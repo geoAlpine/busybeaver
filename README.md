@@ -119,6 +119,17 @@ So a Bouncers decider cracks 53/63 (84%); counter-induction the remaining 10. Pr
 zero unsound-decider risk. `holdouts3_reps.txt` holds the 63 representatives (the test set:
 each must become NEVER_HALTS once the matching decider is built, gated by the known-halter oracle).
 
+## Meeting the BB(6) cryptid: Antihydra (`antihydra.py`)
+Ran the actual BB(6) cryptid `1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA` (halting OPEN,
+Collatz-hard) on our simulator, plus its abstract "soul": iterate h←⌊3h/2⌋ from 8, counter
+c +=2 (even) / −1 (odd), halt iff c=−1.
+- TM: 1,000,000 steps, no halt, tape width 1383 (grinding huge-int arithmetic).
+- Abstract: c climbs 497→4,862→24,961→**50,477** over 100k iters; **lowest c ever = 0** (never
+  near −1); evens 50,159 / odds 49,841 (ratio 0.994; halt needs >2.0); h reaches a
+  **17,610-digit** number. So c drifts ~+0.5/step away from −1 → "probviously" runs forever —
+  but proving it ≡ Mahler's 3/2 problem (open). A 6-state toy whose fate hides behind unsolved
+  number theory: the wall that makes BB(6) astronomically (perhaps unprovably) hard.
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
