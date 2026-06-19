@@ -106,6 +106,19 @@ Run (no dependencies; Python 3.11):
 - **This is the precise target of the next decider** (Closed Tape Language / acceleration /
   counter-aware) — and the road toward BB(6).
 
+## Targeting the monsters: BOUNCER vs COUNTER split (`classify_monsters.py`)
+Before building the (complex, must-be-sound) next decider, we measured each of the 63 distinct
+monsters' width-vs-steps growth law (sound measurement, not a proof) and binned them:
+- **53 BOUNCERS** — width ∝ √steps (ratio r = width(1e5)/width(1e4) clustered tightly at
+  **3.16–3.19 ≈ √10**, the exact quadratic-time bouncer signature: time ∝ n², space ∝ n).
+  Target of the **Bouncers decider** (Iijil1/Bouncers; arXiv 2504.20563 §7 — spec fetched).
+- **10 COUNTERS** — width ∝ log(steps) (carry takes ~2× the last; exponential time).
+  Target of a **counter-induction decider** (sligocki 2022).
+- 0 MID, 0 cap-limited (all genuinely infinite).
+So a Bouncers decider cracks 53/63 (84%); counter-induction the remaining 10. Precise targets,
+zero unsound-decider risk. `holdouts3_reps.txt` holds the 63 representatives (the test set:
+each must become NEVER_HALTS once the matching decider is built, gated by the known-halter oracle).
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
