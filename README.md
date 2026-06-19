@@ -31,10 +31,20 @@ The criteria, after a day of searching for the right "high mountain":
   47,176,870 steps / 4098 ones** (matches the 2024 world result — double-checks both the
   simulator and the table).
 - `decider.py` — a first non-halting prover. Sorts machines into **HALTS / NEVER_HALTS
-  (proven, by exact configuration repeat) / HOLDOUT**. Honest known limitation: the naive
-  `normalize()` is quadratic on drifting machines (hit it the hard way — a runaway machine
-  hung), and it only catches *stationary* cyclers; *translated* cyclers (that drift while
-  repeating) are holdouts here.
+  (proven, by exact configuration repeat) / HOLDOUT**. **SOUND but weak**: only catches
+  *stationary* cyclers (exact config repeat). Honest limitation: the naive `normalize()` is
+  quadratic on drifting machines (hit it the hard way — a runaway machine hung).
+- `lin_decider.py` — an ATTEMPT at a Lin-Rado *translated*-cycle decider (to catch drifters
+  like `1RA1RA`). **KNOWN-UNSOUND — DO NOT TRUST its NEVER_HALTS verdicts.** Two reconstructed
+  formulations of the tape-comparison condition BOTH falsely "proved" non-halting for machines
+  that demonstrably halt (BB(4)@107, BB(5)@47M). Caught by the built-in **soundness audit**
+  that cross-checks every NEVER_HALTS claim against the trusted simulator (the known-halter
+  oracle). Kept as a documented failed attempt + a self-auditing harness. The correct Lin
+  recurrence condition is subtler than reconstructable from memory — it must be implemented
+  against the published spec / a Coq-verified reference and gated by this oracle.
+  **Lesson (the 5th and sharpest self-correction of the day): a decider that emits a false
+  proof is the cardinal sin; we refused to trust a "win" that the oracle flagged — which is
+  exactly why the 2024 BB(5) result is a *machine-checked* proof, not a hand-wave.**
 
 Run (no dependencies; Python 3.11):
 ```
