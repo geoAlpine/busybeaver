@@ -130,6 +130,17 @@ c +=2 (even) / −1 (odd), halt iff c=−1.
   but proving it ≡ Mahler's 3/2 problem (open). A 6-state toy whose fate hides behind unsolved
   number theory: the wall that makes BB(6) astronomically (perhaps unprovably) hard.
 
+## "Computing BB(6)" — the two walls, and a real (tiny) lower bound (`hunt6.py`)
+You can't COMPUTE BB(6): (wall 1, math) deciding it needs every 6-state machine settled,
+incl. cryptids like Antihydra ≡ open problems; (wall 2, time) the known record-holders halt
+after ~10↑↑15 steps — unrunnable by brute force in any physical time. But you can HUNT its
+lower bound. A quick hunt of 40,000 random normalized 6-state machines (cap 300k steps):
+**16,530 halted — and the LATEST halter stopped at just 67 steps**, giving the true (laughable)
+bound **BB(6) ≥ 67**. The lesson is the chasm 67 vs >10↑↑15: late-halters are so rare that
+random search never finds them — **records come from clever CONSTRUCTION (counter/Collatz
+structure), not brute force.** (Our fast counter omits the final halt transition, so +1 vs the
+standard convention; BB(4) read 106 here vs the true 107.)
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
