@@ -45,6 +45,19 @@ The criteria, after a day of searching for the right "high mountain":
   **Lesson (the 5th and sharpest self-correction of the day): a decider that emits a false
   proof is the cardinal sin; we refused to trust a "win" that the oracle flagged — which is
   exactly why the 2024 BB(5) result is a *machine-checked* proof, not a hand-wave.**
+- `translated_cyclers.py` — **the SOUND translated-cycle decider** (supersedes the unsound
+  `lin_decider.py`). A faithful port of the bbchallenge S(5)-gated reference
+  (`bbchallenge-deciders/decider-translated-cyclers`): the **record method** — snapshot only
+  at new leftmost/rightmost positions; bucket by (side, state, read); two records are
+  equivalent iff, walking from the head into the explored region, the tapes agree
+  head-relative (`now[p1+offset] == past[p0+offset]`) over exactly the cells visited since the
+  past record's time (the proof's "distance L"). **Verified SOUND by the built-in audit: 0
+  false proofs across the known halters (BB(2)/BB(3)/BB(4)), and it PROVES non-halting for the
+  drifters the exact-repeat decider couldn't — including `1RA1RA`, the very machine we falsely
+  "proved" then caught.** This is the earned win: failed twice from memory → caught it with the
+  oracle → fetched the authoritative spec → implemented faithfully → gated until sound. The
+  holdout set genuinely shrank. (`flip-in-place` remains a holdout: neither stationary nor
+  translated cycling — the next escalation rung.)
 
 Run (no dependencies; Python 3.11):
 ```
