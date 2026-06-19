@@ -65,6 +65,18 @@ Run (no dependencies; Python 3.11):
 /opt/homebrew/bin/python3.11 busybeaver/decider.py
 ```
 
+## Closing a whole class: the 2-state universe (the real method, at scale 2)
+- `enumerate2.py` — enumerate ALL 20,736 two-state machines and classify each with the sound
+  tools (trivial no-halt-state check → simulator → exact-repeat → translated-cycle).
+  **Result: HALTS 9,784 (max = 6 = BB(2), reproduced from scratch by deciding every machine),
+  NEVER_HALTS 10,952, HOLDOUT 0 — the class is fully closed.**
+- `holdout_probe.py` — the frontier move that got us there. A first pass left **12 holdouts**;
+  probing showed all 12 share one trait: **no halt transition at all** (`Z` absent), and they
+  resist exact-repeat AND translated-cycle even at generous limits (their infinite behaviour is
+  neither). The missing decider was the *simplest* one — "no halt state ⇒ never halts" — not a
+  fancier one. Lesson: enumerate the trivial cases; a holdout can be a forgotten triviality, not
+  a hard problem. Adding it closed the universe (0 holdouts).
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
