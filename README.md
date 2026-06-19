@@ -90,6 +90,22 @@ Run (no dependencies; Python 3.11):
   C-transitions. The genuinely-hard core is small; that's where stronger deciders / hand-analysis
   go next.
 
+## Unmasking the 3-state holdouts (`holdout3_analyze.py`)
+- The 684 holdouts collapse to **63 distinct hard behaviours** (deduped by reached-transition
+  signature; the rest are replicas across irrelevant/unreached transitions). The genuinely-hard
+  core is ~10% of the apparent count.
+- **All 63 stay holdouts even at generous limits — they are genuinely hard, not cap-limited.**
+  (Tested the hypothesis "the small-width ones are just long-period cyclers": FALSED by direct
+  measurement — see below — the 6th self-correction.)
+- **Two monster types** defeat the simple deciders:
+  1. **Two-sided unbounded growth** — symmetric spans (e.g. [-172,173]), width grows ~linearly;
+     escapes the same-side translated-cycle test.
+  2. **Counters** — width ≈ log(steps): one machine measured 5→12→15→18→19 at
+     10²→10³→10⁴→10⁶→2·10⁶ steps. Each carry takes ~2× the last, so the inter-record period
+     keeps growing and no fixed-period cycle exists. (These look "bounded" at 30k steps but creep.)
+- **This is the precise target of the next decider** (Closed Tape Language / acceleration /
+  counter-aware) — and the road toward BB(6).
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
