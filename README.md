@@ -77,6 +77,19 @@ Run (no dependencies; Python 3.11):
   fancier one. Lesson: enumerate the trivial cases; a holdout can be a forgotten triviality, not
   a hard problem. Adding it closed the universe (0 holdouts).
 
+## Scaling up: the 3-state universe (the difficulty wall, seen firsthand)
+- `enumerate3.py` — all 16^5 = 1,048,576 normalized (A0=1RB) three-state machines, classified.
+  **Result: HALTS 471,236 (max = 21 = BB(3), reproduced), NEVER_HALTS 576,656, HOLDOUT 684.**
+  Champion `1RB0LZ_1LB0RC_1LC1LA`.
+- **The key observation (the difficulty wall):** at n=2 the simple deciders close the class
+  (0 holdouts); at n=3 they leave **684 holdouts** — a small but nonzero stubborn residual the
+  trivial + exact-repeat + translated-cycle deciders cannot settle. This is, in miniature, why
+  BB(5) took until 2024 and BB(6) is open: each added state spawns behaviours that resist simple
+  cycle arguments. The holdout sample all share the prefix `1RB0LB_1LA0RA_…` (state C never
+  reached) — i.e. the 684 are a handful of distinct hard behaviours replicated across irrelevant
+  C-transitions. The genuinely-hard core is small; that's where stronger deciders / hand-analysis
+  go next.
+
 ## The actual frontier work (next steps)
 The game is: **shrink the holdout set, one decider at a time, toward BB(6).**
 1. **Incremental config / faster sim** — kill the quadratic normalize; use a relative,
