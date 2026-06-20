@@ -136,10 +136,12 @@ def cross(M, state, segs, from_seg, rep_seg, d):
     else:
         head0 = len(cells) - 1 - BUF * qc; tdir = -1
     ch = extract_chain(M, state, dict(tape), head0, tdir, qmax=max(2, 2 * qc + 4))
-    if ch is None or abs(ch["adv"]) != qc or ch["state"] != state:
+    adv = abs(ch["adv"]) if ch else 0
+    if ch is None or adv == 0 or qc % adv != 0 or ch["state"] != state:
         return (state, segs, from_seg, (0 if d > 0 else len(segs[from_seg][1]) - 1)), ("STUCK", 0)
-    qstep = ch["q"]
-    # simulate K cycles concretely to read the NET transformed word W'
+    k = qc // adv                                 # cycles to cross ONE word copy (adv may divide |W|)
+    qstep = ch["q"] * k                            # micro-steps per word copy
+    # simulate K word-copies concretely to read the NET transformed word W'
     t2 = dict(tape); h = head0; s = state
     for _ in range(K * qstep):
         tr = M[s][t2.get(h, 0)]
