@@ -14,7 +14,7 @@ from collections import defaultdict
 sys.path.insert(0, os.path.dirname(__file__))
 from bouncer_prove2 import parse, sim
 from bouncer_prove_sound import records
-from wsim import step, val
+from wsim import step, val, exps_valid
 
 
 def period_of(cells):
@@ -116,6 +116,8 @@ def prove(spec, steps=20000, max_macro=4000):
                 for s in range(max_macro):
                     cfg, op = step(M, cfg)
                     if op[0] in ("HALT", "STUCK"):
+                        break
+                    if not exps_valid(cfg, base):     # left the n>=base valid regime
                         break
                     if s >= 1:
                         d = closure(start, cfg)

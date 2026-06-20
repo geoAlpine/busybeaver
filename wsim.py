@@ -30,6 +30,11 @@ def _cp(segs):
     return [[x[0], list(x[1])] if x[0] == "c" else [x[0], x[1], x[2]] for x in segs]
 
 
+def exps_valid(cfg, base):
+    """every repeater count is >= 0 at n=base (so the symbolic derivation is valid for all n>=base)."""
+    return all(val(s[2], base) >= 0 for s in cfg[1] if s[0] == "r")
+
+
 def expand(segs, n):
     """-> (cells list, seg_start_index list)."""
     cells = []; starts = []
@@ -111,13 +116,29 @@ def micro(M, cfg):
             segs.append(["c", [0]]); return (ns, segs, nbr, 0), ("MICRO", 1)
         if segs[nbr][0] == "c":
             return (ns, segs, nbr, 0), ("MICRO", 1)
-        return cross(M, ns, segs, hi, nbr, +1)
+        res = cross(M, ns, segs, hi, nbr, +1)
+        return res if res[1][0] != "STUCK" else materialize(ns, segs, nbr, +1)
     else:
         if nbr < 0:                           # blank to the left
             segs.insert(0, ["c", [0]]); return (ns, segs, 0, 0), ("MICRO", 1)
         if segs[nbr][0] == "c":
             return (ns, segs, nbr, len(segs[nbr][1]) - 1), ("MICRO", 1)
-        return cross(M, ns, segs, hi, nbr, -1)
+        res = cross(M, ns, segs, hi, nbr, -1)
+        return res if res[1][0] != "STUCK" else materialize(ns, segs, nbr, -1)
+
+
+def materialize(ns, segs, rep, d):
+    """no chain crosses repeater segs[rep]=(W,exp): peel ONE concrete copy of W on the head's side so
+    the head can micro-step into it (a boundary bounce). Sound: (W)^exp = (W)^(exp-1) . W. If the head
+    bounces back, absorb() re-folds it. Validity (exp-1 >= 0 for n>=base) is checked by the prover."""
+    W = segs[rep][1]; exp = segs[rep][2]
+    segs[rep][2] = (exp[0], exp[1] - 1)
+    if d > 0:                                  # head entering from the left -> copy goes left of repeater
+        segs.insert(rep, ["c", list(W)])
+        return (ns, segs, rep, 0), ("MICRO", 1)
+    else:                                      # entering from the right -> copy goes right of repeater
+        segs.insert(rep + 1, ["c", list(W)])
+        return (ns, segs, rep + 1, len(W) - 1), ("MICRO", 1)
 
 
 def cross(M, state, segs, from_seg, rep_seg, d):
