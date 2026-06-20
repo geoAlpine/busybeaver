@@ -55,10 +55,15 @@ def verdict(spec, sim_cap=2_000_000):
     return "HOLDOUT", "no sound decider closed it"
 
 
-# Open-problem soundness gate: NO sound decider may prove any of these NEVER_HALTS (halting is
-# genuinely OPEN). Any decider that does is unsound — this is the gate that caught bouncer-v3.
+# Soundness gate: NO sound decider may return NEVER_HALTS on any of these.
+#  - OPEN cryptids: halting is a genuine open problem (a NEVER_HALTS proof would resolve it).
+#  - HALTING cryptid: it provably HALTS (after astronomically many steps), so NEVER_HALTS on it is a
+#    flat-out false proof. Binary-alphabet cryptids only (our parser is 2-symbol; Hydra/Bigfoot are
+#    multi-symbol and excluded). This is the gate that caught bouncer-v3.
 OPEN_MACHINES = [
-    ("Antihydra (BB(6) cryptid, OPEN/Collatz)", "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA"),
+    ("Antihydra      (BB6, OPEN/Collatz)",  "1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_---0RA"),
+    ("Space Needle   (BB6, OPEN)",          "1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD"),
+    ("Lucy's Moonlight (BB6, HALTS late)",  "1RB0RD_0RC1RE_1RD0LA_1LE1LC_1RF0LD_---0RA"),
 ]
 
 

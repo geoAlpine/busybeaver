@@ -16,6 +16,17 @@ A valid proof that Antihydra never halts would resolve a famous open problem. v3
 any feasible cap), which is precisely why the synthetic 3-state halter audit (0 false proofs on
 BB2/BB3/BB4) MISSED it. The open-problem machine is the oracle the synthetic set could not be.
 
+**Ironclad confirmation (a false proof on a machine that PROVABLY HALTS).** Hardening the gate with
+more binary BB(6) cryptids exposed the cleaner counterexample: on **Lucy's Moonlight**
+`1RB0RD_0RC1RE_1RD0LA_1LE1LC_1RF0LD_---0RA` — a cryptid the community has shown **HALTS** (after
+astronomically many steps) — **v3 returns `NEVER_HALTS`.** This is not "unprovable", it is **flatly
+false**: v3 claims a halting machine never halts. Two independent classes of evidence now: (1) v3
+"proves" the OPEN Antihydra; (2) v3 "proves" the HALTING Lucy's Moonlight never halts.
+
+**Trusted decider passed the hardened gate.** The faithfully-ported `translated_cyclers` returns
+HOLDOUT on all three binary cryptids tested (Antihydra, Space Needle, Lucy's Moonlight) — 0 gate
+violations — raising confidence in the one non-halting decider we still trust.
+
 ## The bug (why it's unsound)
 v3 takes the last three tape-extreme records on a side that share a state (P0,P1,P2), tokenizes the
 two bounce **step-traces** `(state, read, dir)` into CHAIN (period-q repeats) + WALL tokens, and
