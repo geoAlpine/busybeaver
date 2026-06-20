@@ -25,6 +25,11 @@ def val(exp, n):
     return exp[0] * n + exp[1]
 
 
+def _cp(segs):
+    """deep-copy segments (the 'c' cell lists are mutable and must not be shared)."""
+    return [[x[0], list(x[1])] if x[0] == "c" else [x[0], x[1], x[2]] for x in segs]
+
+
 def expand(segs, n):
     """-> (cells list, seg_start_index list)."""
     cells = []; starts = []
@@ -50,7 +55,7 @@ def normalize(cfg):
     state, segs, hi, ho = cfg
     # map old head to an absolute marker so we can re-find it
     # tag the head cell with a sentinel object inside the concrete seg
-    segs = [list(s) for s in segs]
+    segs = _cp(segs)
     # drop zero-count repeaters and empty concrete segs (but not the head seg) by rebuilding
     out = []; head_marker = ("HEAD", hi, ho)
     for idx, s in enumerate(segs):
@@ -88,7 +93,7 @@ def normalize(cfg):
 def micro(M, cfg):
     """One macro action. Returns (kind, cost_in_micro_steps) or ('HALT',0)/('STUCK',0)."""
     state, segs, hi, ho = cfg
-    segs = [list(s) for s in segs]
+    segs = _cp(segs)
     cur = segs[hi][1][ho]
     tr = M[state][cur]
     if tr is None:
@@ -154,12 +159,51 @@ def cross(M, state, segs, from_seg, rep_seg, d):
         return (state, segs, rep_seg, 0), ("STUCK", 0)
 
 
+def absorb(cfg):
+    """canonicalize: fold concrete W-copies that sit against a repeater into its exponent (sound
+    re-bracketing: 'c'[..W] 'r'W^e == 'r'W^(e+1) with 'c'[..]). Never absorbs the head's cell."""
+    state, segs, hi, ho = cfg
+    segs = _cp(segs)
+    changed = True
+    while changed:
+        changed = False
+        for i, s in enumerate(segs):
+            if s[0] != "r":
+                continue
+            W = s[1]; q = len(W)
+            # left neighbor: absorb trailing copies of W
+            if i - 1 >= 0 and segs[i - 1][0] == "c":
+                c = segs[i - 1][1]; j = 0
+                while len(c) >= (j + 1) * q and tuple(c[len(c) - (j + 1) * q: len(c) - j * q]) == W:
+                    j += 1
+                if i - 1 == hi:                      # don't absorb the head's cell
+                    while j > 0 and ho >= len(c) - j * q:
+                        j -= 1
+                if j > 0:
+                    segs[i][2] = (s[2][0], s[2][1] + j)
+                    segs[i - 1][1] = c[:len(c) - j * q]; changed = True
+            # right neighbor: absorb leading copies of W
+            if i + 1 < len(segs) and segs[i + 1][0] == "c":
+                c = segs[i + 1][1]; j = 0
+                while len(c) >= (j + 1) * q and tuple(c[j * q:(j + 1) * q]) == W:
+                    j += 1
+                if i + 1 == hi:
+                    while j > 0 and ho < j * q:
+                        j -= 1
+                if j > 0:
+                    segs[i][2] = (s[2][0], s[2][1] + j)
+                    segs[i + 1][1] = c[j * q:]
+                    if i + 1 == hi:
+                        ho -= j * q
+                    changed = True
+    return normalize((state, segs, hi, ho))
+
+
 def step(M, cfg):
     cfg2, op = micro(M, cfg)
     if op[0] in ("HALT", "STUCK"):
         return cfg2, op
-    cfg2 = normalize(cfg2)
-    return cfg2, op
+    return absorb(normalize(cfg2)), op
 
 
 def cost_micro(op, exp_or_word, q, n):
