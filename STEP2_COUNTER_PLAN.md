@@ -60,6 +60,23 @@ Reaches `1^(k+2) 00 B> 0` = RHS(k+1). Recurrence `f(0)=0, f(n+1)=2f(n)+2n+18`; s
 `P(n)` holds for all n ⇒ from the start config the machine reaches `C(n)` for every n, writing an
 unbounded number of 1s, never reaching a halt transition ⇒ NEVER_HALTS.
 
+## BUILD STATUS (2026-06-20 session)
+- **✅ G1 done — `counter_prove.py`: symbolic macro-simulator, VALIDATED faithful.** Run-length
+  blocks with single-variable linear exponents a*n+b; faithful micro-steps + exact self-loop CHAIN
+  steps (b^e crossed in 1+e real steps) + symbolic peel. Lockstep cell-for-cell vs the trusted
+  concrete sim: 4 values of n × 160 ops, 0 mismatch. (Two real bugs caught BY the lockstep oracle:
+  a CHAIN cost off-by-one, and the negative-exponent regime boundary — both fixed. Harness works.)
+- **🔑 KEY FINDING — closure needs TWO-LEVEL nested induction, NOT a one-variable rule.** Symbolic
+  trace of the canonical counter from `A> 0 1^n 0` shows the binary DIGITS accumulate on the LEFT
+  (`1 0^(n-k) 1 0 1^.. ..`), not a single growing block. The carry-out points form a clean
+  self-similar rule on a SECOND variable m (the right-deposited count):
+      `R(m):  1 0^(n-m-1) A> 0 1^m  ->  1 0^(n-m-2) A> 0 1^(m+1)`   (gaps 7,15,31 — doubling)
+  BUT executing `R(m)->R(m+1)` requires sweeping the `1^m` digit region (~2^m steps) = its OWN
+  inner induction. So the proof is genuinely 2-level: OUTER = reservoir transfer (m, then n), INNER
+  = digit-region sweep. A single-symbolic-variable simulator + one IH provably cannot close it.
+  This matches sligocki's f(n+1)=2f(n)+… (the IH applied twice) and our decoded MID(k)=MID(k-1)+
+  [pivot]+MID(k-1). **The next build = the nested (multi-rule) induction layer over `counter_prove.py`.**
+
 ## Build pipeline (mirror the bouncer STEP-2 discipline)
 1. **Symbolic config + simulator** (the foundation, soundness-light): blocks `(sym, count)` where
    count ∈ ℤ≥1 or linear `a·n+b`; state + direction. `base_step` = peel one symbol (handle symbolic
