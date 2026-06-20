@@ -126,13 +126,50 @@ def validate(spec, max_ops=300):
     return True, f"validated {max_ops} accelerated macro-ops cell-for-cell"
 
 
+def shape(cfg):
+    """structural signature: state, (seg-kind, word) per seg, head — exps abstracted away."""
+    st, segs, hi, ho = cfg
+    return (st, tuple((s[0], tuple(s[1])) for s in segs), hi, ho)
+
+
+def detect_rules(spec, max_ops=600, min_occ=4):
+    """PIECE 2 (sound: detection only). Run the accelerated macro-sim and find shapes that RECUR
+    with a repeater exponent growing monotonically -> candidate rules S(v) -> S(v+d). Returns
+    [(count, shape, [(op_index, exps)...])]. (Detection is heuristic; the PROOF is PIECE 3.)"""
+    tr = macro_run(spec, ("A", [["c", [0]]], 0, 0), max_ops=max_ops)
+    groups = {}
+    for i, (op, cfg) in enumerate(tr):
+        exps = tuple(val(s[2], 0) for s in cfg[1] if s[0] == "r")
+        groups.setdefault(shape(cfg), []).append((i, exps))
+    cands = []
+    for sh, occ in groups.items():
+        if len(occ) < min_occ:
+            continue
+        seq = [e for _, e in occ if e]
+        if not seq:
+            continue
+        for pos in range(len(seq[0])):
+            vals = [e[pos] for e in seq if len(e) > pos]
+            if len(vals) >= min_occ and all(vals[k + 1] > vals[k] for k in range(len(vals) - 1)):
+                cands.append((len(occ), sh, occ[:6])); break
+    cands.sort(reverse=True)
+    return cands
+
+
 def main():
     spec = "1RB1LA_0LA0RB_0LA0LZ"
     ok, detail = validate(spec)
     print("=" * 70)
-    print("counter_induct PIECE 1 — accelerated macro-machine (compress + chains), G1")
+    print("counter_induct — accelerated macro-machine (compress + chains)")
     print(f"  {spec}")
-    print(f"  {'OK' if ok else 'FAIL'}: {detail}")
+    print(f"  PIECE 1 (G1): {'OK' if ok else 'FAIL'}: {detail}")
+    print(f"  PIECE 2 (rule detection): candidate self-similar shapes (recur with growing exponent):")
+    for cnt, sh, occ in detect_rules(spec)[:6]:
+        st, kinds, hi, ho = sh
+        desc = " ".join(("".join(map(str, w)) if k == "c" else "(" + "".join(map(str, w)) + ")^*")
+                        for k, w in kinds)
+        print(f"    x{cnt}  {st} [{desc}] h=({hi},{ho})  e.g. {occ[:4]}")
+    print("  PIECE 3 (window-rule nested-induction proof) = the next build (the hard sligocki core).")
     return 0 if ok else 1
 
 
