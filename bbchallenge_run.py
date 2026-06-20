@@ -163,6 +163,35 @@ def run_sample(N=20_000, seed=12345, sim_cap=100_000):
     return false_proofs
 
 
+def audit_translated(N=20_000, seed=99, check_cap=300_000):
+    """Regression soundness audit of the ONE trusted non-halting decider: on N random 4/5-state
+    machines, every translated-cycle NEVER_HALTS is cross-checked against the simulator (must not
+    halt). 0 false proofs is the bar. (v3 passed the 3-state halter audit but died on real cryptids;
+    translated_cyclers must pass BOTH this random audit AND the open-problem gate.)"""
+    rng = random.Random(seed)
+    nh = checked = 0; fp = []
+    for _ in range(N):
+        n = rng.choice([4, 5]); spec = rand_4state_or_5(rng, n)
+        v, _ = decide_translated(spec, time_limit=50_000, space_limit=20_000)
+        if v == "NEVER_HALTS":
+            nh += 1; h, _ = sim(spec, check_cap); checked += 1
+            if h:
+                fp.append(spec)
+    print("=" * 88)
+    print(f"(C) SOUNDNESS AUDIT of the trusted translated-cycle decider — {N} random 4/5-state machines")
+    print("=" * 88)
+    print(f"  NEVER_HALTS claims: {nh}   cross-checked: {checked}   FALSE PROOFS: {len(fp)}")
+    print(f"  -> {'SOUND on this audit (0 false proofs)' if not fp else 'UNSOUND ‼ ' + str(fp[:3])}")
+    return len(fp)
+
+
+def rand_4state_or_5(rng, n):
+    cells = ["1RB"]; tg = "ABCDEF"[:n] + "Z"
+    for _ in range(2 * n - 1):
+        cells.append(rng.choice("01") + rng.choice("LR") + rng.choice(tg))
+    return "_".join("".join(cells[2 * i:2 * i + 2]) for i in range(n))
+
+
 def main():
     gate = soundness_gate()
     bad = run_known()

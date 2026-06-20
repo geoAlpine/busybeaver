@@ -23,9 +23,14 @@ astronomically many steps) — **v3 returns `NEVER_HALTS`.** This is not "unprov
 false**: v3 claims a halting machine never halts. Two independent classes of evidence now: (1) v3
 "proves" the OPEN Antihydra; (2) v3 "proves" the HALTING Lucy's Moonlight never halts.
 
-**Trusted decider passed the hardened gate.** The faithfully-ported `translated_cyclers` returns
-HOLDOUT on all three binary cryptids tested (Antihydra, Space Needle, Lucy's Moonlight) — 0 gate
-violations — raising confidence in the one non-halting decider we still trust.
+**Trusted decider passed the hardened gate AND a random audit.** The faithfully-ported
+`translated_cyclers` returns HOLDOUT on all three binary cryptids tested (Antihydra, Space Needle,
+Lucy's Moonlight) — 0 gate violations — AND a random audit of 20,000 four/five-state machines
+produced **10,383 NEVER_HALTS claims, every one cross-checked against the simulator, 0 false proofs**
+(`bbchallenge_run.audit_translated`). It also decides 0/63 of the hard 3-state monsters — the honest
+current ceiling of the trusted suite: it handles cyclers, but the bouncers/counters need a real
+(not-yet-built) sound decider. Contrast with v3: v3 *also* passed the 3-state halter audit, then died
+on the first real cryptids. translated_cyclers passes both the random audit and the cryptid gate.
 
 ## The bug (why it's unsound)
 v3 takes the last three tape-extreme records on a side that share a state (P0,P1,P2), tokenizes the
