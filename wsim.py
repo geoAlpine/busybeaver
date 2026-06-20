@@ -121,41 +121,54 @@ def micro(M, cfg):
 
 
 def cross(M, state, segs, from_seg, rep_seg, d):
-    """head in `state` is about to enter repeater segs[rep_seg]=(W,exp) from direction d (d=+1 means
-    moving right into it, so entering its left/W[0]; d=-1 entering its right/W[-1]). Cross via a
-    verified word-chain. Returns (cfg, (kind,cost)) or STUCK."""
+    """head in `state` is about to enter repeater segs[rep_seg]=(W,exp) from direction d. Cross via a
+    verified word-chain (q steps/copy, advancing |W| cells/copy; the transformed word W' is read from
+    the NET result of crossing concrete copies, so q != |W| 'wiggling' chains are handled). The chain
+    op carries (exp, q) so the cost is exp*q micro-steps (+1 entry, in validate)."""
     _, W, exp = segs[rep_seg]
-    q = len(W)
-    # build a concrete window of K copies of W in tape order, head at the entry boundary
-    K = 4
-    cells = list(W) * K
-    if d > 0:
-        head0 = 0; tdir = 1
-    else:
-        head0 = len(cells) - 1; tdir = -1
+    qc = len(W)                                   # cells per copy
+    K, BUF = 4, 4                                 # K copies to cross, BUF buffer copies each side
+    total = K + 2 * BUF
+    cells = list(W) * total
     tape = {i: cells[i] for i in range(len(cells))}
-    ch = extract_chain(M, state, dict(tape), head0, tdir, qmax=max(2, q + 2))
-    if ch is None or abs(ch["adv"]) != q or ch["state"] != state:
+    if d > 0:
+        head0 = BUF * qc; tdir = 1
+    else:
+        head0 = len(cells) - 1 - BUF * qc; tdir = -1
+    ch = extract_chain(M, state, dict(tape), head0, tdir, qmax=max(2, 2 * qc + 4))
+    if ch is None or abs(ch["adv"]) != qc or ch["state"] != state:
         return (state, segs, from_seg, (0 if d > 0 else len(segs[from_seg][1]) - 1)), ("STUCK", 0)
-    # transformed word in tape order
-    write = ch["write"]
-    Wp = tuple(write) if d > 0 else tuple(reversed(write))
+    qstep = ch["q"]
+    # simulate K cycles concretely to read the NET transformed word W'
+    t2 = dict(tape); h = head0; s = state
+    for _ in range(K * qstep):
+        tr = M[s][t2.get(h, 0)]
+        if tr is None:
+            return (state, segs, from_seg, 0), ("STUCK", 0)
+        w, mv, ns = tr; t2[h] = w; h += 1 if mv == "R" else -1; s = ns
+    if s != state or h != head0 + d * K * qc:    # must end at the far boundary, same state
+        return (state, segs, from_seg, 0), ("STUCK", 0)
+    # the K copies just crossed are now behind the head; read W' (period qc), require uniform
+    if d > 0:
+        region = [t2.get(head0 + i, 0) for i in range(K * qc)]
+    else:
+        region = [t2.get(head0 - K * qc + 1 + i, 0) for i in range(K * qc)]
+    Wp = tuple(region[:qc])
+    if any(tuple(region[i:i + qc]) != Wp for i in range(0, K * qc, qc)):
+        return (state, segs, from_seg, 0), ("STUCK", 0)
     segs[rep_seg] = ["r", Wp, exp]
-    cost = ("CHAIN", None)                     # symbolic cost; filled by val at validation time
-    # head exits the far side of the repeater
     far = rep_seg + d
     if d > 0:
         if far >= len(segs):
-            segs.append(["c", [0]]); return (state, segs, far, 0), ("CHAINR", exp)
+            segs.append(["c", [0]]); return (state, segs, far, 0), ("CHAINR", exp, qstep)
         if segs[far][0] == "c":
-            return (state, segs, far, 0), ("CHAINR", exp)
-        # far is another repeater -> recurse cross from boundary (rare); stuck for now
+            return (state, segs, far, 0), ("CHAINR", exp, qstep)
         return (state, segs, rep_seg, 0), ("STUCK", 0)
     else:
         if far < 0:
-            segs.insert(0, ["c", [0]]); return (state, segs, rep_seg, 0), ("CHAINL", exp)
+            segs.insert(0, ["c", [0]]); return (state, segs, rep_seg, 0), ("CHAINL", exp, qstep)
         if segs[far][0] == "c":
-            return (state, segs, far, len(segs[far][1]) - 1), ("CHAINL", exp)
+            return (state, segs, far, len(segs[far][1]) - 1), ("CHAINL", exp, qstep)
         return (state, segs, rep_seg, 0), ("STUCK", 0)
 
 
@@ -240,12 +253,8 @@ def validate(spec, cfg0, ns=(3, 4, 5, 7), max_macro=200):
                 break
             if op[0] == "MICRO":
                 cost = 1
-            else:                                # CHAIN: 1 entry micro-step + (copies * q) chain steps
-                q = None
-                for s in prev[1]:
-                    if s[0] == "r" and s[2] == op[1]:
-                        q = len(s[1]); break
-                cost = 1 + val(op[1], n) * (q or 1)
+            else:                                # CHAIN ('CHAINR'/'CHAINL', exp, qstep): 1 entry + copies*qstep
+                cost = 1 + val(op[1], n) * op[2]
             ctape, chead, cst, halted = concrete_run(M, ctape, chead, cst, cost)
             stape, shead, sst = cfg_to_tape(cfg, n)
             if sst != cst:

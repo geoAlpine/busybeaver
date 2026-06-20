@@ -27,48 +27,38 @@ def period_of(cells):
     return None
 
 
-def build_left_rep(cells, head, state):
-    """repeater on the LEFT of the head: cells[0:head] periodic. -> (cfg, base) or None."""
+def build_left_rep(cells, head, state, L):
+    """repeater (word length L) on the LEFT of the head: cells[0:R] = (W)^base, W=cells[0:L]."""
     left = cells[:head]
-    p = period_of(left)
-    if p is None:
+    if len(left) < 2 * L:
         return None
-    W = tuple(left[:p])
-    w_start = (head // p) * p
-    if w_start == head:
-        w_start -= p                                  # keep >=1 copy in the wall region
-    while w_start > 0 and tuple(cells[w_start - p:w_start]) != W:
-        w_start -= p
-    if w_start < p:                                   # need >=1 symbolic copy
+    W = tuple(cells[:L])
+    R = ((head - 1) // L) * L                          # largest L-multiple <= head-1 (keep head in wall)
+    if R < L:
         return None
-    if any(tuple(cells[i:i + p]) != W for i in range(0, w_start, p)):
+    if any(tuple(cells[i:i + L]) != W for i in range(0, R, L)):
         return None
-    base = w_start // p
-    wall = cells[w_start:]                             # concrete cells from repeater end through head
-    segs = [["r", W, (1, 0)], ["c", list(wall)]]
-    return (state, segs, 1, head - w_start), base
+    segs = [["r", W, (1, 0)], ["c", list(cells[R:])]]
+    return (state, segs, 1, head - R), R // L
 
 
-def build_right_rep(cells, head, state):
-    """repeater on the RIGHT of the head: cells[head+1:] periodic. -> (cfg, base) or None."""
+def build_right_rep(cells, head, state, L):
+    """repeater (word length L) on the RIGHT of the head: cells[rep_start:] = (W)^base."""
     right = cells[head + 1:]
-    p = period_of(right)
-    if p is None:
+    if len(right) < 2 * L:
         return None
-    W = tuple(right[:p])
-    n_right = len(right)
-    w_len = (n_right // p) * p
-    if w_len == n_right:
-        w_len -= p
-    if w_len < p:
+    n = len(right)
+    w_len = (n // L) * L
+    if w_len == n:
+        w_len -= L
+    if w_len < L:
         return None
-    if any(tuple(right[i:i + p]) != W for i in range(0, w_len, p)):
+    rep_start = head + 1 + (n - w_len)
+    W = tuple(cells[rep_start:rep_start + L])
+    if any(tuple(cells[rep_start + i:rep_start + i + L]) != W for i in range(0, w_len, L)):
         return None
-    rep_start = head + 1 + (n_right - w_len)           # repeater begins after the inner wall
-    base = w_len // p
-    wall = cells[:rep_start]
-    segs = [["c", list(wall)], ["r", W, (1, 0)]]
-    return (state, segs, 0, head), base
+    segs = [["c", list(cells[:rep_start])], ["r", W, (1, 0)]]
+    return (state, segs, 0, head), w_len // L
 
 
 def seg_key(segs):
@@ -115,21 +105,22 @@ def prove(spec, steps=20000, max_macro=4000):
         r = rs[len(rs) // 2]                            # a developed record
         t, st, side, cells, hr = r
         for builder in (build_left_rep, build_right_rep):
-            built = builder(cells, hr, st)
-            if not built:
-                continue
-            start, base = built
-            if base < 1:
-                continue
-            cfg = start
-            for s in range(max_macro):
-                cfg, op = step(M, cfg)
-                if op[0] in ("HALT", "STUCK"):
-                    break
-                if s >= 1:
-                    d = closure(start, cfg)
-                    if d:
-                        return "NEVER_HALTS", ("w-bouncer", key, f"period~{s+1}", f"n>={base}", f"grow+{d}")
+            for L in range(1, 7):                       # word length = |adv| of the chain; try 1..6
+                built = builder(cells, hr, st, L)
+                if not built:
+                    continue
+                start, base = built
+                if base < 1:
+                    continue
+                cfg = start
+                for s in range(max_macro):
+                    cfg, op = step(M, cfg)
+                    if op[0] in ("HALT", "STUCK"):
+                        break
+                    if s >= 1:
+                        d = closure(start, cfg)
+                        if d:
+                            return "NEVER_HALTS", ("w-bouncer", key, f"L={L}", f"period~{s+1}", f"n>={base}", f"grow+{d}")
     return "HOLDOUT", "no word-bouncer closure"
 
 
