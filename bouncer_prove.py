@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 """
+‼‼ KNOWN-UNSOUND (2026-06-20) — DO NOT TRUST NEVER_HALTS. See SOUNDNESS_INCIDENT.md. ‼‼
+v1 of the unsound trace-extrapolation bouncer engine (superseded by v2/v3, all quarantined):
+it proved the OPEN cryptid Antihydra, an invalid proof. The "oracle-gated" claim below only
+guards against false proofs on machines that HALT — it cannot certify a non-halting prover.
+
 Bouncers decider — STEP 2: the PROOF engine (sound, conservative, oracle-gated).
 
 Soundness core (the chain rule, verified at the transition-table level):

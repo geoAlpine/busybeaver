@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 """
+‼‼ KNOWN-UNSOUND (2026-06-20) — DO NOT TRUST NEVER_HALTS. See SOUNDNESS_INCIDENT.md. ‼‼
+Same unsound trace-extrapolation as v3 (v3 only changed record selection). Quarantined.
+(The parse/sim/records/tokenize helpers here are sound and reused by sound measurement code.)
+
 Bouncers PROOF engine v2 — generalize the chain rule to PERIOD-q chains (multi-symbol repeaters).
 
 v1 (bouncer_prove.py) only proved bouncers whose growing run is a single-symbol SELF-LOOP

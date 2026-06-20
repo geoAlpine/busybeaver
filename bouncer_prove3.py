@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 """
+‼‼ KNOWN-UNSOUND (2026-06-20) — DO NOT TRUST NEVER_HALTS. See SOUNDNESS_INCIDENT.md. ‼‼
+This engine proved NEVER_HALTS for the OPEN BB(6) cryptid Antihydra (an invalid proof). It compares
+(state,read,dir) STEP-TRACES of two bounces and extrapolates "forever" from one growth instance,
+omitting the wall-content equality / buffer / head-containment conditions a real bouncer decider
+needs. Quarantined like lin_decider.py. The SOUND replacement = STEP2_PLAN.md (build it, gate on
+Antihydra). Kept as a documented failed attempt + the (sound) record-bucketing idea.
+
 Bouncers PROOF engine v3 — PHASE-ALIGN the records by (side, state).
 
 v2 (bouncer_prove2.py) took the last 3 records on a side and required all three to share

@@ -24,7 +24,8 @@ def parse(spec: str) -> dict:
         machine[state] = {}
         for sym in (0, 1):
             w, m, nxt = group[sym * 3 : sym * 3 + 3]
-            machine[state][sym] = (int(w), m, nxt)
+            # halt transitions are written "---" in the standard format; write is irrelevant then.
+            machine[state][sym] = (int(w) if w in "01" else 0, m, nxt)
     return machine
 
 
