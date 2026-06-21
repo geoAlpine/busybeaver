@@ -103,7 +103,34 @@ class Invariant:
                     seen.add(key); dq.append((nx, ny, path + [sym]))
         return (True, None) if witness else True
 
+    def shortest_prefix(self, target):
+        """shortest {0,1}* string driving START to `target` (the U context). None if unreachable."""
+        seen = {self.START: ()}; dq = deque([self.START])
+        while dq:
+            st = dq.popleft()
+            if st == target:
+                return seen[st]
+            for sym in ("0", "1"):
+                nx = self.step(st, sym)
+                if nx is not None and nx not in seen:
+                    seen[nx] = seen[st] + (sym,); dq.append(nx)
+        return None
+
+    def _completion(self, st):
+        """shortest continuation (over alpha) from st reaching an endable state; () if st endable."""
+        seen = {st: ()}; dq = deque([st])
+        while dq:
+            x = dq.popleft()
+            if self.endable(x):
+                return seen[x]
+            for sym in self.alpha:
+                nx = self.step(x, sym)
+                if nx is not None and nx not in seen:
+                    seen[nx] = seen[x] + (sym,); dq.append(nx)
+        return None
+
     def verify(self):
+        self.witness = None
         # (S) start accepted
         if not self.accepts(canon(["A"])):
             return False, "start not in L"
@@ -122,12 +149,19 @@ class Invariant:
                     if tr is None:
                         # (H) halt: must be NO accepted config with q reading c here
                         if self._can_finish(pqc):
+                            U = self.shortest_prefix(p); V = self._completion(pqc)
+                            if U is not None and V is not None:
+                                self.witness = list(U) + [q, cs] + list(V)
                             return False, f"halt config in L: state {q} reads {c} (context {p})"
                         continue
                     w, d, ns = tr
                     if d == "R":
                         post = self.step(self.step(p, str(w)), ns)
-                        if not self.suffix_includes(pqc, post):
+                        ok, vwit = self.suffix_includes(pqc, post, witness=True)
+                        if not ok:
+                            U = self.shortest_prefix(p)
+                            if U is not None and vwit is not None:
+                                self.witness = list(U) + [q, cs] + list(vwit)
                             return False, f"closure R fails: {q},{c}->{w}{d}{ns} ctx {p}"
                     else:
                         # L move needs the left neighbour c_L; p already includes it as last window sym.
@@ -147,7 +181,11 @@ class Invariant:
                         if pre is None:
                             continue
                         post = self.feed(p, [ns, cL, str(w)])
-                        if not self.suffix_includes(pre, post):
+                        ok, vwit = self.suffix_includes(pre, post, witness=True)
+                        if not ok:
+                            U = self.shortest_prefix(p)
+                            if U is not None and vwit is not None:
+                                self.witness = list(U) + [cL, q, cs] + list(vwit)
                             return False, f"closure L fails: {q},{c}->{w}{d}{ns} ctx {p} cL {cL}"
         return True, f"VERIFIED inductive invariant ({self.tag}, {len(ctx)} ctx states)"
 

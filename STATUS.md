@@ -6,24 +6,27 @@ trivial + cycler deciders leave behind. Every claim here is SOUND: machine-check
 > **Big-picture map / consolidation: see `MAP.md`** (BB(6)-goal oriented, the single source of truth).
 
 ## Headline
-- **62 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): **23 halt-dead**, **14 single +
-  16 word + 3 wall bouncers**, **5 halt-segment**, **1 FAR (memory-DFA invariant)**.
-- The FAR finder cracked the first binary **counter** `1RB1LC_0LA0RB_1LA0LZ` — a regular non-halting
-  reason (an automaton-recognised inductive invariant), VERIFIED sound. Gate: all 19 cryptids HOLDOUT,
-  halters HALTS, random audit 0 false. The last holdout `1RB0LZ_1LC1RA_0RA0LC` needs a prefix-parity
-  the suffix-merge finder structurally can't learn (k-tails merges by future) — that one wants CEGAR.
+- **63 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs). The hard 3-state residual is
+  CLOSED. Breakdown: **23 halt-dead**, **14 single + 16 word + 3 wall bouncers**, **5 halt-segment**,
+  **1 FAR (k-tails memory-DFA)**, **1 FAR-CEGAR**.
+- The two binary **counters** fell to FAR memory-DFA invariants (automaton-recognised regular
+  non-halting reasons), VERIFIED sound: `1RB1LC_0LA0RB_1LA0LZ` by k-tails state-merging, and
+  `1RB0LZ_1LC1RA_0RA0LC` by **CEGAR** (its invariant needs a boundary-anchored prefix-parity that
+  suffix-merging can't learn; CEGAR discovers it from the verifier's own counterexamples).
+- Soundness audited the v3 way: all 19 cryptids HOLDOUT, halters HALTS; FAR random audit 1494 claims
+  / 0 false, CEGAR random audit 243 claims / 0 false.
 - The 2 boundary-coupled bouncers (`1RB0LC_0LA0RA_1LA0LZ`, `1RB0LZ_1LC0RA_0RB0LB`) are now PROVEN by
   **`wbounce2.py`**: it finds a period-q repeater wedged between fixed walls via a two-record diff
   (`x1 == (W)^m + x0`, repeater grows at the head end), builds `C(n)=[head (W)^n wall]`, and closes
   `C(n)=>C(n+d)` on the G1-validated `wsim`. A **faithfulness gate** (`cfg_to_tape(C(base))` must equal
   the real record) blocks closures on configs the machine never reaches — the key soundness link.
-- Remaining **2** = the genuinely-hard residual: 2 live-halt **binary counters**
-  (`1RB0LZ_1LC1RA_0RA0LC`, `1RB1LC_0LA0RB_1LA0LZ`). Structure fully cracked (`far.py` analysis):
-  C-turn family `0 1^(2m) -> 0 1^(2m+2)`, time **doubles** (gaps `2^(k+4)-2`); single-pass symbolic
-  closure is provably impossible (the `0^n` carry materialises a size-n counter block). Non-halt reason
-  = "state A never reads 1" (machine 1), a REGULAR invariant — but a non-local one.
+- The two binary counters (`1RB0LZ_1LC1RA_0RA0LC`, `1RB1LC_0LA0RB_1LA0LZ`) were the last residual.
+  Structure (`far.py` analysis): C-turn family `0 1^(2m) -> 0 1^(2m+2)`, time **doubles** (gaps
+  `2^(k+4)-2`); single-pass symbolic closure is provably impossible (the `0^n` carry materialises a
+  size-n counter block). Non-halt reason = "state A never reads 1", a REGULAR but non-local invariant
+  — proven by the FAR memory-DFA engine below.
 
-## FAR engine (cracked the first counter) — SOUND, audited
+## FAR engine (cracked BOTH counters) — SOUND, audited
 Three layers, soundness-first:
 - `far.py` (LAYER 0): config-string single-step rewrite, **validated** cell-for-cell vs the trusted
   sim (5 machines x 4000 steps).
@@ -36,10 +39,12 @@ Three layers, soundness-first:
 - **Result: cracked `1RB1LC_0LA0RB_1LA0LZ`** (|Q|=8 invariant, k=2). **Audited (the v3 discipline):
   all 19 cryptids HOLDOUT, BB4 halter HALTS, random audit 1494 NEVER_HALTS claims cross-checked,
   0 false.** Integrated into `suite.py` as the `far-dfa` decider.
-- **Last holdout `1RB0LZ_1LC1RA_0RA0LC`:** its invariant needs the **parity of the boundary-anchored
-  leading-1 run** (a PREFIX property). k-tails merges by SUFFIX (future) behaviour, so it structurally
-  cannot learn a prefix-parity — no k fixes it (confirmed). Needs **CEGAR** (use verify's
-  closure/halt witnesses as negative examples to forbid the bad merges) or a hand-built parity DFA.
+- **`far_cegar.py`:** RPNI Blue-Fringe state merging with NEGATIVE examples — a merge is kept only if
+  the result accepts no known-bad string. Negatives come from the verifier itself (`self.witness`: a
+  concrete spurious config per failed check). Loop build->verify->add witness->rebuild. Cracked
+  `1RB0LZ_1LC1RA_0RA0LC` in 18 rounds (|Q|=6, 17 negatives) — the prefix-parity k-tails can't learn.
+  Made deterministic (sorted samples) so it converges regardless of hash seed. Audited: cryptids
+  HOLDOUT, 243 random claims / 0 false.
 
 ## The remaining 4 all reduce to one thing — and why we did NOT rush it
 All four are non-halting because a specific halt **(state,symbol)** configuration never occurs (e.g.

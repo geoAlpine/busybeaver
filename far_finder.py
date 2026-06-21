@@ -145,8 +145,8 @@ def prove(spec, Ns=(800, 2000, 5000), ks=(2, 3, 4, 5, 6), verbose=False):
         configs, halted = reachable_configs(spec, N)
         if halted:
             return "HALTS", N
-        configs = list(set(configs))
-        samples = augment(configs)
+        configs = sorted(set(configs))                # deterministic (no hash-seed sensitivity)
+        samples = sorted(augment(configs))
         delta, accept, nstates = build_pta(samples)
         for k in ks:
             mdelta, maccept, start = merge(delta, accept, nstates, k)
