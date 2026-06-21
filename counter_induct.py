@@ -176,6 +176,93 @@ def validate_symbolic(spec, start_template, ns=(4, 5, 6, 8, 11, 20), max_ops=120
     return True, f"{total} symbolic ops cell-for-cell across n={ns}"
 
 
+def d_window(cfg):
+    """Is the head at a D-form '... 1 (0)^m B> 0' window? Return (rep_seg_index, exp_tuple) or None.
+    D-form: state B, head on a concrete [0] cell (offset 0), the seg just left is (0,)^m, and the seg
+    left of THAT ends in 1."""
+    st, segs, hi, ho = cfg
+    if st != "B" or ho != 0:
+        return None
+    if hi < 2 or segs[hi][0] != "c" or not segs[hi][1] or segs[hi][1][0] != 0:
+        return None
+    r = segs[hi - 1]; L = segs[hi - 2]
+    if r[0] == "r" and tuple(r[1]) == (0,) and L[0] == "c" and L[1] and L[1][-1] == 1:
+        return hi - 1, r[2]
+    return None
+
+
+def lt_var(exp, base):
+    """is the linear exponent exp = a*k+b provably < k (the induction variable) for all k>=base?"""
+    a, b = exp
+    if a == 0:
+        return b < base                      # constant m < k  iff  m < base (<= smallest k)
+    if a == 1:
+        return b <= -1                       # k+b < k  iff  b<0
+    return False
+
+
+def prove_counter(spec, base=3, max_ops=4000):
+    """‼ WIP / NOT VALIDATED — never returns a trusted proof yet. ‼
+    BREAKTHROUGH (sound, confirmed by the faithful simulator): the canonical counter obeys the
+    SELF-RECURSIVE rule  R: D(k)->D(k+1)  (D(k)='1 0^k B>', the 0-block grows by 1), and R for all k
+    => unbounded tape => never halts. R is provable by induction.
+
+    BUT the inductive STEP here is WRONG and INCOMPLETE: sligocki's method applies the IH D(k-1)->D(k)
+    a CONSTANT number of times (twice — that is the f(n+1)=2f(n)+... doubling), to the SYMBOLIC k-1.
+    This draft instead applies R(m) to CONCRETE inner windows (m=2,3,4,...) — exponentially many, and
+    it mishandles the window CONTEXT (head-containment is not verified). So it does NOT close, and its
+    IH application is unsound in general. It is kept as a documented WIP. To finish: recognise the
+    symbolic D(k-1) sub-structure, apply R(k-1) twice with head-containment verified, gate on the
+    cryptids + a self-consistency check on f(k). DO NOT trust a NEVER_HALTS from this until then."""
+    M = parse(spec)
+
+    def D(kexp):
+        return ("B", [["c", [1]], ["r", (0,), kexp], ["c", [0]]], 2, 0)
+
+    # ---- base case: D(base) -> D(base+1) concretely (no IH), no halt ----
+    cfg = D((0, base)); ok_base = False
+    for _ in range(max_ops):
+        cfg = compress(cfg); cfg, op = step(M, cfg)
+        if op[0] == "HALT":
+            return "HALTS-base", None
+        st, segs, hi, ho = cfg
+        if (st, hi, ho) == ("B", 2, 0) and len(segs) == 3 and segs[0] == ["c", [1]] \
+           and segs[1][0] == "r" and tuple(segs[1][1]) == (0,) and segs[2] == ["c", [0]]:
+            if val(segs[1][2], 0) == base + 1:
+                ok_base = True
+            break
+    if not ok_base:
+        return "HOLDOUT", "base case did not reach D(base+1)"
+
+    # ---- inductive step: D(k) symbolic -> D(k+1), applying R(m) on inner windows (m<k) ----
+    cfg = D((1, 0))                            # D(k), k symbolic
+    applied = 0
+    for _ in range(max_ops):
+        w = d_window(cfg)
+        # apply the IH on an inner window whose exponent is provably < k, and is NOT the whole start
+        if w and lt_var(w[1], base) and not (cfg == D((1, 0))):
+            ridx, mexp = w
+            st, segs, hi, ho = cfg
+            segs = _cp(segs)
+            segs[ridx][2] = (mexp[0], mexp[1] + 1)   # R(m): D(m) -> D(m+1)  (0-block + 1)
+            cfg = compress((st, segs, hi, ho)); applied += 1
+            continue
+        cfg = compress(cfg)
+        # closure: reached D(k+1)?
+        st, segs, hi, ho = cfg
+        if (st, hi, ho) == ("B", 2, 0) and len(segs) == 3 and segs[0] == ["c", [1]] \
+           and segs[1][0] == "r" and tuple(segs[1][1]) == (0,) and segs[2] == ["c", [0]] \
+           and segs[1][2] == (1, 1):           # exp = k+1
+            # ‼ IH logic NOT validated -> NEVER claim a proof here yet (avoid the v3 sin)
+            return "WIP-CLOSED-UNTRUSTED", ("D(k)->D(k+1)", f"base={base}", f"IH-applied={applied}")
+        cfg, op = step(M, cfg)
+        if op[0] == "HALT":
+            return "‼ HALT-in-step", None
+        if op[0] == "STUCK":
+            return "HOLDOUT", "step stuck"
+    return "HOLDOUT", "step did not close to D(k+1)"
+
+
 def main():
     spec = "1RB1LA_0LA0RB_0LA0LZ"
     ok, detail = validate(spec)
