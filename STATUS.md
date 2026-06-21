@@ -9,6 +9,11 @@ trivial + cycler deciders leave behind. Every claim here is SOUND: machine-check
 - The earlier "53/63" from `bouncer_prove v1/v2/v3` was **UNSOUND and is RETRACTED** — those engines
   proved the OPEN cryptid Antihydra and the HALTING cryptid Lucy's Moonlight. See `SOUNDNESS_INCIDENT.md`.
 
+## Run it / read it
+- **`python suite.py`** — the one runner: open-problem gate + 63 monsters (46/63, 0 false) + random audit.
+- **`SOUNDNESS.md`** — the explicit, auditable argument for why every `NEVER_HALTS` is rigorous.
+- **`SOUNDNESS_INCIDENT.md`** — why v1/v2/v3 are unsound (caught by Antihydra/Lucy).
+
 ## Soundness discipline (every decider must pass BOTH)
 1. **Open-problem gate** — must return HOLDOUT on the binary BB(6) cryptids Antihydra, Space Needle,
    Lucy's Moonlight (a NEVER_HALTS there is a false proof, since their halting is open / Lucy halts).
