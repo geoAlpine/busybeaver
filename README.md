@@ -2,6 +2,12 @@
 
 **Yosuke Aoki** — GeoAlpine LLC — started 2026-06-19 (evening, one shochu in)
 
+> **Current state → `STATUS.md`** (this README is the early-days log). The sound decider suite proves
+> **46/63** of the three-state monsters (0 false proofs); run it with `python suite.py`. Soundness
+> argument: `SOUNDNESS.md`. NOTE: the `bouncer_prove v1/v2/v3` engines described later were later found
+> **UNSOUND and are quarantined** (`SOUNDNESS_INCIDENT.md`) — the real sound provers are
+> `bouncer_prove_sound.py` + `wbounce.py` on the G1-validated `wsim.py`.
+
 ## Why this mountain
 
 The criteria, after a day of searching for the right "high mountain":
