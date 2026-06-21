@@ -150,7 +150,7 @@ def _sim_cross(M, state, W, K, d):
     qc = len(W); N = K * qc
     tape = {i: W[i % qc] for i in range(N)}
     head = 0 if d > 0 else N - 1
-    s = state; steps = 0; cap = N * 40 + 100
+    s = state; steps = 0; cap = N * 8 + 60
     while steps < cap:
         if (d > 0 and head == N) or (d < 0 and head == -1):
             break                                  # exited the far boundary cleanly
@@ -171,26 +171,35 @@ def _sim_cross(M, state, W, K, d):
     return Wp, steps
 
 
+_CHAIN_CACHE = {}
+
+
 def chain_cross(M, state, W, d):
     """Verify a SOUND contained chain by crossing K = 2,3,4 copies: same transformed word W', same
     exit state, and steps LINEAR in K through the origin (steps = K*qstep). If so the per-copy
-    behaviour is uniform AND contained, so crossing (W)^m is sound for any m>=1. Returns (W', qstep)."""
+    behaviour is uniform AND contained, so crossing (W)^m is sound for any m>=1. Returns (W', qstep).
+    Memoized per (machine, state, W, d) — deterministic, so caching is sound and avoids recomputing
+    on materialize-loops (a big speedup)."""
+    mkey = tuple((s, sym, M[s].get(sym)) for s in M for sym in (0, 1))
+    key = (mkey, state, tuple(W), d)
+    if key in _CHAIN_CACHE:
+        return _CHAIN_CACHE[key]
+    if len(_CHAIN_CACHE) > 50000:
+        _CHAIN_CACHE.clear()
     res = []
     for K in (2, 3, 4):
         r = _sim_cross(M, state, list(W), K, d)
         if r is None:
-            return None
+            _CHAIN_CACHE[key] = None; return None
         res.append(r)
     Wp = res[0][0]
-    if any(w != Wp for w, _ in res):
-        return None
+    out = None
     s0, s1, s2 = (st for _, st in res)
-    if s1 - s0 != s2 - s1:
-        return None                                # steps not linear in K -> not a clean chain
     qstep = s1 - s0
-    if qstep <= 0 or s0 != 2 * qstep:              # must pass through origin: steps(K) = K*qstep
-        return None
-    return Wp, qstep
+    if (not any(w != Wp for w, _ in res)) and (s1 - s0 == s2 - s1) and qstep > 0 and s0 == 2 * qstep:
+        out = (Wp, qstep)                          # uniform + linear-through-origin = sound chain
+    _CHAIN_CACHE[key] = out
+    return out
 
 
 def cross(M, state, segs, from_seg, rep_seg, d):
