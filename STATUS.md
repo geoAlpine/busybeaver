@@ -3,13 +3,35 @@
 Deciding the **63 distinct 3-state "monster" holdouts** (`holdouts3_reps.txt`) — the hard residual the
 trivial + cycler deciders leave behind. Every claim here is SOUND: machine-checked and gated.
 
+> **Big-picture map / consolidation: see `MAP.md`** (BB(6)-goal oriented, the single source of truth).
+
 ## Headline
-- **59 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): **23 halt-dead** ((state,symbol)
-  of the halt can never occur), **14 single-symbol + 16 word-repeater bouncers**, **6 halt-segment**
-  (bounded backward reachability: the halt is not backward-reachable to the blank start).
-- Remaining **4** = the genuinely-hard residual: 2 live-halt counters
-  (`1RB0LZ_1LC1RA_0RA0LC`, `1RB1LC_0LA0RB_1LA0LZ`) + 2 boundary-coupled bouncers
-  (`1RB0LC_0LA0RA_1LA0LZ`, `1RB0LZ_1LC0RA_0RB0LB`).
+- **61 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): **23 halt-dead** ((state,symbol)
+  of the halt can never occur), **14 single-symbol + 16 word-repeater + 3 wall-repeater bouncers**,
+  **5 halt-segment** (bounded backward reachability: halt not backward-reachable to the blank start).
+- The 2 boundary-coupled bouncers (`1RB0LC_0LA0RA_1LA0LZ`, `1RB0LZ_1LC0RA_0RB0LB`) are now PROVEN by
+  **`wbounce2.py`**: it finds a period-q repeater wedged between fixed walls via a two-record diff
+  (`x1 == (W)^m + x0`, repeater grows at the head end), builds `C(n)=[head (W)^n wall]`, and closes
+  `C(n)=>C(n+d)` on the G1-validated `wsim`. A **faithfulness gate** (`cfg_to_tape(C(base))` must equal
+  the real record) blocks closures on configs the machine never reaches — the key soundness link.
+- Remaining **2** = the genuinely-hard residual: 2 live-halt **binary counters**
+  (`1RB0LZ_1LC1RA_0RA0LC`, `1RB1LC_0LA0RB_1LA0LZ`). Structure fully cracked (`far.py` analysis):
+  C-turn family `0 1^(2m) -> 0 1^(2m+2)`, time **doubles** (gaps `2^(k+4)-2`); single-pass symbolic
+  closure is provably impossible (the `0^n` carry materialises a size-n counter block). Non-halt reason
+  = "state A never reads 1" (machine 1), a REGULAR invariant — but a non-local one.
+
+## FAR engine (the route to the last 2) — in progress, soundness-first
+`far.py` (LAYER 0, **validated** cell-for-cell vs the trusted sim, 5 machines x 4000 steps) gives a
+config-string single-step rewrite. `far_dfa.py` builds an m-gram invariant `L` and **verifies**
+soundly: start in L, closure `succ(L) subset L` (reduced to per-context suffix-language inclusions,
+no transducer), no halt in L. The verifier correctly HOLDS OUT Antihydra/Lucy and says HALTS on the
+BB4 halter. **Finding (computed, fundamental): pure m-gram `L` is too weak** — the binary counter's
+carry is non-local. Witness: `L` wrongly accepts `001B1001` (a single 1 before B, not boundary-
+anchored); its successor escapes `L`. The TRUE reachable invariant (read off the data): B-configs are
+`1^(odd) B ...` with the 1-run **anchored at the left boundary** (run lengths 1,3,5,...). So the
+finder needs a small **memory-DFA** (boundary-anchored + parity), which is exactly real FAR.
+**Next:** build/verify that memory-DFA finder, THEN audit the verifier on the cryptid gate + random
+machines (0 false) before claiming any 62/63. Do NOT trust a NEVER_HALTS from `far_dfa` until audited.
 
 ## The remaining 4 all reduce to one thing — and why we did NOT rush it
 All four are non-halting because a specific halt **(state,symbol)** configuration never occurs (e.g.
@@ -28,7 +50,7 @@ build, not rushed. So the suite stops at 59/63 by choice, soundly.
   proved the OPEN cryptid Antihydra and the HALTING cryptid Lucy's Moonlight. See `SOUNDNESS_INCIDENT.md`.
 
 ## Run it / read it
-- **`python suite.py`** — the one runner: open-problem gate + 63 monsters (46/63, 0 false) + random audit.
+- **`python suite.py`** — the one runner: open-problem gate + 63 monsters (61/63, 0 false) + random audit.
 - **`SOUNDNESS.md`** — the explicit, auditable argument for why every `NEVER_HALTS` is rigorous.
 - **`SOUNDNESS_INCIDENT.md`** — why v1/v2/v3 are unsound (caught by Antihydra/Lucy).
 

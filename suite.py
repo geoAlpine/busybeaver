@@ -18,6 +18,7 @@ from bouncer_prove2 import parse, sim
 from translated_cyclers import decide_translated
 from bouncer_prove_sound import prove as ss_prove
 from wbounce import prove as wb_prove
+from wbounce2 import prove as wb2_prove
 from halt_segment import halt_segment
 
 HERE = os.path.dirname(__file__)
@@ -111,6 +112,11 @@ def verdict(spec, sim_cap=1_000_000, bsteps=15_000, bmacro=2000):
     except Exception:
         pass
     try:
+        if wb2_prove(spec, steps=bsteps, max_macro=bmacro)[0] == "NEVER_HALTS":
+            return "NEVER_HALTS", ("bouncer-wall",)
+    except Exception:
+        pass
+    try:
         if halt_segment(spec, W=10) is True:
             return "NEVER_HALTS", ("halt-segment",)
     except Exception:
@@ -152,7 +158,7 @@ def monsters():
     print("=" * 78)
     print(f"(2) THE {len(reps)} THREE-STATE MONSTERS")
     print("=" * 78)
-    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0, "halt-segment": 0}
+    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0, "bouncer-wall": 0, "halt-segment": 0}
     proven = 0; false_proofs = 0; held = []
     for spec in reps:
         v, w = verdict(spec)
@@ -165,8 +171,8 @@ def monsters():
         elif v == "HOLDOUT":
             held.append(spec)
     print(f"  PROVEN never-halt: {proven}/{len(reps)}  "
-          f"(unreachable {by['halt-unreachable']}, translated {by['translated-cycle']}, single {by['bouncer-single']}, word {by['bouncer-word']}, segment {by['halt-segment']})")
-    print(f"  HOLDOUT          : {len(held)}  (the ~10 counters + ~7 boundary-coupled bouncers)")
+          f"(unreachable {by['halt-unreachable']}, translated {by['translated-cycle']}, single {by['bouncer-single']}, word {by['bouncer-word']}, wall {by['bouncer-wall']}, segment {by['halt-segment']})")
+    print(f"  HOLDOUT          : {len(held)}  (remaining counters / boundary-coupled bouncers)")
     print(f"  FALSE PROOFS     : {false_proofs}   (MUST be 0)")
     return false_proofs
 
@@ -177,7 +183,7 @@ def random_audit(N=5000, seed=1, check_cap=2_000_000):
     print("=" * 78)
     rng = random.Random(seed)
     nh = 0; checked = 0; fp = []
-    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0, "halt-segment": 0}
+    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0, "bouncer-wall": 0, "halt-segment": 0}
     for i in range(N):
         if i and i % 1000 == 0:
             print(f"  ...{i}/{N}  NEVER_HALTS={nh}  false={len(fp)}", flush=True)
@@ -189,7 +195,7 @@ def random_audit(N=5000, seed=1, check_cap=2_000_000):
             if h:
                 fp.append((spec, hs + 1)); print(f"  ‼ FALSE PROOF {spec} HALTS@{hs + 1}", flush=True)
     print(f"  NEVER_HALTS claims: {nh}  (translated {by['translated-cycle']}, single "
-          f"{by['bouncer-single']}, word {by['bouncer-word']})")
+          f"{by['bouncer-single']}, word {by['bouncer-word']}, wall {by['bouncer-wall']})")
     print(f"  cross-checked: {checked}   FALSE PROOFS: {len(fp)}   -> "
           f"{'SOUND on this audit' if not fp else 'UNSOUND ‼'}")
     return len(fp)
