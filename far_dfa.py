@@ -49,34 +49,12 @@ def reachable_configs(spec, steps):
     return out, False
 
 
-class FAR:
-    def __init__(self, spec, configs, m):
-        self.M = parse(spec)
-        self.m = m
-        self.markers = [q for q in STATES if q in self.M]
-        self.alpha = ["0", "1"] + self.markers
-        pad = ["0"] * (m - 1)
-        G = set()
-        for cfg in configs:
-            seq = pad + list(cfg) + pad
-            for i in range(len(seq) - m + 1):
-                G.add(tuple(seq[i:i + m]))
-        self.G = G
-        self.START = (tuple(["0"] * (m - 1)), 0)     # window=0^(m-1), marker_count=0
-
-    def step(self, st, sym):
-        if st is None:
-            return None
-        w, mc = st
-        if sym in self.markers:
-            mc += 1
-            if mc > 1:
-                return None
-        gram = w + (sym,)
-        if len(gram) == self.m and gram not in self.G:
-            return None
-        nw = (w + (sym,))[-(self.m - 1):] if self.m > 1 else ()
-        return (nw, mc)
+class Invariant:
+    """Base class holding the SOUND verifier. Subclasses provide: self.M, self.markers, self.alpha,
+    self.START, step(state,sym)->state|None, endable(state)->bool. The verifier is decider-agnostic:
+    it checks (S) start in L, (C) succ(L) subset L, (H) no halt in L on whatever DFA the subclass
+    defines. A wrong DFA fails verification; it can never produce a false NEVER_HALTS."""
+    tag = "invariant"
 
     def feed(self, st, seq):
         for sym in seq:
@@ -86,28 +64,22 @@ class FAR:
         return st
 
     def endable(self, st):
-        """can the tape end here? flush right blank infinity 0^(m-1); need it stay valid & mc==1."""
-        if st is None:
-            return False
-        end = self.feed(st, ["0"] * (self.m - 1))
-        return end is not None and end[1] == 1
+        raise NotImplementedError
 
     def accepts(self, cfg):
         st = self.feed(self.START, list(cfg))
         return self.endable(st)
 
     def reachable_context_states(self):
-        """all DFA states reachable from START reading tape-only prefixes (mc stays 0).
-        These are exactly the possible left-context states p (after reading U) of an accepted config."""
-        seen = {self.START}; dq = deque([self.START]); out = []
+        """all DFA states reachable from START reading tape-only (non-marker) prefixes -- exactly the
+        possible left-context states p (after reading U) of an accepted config U q c_h V."""
+        seen = {self.START}; dq = deque([self.START]); out = [self.START]
         while dq:
             st = dq.popleft()
-            if st[1] == 0:
-                out.append(st)
-            for sym in ["0", "1"]:                       # U is tape-only
+            for sym in ["0", "1"]:                       # U is tape-only (no marker read yet)
                 nx = self.step(st, sym)
                 if nx is not None and nx not in seen:
-                    seen.add(nx); dq.append(nx)
+                    seen.add(nx); dq.append(nx); out.append(nx)
         return out
 
     def suffix_includes(self, a, b, witness=False):
@@ -177,7 +149,7 @@ class FAR:
                         post = self.feed(p, [ns, cL, str(w)])
                         if not self.suffix_includes(pre, post):
                             return False, f"closure L fails: {q},{c}->{w}{d}{ns} ctx {p} cL {cL}"
-        return True, f"VERIFIED inductive invariant (m={self.m}, {len(self.G)} grams, {len(ctx)} ctx states)"
+        return True, f"VERIFIED inductive invariant ({self.tag}, {len(ctx)} ctx states)"
 
     def _can_finish(self, st):
         """is any accepted config completable from state st? (st has mc==1 already)"""
@@ -193,6 +165,45 @@ class FAR:
                 if nx is not None and nx not in seen:
                     seen.add(nx); dq.append(nx)
         return False
+
+
+class FAR(Invariant):
+    """m-gram invariant: config in L iff every length-m window of 0^(m-1)+config+0^(m-1) is in G.
+    state = (window of last m-1 symbols, marker_count)."""
+    def __init__(self, spec, configs, m):
+        self.M = parse(spec)
+        self.m = m
+        self.markers = [q for q in STATES if q in self.M]
+        self.alpha = ["0", "1"] + self.markers
+        self.tag = f"m-gram m={m}"
+        pad = ["0"] * (m - 1)
+        G = set()
+        for cfg in configs:
+            seq = pad + list(cfg) + pad
+            for i in range(len(seq) - m + 1):
+                G.add(tuple(seq[i:i + m]))
+        self.G = G
+        self.START = (tuple(["0"] * (m - 1)), 0)
+
+    def step(self, st, sym):
+        if st is None:
+            return None
+        w, mc = st
+        if sym in self.markers:
+            mc += 1
+            if mc > 1:
+                return None
+        gram = w + (sym,)
+        if len(gram) == self.m and gram not in self.G:
+            return None
+        nw = (w + (sym,))[-(self.m - 1):] if self.m > 1 else ()
+        return (nw, mc)
+
+    def endable(self, st):
+        if st is None:
+            return False
+        end = self.feed(st, ["0"] * (self.m - 1))
+        return end is not None and end[1] == 1
 
 
 def prove(spec, samples=(400, 1000, 3000, 8000), ms=(2, 3, 4, 5, 6, 7, 8)):

@@ -6,9 +6,12 @@ trivial + cycler deciders leave behind. Every claim here is SOUND: machine-check
 > **Big-picture map / consolidation: see `MAP.md`** (BB(6)-goal oriented, the single source of truth).
 
 ## Headline
-- **61 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): **23 halt-dead** ((state,symbol)
-  of the halt can never occur), **14 single-symbol + 16 word-repeater + 3 wall-repeater bouncers**,
-  **5 halt-segment** (bounded backward reachability: halt not backward-reachable to the blank start).
+- **62 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): **23 halt-dead**, **14 single +
+  16 word + 3 wall bouncers**, **5 halt-segment**, **1 FAR (memory-DFA invariant)**.
+- The FAR finder cracked the first binary **counter** `1RB1LC_0LA0RB_1LA0LZ` — a regular non-halting
+  reason (an automaton-recognised inductive invariant), VERIFIED sound. Gate: all 19 cryptids HOLDOUT,
+  halters HALTS, random audit 0 false. The last holdout `1RB0LZ_1LC1RA_0RA0LC` needs a prefix-parity
+  the suffix-merge finder structurally can't learn (k-tails merges by future) — that one wants CEGAR.
 - The 2 boundary-coupled bouncers (`1RB0LC_0LA0RA_1LA0LZ`, `1RB0LZ_1LC0RA_0RB0LB`) are now PROVEN by
   **`wbounce2.py`**: it finds a period-q repeater wedged between fixed walls via a two-record diff
   (`x1 == (W)^m + x0`, repeater grows at the head end), builds `C(n)=[head (W)^n wall]`, and closes
@@ -20,18 +23,23 @@ trivial + cycler deciders leave behind. Every claim here is SOUND: machine-check
   closure is provably impossible (the `0^n` carry materialises a size-n counter block). Non-halt reason
   = "state A never reads 1" (machine 1), a REGULAR invariant — but a non-local one.
 
-## FAR engine (the route to the last 2) — in progress, soundness-first
-`far.py` (LAYER 0, **validated** cell-for-cell vs the trusted sim, 5 machines x 4000 steps) gives a
-config-string single-step rewrite. `far_dfa.py` builds an m-gram invariant `L` and **verifies**
-soundly: start in L, closure `succ(L) subset L` (reduced to per-context suffix-language inclusions,
-no transducer), no halt in L. The verifier correctly HOLDS OUT Antihydra/Lucy and says HALTS on the
-BB4 halter. **Finding (computed, fundamental): pure m-gram `L` is too weak** — the binary counter's
-carry is non-local. Witness: `L` wrongly accepts `001B1001` (a single 1 before B, not boundary-
-anchored); its successor escapes `L`. The TRUE reachable invariant (read off the data): B-configs are
-`1^(odd) B ...` with the 1-run **anchored at the left boundary** (run lengths 1,3,5,...). So the
-finder needs a small **memory-DFA** (boundary-anchored + parity), which is exactly real FAR.
-**Next:** build/verify that memory-DFA finder, THEN audit the verifier on the cryptid gate + random
-machines (0 false) before claiming any 62/63. Do NOT trust a NEVER_HALTS from `far_dfa` until audited.
+## FAR engine (cracked the first counter) — SOUND, audited
+Three layers, soundness-first:
+- `far.py` (LAYER 0): config-string single-step rewrite, **validated** cell-for-cell vs the trusted
+  sim (5 machines x 4000 steps).
+- `far_dfa.py`: the **sound verifier** (`Invariant.verify`) — checks start in L, closure
+  `succ(L) subset L` (per-context suffix-language inclusion, no transducer), no halt in L, on ANY DFA.
+  Decider-agnostic: a wrong DFA fails verification, never a false proof.
+- `far_finder.py`: auto-builds a **memory-DFA invariant** by RPNI-style k-tails state merging on the
+  reachable-config sample (folds the counter loop), then hands it to the verifier. Leading
+  blank-invariance = root `0`-self-loop; trailing = `endable` follows the `0`-chain.
+- **Result: cracked `1RB1LC_0LA0RB_1LA0LZ`** (|Q|=8 invariant, k=2). **Audited (the v3 discipline):
+  all 19 cryptids HOLDOUT, BB4 halter HALTS, random audit 1494 NEVER_HALTS claims cross-checked,
+  0 false.** Integrated into `suite.py` as the `far-dfa` decider.
+- **Last holdout `1RB0LZ_1LC1RA_0RA0LC`:** its invariant needs the **parity of the boundary-anchored
+  leading-1 run** (a PREFIX property). k-tails merges by SUFFIX (future) behaviour, so it structurally
+  cannot learn a prefix-parity — no k fixes it (confirmed). Needs **CEGAR** (use verify's
+  closure/halt witnesses as negative examples to forbid the bad merges) or a hand-built parity DFA.
 
 ## The remaining 4 all reduce to one thing — and why we did NOT rush it
 All four are non-halting because a specific halt **(state,symbol)** configuration never occurs (e.g.
