@@ -53,22 +53,37 @@ HALT_SYMS = {"Z", "H", "-"}
 
 
 def halt_unreachable(spec):
-    """SOUND trivial non-halt: BFS the states reachable from A (following non-halt transitions); if no
-    reachable (state,symbol) is a halting transition, the halt can never execute -> never halts. This
-    catches the case where a halt transition exists but sits in an UNREACHABLE state (the simple
-    'no halt symbol' check misses it)."""
-    M = parse(spec); seen = {"A"}; stack = ["A"]
+    """SOUND trivial non-halt: the machine never halts iff every halting transition is DEAD (its
+    (state,symbol) configuration never occurs). We decide deadness with a sound abstraction:
+      - states reachable from A are `live`; a halt in a non-live state is dead (never entered);
+      - a state s!=A is live only if some transition targets it (`re-entered`), so it may read 0 or 1
+        (conservative: a halt there is treated as possibly-live);
+      - the START state A, if NOT re-entered, occurs ONLY at the start reading the blank 0 — so a halt
+        on A,1 is DEAD (A,1 never executes), while A,0 is live.
+    Returns True only if ALL halts are dead. (Generalises the bare reachability check: it additionally
+    kills the very common 'halt on symbol 1 in the never-re-entered start state' pattern.)"""
+    M = parse(spec)
+    live = {"A"}; stack = ["A"]
     while stack:
         s = stack.pop()
         for sym in (0, 1):
             tr = M[s][sym]
-            if tr is None:
-                return False                         # reachable state hits an (undefined) halt
-            nxt = tr[2]
-            if nxt in HALT_SYMS:
-                return False                         # reachable state -> halt
-            if nxt not in seen:
-                seen.add(nxt); stack.append(nxt)
+            if tr is None or tr[2] in HALT_SYMS:
+                continue
+            if tr[2] not in live:
+                live.add(tr[2]); stack.append(tr[2])
+    reentered = {tr[2] for s in live for sym in (0, 1)
+                 if (tr := M[s][sym]) and tr[2] not in HALT_SYMS}
+    for s in live:
+        for sym in (0, 1):
+            tr = M[s][sym]
+            if not (tr is None or tr[2] in HALT_SYMS):
+                continue                             # not a halt transition
+            if s == "A" and s not in reentered:
+                if sym == 0:
+                    return False                     # A,0 fires at the start (head reads blank 0)
+            elif s in reentered:
+                return False                         # s re-entered -> may read sym -> halt may fire
     return True
 
 
