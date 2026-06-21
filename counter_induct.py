@@ -20,58 +20,50 @@ from bouncer_prove2 import parse
 from wsim import step, val, cfg_to_tape, _cp, normalize
 
 
-def compress(cfg, T=2):
-    """fold maximal single-symbol runs (length >= T) in concrete segments into (sym,)^len repeaters.
-    Never folds the head's cell. Sound re-bracketing; returns a normalized cfg."""
+def merge_reps(cfg):
+    """merge adjacent repeaters of the SAME word into one (sound: (W)^a (W)^b = (W)^(a+b)).
+    Adjusts the head index. Concrete-segment merging is left to normalize."""
     state, segs, hi, ho = cfg
-    out = []
+    segs = _cp(segs)
+    out = []; old2new = {}
+    for idx, s in enumerate(segs):
+        if s[0] == "r" and out and out[-1][1][0] == "r" and tuple(out[-1][1][1]) == tuple(s[1]):
+            e0 = out[-1][1][2]; out[-1][1][2] = (e0[0] + s[2][0], e0[1] + s[2][1])
+            old2new[idx] = out[-1][0]
+        else:
+            old2new[idx] = len(out); out.append([idx, list(s)])
+    new_segs = [o[1] for o in out]
+    return normalize((state, new_segs, old2new.get(hi, hi), ho))
+
+
+def compress(cfg, T=2):
+    """fold maximal single-symbol runs (length >= T) in concrete segments into (sym,)^len repeaters,
+    then merge adjacent same-word repeaters. NEVER folds the head's cell. The head position is tracked
+    LOCALLY (seg index + offset) — never via absolute positions (those depend on the symbolic n)."""
+    state, segs, hi, ho = cfg
+    new_segs = []; nhi = nho = None
     for idx, s in enumerate(_cp(segs)):
         if s[0] != "c":
-            out.append(s); continue
-        cells = s[1]
-        head_off = ho if idx == hi else None
-        i = 0; pieces = []                          # list of ('c',[..]) / ('r',(sym,),(0,k))
+            if idx == hi:                             # head can't be in a repeater, but guard anyway
+                nhi, nho = len(new_segs), ho
+            new_segs.append(s); continue
+        cells = s[1]; is_head = (idx == hi)
+        i = 0
         while i < len(cells):
             j = i
             while j < len(cells) and cells[j] == cells[i]:
                 j += 1
-            run = (i, j)                              # [i,j) all equal cells[i]
-            head_in = head_off is not None and i <= head_off < j
-            if j - i >= T and not head_in:
-                pieces.append(["r", (cells[i],), (0, j - i)])
+            head_in_run = is_head and i <= ho < j
+            if j - i >= T and not head_in_run:
+                new_segs.append(["r", (cells[i],), (0, j - i)])
             else:
-                pieces.append(["c", list(cells[i:j])])
+                if head_in_run:
+                    nhi, nho = len(new_segs), ho - i   # head lands in this concrete piece
+                new_segs.append(["c", list(cells[i:j])])
             i = j
-        # if the head was in this seg, find which piece holds it and record (seg_index, offset)
-        out.extend(pieces)
-    # rebuild head index: locate the concrete piece that contains the head cell
-    new_segs = out
-    # recompute hi/ho by walking cells up to the original head absolute position
-    cells_all, starts = cfg_to_tape(cfg, 0)[0], None
-    # simpler: find head by absolute position
-    abs_head = _abs_head(cfg)
-    nhi, nho = _locate(new_segs, abs_head)
-    return normalize((state, new_segs, nhi, nho))
-
-
-def _abs_head(cfg):
-    _, segs, hi, ho = cfg
-    pos = 0
-    for i, s in enumerate(segs):
-        if i == hi:
-            return pos + ho
-        pos += len(s[1]) if s[0] == "c" else len(s[1]) * val(s[2], 0)
-    return pos
-
-
-def _locate(segs, abs_pos):
-    pos = 0
-    for i, s in enumerate(segs):
-        ln = len(s[1]) if s[0] == "c" else len(s[1]) * val(s[2], 0)
-        if s[0] == "c" and pos <= abs_pos < pos + ln:
-            return i, abs_pos - pos
-        pos += ln
-    return 0, 0
+    if nhi is None:                                   # head seg was empty/edge; fall back
+        nhi, nho = hi, ho
+    return merge_reps(normalize((state, new_segs, nhi, nho)))
 
 
 def macro_run(spec, start, max_ops=4000, T=2):
@@ -156,13 +148,44 @@ def detect_rules(spec, max_ops=600, min_occ=4):
     return cands
 
 
+def validate_symbolic(spec, start_template, ns=(4, 5, 6, 8, 11, 20), max_ops=120):
+    """G1 for a SYMBOLIC start config: instantiate at concrete n, run the symbolic accelerated sim
+    and the trusted sim in lockstep cell-for-cell, ONLY while exponents stay valid at that n.
+    This is the guard that caught the compress head-tracking bug (absolute positions depend on n)."""
+    from wsim import exps_valid
+    M = parse(spec); total = 0
+    for n in ns:
+        cfg = start_template
+        tp, hd, st = cfg_to_tape(cfg, n); ct, ch, cs = dict(tp), hd, st
+        for i in range(max_ops):
+            cfg = compress(cfg)
+            if not exps_valid(cfg, n):
+                break
+            cfg, op = step(M, cfg)
+            if op[0] in ("HALT", "STUCK") or not exps_valid(cfg, n):
+                break
+            ct, ch, cs, _ = concrete_run(M, ct, ch, cs, micro_cost(op, n))
+            stape, sh, ss = cfg_to_tape(cfg, n)
+            if ss != cs:
+                return False, f"n={n} op#{i} state"
+            allk = set(k for k, v in stape.items() if v) | set(k for k, v in ct.items() if v)
+            for k in range(min(allk, default=0) - 2, max(allk, default=0) + 3):
+                if stape.get(sh - ch + k, 0) != ct.get(k, 0):
+                    return False, f"n={n} op#{i} tape"
+            total += 1
+    return True, f"{total} symbolic ops cell-for-cell across n={ns}"
+
+
 def main():
     spec = "1RB1LA_0LA0RB_0LA0LZ"
     ok, detail = validate(spec)
+    Csym = ("A", [["c", [0]], ["r", (1,), (1, 0)], ["c", [0]]], 0, 0)
+    oks, dets = validate_symbolic(spec, Csym)
     print("=" * 70)
     print("counter_induct — accelerated macro-machine (compress + chains)")
     print(f"  {spec}")
-    print(f"  PIECE 1 (G1): {'OK' if ok else 'FAIL'}: {detail}")
+    print(f"  PIECE 1 (G1 from blank):  {'OK' if ok else 'FAIL'}: {detail}")
+    print(f"  PIECE 3 (G1 symbolic C(n)): {'OK' if oks else 'FAIL'}: {dets}")
     print(f"  PIECE 2 (rule detection): candidate self-similar shapes (recur with growing exponent):")
     for cnt, sh, occ in detect_rules(spec)[:6]:
         st, kinds, hi, ho = sh
