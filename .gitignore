@@ -1,1 +1,5 @@
 _*.out
+_bbdata/
+_*.txt
+_*_run.py
+_*_audit.py
