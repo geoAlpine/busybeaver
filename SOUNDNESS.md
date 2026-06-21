@@ -50,7 +50,9 @@ Even granting 1–3, every verdict passes two independent gates:
   be HOLDOUT. A `NEVER_HALTS` there is a false proof by definition (their halting is open, or — Lucy —
   provably halts). This is the gate that exposed v3.
 - **Random audit**: thousands of random 4/5-state machines; every `NEVER_HALTS` is cross-checked
-  against the oracle to a large cap. 0 false proofs required.
+  against the oracle to a large cap. 0 false proofs required. **Latest run: 12,000 machines,
+  6,255 `NEVER_HALTS` claims (translated 6,239 / single-symbol bouncer 6 / word bouncer 10), all
+  cross-checked, 0 false proofs.**
 A halter audit alone cannot certify a non-halting prover (it only catches false proofs on machines
 that HALT) — which is why the cryptid gate is mandatory, and why both are run together.
 
