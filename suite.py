@@ -49,11 +49,36 @@ HALTERS = [("BB(2)", "1RB1LB_1LA1RZ"), ("BB(3)", "1RB1RZ_1LB0RC_1LC1LA"),
            ("BB(4)", "1RB1LB_1LA0LC_1RZ1LD_1RD0RA")]
 
 
+HALT_SYMS = {"Z", "H", "-"}
+
+
+def halt_unreachable(spec):
+    """SOUND trivial non-halt: BFS the states reachable from A (following non-halt transitions); if no
+    reachable (state,symbol) is a halting transition, the halt can never execute -> never halts. This
+    catches the case where a halt transition exists but sits in an UNREACHABLE state (the simple
+    'no halt symbol' check misses it)."""
+    M = parse(spec); seen = {"A"}; stack = ["A"]
+    while stack:
+        s = stack.pop()
+        for sym in (0, 1):
+            tr = M[s][sym]
+            if tr is None:
+                return False                         # reachable state hits an (undefined) halt
+            nxt = tr[2]
+            if nxt in HALT_SYMS:
+                return False                         # reachable state -> halt
+            if nxt not in seen:
+                seen.add(nxt); stack.append(nxt)
+    return True
+
+
 def verdict(spec, sim_cap=1_000_000, bsteps=15_000, bmacro=2000):
     """HALTS / NEVER_HALTS / HOLDOUT via the trusted suite. Returns (verdict, which)."""
     h, hs = sim(spec, sim_cap)
     if h:
         return "HALTS", ("sim", hs + 1)
+    if halt_unreachable(spec):
+        return "NEVER_HALTS", ("halt-unreachable",)
     try:
         if decide_translated(spec, time_limit=min(sim_cap, 100_000), space_limit=40_000)[0] == "NEVER_HALTS":
             return "NEVER_HALTS", ("translated-cycle",)
@@ -106,7 +131,7 @@ def monsters():
     print("=" * 78)
     print(f"(2) THE {len(reps)} THREE-STATE MONSTERS")
     print("=" * 78)
-    by = {"translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0}
+    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0}
     proven = 0; false_proofs = 0; held = []
     for spec in reps:
         v, w = verdict(spec)
@@ -115,11 +140,11 @@ def monsters():
             if h:
                 false_proofs += 1; print(f"  ‼ FALSE PROOF {spec}")
             else:
-                proven += 1; by[w[0]] += 1
+                proven += 1; by[w[0]] = by.get(w[0], 0) + 1
         elif v == "HOLDOUT":
             held.append(spec)
     print(f"  PROVEN never-halt: {proven}/{len(reps)}  "
-          f"(translated {by['translated-cycle']}, single {by['bouncer-single']}, word {by['bouncer-word']})")
+          f"(unreachable {by['halt-unreachable']}, translated {by['translated-cycle']}, single {by['bouncer-single']}, word {by['bouncer-word']})")
     print(f"  HOLDOUT          : {len(held)}  (the ~10 counters + ~7 boundary-coupled bouncers)")
     print(f"  FALSE PROOFS     : {false_proofs}   (MUST be 0)")
     return false_proofs
@@ -131,14 +156,14 @@ def random_audit(N=5000, seed=1, check_cap=2_000_000):
     print("=" * 78)
     rng = random.Random(seed)
     nh = 0; checked = 0; fp = []
-    by = {"translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0}
+    by = {"halt-unreachable": 0, "translated-cycle": 0, "bouncer-single": 0, "bouncer-word": 0}
     for i in range(N):
         if i and i % 1000 == 0:
             print(f"  ...{i}/{N}  NEVER_HALTS={nh}  false={len(fp)}", flush=True)
         spec = rand_machine(rng, rng.choice([4, 5]))
         v, w = verdict(spec, sim_cap=500_000, bsteps=8000, bmacro=1200)
         if v == "NEVER_HALTS":
-            nh += 1; by[w[0]] += 1
+            nh += 1; by[w[0]] = by.get(w[0], 0) + 1
             h, hs = sim(spec, check_cap); checked += 1
             if h:
                 fp.append((spec, hs + 1)); print(f"  ‼ FALSE PROOF {spec} HALTS@{hs + 1}", flush=True)

@@ -4,8 +4,10 @@ Deciding the **63 distinct 3-state "monster" holdouts** (`holdouts3_reps.txt`) �
 trivial + cycler deciders leave behind. Every claim here is SOUND: machine-checked and gated.
 
 ## Headline
-- **46 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs).
-- Remaining 17 = **10 counters** (need nested induction) + **7 bouncers** (boundary-coupled crossings).
+- **47 / 63 monsters PROVEN never-halt — SOUNDLY** (0 false proofs): 4 halt-unreachable (incl. the
+  canonical counter — its halt state is unreachable, so it's trivially non-halting), 25 single-symbol
+  + 18 word-repeater bouncers.
+- Remaining 16 = **9 counters** (need nested induction) + **7 bouncers** (boundary-coupled crossings).
 - The earlier "53/63" from `bouncer_prove v1/v2/v3` was **UNSOUND and is RETRACTED** — those engines
   proved the OPEN cryptid Antihydra and the HALTING cryptid Lucy's Moonlight. See `SOUNDNESS_INCIDENT.md`.
 
