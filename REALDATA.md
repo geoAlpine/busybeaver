@@ -38,3 +38,21 @@ cyclers/bouncers, with the soundness discipline intact (0 false across the whole
 ## Repro
 `python bb5db.py` (decoder). Sampling/measurement scripts are local (`_bb5_run.py`, gitignored with the
 2.9 GB `_bbdata/`). DB: `docs.bbchallenge.org/all_5_states_undecided_machines_with_global_header.zip`.
+
+## 3. The real BB(6) holdout list (1104 machines, wiki, "up to equivalence")
+The hard residual that survived the community's deciders (incl. their own FAR). We ran the full suite
+(fast deciders + our FAR + CEGAR). **Fast deciders + FAR + CEGAR decided 0 of the 1104** — expected,
+these survived stronger deciders, and the rest are open cryptids (Collatz-hard). 0 false from those.
+
+**BUT `wbounce2` returned one `NEVER_HALTS` — and it was a FALSE PROOF.** Rigorous concrete
+re-verification showed the claimed bouncer rule `C(n)->C(n+1)` does not hold (real machine does
+`C(1)->C(6)`); `wsim`'s chain macro-step was unfaithful at small `n`. See `SOUNDNESS_INCIDENT.md`
+INCIDENT 2. We **caught it before claiming any contribution**, verified the 63/63 monsters are all
+still concretely sound (blast radius zero), and added a **concrete-induction gate** to `wbounce`/
+`wbounce2` (a `wsim` closure is trusted only if the trusted simulator confirms `C(base+j)->C(base+j+d)`
+for j=0,1,2). After the fix: the BB(6) machine -> HOLDOUT, suite still **63/63, 0 false**.
+
+**Honest outcome:** we did NOT decide any genuine BB(6) holdout (consistent with them surviving the
+community pipeline). The real payoff was the opposite of a contribution and more valuable to the
+project: **real BB(6) data exposed a latent false-proof generator that all synthetic audits missed**,
+and the soundness discipline caught and fixed it. That is exactly what this project is for.

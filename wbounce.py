@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from bouncer_prove2 import parse, sim
 from bouncer_prove_sound import records
 from wsim import step, val, exps_valid
+from wbounce2 import concrete_closure_ok
 
 
 def period_of(cells):
@@ -122,6 +123,8 @@ def prove(spec, steps=20000, max_macro=4000):
                     if s >= 1:
                         d = closure(start, cfg)
                         if d:
+                            if not concrete_closure_ok(M, start, base, d):
+                                break                 # symbolic closure not confirmed concretely
                             return "NEVER_HALTS", ("w-bouncer", key, f"L={L}", f"period~{s+1}", f"n>={base}", f"grow+{d}")
     return "HOLDOUT", "no word-bouncer closure"
 

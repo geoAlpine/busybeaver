@@ -71,3 +71,41 @@ non-halting decider you must also test it against machines that *provably cannot
 (open/cryptid machines) and against a faithful reference. We shipped "40/53 proven" too confidently;
 the real frontier corrected us within minutes. Build the SOUND bouncer decider per `STEP2_PLAN.md`
 (walls/repeaters/buffer/containment), gate it on Antihydra, and only then re-claim proofs.
+
+---
+
+# INCIDENT 2 — wbounce/wbounce2 wsim-chain unfaithfulness. Caught by a REAL BB(6) holdout. 2026-06-22.
+
+## What happened
+We ran the suite on the real bbchallenge **BB(6) holdouts** list (1104 machines,
+`wiki.bbchallenge.org`). `wbounce2` returned a lone `NEVER_HALTS` on
+`1RB1LA_0LC0RE_1LD1LB_1RE1LF_1RC0RA_0RC---`. On rigorous concrete re-verification this was a
+**FALSE PROOF**: `wbounce2` claimed the bouncer rule `C(n) -> C(n+1)` (repeater `W=101`, base `n=1`),
+but the real machine maps `C(1) -> C(6)` (it never visits `C(2)..C(5)`). The symbolic `wsim`
+simulation said macro-9 reaches `C(2)`; the trusted simulator reaches `C(6)`.
+
+## Root cause
+`wsim`'s **word-chain macro-steps (CHAINR/CHAINL) extrapolate a repeater `(W)^n` as if `n` is large**,
+but the closure was asserted for `n >= base` with `base = 1` — a regime where the chain's boundary
+behaviour is wrong. So `wsim` was unfaithful at small `n` on this 6-state structure; the G1 validation
+(on other machines) had not exercised this case. This is the v3 lesson at the `wsim` layer: a symbolic
+engine that is "validated" on a sample can still be unfaithful on an unseen structure.
+
+## Blast radius — CHECKED, and it is ZERO for the 63 monsters
+Every one of the **42 monster proofs `wbounce2` produces was concretely re-verified**: the real machine
+really does map `C(base+j) -> C(base+j+d)` (exact, no halt) for `j = 0,1`. All 42 hold. `wbounce` (word)
+did not false-prove the BB(6) machine either. **So 63/63 was never compromised** — the only false proof
+was on the new BB(6) machine, which we caught before claiming anything.
+
+## Fix — concrete-induction gate (`wbounce2.concrete_closure_ok`)
+A symbolic `wsim` closure `C(n) => C(n+d)` is now trusted ONLY if the TRUSTED simulator confirms the
+real machine maps `C(base+j) -> C(base+j+d)`, exactly and without halting, for `j = 0,1,2`. Added to
+both `wbounce2` and `wbounce`. Result: the BB(6) false proof is rejected (-> HOLDOUT), all 42 valid
+monster proofs are kept, cryptids still HOLDOUT, suite is **63/63, 0 false**.
+
+## The lesson (again, sharper)
+A "G1-validated" symbolic simulator is still only validated on its sample — real data outside the
+sample can expose unfaithfulness. The durable defence is to **cross-check every symbolic proof against
+the trusted simulator on concrete instances** (the concrete-induction gate), not to trust the symbolic
+engine alone. Real BB(6) data earned its keep: it caught a latent false-proof generator that thousands
+of synthetic-audit machines did not.

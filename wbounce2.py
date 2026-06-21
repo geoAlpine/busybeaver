@@ -138,6 +138,43 @@ def faithful(cfg, base, rec):
     return bl == rl and br == rr and bc == rc
 
 
+def _canon(state, tape, head):
+    keys = [k for k, v in tape.items() if v]
+    lo = min(keys + [head]); hi = max(keys + [head])
+    while lo < head and tape.get(lo, 0) == 0:
+        lo += 1
+    while hi > head and tape.get(hi, 0) == 0:
+        hi -= 1
+    return (state, tuple(tape.get(j, 0) for j in range(lo, hi + 1)), head - lo)
+
+
+def _canon_cfg(start, n):
+    tape, head, state = cfg_to_tape(start, n)
+    return _canon(state, dict(tape), head)
+
+
+def concrete_closure_ok(M, start, base, d, cap=2_000_000, checks=3):
+    """SOUNDNESS GATE 2 (concrete-induction): the symbolic wsim closure C(n)=>C(n+d) is only trusted
+    if the REAL machine actually maps C(base+j) -> C(base+j+d), exactly and without halting, for
+    several consecutive j. This catches wsim chain-extrapolation that is unfaithful at small n
+    (e.g. it 'proved' a real BB(6) bouncer mapping C(1)->C(2) when the machine does C(1)->C(6))."""
+    for j in range(checks):
+        ns = base + j
+        tgt = _canon_cfg(start, ns + d)
+        tape, head, state = cfg_to_tape(start, ns); tape = dict(tape)
+        reached = False
+        for _ in range(cap):
+            r = tape.get(head, 0); tr = M[state].get(r)
+            if tr is None:
+                return False                          # halts -> closure is false
+            w, dd, nx = tr; tape[head] = w; state = nx; head += 1 if dd == "R" else -1
+            if state == tgt[0] and _canon(state, tape, head) == tgt:
+                reached = True; break
+        if not reached:
+            return False
+    return True
+
+
 def prove(spec, steps=20000, max_macro=6000):
     M = parse(spec)
     recs, halted = records(spec, steps)
@@ -171,6 +208,8 @@ def prove(spec, steps=20000, max_macro=6000):
                 if s >= 1:
                     d = closure(start, cfg)
                     if d:
+                        if not concrete_closure_ok(M, start, base, d):
+                            break                     # symbolic closure not confirmed concretely -> reject
                         return "NEVER_HALTS", ("wbounce2", key, f"W={g[1]}", f"period~{s+1}", f"n>={base}", f"grow+{d}")
     return "HOLDOUT", "no closure"
 
