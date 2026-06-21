@@ -3,3 +3,5 @@ _bbdata/
 _*.txt
 _*_run.py
 _*_audit.py
+_reverify*.py
+_bb6_holdout_run.py
