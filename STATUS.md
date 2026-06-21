@@ -10,6 +10,20 @@ trivial + cycler deciders leave behind. Every claim here is SOUND: machine-check
 - Remaining **4** = the genuinely-hard residual: 2 live-halt counters
   (`1RB0LZ_1LC1RA_0RA0LC`, `1RB1LC_0LA0RB_1LA0LZ`) + 2 boundary-coupled bouncers
   (`1RB0LC_0LA0RA_1LA0LZ`, `1RB0LZ_1LC0RA_0RB0LB`).
+
+## The remaining 4 all reduce to one thing — and why we did NOT rush it
+All four are non-halting because a specific halt **(state,symbol)** configuration never occurs (e.g.
+`1RB0LC_0LA0RA_1LA0LZ`: state C only ever reads 0, never 1 — the "0101" pattern always has a 0 left of
+each 1). This is a structural invariant beyond the forward (`halt-dead`) and bounded-backward
+(`halt-segment`) over-approximations — it needs a **CTL (Closed Tape Language)** decider.
+**Soundness analysis (why CTL is a careful build, not a quick add):** a CTL is sound only if its
+abstraction OVER-approximates reachability. A naive n-gram CTL (track the grams seen as head-window
+snapshots) has a real HOLE: a tape's L-cell gram is built from cells written at DIFFERENT times, so it
+need not equal any single window snapshot — so the gram set can MISS a reachable gram → the window set
+misses a reachable config → halts get wrongly excluded → UNSOUND. (A small random audit can pass while
+this hole hides — exactly the v3 failure mode.) The right path is the bbchallenge CTL/FAR construction
+(DFA-based reachability), ported and reference-validated like `translated_cyclers` — a careful research
+build, not rushed. So the suite stops at 59/63 by choice, soundly.
 - The earlier "53/63" from `bouncer_prove v1/v2/v3` was **UNSOUND and is RETRACTED** — those engines
   proved the OPEN cryptid Antihydra and the HALTING cryptid Lucy's Moonlight. See `SOUNDNESS_INCIDENT.md`.
 
