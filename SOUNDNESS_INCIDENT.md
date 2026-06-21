@@ -109,3 +109,17 @@ sample can expose unfaithfulness. The durable defence is to **cross-check every 
 the trusted simulator on concrete instances** (the concrete-induction gate), not to trust the symbolic
 engine alone. Real BB(6) data earned its keep: it caught a latent false-proof generator that thousands
 of synthetic-audit machines did not.
+
+## ROOT FIX (2026-06-22, after the concrete-induction gate)
+The gate above is a safety net; the root cause is now fixed in `wsim.cross`. The old chain extracted
+the per-copy behaviour in a synthetic **all-W buffer** (K + 2·BUF copies of W), so the head could read
+buffer-W cells during a crossing — masking dependence on whatever actually bounds the repeater. New
+`cross`/`chain_cross`/`_sim_cross`: cross `(W)^K` with **NO buffer and head-containment** — the head
+must enter at the near boundary in `state`, read ONLY the K copies, and exit at the far boundary in
+`state`; reading any neighbour cell (outside `[0, K·|W|)`) returns STUCK. Uniformity is checked across
+K=2,3,4 (same `W'`, same exit state, steps linear through the origin). A contained, uniform crossing is
+sound for any m≥1 — the rigorous version of what the chain docstring always claimed.
+**Verified:** wsim G1 self-validation still 1600 ops cell-for-cell; the BB(6) chain is now rejected at
+the wsim level; in the `exps_valid` regime wsim matches the trusted sim cell-for-cell; full suite still
+**63/63, 0 false**, coverage held (stricter chain dropped a few word/wall proofs; `halt_segment`+FAR
+absorbed them). Both layers (root fix + concrete gate) are kept.
