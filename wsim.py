@@ -141,44 +141,67 @@ def materialize(ns, segs, rep, d):
         return (ns, segs, rep + 1, len(W) - 1), ("MICRO", 1)
 
 
-def cross(M, state, segs, from_seg, rep_seg, d):
-    """head in `state` is about to enter repeater segs[rep_seg]=(W,exp) from direction d. Cross via a
-    verified word-chain (q steps/copy, advancing |W| cells/copy; the transformed word W' is read from
-    the NET result of crossing concrete copies, so q != |W| 'wiggling' chains are handled). The chain
-    op carries (exp, q) so the cost is exp*q micro-steps (+1 entry, in validate)."""
-    _, W, exp = segs[rep_seg]
-    qc = len(W)                                   # cells per copy
-    K, BUF = 4, 4                                 # K copies to cross, BUF buffer copies each side
-    total = K + 2 * BUF
-    cells = list(W) * total
-    tape = {i: cells[i] for i in range(len(cells))}
-    if d > 0:
-        head0 = BUF * qc; tdir = 1
-    else:
-        head0 = len(cells) - 1 - BUF * qc; tdir = -1
-    ch = extract_chain(M, state, dict(tape), head0, tdir, qmax=max(2, 2 * qc + 4))
-    adv = abs(ch["adv"]) if ch else 0
-    if ch is None or adv == 0 or qc % adv != 0 or ch["state"] != state:
-        return (state, segs, from_seg, (0 if d > 0 else len(segs[from_seg][1]) - 1)), ("STUCK", 0)
-    k = qc // adv                                 # cycles to cross ONE word copy (adv may divide |W|)
-    qstep = ch["q"] * k                            # micro-steps per word copy
-    # simulate K word-copies concretely to read the NET transformed word W'
-    t2 = dict(tape); h = head0; s = state
-    for _ in range(K * qstep):
-        tr = M[s][t2.get(h, 0)]
+def _sim_cross(M, state, W, K, d):
+    """Cross K concrete copies of W with HEAD-CONTAINMENT: the head enters (W)^K at the near boundary
+    in `state` and must exit at the FAR boundary in `state`, reading ONLY cells of the K copies in
+    between. If it ever reads outside [0, K|W|) (a neighbour) the crossing is context-dependent and we
+    return None (SOUND: a chain is trusted only when crossing is independent of what bounds the
+    repeater — the bug fix). Returns (W' tuple, total_steps) on a clean contained crossing."""
+    qc = len(W); N = K * qc
+    tape = {i: W[i % qc] for i in range(N)}
+    head = 0 if d > 0 else N - 1
+    s = state; steps = 0; cap = N * 40 + 100
+    while steps < cap:
+        if (d > 0 and head == N) or (d < 0 and head == -1):
+            break                                  # exited the far boundary cleanly
+        if head < 0 or head >= N:
+            return None                            # read a neighbour -> context-dependent, reject
+        tr = M[s].get(tape[head])
         if tr is None:
-            return (state, segs, from_seg, 0), ("STUCK", 0)
-        w, mv, ns = tr; t2[h] = w; h += 1 if mv == "R" else -1; s = ns
-    if s != state or h != head0 + d * K * qc:    # must end at the far boundary, same state
-        return (state, segs, from_seg, 0), ("STUCK", 0)
-    # the K copies just crossed are now behind the head; read W' (period qc), require uniform
-    if d > 0:
-        region = [t2.get(head0 + i, 0) for i in range(K * qc)]
+            return None
+        w, mv, ns = tr; tape[head] = w; head += 1 if mv == "R" else -1; s = ns; steps += 1
     else:
-        region = [t2.get(head0 - K * qc + 1 + i, 0) for i in range(K * qc)]
+        return None                                # didn't exit within cap
+    if s != state:
+        return None                                # must return to the same state at the far boundary
+    region = [tape[i] for i in range(N)]
     Wp = tuple(region[:qc])
-    if any(tuple(region[i:i + qc]) != Wp for i in range(0, K * qc, qc)):
-        return (state, segs, from_seg, 0), ("STUCK", 0)
+    if any(tuple(region[i:i + qc]) != Wp for i in range(0, N, qc)):
+        return None                                # transformed word must be uniform across copies
+    return Wp, steps
+
+
+def chain_cross(M, state, W, d):
+    """Verify a SOUND contained chain by crossing K = 2,3,4 copies: same transformed word W', same
+    exit state, and steps LINEAR in K through the origin (steps = K*qstep). If so the per-copy
+    behaviour is uniform AND contained, so crossing (W)^m is sound for any m>=1. Returns (W', qstep)."""
+    res = []
+    for K in (2, 3, 4):
+        r = _sim_cross(M, state, list(W), K, d)
+        if r is None:
+            return None
+        res.append(r)
+    Wp = res[0][0]
+    if any(w != Wp for w, _ in res):
+        return None
+    s0, s1, s2 = (st for _, st in res)
+    if s1 - s0 != s2 - s1:
+        return None                                # steps not linear in K -> not a clean chain
+    qstep = s1 - s0
+    if qstep <= 0 or s0 != 2 * qstep:              # must pass through origin: steps(K) = K*qstep
+        return None
+    return Wp, qstep
+
+
+def cross(M, state, segs, from_seg, rep_seg, d):
+    """head in `state` about to enter repeater segs[rep_seg]=(W,exp) from direction d. Cross via a
+    CONTAINED, uniform word-chain (chain_cross); reject (STUCK) if crossing is neighbour-dependent.
+    The chain op carries (exp, qstep): cost = exp*qstep micro-steps (+1 entry, in validate)."""
+    _, W, exp = segs[rep_seg]
+    info = chain_cross(M, state, list(W), d)
+    if info is None:
+        return (state, segs, from_seg, (0 if d > 0 else len(segs[from_seg][1]) - 1)), ("STUCK", 0)
+    Wp, qstep = info
     segs[rep_seg] = ["r", Wp, exp]
     far = rep_seg + d
     if d > 0:
