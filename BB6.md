@@ -20,11 +20,12 @@ These machines are now a permanent frontier gate (in `suite.py`): no decider may
 NEVER_HALTS on the Open/Halts cryptids.
 
 ## 2. Sound on a sample of the real BB(6) seed space
-The 6-state seed space IS the BB(6) search space. Running the suite on a large random sample:
-0 false proofs (every NEVER_HALTS cross-checked against the trusted simulator), ~6–7% HOLDOUT
-(genuine 6-state holdouts for our tools), the rest HALTS / proven-non-halting. Confirms the suite is
-sound at scale 6, not just on the 3-state monsters. (Random sampling finds only short halters, so the
-sampled lower bound is tiny — records come from construction, not random search; cf. `hunt6.py`.)
+The 6-state seed space IS the BB(6) search space. Ran the suite on **12,000 random 6-state machines**:
+**6,402 NEVER_HALTS claims (translated 6,379 / single-symbol bouncer 7 / word bouncer 16), every one
+cross-checked against the trusted simulator, 0 false proofs.** HALTS 4,885, HOLDOUT 713 (5.9% — genuine
+6-state holdouts for our tools). Confirms the suite is sound at scale 6, not just on the 3-state
+monsters. (Random sampling finds only short halters — longest here 27 steps — so the sampled lower
+bound is tiny; records come from construction, not random search; cf. `hunt6.py`.)
 
 ## 3. Portability
 The bouncer / counter techniques here are the SAME family bbchallenge uses for BB(6). The suite parses
