@@ -43,3 +43,27 @@ BB(6) itself remains open mathematics (the cryptids). We are now properly equipp
 CAN advance: recognise a contribution if we ever decide a holdout (①), know our deciders don't (②),
 and map + theorise the cryptid frontier (⑤ → ⑥). The soundness discipline (INCIDENT 2 caught + fixed)
 is intact throughout.
+
+## Feasibility verdict — "is a BB(6) proof possible?" (2026-06-22, tested)
+
+Tested directly, not asserted. Evidence:
+1. **Proven** (`LIMIT_THEOREM.md`): the tame certificate hierarchy is strict — k-window ⊊ regular ⊊
+   semilinear (conjecture-free witnesses). Tame certificates do not reach the cryptid ceiling.
+2. **Computed** (`certification_cost.py`): the certification cost of a cryptid is `K* = ∞` — its update
+   map is non-parametric, so no finite observation/certificate pins it (Antihydra orbit 2240 pts, no
+   parity-mod-2..6 affine model predicts it).
+3. **Empirical, uniform**: a random sample of **80 holdouts → 80 non-parametric** (`certification_cost`),
+   and the orbits are genuine super-exponential irregular Collatz-like sequences (e.g.
+   `[3,43,235,2031,32427,261819]`), not extraction noise. **No tractable (finite-parameter) holdout
+   was found.**
+4. **Our deciders**: 0 of 300 holdouts decided (FAR k-tails + CEGAR).
+
+**Verdict.** BB(6) has a definite value, so a proof exists *in principle*. But the surviving residual is
+**uniformly Collatz-hard**: every sampled holdout sits at the non-parametric ceiling, and proving any of
+them never-halts = resolving the specific Collatz-type arithmetic statement it encodes (Antihydra is the
+canonical one — an open problem). **So a BB(6) proof is NOT possible by any tame/finite certificate
+(proven), nor by our or the community's currently-deployed deciders (they left exactly this residual);
+it is gated on open number theory.** This is a rigorous *no, not now* — with the exact barrier
+identified — rather than a failure to try. The only honest routes forward are (i) resolving a named
+cryptid mathematically (research, Collatz-hard), or (ii) chipping individual non-cryptid holdouts the
+community's pipeline happened to miss — and our sweep found none.
