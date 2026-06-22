@@ -128,6 +128,30 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
   feasible only for tiny N. A targeted CEGAR-style *lower bound* (no certificate the search class can
   express) is more practical but weaker than a true ∀-DFA bound.
 
+- **(e) [IN-PROGRESS — target SLIN ⊊ 2-automatic; obstacle identified, no separation claimed]**
+  The natural next rung above SLIN is the **2-automatic** sets (Büchi–Bruyère: Presburger ⊊ Presburger+V₂
+  = base-2-recognisable); the canonical witness property is **"is a power of 2"** — `{2ⁿ}` is 2-automatic
+  but not semilinear (gaps `2ⁿ→∞` ⇒ not eventually periodic). Intended construction (mirroring brick a):
+  a machine whose *only* non-halting reachable configs are `{1^(2ⁿ)}`, halting on every non-power; then a
+  semilinear over-approximation `L⊇{2ⁿ}` must (pigeonhole on its finitely many linear components) contain
+  an infinite AP `{a+bk}`, hence a non-power, hence a halt — so no SLIN certificate, while the 2-automatic
+  `{2ⁿ}` is one.
+  - **Built + verified (`pow2_machine.py`):** an explicit 29-state / 4-symbol TM **POW2** that
+    semi-decides power-of-2 in unary — HALT ⟺ not-a-power, machine-checked for v=1..200 (0 mismatches);
+    from `1^1` it visits exactly `1^(2ⁿ)` (n=0,1,2,…) at state `DOUBLE`, never halting.
+  - **Obstacle (self-found, conjecture-free):** POW2 **does not separate SLIN.** From blank it enters the
+    DOUBLE phase and **never re-checks** (verified: it never returns to a halve/halt state), so *from blank*
+    it is a pure doubler whose non-halting has a **semilinear (regular) certificate** `{1^k at the doubling
+    states}`. The power-of-2 test only fires from non-power *starts*. A real witness must **check power-of-2
+    every cycle** (as EQ checks equality every round) — e.g. duplicate the counter, halve-check the copy
+    (HALT if not a power), then double the original — so the only non-halting configs are `{1^(2ⁿ)}`.
+    Deeper tension this exposes: power-of-2 is non-semilinear in **unary** but its check is **destructive**
+    (halving loses the exponent), whereas in **binary** the check is regular but `{2ⁿ}=10*` is itself
+    regular. The clean witness must resolve this (a non-destructive unary verifier, ~two-counter).
+  - **Status: honest partial.** Target stated, building block verified, obstacle precisely characterised;
+    **no SLIN ⊊ 2-automatic separation is claimed** (soundness discipline — the naive witness was checked
+    and refuted). Completion = build the duplicate-and-check-every-cycle witness, then the AP argument above.
+
 ### Standing summary — the hierarchy, with two strict separations now PROVEN
 ```
    k-window  ⊊  regular (REG)  ⊊  semilinear (SLIN)  ⊆ ... ⊆  beyond (Collatz)
