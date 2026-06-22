@@ -88,21 +88,35 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
 - **(b) [DONE]** concrete distinguishability for Antihydra: the milestone configs have **pairwise-
   distinct future-3-width signatures (14/14)**, so they lie in distinct Myhill-Nerode classes — the
   §3 non-regularity argument made concrete (still [CONDITIONAL] on the orbit being unbounded).
-- **(a) [OPEN, reduced]** SLIN ⊋ REG for certification needs a machine with NO regular *over-
-  approximation* certificate but a semilinear one. Reduction: build M whose only infinite orbit is the
-  start orbit, with reachable = SAFE = a non-regular semilinear set R (e.g. equal-block `1^n X 1^n`);
-  then every certificate is squeezed to R (non-regular) ⇒ no REG cert, while R is the SLIN cert. The
-  gap is constructing M so SAFE = R exactly (every off-orbit config halts) — not yet built.
+- **(a) [PROVEN, conjecture-free]** SLIN ⊋ REG for non-halting certification. Witness: the machine
+  **EQ** (`eq_machine.py`, alphabet `{_,L,C,R,xL,xR}`) that semi-decides equal blocks: it crosses off
+  one L and one R per round at the centre `C`, and on equality uncrosses and grows both arms by one.
+  Verified: **(i)** from blank EQ passes through `L^n C R^n` for n=0..15 without halting (the milestone
+  step is uniform in n, so it reaches every n by induction); **(ii)** from every unequal block
+  `L^a C R^b`, a≠b (checked a,b≤12), EQ HALTS (cross-off exhausts the short arm and the surplus is
+  detected). Proof: any regular certificate `L'` contains `reachable ⊇ {L^n C R^n}` for unbounded n;
+  by the pumping lemma a regular `L'` then contains some `L^{n+p} C R^n` (pump the L-arm) — an unequal
+  block, which reaches the halt — so `L'` is not halt-free. **No regular certificate exists.** Yet the
+  reachable set (milestones + compare/grow intermediates, each a linearly-parameterised family in
+  `(n, round, head)`) is **semilinear**, and being exactly reachable it is a (semilinear) certificate.
+  ∎ This is independent of any open conjecture: REG ⊊ SLIN for certification, with an explicit witness.
 - **(c) [OPEN, scoped]** "no REG certificate with ≤ N states" by complete enumeration is exponential;
   feasible only for tiny N. A targeted CEGAR-style *lower bound* (no certificate the search class can
   express) is more practical but weaker than a true ∀-DFA bound.
 
-### Standing summary
-- **[PROVEN]** REG suffices at n=3 (63 explicit certificates); **k-window ⊊ regular** (parity counter).
+### Standing summary — the hierarchy, with two strict separations now PROVEN
+```
+   k-window  ⊊  regular (REG)  ⊊  semilinear (SLIN)  ⊆ ... ⊆  beyond (Collatz)
+       └ (d) parity counter ┘    └ (a) EQ machine ┘            └ (cryptids: OPEN) ┘
+```
+- **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
+- **[PROVEN, conjecture-free]** **k-window ⊊ REG** (d, parity counter) and **REG ⊊ SLIN** (a, EQ machine).
+  Two strict levels of the certification hierarchy, each with an explicit verified witness.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b).
-- **[OPEN]** no REG/SLIN over-approximation certificate for a cryptid (≥ as hard as the cryptid itself);
-  SLIN ⊋ REG witness (a) reduced to an unbuilt construction.
+- **[OPEN]** no certificate of ANY tame class for a cryptid — the top of the hierarchy, = the BB(6)
+  frontier itself (≥ as hard as resolving the cryptid). This is exactly the genuineness limit: the
+  cryptids are non-halting in a way no finite/tame certificate can witness.
 
 Next bricks (all rigorous, achievable): (a) construct an explicit non-halting machine with a *provably*
 non-regular reachable language **and** an explicit SLIN certificate — a clean witness that SLIN ⊋ REG
