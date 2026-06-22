@@ -26,6 +26,15 @@ Antihydra & Lucy → IRREGULAR/candidate-cryptid (correctly: open); our counter 
 bouncer → linear width. This is the tool for path (B): it shows *which* Collatz-like object each
 cryptid is, so the open frontier can be catalogued (not proved).
 
+## ⑤′ Cryptid census — the frontier is heterogeneous (`cryptid_census.py`, `CRYPTID_CENSUS.md`)  ✅
+Ran ⑤ over all 19 open cryptids. **Not monolithic:** a small **exponential-Collatz core** (Antihydra,
+o10, o15, o17, o18 — width jumps ~2–3×, few milestones, clean Collatz orbits) vs a **slow-width
+majority** (15 machines, near-linear width over hundreds–thousands of milestones — the auto-milestone
+is the wrong event). Directs path (B): apply the §3c exact-reduction (`antihydra_attack.md` §3c, which
+reduced Antihydra to `v2(c_n-1) ≥ balance_n+1`) to the Collatz core first → catalogue the BB(6) core as
+named open arithmetic problems; lottery upside if one reduces to a decidable family. Recon only, no
+decidability claim (the slow-width tags are extraction artifacts; all survived the community pipeline).
+
 ## ③④ Scale / missing deciders — DEFERRED
 Premature: ② shows our deciders don't crack holdouts, so optimising/scaling them or porting more
 (WFA, etc.) chases the community's lead. Revisit only if a genuinely novel decider appears.
