@@ -41,6 +41,14 @@ deciders; a "LINEAR"/slow-width tag (e.g. o13) is almost certainly a milestone-e
 tractability. The census only *prioritises* where the math road looks; it asserts nothing about any
 machine's status. (Discipline per `SOUNDNESS_INCIDENT.md`.)
 
+**UPDATE 2026-06-22 — the "COLLATZ-LIKE" tags for o10 and o17 were artifacts.** The full §3c reductions
+(`CRYPTID_REDUCTIONS.md`) reverse-engineered all five core machines against the raw TM: **o10 is a
+nested two-level counter** (inner Mahler-3/2, not a single Collatz orbit) and **o17 is a carrying
+odometer** (not a Collatz orbit at all). Both COLLATZ tags came from a 5-point float-ratio fit on a
+sparse, biased milestone — exactly the few-point-fit spoof the discipline warns of. The genuine clean
+Mahler maps in the core are **o18 (`⌊8N/3⌋+2`)** and **o10-inner (`⌈3m/2⌉`)**, plus Antihydra (`⌊3c/2⌋`);
+o15 is Mahler-8/3 but parity-irregular (no clean map). See `CRYPTID_REDUCTIONS.md` for the comparison.
+
 ## Status
 - **[done]** census built + reproducible (`cryptid_census.py`); frontier shown heterogeneous.
 - **[next, achievable]** apply the §3c exact-reduction to the Collatz core (o10/o15/o17/o18) → catalogue.
