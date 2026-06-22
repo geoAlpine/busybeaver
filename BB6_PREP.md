@@ -58,12 +58,20 @@ Tested directly, not asserted. Evidence:
    was found.**
 4. **Our deciders**: 0 of 300 holdouts decided (FAR k-tails + CEGAR).
 
-**Verdict.** BB(6) has a definite value, so a proof exists *in principle*. But the surviving residual is
-**uniformly Collatz-hard**: every sampled holdout sits at the non-parametric ceiling, and proving any of
-them never-halts = resolving the specific Collatz-type arithmetic statement it encodes (Antihydra is the
-canonical one — an open problem). **So a BB(6) proof is NOT possible by any tame/finite certificate
-(proven), nor by our or the community's currently-deployed deciders (they left exactly this residual);
-it is gated on open number theory.** This is a rigorous *no, not now* — with the exact barrier
-identified — rather than a failure to try. The only honest routes forward are (i) resolving a named
-cryptid mathematically (research, Collatz-hard), or (ii) chipping individual non-cryptid holdouts the
-community's pipeline happened to miss — and our sweep found none.
+**Verdict — precise (could-not vs cannot).** BB(6) has a definite value, so a proof exists *in
+principle*. What is established and what is NOT:
+- **WE COULD NOT prove it** (a fact, not an impossibility): our deciders settled 0/300 holdouts; a
+  random 80-holdout sample is uniformly non-parametric (genuine Collatz-like orbits); the community's
+  deployed pipeline left exactly this residual. This is failure-of-current-tools.
+- **It is NOT proven impossible.** We did NOT show "no certificate exists" for any cryptid. What is
+  *proven* is only that the tame hierarchy is **strict** (k-window ⊊ regular ⊊ semilinear). The
+  claim "cryptids escape ALL tame classes / have no certificate" is **[OPEN]** in `LIMIT_THEOREM.md`
+  (the over-approximation gap) — conjectured, not proven. `K*=∞` concerns one method (fitting the
+  milestone map); the 80/80 figure is an empirical classification. None of these prove impossibility.
+- So: a cryptid is an **open problem**, not an impossibility. "Collatz-hard" = as hard as a known open
+  problem; open ≠ impossible — the community keeps shrinking the holdout list, and any cryptid could be
+  settled by new mathematics.
+
+**Bottom line: we *could not* (current tools fail, barrier identified) — NOT *cannot* (no impossibility
+proven).** Honest routes forward unchanged: (i) resolve a named cryptid mathematically (Collatz-hard
+research), or (ii) find a non-cryptid holdout the pipeline missed — our sweep found none.
