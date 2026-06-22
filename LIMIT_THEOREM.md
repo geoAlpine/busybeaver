@@ -128,38 +128,51 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
   feasible only for tiny N. A targeted CEGAR-style *lower bound* (no certificate the search class can
   express) is more practical but weaker than a true ∀-DFA bound.
 
-- **(e) [IN-PROGRESS — target SLIN ⊊ 2-automatic; obstacle identified, no separation claimed]**
-  The natural next rung above SLIN is the **2-automatic** sets (Büchi–Bruyère: Presburger ⊊ Presburger+V₂
-  = base-2-recognisable); the canonical witness property is **"is a power of 2"** — `{2ⁿ}` is 2-automatic
-  but not semilinear (gaps `2ⁿ→∞` ⇒ not eventually periodic). Intended construction (mirroring brick a):
-  a machine whose *only* non-halting reachable configs are `{1^(2ⁿ)}`, halting on every non-power; then a
-  semilinear over-approximation `L⊇{2ⁿ}` must (pigeonhole on its finitely many linear components) contain
-  an infinite AP `{a+bk}`, hence a non-power, hence a halt — so no SLIN certificate, while the 2-automatic
-  `{2ⁿ}` is one.
-  - **Built + verified (`pow2_machine.py`):** an explicit 29-state / 4-symbol TM **POW2** that
-    semi-decides power-of-2 in unary — HALT ⟺ not-a-power, machine-checked for v=1..200 (0 mismatches);
-    from `1^1` it visits exactly `1^(2ⁿ)` (n=0,1,2,…) at state `DOUBLE`, never halting.
-  - **Obstacle (self-found, conjecture-free):** POW2 **does not separate SLIN.** From blank it enters the
-    DOUBLE phase and **never re-checks** (verified: it never returns to a halve/halt state), so *from blank*
-    it is a pure doubler whose non-halting has a **semilinear (regular) certificate** `{1^k at the doubling
-    states}`. The power-of-2 test only fires from non-power *starts*. A real witness must **check power-of-2
-    every cycle** (as EQ checks equality every round) — e.g. duplicate the counter, halve-check the copy
-    (HALT if not a power), then double the original — so the only non-halting configs are `{1^(2ⁿ)}`.
-    Deeper tension this exposes: power-of-2 is non-semilinear in **unary** but its check is **destructive**
-    (halving loses the exponent), whereas in **binary** the check is regular but `{2ⁿ}=10*` is itself
-    regular. The clean witness must resolve this (a non-destructive unary verifier, ~two-counter).
-  - **Status: honest partial.** Target stated, building block verified, obstacle precisely characterised;
-    **no SLIN ⊊ 2-automatic separation is claimed** (soundness discipline — the naive witness was checked
-    and refuted). Completion = build the duplicate-and-check-every-cycle witness, then the AP argument above.
+- **(e) [PROVEN, conjecture-free — SLIN ⊊ 2-automatic, third strict separation]** Witness **POW2W**
+  (`pow2w_machine.py`): an explicit 60-state multi-symbol TM that **checks power-of-2-ness every cycle**.
+  Cycle-start state `CS`; each cycle from `(CS, 1^v)`: DUPLICATE `1^v→1^v M 1^v`, HALVE-CHECK the right
+  copy (HALT iff `v` not a power of 2), MERGE back to `(CS, 1^{2v})`. Verified by simulation (the sound
+  gate; re-checked independently): from `(CS,1^1)` it runs forever, visiting `CS`-milestones exactly
+  `1^1,1^2,1^4,…,1^{1024}` (powers, exact doubling); `(CS,1^w)` **HALTS for every non-power `w`** and loops
+  for every power (`w=1..130`, 0 mismatches); and — the separation-critical fact — **every clean
+  left-anchored 1-block, in ANY state (`CS,DBL,PHOME,FUSE_HOME`), has power-of-2 length** (no `DOUBLE`-like
+  state hosts an unchecked arbitrary-length block; this is the defect that sank the earlier `pow2_machine.py`
+  POW2, recorded below).
 
-### Standing summary — the hierarchy, with two strict separations now PROVEN
+  - **No semilinear certificate (the lower half — airtight, conjecture-free).** POW2W never halts from
+    blank, so `reachable(blank)` is a certificate; but no *semilinear* one exists. *Proof.* Suppose `L` is
+    semilinear, step-closed, halt-free, `L ⊇ reachable`. `reachable` contains every `CS`-milestone
+    `(CS,1^{2ⁿ})`. Let `V = {v : (CS,1^v) ∈ L}`; under SLIN's block-count encoding, `L` semilinear ⇒ `V`
+    semilinear (a section + projection = Presburger operations), and `V ⊇ {2ⁿ}`. A semilinear `V ⊆ ℕ` is a
+    finite union of arithmetic progressions; since `V` is infinite, some component `a+bℕ` (`b≥1`) contains
+    infinitely many `2ⁿ`. But `a+bℕ` (`b≥1`) is an infinite AP and powers of 2 have density 0, so it
+    contains a **non-power** `w`. Then `(CS,1^w) ∈ L`, the machine HALTS from `(CS,1^w)` (verified), and `L`
+    step-closed ⇒ `L` contains that halt config — contradicting halt-free. ∎ So **SLIN is insufficient** for
+    POW2W's non-halting.
+  - **A 2-automatic certificate exists (the upper half).** The `CS`-milestone value set is `{2ⁿ}`, which is
+    **2-automatic** (base-2: `10*`) but **not semilinear** (gaps `2ⁿ→∞`). The reachable configs are a
+    finite-state family parameterised by `(n, within-cycle progress j with 0≤j≤2ⁿ, phase)`; the constraint
+    "`x` is a power of 2 ∧ `0≤j≤x`" is `Presburger+V₂`-definable, so by Büchi–Bruyère the reachable
+    config-language is 2-automatic. Hence a 2-automatic certificate exists.
+  - **Therefore `SLIN ⊊ 2-automatic` for non-halting certification**, with an explicit, simulation-verified
+    witness — the third strict level after `k-window ⊊ REG` (d) and `REG ⊊ SLIN` (a). The lower half (no
+    SLIN certificate) is fully rigorous and conjecture-free; the upper half rests on standard automatic-set
+    theory (Büchi–Bruyère).
+  - **Provenance / soundness note.** The first attempt (`pow2_machine.py`, POW2, 29 states) was a correct
+    power-of-2 *semi-decider* but **did not separate SLIN** — from blank it checks once then doubles forever
+    (state `DOUBLE` re-hosts every length), giving it a semilinear certificate. That defect was *self-found
+    by simulation and recorded* before any claim; POW2W (check-every-cycle) fixes it. No separation was
+    claimed until the witness passed all three verifications. (Discipline per `SOUNDNESS_INCIDENT.md`.)
+
+### Standing summary — the hierarchy, with THREE strict separations now PROVEN
 ```
-   k-window  ⊊  regular (REG)  ⊊  semilinear (SLIN)  ⊆ ... ⊆  beyond (Collatz)
-       └ (d) parity counter ┘    └ (a) EQ machine ┘            └ (cryptids: OPEN) ┘
+   k-window ⊊ regular (REG) ⊊ semilinear (SLIN) ⊊ 2-automatic ⊆ ... ⊆ beyond (Collatz)
+     └ (d) parity ctr ┘   └ (a) EQ machine ┘  └ (e) POW2W ┘        └ (cryptids: OPEN) ┘
 ```
 - **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
-- **[PROVEN, conjecture-free]** **k-window ⊊ REG** (d, parity counter) and **REG ⊊ SLIN** (a, EQ machine).
-  Two strict levels of the certification hierarchy, each with an explicit verified witness.
+- **[PROVEN, conjecture-free]** **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), and
+  **SLIN ⊊ 2-automatic** (e, POW2W — no semilinear certificate, lower half airtight). Three strict levels
+  of the certification hierarchy, each with an explicit simulation-verified witness.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
