@@ -40,6 +40,16 @@ def run(N, c0=8):
             "max_odd_run": maxoddrun}
 
 
+def sigma_to_halt(n):
+    """Fair-coin model: E ~ Binomial(n, 1/2), mean n/2, std sqrt(n)/2.
+    HALT needs E <= (n-1)/3 => a downward deviation of (n/2 - n/3) = n/6,
+    i.e. (n/6)/(sqrt(n)/2) = sqrt(n)/3 standard deviations. Returns that many sigmas.
+    P(halt at step n) ~ exp(-sigma^2/2) = exp(-n/18); sum over n converges => (Borel-Cantelli)
+    the orbit halts with probability 0 under the random model. The orbit is NOT random, so this
+    is a heuristic, not a proof — exactly the gap that keeps Antihydra open (antihydra_attack.md §4)."""
+    return math.sqrt(n) / 3.0
+
+
 def main():
     print("Antihydra abstract process — does the balance ever hit -1?\n")
     for N in (1000, 10000, 100000, 300000):
@@ -51,6 +61,12 @@ def main():
               f"max-odd-run={r['max_odd_run']} (log2 n={math.log2(N):.1f})")
     print("\n  => balance climbs ~0.5n (linear); odd-runs grow ~log2(n); min-balance stays >= 0.")
     print("     Non-halting <= 'even-density > 1/3 forever' (antihydra_attack.md §4) — open (Mahler family).")
+    print("\n  Random-model 'why it (probably) never halts' (antihydra_attack.md §3b):")
+    print(f"    {'n':>10} {'sigma_to_halt=sqrt(n)/3':>24} {'ln P(halt@n)~-n/18':>20}")
+    for n in (10, 1000, 10 ** 5, 10 ** 9):
+        print(f"    {n:>10} {sigma_to_halt(n):>24.2f} {-n / 18.0:>20.1f}")
+    print("    => sigma-to-halt grows without bound; sum_n exp(-n/18) converges (Borel-Cantelli):")
+    print("       halts w.p. 0 in the fair-coin model. Heuristic only — the orbit is deterministic.")
 
 
 if __name__ == "__main__":
