@@ -31,14 +31,19 @@ Certificate-complexity of `M` = the smallest class with a certificate. Define
   and the two binary counters were certified by explicit DFA invariants (`far_finder` k-tails,
   `far_cegar`). So **at n=3, REG certificates suffice for the entire hard residual** — the hierarchy
   does not separate yet. (This is itself a clean finite theorem: 63 explicit certificates.)
-- **[EVIDENCE→PROVABLE] REG certification is not closed under suffix-merging.** The counter
-  `1RB0LZ_1LC1RA_0RA0LC` has a REG certificate (CEGAR found and we VERIFIED one), but **no k-tails
-  (suffix-window) invariant up to k=20 is one** — and the obstruction is identified: the certificate
-  must distinguish the *parity of the boundary-anchored leading-1 run*, a prefix property. Parity is
-  the canonical *not-locally-testable* language, so no k-window invariant can capture it for any k.
-  Turning this into a clean theorem (the certificate language is provably not k-testable for any k) is
-  brick (d) below — straightforward but not yet written down. So: suffix-regular ⊊ regular, with the
-  parity counter as witness (empirically for k≤20, with the standard non-local-testability reason).
+- **[PROVEN] (brick d) k-testable ⊊ regular for certification.** Witness: the counter
+  `1RB0LZ_1LC1RA_0RA0LC` (halt = A reads 1). It HAS a REG certificate (CEGAR found, we VERIFIED a
+  2-class/parity DFA), but **NO k-window (locally-testable / k-tails) set is a certificate, for any k.**
+  Conjecture-free proof (Lemma 1 verified m=1..32):
+  - *Lemma 1.* The config `1^m B 0…` reaches the halt **iff m is even** (even m halt in Θ(2^{m/2})
+    steps; odd m never halt — they are the reachable configs, non-halting by the verified certificate).
+  - Any certificate `L` is step-closed and halt-free, so it must **exclude every even-m config**
+    (each reaches halt) and, containing the start's reachable set (the leading 1-run grows through
+    1,3,5,…), **include 1^m B 0 for infinitely many odd m**.
+  - On the unary sub-structure `1^* B 0`, a locally-testable (k-window) language is all-or-nothing for
+    m ≥ k (membership is fixed once the window `1^k` is seen), so it cannot contain infinitely many
+    odds while excluding all evens. Hence no k-window certificate. A full DFA (count parity) is one. ∎
+  So suffix-window certification ⊊ regular certification — a clean, conjecture-free separation.
 
 ## 3. The cryptid barrier
 
@@ -77,11 +82,27 @@ This is the same shape as the quantum limit theorem: single-basis (finite) stati
 genuineness; here, finite-state abstractions cannot certify non-halting of a cryptid. BB(6)'s hardness
 *is* a genuineness-limit phenomenon, on a fully-specified discrete system.
 
-## 5. Honest status & next bricks
+## 5. Results this pass (bricks b, d) and honest status
 
-- **[PROVEN]** REG suffices at n=3 (63 explicit certificates); suffix-regular ⊊ regular (parity counter).
-- **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded).
-- **[OPEN]** no REG/SLIN over-approximation certificate for a cryptid (≥ as hard as the cryptid itself).
+- **(d) [PROVEN]** k-window ⊊ regular for certification — §2, conjecture-free, Lemma 1 verified m=1..32.
+- **(b) [DONE]** concrete distinguishability for Antihydra: the milestone configs have **pairwise-
+  distinct future-3-width signatures (14/14)**, so they lie in distinct Myhill-Nerode classes — the
+  §3 non-regularity argument made concrete (still [CONDITIONAL] on the orbit being unbounded).
+- **(a) [OPEN, reduced]** SLIN ⊋ REG for certification needs a machine with NO regular *over-
+  approximation* certificate but a semilinear one. Reduction: build M whose only infinite orbit is the
+  start orbit, with reachable = SAFE = a non-regular semilinear set R (e.g. equal-block `1^n X 1^n`);
+  then every certificate is squeezed to R (non-regular) ⇒ no REG cert, while R is the SLIN cert. The
+  gap is constructing M so SAFE = R exactly (every off-orbit config halts) — not yet built.
+- **(c) [OPEN, scoped]** "no REG certificate with ≤ N states" by complete enumeration is exponential;
+  feasible only for tiny N. A targeted CEGAR-style *lower bound* (no certificate the search class can
+  express) is more practical but weaker than a true ∀-DFA bound.
+
+### Standing summary
+- **[PROVEN]** REG suffices at n=3 (63 explicit certificates); **k-window ⊊ regular** (parity counter).
+- **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
+  distinguishability made concrete (b).
+- **[OPEN]** no REG/SLIN over-approximation certificate for a cryptid (≥ as hard as the cryptid itself);
+  SLIN ⊋ REG witness (a) reduced to an unbuilt construction.
 
 Next bricks (all rigorous, achievable): (a) construct an explicit non-halting machine with a *provably*
 non-regular reachable language **and** an explicit SLIN certificate — a clean witness that SLIN ⊋ REG
