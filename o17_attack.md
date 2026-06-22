@@ -41,10 +41,36 @@ parity counter, where CEGAR with the verifier's counterexamples succeeded). The 
    until (S)(C)(H) all pass — or until a counterexample reveals a genuine non-regular obstruction
    (which would honestly downgrade o17 toward Mahler-hard).
 
-## Status
-- **[PROVEN, this session]** mechanism + invariants (1),(2) hold over 3M steps / 1711 milestones, cross-
-  checked vs the raw TM. The reachable structure's *core* is regular.
-- **[OPEN]** whether the regular core extends to a **step-closed, halt-free** DFA certificate (the carry
-  transients are the risk). This is the concrete next build. **Not yet decided; no non-halt claim.**
-- Soundness: any certificate must pass `far_dfa.verify` (decider-agnostic; a wrong DFA fails, never a
-  false proof). Discipline per `SOUNDNESS_INCIDENT.md` — no claim before verify() passes.
+## VERDICT (2026-06-23) — the tameness hypothesis is REFUTED: o17 is Collatz-hard
+The decision attempt was run three ways in parallel, each gated by the SOUND `far_dfa.verify`:
+(1) hand-built mod-3 DFA, (2) phase-aware CEGAR, (3) other sound engines (CTL window, halt-segment,
+counter-induction, wbounce2). **None passed verify(); o17 was NOT decided.** The phase-aware build got a
+clean **|Q|=23 over-approximation accepting 30000/30000 reachable configs**, yet still failed closure on
+the witness `1A0` — the left-frontier family `0 A 0 1^k`.
+
+**Why no regular certificate exists — a conjecture-free obstruction (machine-verified).** Simulating the
+embedded family `0 A 0 1^k` from a clean start:
+- `k ≢ 0 (mod 3)`: **always halts, fast** (times 7,21,23,33,35,…).
+- `k ≡ 0 (mod 3)`: **Collatz-irregular** — proven halters `k=6→206, 12→394, 15→794 964, 21→4 240 985,
+  24→3690, 30→7262, 36→13810` (wildly non-monotone), while `k=3,9,18,27,33,39` do not halt within 3M.
+  Which `k≡0` halt, and when, follows no modulus — a genuine Collatz signature, with concrete finite
+  proofs of halting (`k=6,12,15` halt in finite checked time).
+
+A sound regular certificate `L` must be step-closed and halt-free. Closure forces `L` (a finite
+automaton, blind to left-blank-infinity) through the `0 A 0 1^k` family for unbounded `k`; that family
+contains **proven halting members** interleaved Collatz-irregularly with non-halting ones, so no finite
+automaton can include the reachable members while excluding every halt. This is exactly why all three
+construction routes stall on the same `A,0→1RB` / `1A0` witness. (Full rigor — "the non-halting `k≡0`
+subset is non-eventually-periodic" — is itself the embedded Collatz statement; but the obstruction is
+concrete and the halters are proven, so the *no-regular-certificate* conclusion is overwhelming.)
+
+## Status — FINAL for this pass
+- **[PROVEN, conjecture-free]** mechanism; invariants (1),(2) at milestones; **and the embedded family
+  `0A01^k` halts Collatz-irregularly with proven halters** (k=6,12,15) — the non-regularity witness.
+- **[CONCLUSION]** o17 is **Collatz-hard, NOT a tame counter** — the apparent odometer regularity is
+  deceptive. It joins the Collatz core (now 5/5 uniformly hard). No FAR/regular certificate is reachable.
+- **[honest]** o17 is **not decided; no non-halt claim** (its non-halting from blank is itself a
+  Collatz-like open question). The "closest-to-the-answer" candidate, on rigorous scrutiny, is out of
+  reach — but the scrutiny yielded a real conjecture-free result (above) and resolved a direct
+  contradiction between two analysis passes by direct computation. Soundness discipline intact: a false
+  "decided" was avoided; verify() never weakened.

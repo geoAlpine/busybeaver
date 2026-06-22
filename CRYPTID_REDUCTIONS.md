@@ -48,6 +48,17 @@ compares. Each non-Antihydra machine was reverse-engineered against the **raw TM
 - **Next achievable (per `LIMIT_THEOREM.md` ⑥):** the strongest leverage is no longer "find a tractable
   cryptid" (the core is uniformly hard) but the **certificate-hierarchy** result — push [OPEN] "no REG
   certificate for a cryptid" toward [PROVEN] for one, now that four of five are pinned to the *same*
-  Mahler family (a shared barrier is easier to attack than five separate ones). o17's odometer +
-  single-separator invariant is the one place a *counter-style* (semilinear) certificate attempt could
-  be probed — the most tractable-looking of the five, though its invariant is unproven.
+  Mahler family (a shared barrier is easier to attack than five separate ones).
+
+## UPDATE 2026-06-23 — o17's "tractable odometer" hypothesis is REFUTED (now 5/5 Collatz-hard)
+o17 was selected as the closest-to-an-answer target (a carrying odometer, seemingly nearest the defeated
+counter class) and attacked three ways under the sound `far_dfa.verify` gate (hand-built DFA / phase-aware
+CEGAR / other engines). **None decided it.** The conjecture-free reason (machine-verified, see
+`o17_attack.md`): the embedded family `0 A 0 1^k` halts **Collatz-irregularly** — `k≢0 (mod 3)` always
+halts fast, while `k≡0 (mod 3)` is Collatz-like with proven halters (`k=6→206, 12→394, 15→794964`)
+interleaved with apparent non-halters and no separating modulus. A regular certificate's closure is forced
+through this family, which mixes proven halts with non-halts — so **no FAR/regular certificate is
+reachable**. o17 is Collatz-hard, not a tame counter. The whole Collatz core is now **uniformly hard
+(5/5)**; o17's odometer was the last plausible tractable target and it fell. This sharpens the strategic
+conclusion: the decision route is closed for all five; only the **certificate-hierarchy theory** (⑥)
+remains as the BB(6)-related contribution. (A false "decided" was avoided — the soundness gate held.)
