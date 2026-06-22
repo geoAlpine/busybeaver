@@ -77,6 +77,30 @@ def oddrun_check(N, c0=8):
     return checked, ok, min_gap
 
 
+def summit_probe(N=200000, c0=8):
+    """§4a: verify the mod-4 parity rule and measure the halt gap on the real orbit.
+    Returns (mod4_ok, max_v2, max_v2_at, min_gap, min_gap_at) where the halt criterion is
+    HALT <=> some n has v2(c_n-1) >= balance_n+1, i.e. min_gap = min_n (balance_n+1 - v2(c_n-1)) <= 0."""
+    c = c0; E = 0
+    mod4_ok = True
+    max_v2 = 0; max_v2_at = 0; min_gap = 10 ** 18; min_gap_at = 0
+    for n in range(1, N + 1):
+        if c % 2 == 0:
+            E += 1
+        bal = 3 * E - n
+        val = v2(c - 1)
+        if val > max_v2:
+            max_v2 = val; max_v2_at = n
+        gap = (bal + 1) - val
+        if gap < min_gap:
+            min_gap = gap; min_gap_at = n
+        nxt = 3 * c // 2
+        if ((nxt % 2 == 0) != (c % 4 in (0, 3))):      # mod-4 parity rule
+            mod4_ok = False
+        c = nxt
+    return mod4_ok, max_v2, max_v2_at, min_gap, min_gap_at
+
+
 def sigma_to_halt(n):
     """Fair-coin model: E ~ Binomial(n, 1/2), mean n/2, std sqrt(n)/2.
     HALT needs E <= (n-1)/3 => a downward deviation of (n/2 - n/3) = n/6,
@@ -109,6 +133,12 @@ def main():
     print(f"    Lemma 'odd-run length == v2(c-1)' holds for all {checked} maximal runs (n<=2e5): {ok}")
     print(f"    exact criterion: HALT <=> exists n with v2(c_n-1) >= balance_n+1.")
     print(f"    min over n<=2e5 of (balance+1 - v2(c-1)) = {min_gap}  (halt needs <= 0; stays > 0).")
+    print("\n  SUMMIT — §4a sharpening of the open kernel:")
+    m4, mv2, mv2at, mg, mgat = summit_probe(200000)
+    print(f"    mod-4 parity rule (next even <=> c==0,3 mod4) holds for n<=2e5: {m4}")
+    print(f"    max v2(c_n-1) ever = {mv2} (~log2 n, at n={mv2at}); halt threshold there balance+1 ~ {mv2at//2}.")
+    print(f"    HALT <=> c_n == 1 (mod 2^(balance_n+1)); min gap (balance+1 - v2) = {mg} at n={mgat}.")
+    print(f"    => gap ~ n/2 - log2(n) -> inf. OPEN kernel: prove v2(c_n-1) < balance_n+1 for ALL n.")
 
 
 if __name__ == "__main__":

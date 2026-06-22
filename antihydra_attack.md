@@ -82,14 +82,39 @@ needs the density to fall to **1/3**, so:
 This is *weaker* than Mahler (one-sided, with a 1/2-vs-1/3 margin), but still a statement about the
 2-adic distribution of `floor(8*(3/2)^n)` — the Mahler family. **Not solved; sharpened.**
 
+### 4a. Summit attack (2026-06-23) — sharpened to a crisp conjecture-free open kernel
+Three conjecture-free results pushing on §4 directly (all verified on the real orbit to `n=2·10^5`):
+- **[PROVEN] mod-4 parity rule.** `c_{n+1}` is **even ⟺ `c_n ≡ 0 or 3 (mod 4)`** (odd ⟺ `c_n ≡ 1,2`).
+  Equivalently `parity(c_{n+1}) = bit₀(c_n) ⊕ bit₁(c_n)`: the parity stream is the xor of the low two
+  bits of the `×3/2` 2-adic odometer orbit — no finite-state reduction (the bits themselves carry).
+- **[PROVEN] sharpened halt criterion.** Combining §3c (odd-run length `= v2(c−1)`, decreasing by 1 per
+  step) with "halt needs an odd-run of length `≥ balance_n+1`":
+  > **Antihydra HALTS ⟺ ∃n with `c_n ≡ 1 (mod 2^{balance_n+1})`** (the orbit lands on the residue `1`
+  > to depth `balance_n+1`). Since `balance_n ~ n/2` and `c_n ~ 8(3/2)^n` has `~0.585n` bits, halting
+  > demands the **low ~`n/2` bits of `c_n` be `0…01`** — half the bits forced to a single pattern.
+- **[verified, conjecture-free DATA] the gap diverges.** Over `n ≤ 2·10^5`: `max_n v2(c_n−1) = 20`
+  (at `n=67941`, `≈ log₂ n`), while the halt threshold `balance_n+1 ≈ n/2` (≈ 34000 there). The gap
+  `(balance_n+1) − v2(c_n−1)` has **minimum 3, at `n=1`**, and grows like `n/2 − log₂ n → ∞`. No size
+  obstruction kills it either (dimensionally `c_n ≡ 1 mod 2^{n/2}` is consistent: the odd cofactor would
+  be `~8·(3/2^{3/2})^n = 8·(1.06)^n`, no contradiction) — so the gap is real but not closed by counting.
+- **Open kernel, now crisp:** prove **`v2(c_n − 1) < balance_n + 1` for all `n`** — equivalently
+  **odd-run lengths grow sub-linearly** (`= o(n)`; empirically `~log₂ n`). This is the entire remaining
+  content of "Antihydra never halts", isolated to one 2-adic statement about `(3/2)^n`. Bounding
+  `v2(⌊8·3^n/2^n⌋ − 1)` unconditionally is the Mahler-family core — **the summit**.
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
 - **[PROVEN, conjecture-independent]** §3c Lemma: odd-run length `= v2(c-1)` exactly, giving the **exact 2-adic
   halting criterion** `HALT ⟺ ∃n: v2(c_n-1) ≥ balance_n+1`. Makes §3b's `2^{-k}` tail structural, not assumed.
 - **[reduction]** non-halting ⟸ even-density `> 1/3` forever (§4) — a sharper, weaker target than Mahler.
-- **[open]** proving the §4 bound / equivalently that `v2(c_n-1)` never reaches `balance_n+1`. It is a 2-adic /
-  Weyl-equidistribution statement about `(3/2)^n`; hard, in the Mahler family. The honest progress this session:
-  the §2 reformulation, the §3c exact 2-adic criterion (proven), and the §4 reduction.
+- **[PROVEN, conjecture-free, §4a]** mod-4 parity rule; sharpened halt criterion `HALT ⟺ ∃n: c_n ≡ 1
+  (mod 2^{balance_n+1})`; verified gap `(balance_n+1)−v2(c_n−1)` ≥ 3 with min at `n=1`, diverging `~n/2`.
+- **[open — THE SUMMIT]** prove `v2(c_n−1) < balance_n+1 ∀n`, i.e. odd-run lengths are `o(n)` (`~log₂n`).
+  A single 2-adic statement about `(3/2)^n` (Mahler family). The honest progress: §2 reformulation, §3c
+  exact criterion, §4 reduction, and §4a's sharpening of the open kernel to a crisp data-backed target.
+  **Next realistic angle: apply known unconditional bounds on the distribution of `{(3/2)^n}`
+  (Flatto–Lagarias–Pollington-type) to extract a partial unconditional density bound** (a literature
+  attack — the legitimate way to gain *unconditional* ground on a Mahler-class problem).
 
 Run `antihydra_attack.py` to reproduce §3 / §3b / §3c and to keep attacking §4.
