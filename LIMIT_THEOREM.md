@@ -164,15 +164,54 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
     by simulation and recorded* before any claim; POW2W (check-every-cycle) fixes it. No separation was
     claimed until the witness passed all three verifications. (Discipline per `SOUNDNESS_INCIDENT.md`.)
 
-### Standing summary — the hierarchy, with THREE strict separations now PROVEN
+### The Squeeze Lemma — a check-S-every-cycle machine has certificate-complexity = the descriptive complexity of S
+The constructions (e),(f) below share one mechanism, isolated here.
+
+> **Squeeze Lemma.** Let `M` be a *check-`S`-every-cycle* machine: a cycle-start state `CS` and a unary
+> encoding such that (i) `reachable(blank)` contains exactly the clean milestones `{(CS, 1^s) : s ∈ S}`,
+> and (ii) `M` halts from `(CS, 1^v)` for every `v ∉ S`. Then **every** step-closed halt-free certificate
+> `L ⊇ reachable` has CS-value-set exactly `S`, i.e. `{v : (CS,1^v) ∈ L} = S`.
+> *Proof.* `V := {v : (CS,1^v) ∈ L} ⊇ S` (reachable ⊆ L). If `v ∉ S` then `(CS,1^v)` halts (ii); `L`
+> step-closed + halt-free ⇒ `(CS,1^v) ∉ L`, so `v ∉ V`. Hence `V ⊆ S`, so `V = S`. ∎
+
+**Consequence.** The minimal certificate class for `M`'s non-halting equals the descriptive class of `S`
+itself: no certificate in a class `C` exists when `S ∉ C` (an `L ∈ C` would give `V = S ∈ C`), and the
+reachable set is a certificate in the class of `S` when the within-cycle progress is `C`-definable.
+So *extending the hierarchy reduces to exhibiting a check-`S`-machine for a set `S` of the target
+complexity.* This is the engine behind (e) `S={2ⁿ}` and (f) `S={n²}`; it also streamlines (e)'s lower
+half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is impossible").
+
+- **(f) [PROVEN, conjecture-free — 2-automatic ⊊ arithmetic, fourth strict separation]** Witness **SQW**
+  (`sqw_machine.py`), the squares-analogue of POW2W: an explicit ~45-state / 8-symbol TM that **checks
+  "is a perfect square" every cycle**. Cycle-start `CS`; each cycle from `(CS,1^v)`: DUPLICATE, then
+  CHECK the copy by subtracting consecutive odds `1,3,5,…` (a square is `1+3+…+(2k−1)=k²`; exact 0 ⇒
+  `v=k²`, overshoot ⇒ HALT), then advance the original by `+(2k+1)` to `(CS, 1^{(k+1)²})`. Verified
+  (sound gate, independently re-checked): from `(CS,1^1)` it runs forever visiting CS-milestones
+  `1,4,9,16,…,100,…` (squares); `(CS,1^w)` HALTS for every non-square `w` (`w=1..100`, 0 mismatches);
+  and every clean left-anchored block in any state (`CS`, `PASS_HOME2`) has square length (no trap).
+  - By the Squeeze Lemma, every step-closed halt-free certificate has CS-value-set exactly `S = {n²}`.
+  - `{n²}` is **not 2-automatic** — the perfect squares are not recognised by a finite automaton in any
+    base (Minsky–Papert, *Unrecognizable sets of numbers*, JACM 1966). So **no 2-automatic certificate**.
+  - `{n²}` **is** decidable/arithmetic (`∃k. v=k·k`) and its base-2 language is context-sensitive (an LBA
+    checks perfect-squareness in linear space); the reachable set is `⟨ℕ,+,×⟩`-definable ("`v=k²` ∧
+    bounded progress"), so a certificate at the arithmetic/context-sensitive level exists.
+  - Therefore **`2-automatic ⊊ arithmetic` for non-halting certification**, with an explicit verified
+    witness — the fourth strict level. (Lower half airtight via Minsky–Papert; the gap to the named upper
+    class is larger here because Cobham–Semenov blocks the obvious valuation-based rung just above
+    2-automatic — adding `V₃` collapses back to semilinear — so the next *clean* describable class up is
+    the multiplicative/arithmetic one.)
+
+### Standing summary — the hierarchy, with FOUR strict separations now PROVEN
 ```
-   k-window ⊊ regular (REG) ⊊ semilinear (SLIN) ⊊ 2-automatic ⊆ ... ⊆ beyond (Collatz)
-     └ (d) parity ctr ┘   └ (a) EQ machine ┘  └ (e) POW2W ┘        └ (cryptids: OPEN) ┘
+ k-window ⊊ REG ⊊ semilinear (SLIN) ⊊ 2-automatic ⊊ arithmetic ⊆ ... ⊆ beyond (Collatz)
+   └(d)parity┘ └(a)EQ machine┘    └(e)POW2W {2ⁿ}┘ └(f)SQW {n²}┘      └(cryptids: OPEN)┘
 ```
 - **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
-- **[PROVEN, conjecture-free]** **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), and
-  **SLIN ⊊ 2-automatic** (e, POW2W — no semilinear certificate, lower half airtight). Three strict levels
-  of the certification hierarchy, each with an explicit simulation-verified witness.
+- **[PROVEN, conjecture-free]** four strict levels, each with an explicit simulation-verified witness:
+  **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), **SLIN ⊊ 2-automatic**
+  (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ arithmetic** (f, SQW, `S={n²}`, via the Squeeze Lemma +
+  Minsky–Papert). Bricks (e),(f) share the Squeeze Lemma: certificate-complexity = descriptive
+  complexity of the checked set `S`.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
