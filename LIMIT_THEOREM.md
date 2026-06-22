@@ -51,7 +51,8 @@ Let `M` be a cryptid (e.g. Antihydra) and `v_0, v_1, …` its milestone orbit (`
 integer it iterates, read at successive turning points, with milestone width `w_i = Θ(log v_i)` (the
 tape stores `v_i` in ~binary). Antihydra's orbit (measured): widths `2,3,10,17,18,28,29,62,63,94,…`,
 binary values `2, 2, 126, 106494, 255852542, 4.5e18, …` — the classifier reports **IRREGULAR**, i.e.
-not LINEAR (bouncer), not AFFINE/GEOMETRIC (counter): a genuine Collatz-like rule.
+not LINEAR (bouncer), not AFFINE/GEOMETRIC (counter): a genuine Collatz-like rule. For Antihydra this
+"Collatz-like rule" is now **exact, not just measured** — see the next bullet.
 
 - **[CONDITIONAL] If `M` never halts, its EXACT reachable language is non-regular.**
   *Proof sketch (rigorous modulo "orbit unbounded").* Never-halting ⇒ the orbit is infinite. The
@@ -60,6 +61,24 @@ not LINEAR (bouncer), not AFFINE/GEOMETRIC (counter): a genuine Collatz-like rul
   to a valid reachable config of a fixed larger width fails for the other), giving infinitely many
   equivalence classes ⇒ the language is non-regular. ∎ (The only gap is "widths → ∞", i.e. the orbit
   is unbounded — precisely Antihydra's open conjecture.)
+- **[PROVEN, conjecture-free] The "beyond" class is concrete for Antihydra: an exact 2-adic criterion.**
+  (Full derivation + verification in `antihydra_attack.md` §3c.) Antihydra's tape is two unary counters
+  `0 1^a 0 0 1^b 0`; with `c := b+6` the orbit obeys `c ← ⌊3c/2⌋` (`c_0=8`) and the balance is
+  `balance_n = 3E_n − n` (`E_n` = #even values so far). Two proven facts:
+  - *Lemma (odd-run = 2-adic valuation).* The run of consecutive odd orbit values starting at `c` has
+    length **exactly `v2(c−1)`** (`v2` = 2-adic valuation). One-line induction: `c=1+2^L m`, `m` odd ⇒
+    `⌊3c/2⌋ = 1 + 3·2^{L−1} m`, so `v2` drops by exactly 1 per step. Verified: the *unique* residue mod
+    `2^k` beginning a run `≥ k` is `1` (density exactly `2^{-k}`); all 50 034 maximal runs in the first
+    `2·10^5` steps obey it, zero violations.
+  - *Exact halting criterion.* `M` **HALTS ⟺ ∃ n : v2(c_n − 1) ≥ balance_n + 1`** — i.e. the orbit lands
+    2-adically within `2^{-(balance_n+1)}` of `1`. This realizes the §3-preamble "Collatz-like rule" as a
+    **named arithmetic predicate**, not a classifier output: the certificate question for Antihydra is
+    *exactly* the 2-adic distribution of `⌊8·(3/2)^n⌋` (the Mahler family). It does **not** by itself
+    prove "no REG certificate" (a regular over-approximation could still exist); its force is to **pin the
+    [CONDITIONAL] gap below** — "milestone widths → ∞" / "orbit unbounded" / "never halts" are now one
+    clean statement: `v2(c_n−1) < balance_n+1` for all `n`. The barrier is no longer hand-waved as
+    "IRREGULAR"; it is a specific, open 2-adic equidistribution fact, and *that specificity is the point*
+    — the cryptid's non-halting reduces to an equidistribution no finite-state abstraction can encode.
 - **[OPEN] No REG certificate exists for `M`.** This is the real target and is *strictly stronger* than
   §3's non-regularity, because a REG certificate is an **over-approximation** `L ⊇ reachable`, and a
   regular superset of a non-regular set can exist. Proving none exists would mean: every regular,
@@ -88,6 +107,11 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
 - **(b) [DONE]** concrete distinguishability for Antihydra: the milestone configs have **pairwise-
   distinct future-3-width signatures (14/14)**, so they lie in distinct Myhill-Nerode classes — the
   §3 non-regularity argument made concrete (still [CONDITIONAL] on the orbit being unbounded).
+- **(b′) [PROVEN, conjecture-free]** the "beyond" class is made **exact** for Antihydra (§3,
+  `antihydra_attack.md` §3c): odd-run length `= v2(c−1)` (proven), giving the exact criterion
+  `HALT ⟺ ∃n: v2(c_n−1) ≥ balance_n+1`. The cryptid's Collatz-rule is now a named 2-adic
+  predicate, and the [CONDITIONAL] gap of §3 collapses to the single statement "the orbit
+  `⌊8·(3/2)^n⌋` never lands 2-adically that close to 1" (Mahler family). Pins, does not close, the gap.
 - **(a) [PROVEN, conjecture-free]** SLIN ⊋ REG for non-halting certification. Witness: the machine
   **EQ** (`eq_machine.py`, alphabet `{_,L,C,R,xL,xR}`) that semi-decides equal blocks: it crosses off
   one L and one R per round at the centre `C`, and on equality uncrosses and grows both arms by one.
@@ -113,7 +137,8 @@ genuineness; here, finite-state abstractions cannot certify non-halting of a cry
 - **[PROVEN, conjecture-free]** **k-window ⊊ REG** (d, parity counter) and **REG ⊊ SLIN** (a, EQ machine).
   Two strict levels of the certification hierarchy, each with an explicit verified witness.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
-  distinguishability made concrete (b).
+  distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
+  equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
 - **[OPEN]** no certificate of ANY tame class for a cryptid — the top of the hierarchy, = the BB(6)
   frontier itself (≥ as hard as resolving the cryptid). This is exactly the genuineness limit: the
   cryptids are non-halting in a way no finite/tame certificate can witness.
