@@ -40,6 +40,43 @@ def run(N, c0=8):
             "max_odd_run": maxoddrun}
 
 
+def v2(x):
+    """2-adic valuation: number of trailing binary zeros of x (v2(0)=inf)."""
+    if x == 0:
+        return float("inf")
+    k = 0
+    while x % 2 == 0:
+        x //= 2
+        k += 1
+    return k
+
+
+def oddrun_check(N, c0=8):
+    """§3c: verify the Lemma 'odd-run length == v2(c-1)' and the exact 2-adic halting criterion
+    over N steps. Returns (runs_checked, all_match, min_halt_gap) where min_halt_gap is the minimum
+    of (balance+1 - v2(c-1)); halting would require this to reach <= 0."""
+    c = c0; E = 0; runlen = 0; start = 0
+    checked = 0; ok = True; min_gap = 10 ** 18
+    for n in range(1, N + 1):
+        if c % 2 == 1:
+            if runlen == 0:
+                start = c
+            runlen += 1
+        else:
+            E += 1
+            if runlen > 0:
+                if v2(start - 1) != runlen:
+                    ok = False
+                checked += 1
+            runlen = 0
+        bal = 3 * E - n
+        gap = (bal + 1) - v2(c - 1)        # halt <=> gap <= 0 for some n
+        if gap < min_gap:
+            min_gap = gap
+        c = 3 * c // 2
+    return checked, ok, min_gap
+
+
 def sigma_to_halt(n):
     """Fair-coin model: E ~ Binomial(n, 1/2), mean n/2, std sqrt(n)/2.
     HALT needs E <= (n-1)/3 => a downward deviation of (n/2 - n/3) = n/6,
@@ -67,6 +104,11 @@ def main():
         print(f"    {n:>10} {sigma_to_halt(n):>24.2f} {-n / 18.0:>20.1f}")
     print("    => sigma-to-halt grows without bound; sum_n exp(-n/18) converges (Borel-Cantelli):")
     print("       halts w.p. 0 in the fair-coin model. Heuristic only — the orbit is deterministic.")
+    print("\n  PROVEN 2-adic structure (antihydra_attack.md §3c):")
+    checked, ok, min_gap = oddrun_check(200000)
+    print(f"    Lemma 'odd-run length == v2(c-1)' holds for all {checked} maximal runs (n<=2e5): {ok}")
+    print(f"    exact criterion: HALT <=> exists n with v2(c_n-1) >= balance_n+1.")
+    print(f"    min over n<=2e5 of (balance+1 - v2(c-1)) = {min_gap}  (halt needs <= 0; stays > 0).")
 
 
 if __name__ == "__main__":

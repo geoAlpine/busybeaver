@@ -51,6 +51,30 @@ again." **This is a heuristic, not a proof:** the orbit `floor(8·(3/2)^n)` is *
 Closing that gap — showing the real parities don't conspire to the rare `1/3` deviation — *is* the open §4
 bound. The heuristic explains why everyone believes it never halts and why no one can prove it.
 
+## 3c. Odd-runs are 2-adic, *exactly* — a conjecture-independent structural fact
+§3 observed "longest odd-run grows like `log2 n`" empirically. That is now a **proven identity**, not a
+heuristic. Let `T(c) = floor(3c/2)` and `v2(x)` = the 2-adic valuation (number of trailing binary zeros).
+
+> **Lemma.** The odd run of Hydra values starting at `c` has length **exactly `v2(c-1)`**.
+
+*Proof.* Let `L = v2(c-1)`, so `c = 1 + 2^L·m` with `m` **odd**. If `L ≥ 1` then `c` is odd and
+`T(c) = (3c-1)/2 = 1 + 3·2^{L-1}·m`, hence `v2(T(c)-1) = (L-1) + v2(3m) = L-1` (because `3m` is odd). So one
+`T`-step drops the valuation by **exactly 1**, and `c` stays odd exactly while `v2(c-1) ≥ 1`. Induction ⇒ the
+run length is `v2(c-1)`. ∎  (Equivalently: for each `k` there is **exactly one** residue mod `2^k`, namely
+`1`, that begins a run of length `≥ k` — verified by enumeration, density exactly `2^{-k}`; and all 50,034
+maximal runs in the first `2·10^5` orbit steps satisfy it with zero violations.)
+
+**Exact halting criterion.** Halting needs an odd run that drives the balance from `b` to `-1`, i.e. a run of
+length `≥ b+1` while `balance = b`. By the Lemma:
+```
+   Antihydra HALTS  ⟺  ∃ n :  v2(c_n - 1)  ≥  balance_n + 1 ,   where balance_n = 3E_n - n.
+```
+So the whole question is **2-adic**: does the orbit `c_n = floor(8·(3/2)^n)` ever land within 2-adic distance
+`2^{-(balance_n+1)}` of `1`? Empirically the gap `(balance_n+1) - v2(c_n-1)` has **minimum 3** over `n ≤ 2·10^5`
+(again the danger is only at the very start). This **upgrades §3b**: the geometric tail `P(run ≥ k) = 2^{-k}`
+is now *structural* (exactly one residue mod `2^k`), not a coin assumption — only the equidistribution of
+`(3/2)^n` mod `2^k` (Mahler family) remains heuristic.
+
 ## 4. The (weaker) target the proof reduces to
 Full equidistribution (even-density = 1/2 exactly) is **Mahler's 3/2 problem** (open). But halting only
 needs the density to fall to **1/3**, so:
@@ -61,9 +85,11 @@ This is *weaker* than Mahler (one-sided, with a 1/2-vs-1/3 margin), but still a 
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
+- **[PROVEN, conjecture-independent]** §3c Lemma: odd-run length `= v2(c-1)` exactly, giving the **exact 2-adic
+  halting criterion** `HALT ⟺ ∃n: v2(c_n-1) ≥ balance_n+1`. Makes §3b's `2^{-k}` tail structural, not assumed.
 - **[reduction]** non-halting ⟸ even-density `> 1/3` forever (§4) — a sharper, weaker target than Mahler.
-- **[open]** proving the §4 bound. It is a 2-adic / Weyl-equidistribution statement about `(3/2)^n`;
-  hard, in the Mahler family. The honest "getting closer" of this session is the §2 reformulation and
-  the §4 reduction, with the §3 quantitative confirmation.
+- **[open]** proving the §4 bound / equivalently that `v2(c_n-1)` never reaches `balance_n+1`. It is a 2-adic /
+  Weyl-equidistribution statement about `(3/2)^n`; hard, in the Mahler family. The honest progress this session:
+  the §2 reformulation, the §3c exact 2-adic criterion (proven), and the §4 reduction.
 
-Run `antihydra_attack.py` to reproduce §3 and to keep attacking §4.
+Run `antihydra_attack.py` to reproduce §3 / §3b / §3c and to keep attacking §4.
