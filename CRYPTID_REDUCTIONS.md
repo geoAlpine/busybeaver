@@ -11,7 +11,7 @@ compares. Each non-Antihydra machine was reverse-engineered against the **raw TM
 | machine | mechanism | orbit map `f` | exact halt predicate | family | clean orbit? | status |
 |---|---|---|---|---|---|---|
 | **Antihydra** | 2 unary counters | `c→⌊3c/2⌋`, `c0=8` | `∃n: v2(c_n−1) ≥ balance_n+1` | **Mahler 3/2** | ✅ (proven) | [OPEN] Mahler-hard |
-| **o10** | **nested** 2-level counter | inner `m→⌈3m/2⌉`; balance `b→b−1/−2` **decreasing** | on the **outer refill** orbit (unextracted) | **Mahler 3/2** (inner) | inner ✅ / outer ✗ | [OPEN] outer not extracted |
+| **o10** | **nested** 2-level counter | inner `m→⌈3m/2⌉`; outer = **doubly-exp b-refill orbit**, refill map irregular | refill sub-routine on the outer orbit | **Mahler 3/2** (inner) + irregular outer | inner ✅ / outer examined | [OPEN] outer orbit doubly-exp & irregular (`o10_attack.md`) |
 | **o15** | 2 nested loops, `(10)`-counter | width `×8/3`; value `v→v^{8/3}` (doubly-exp), parity-irregular | `∃` outer step where new `11`-block **abuts a 1** (collision) | **Mahler 8/3** | ✗ (genuine parity defect) | [OPEN] Mahler-hard |
 | **o17** | carrying **odometer**, digit-step 3 | none (multi-digit base-≈3 counter; `v≈8v+carry-noise`) | `∃` D-read of `0` with left cell `0` (a `00` gap forms) | **odometer / other** | ✗ (not single-variable) | [OPEN]; invariant "separators stay single" [CONJECTURED] |
 | **o18** | 2 counters, `b→b−3` | `f(N)=⌊8N/3⌋+2` (7 transitions), **breaks at epoch 8** | `∃` epoch where left-frontier bit becomes `1` | **Mahler 8/3** | partial (intermittent 3-zero class breaks it) | [OPEN] Mahler-hard |
