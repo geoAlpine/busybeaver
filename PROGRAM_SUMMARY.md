@@ -60,3 +60,24 @@ breakthrough. But the programme has compressed BB(6)'s entire open core from "19
    would put both clusters under one mechanism and might expose a cluster with a favourable growth/trap ratio.
 4. **Consolidate as a citable problem statement [capitalise].** Write the reduction "BB(6) cryptid core ⟺
    specific-point equidistribution of `⌊(2^a/3^b)ⁿ⌋ mod p`" as a self-contained problem for number theorists.
+
+## E. Paths attacked in probability order (2026-06-24) — both top paths hit the SAME wall
+**Path 1 (induced map / jump heights) — attacked, cleanest framing, wall intact** (`antihydra_renewal_attack.md`
+§8). Derived the first-return-to-even map `F(c')=(3^D u+1)/2`, `D=v2(3c'−1)`. Jumps iid-geometric (mean
+1.005<2). But growth is **parity-blind** (`log₂ c_n=0.585n+3` regardless of parities) ⇒ no lower bound on
+even-density; the bookkeeping `ΣD_i=n_j−j` is a tautology; jump-sums fluctuate like `√N` (no drift/
+supermartingale). Cleanest possible framing, but the complete proof still needs `c'_j mod 2^k` equidistribution.
+
+**Path 2 ((×2,×3) effective equidistribution) — no applicable theorem; it IS Mahler.** Furstenberg/Rudolph/
+Host/BLMV are about **invariant measures / a.e. points**. The specific orbit `{(3/2)ⁿ}` furnishes **no
+(×2,×3)-invariant positive-entropy measure** (a single trajectory has zero entropy; its closure is not
+`×2`/`×3`-invariant in any usable way), so rigidity cannot bite. Equidistributing the specific orbit IS
+Mahler's 1968 problem — no unconditional theorem applies. Same wall as path 1.
+
+## F. Verdict (honest)
+The two highest-probability routes to the complete proof both **converge to the identical world-open kernel**:
+specific-orbit equidistribution of a `2^a/3^b` orbit (= Mahler-3/2 / Erdős-ternary / the unified diagonal
+digit). Path 1 produced the **cleanest reduction the programme has** (renewal map, iid jumps, one-sided
+averaged target) but cannot break the circularity; path 2 has **no applicable unconditional theorem**. There
+is **no in-session route to an unconditional complete proof** — it requires resolving a ~50-year-open problem.
+This is the genuine mathematical frontier, now reached and documented, with `0` decisions and `0` false proofs.
