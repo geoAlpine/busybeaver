@@ -288,3 +288,26 @@ templates (two-counter / single-defect) × two width-envelopes (geometric / sawt
 same irregular geometric (`2^a/3^b`, Mahler/Collatz) content. The named open kernels are unchanged:
 **Mahler 3/2** (two-counter family) and **Erdős ternary-digits-of-2^n / Mahler 8·3⁻¹,4·3⁻¹** (the 8/3,4/3
 core). Stage 1 (the complete catalogue) is a FINISHED artifact. No decision; soundness intact.
+
+## o15 — characterized + Erdős cluster {o5, o15, o18} CLOSED (2026-06-24)
+Reverse-engineered o15 (`1RB---_0RC0RE_1RD1RF_1LE0LB_1RC0LD_1RC1RA`) against the raw TM (`o15_orbit.py`).
+**Structure:** `1^V 0 (10)^m` — a leading **counter block** `1^V` over a `(10)*` background; **halt = state A
+reads 1** at the right frontier (collision). Symmetric to o18 (o18 = left-frontier F-collision over a clean
+`0 1^{N-1}`; o15 = right-frontier A-collision over `1^V 0 (10)*`).
+- **Width grows cleanly ×8/3** [VERIFIED]: milestone widths `19,40,108,290,773,2060,5493,14634`, ratios →
+  **2.667 = 8/3** (= 2³/3, Mahler/Erdős). Same multiplier as o18.
+- **Counter V is parity-irregular** [VERIFIED — the distinguishing feature]: `V = 6,39,107,289,6,2059,6,3`
+  — the big block intermittently **splits/reforms** (e.g. config `1^6 0 1^232`, `1^6 0 1^4460`), so there
+  is **NO clean scalar map for V** (unlike o18's clean `⌊8N/3⌋+2` width law). This is the "genuine parity
+  defect" flagged earlier — o15 is the *harder-to-model* 8/3 partner.
+- **Halt predicate** [same family/wall as o18]: o15 halts ⟺ state A's right-frontier read ever hits a 1 =
+  a base-3 carry of the ×(8/3) counter aligns with the A-sweep collision point. Verified: 9 milestones, A
+  read 0 every time (no halt). Same Erdős ternary-digit / deterministic-alignment wall; no unconditional tool.
+
+### ERDŐS CLUSTER CLOSED: {o5 (4/3), o15 (8/3), o18 (8/3)}
+All three are `×2^a/3` Mahler maps whose halting is a **base-3-carry-alignment of an exponentially-growing
+orbit with a moving frontier** — the Erdős ternary-digits-of-`2^{a·k}` family. o18 has the clean width law
+`⌊8N/3⌋+2` (breaks at epoch 7 via a carry); o15 is parity-irregular (no clean map); o5 is the 4/3 case
+(`CRYPTID_REDUCTIONS.md` o5 note). **All share one wall** (deterministic base-3 alignment; Narkiewicz gives
+only a density upper bound). Deciding any one unconditionally requires the Erdős-class breakthrough; deciding
+the cluster decides 3 cryptids at once. Cluster fully characterized; no decision; soundness intact.
