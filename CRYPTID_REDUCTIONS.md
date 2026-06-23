@@ -179,3 +179,23 @@ zero new families. Of the 19, **8 are now reduced and they occupy just 2 number-
 3/2; Erdős ternary-digits-of-2^m). The "~2 families" hypothesis is gaining support — if it holds for the
 remaining slow-width machines, **BB(6)'s open core ≈ two named problems** (the 2-adic distribution of
 `(3/2)^n`, and the base-3 digits of powers of 2), a dramatically cleaner picture than 19 separate problems.
+
+## TIER-1 REDUCTION 2026-06-24 — o4 = polynomial-time defect machine (THIRD type; breaks ~2-family; decision LEAD)
+`o4 = 1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---`, halt = state F reads 1 (F entered via `B:1→1RF`).
+- **NOT exponential/Mahler — it is POLYNOMIAL-TIME [VERIFIED].** `width ~ 1.44·√t` (w/√t = 1.85→1.63→1.51
+  →1.47→1.45→1.44 at t=10^4..3·10^7), i.e. **time ~ width²** (quadratic). A different class from the
+  exponential Mahler cryptids. **So the ~2-family hypothesis is FALSE — o4 is a third structural type.**
+- **Mechanism [VERIFIED]:** the tape is a `(10)*` sea carrying a **single defect** (a `11`-block), which
+  appears at only ~7 of millions of milestones. The defect drifts rightward toward the boundary. Halt ⟺
+  the `B→F` head reads the defect `11` at the right boundary. Non-halt ⟺ the defect never reaches it.
+- **The key quantity — the GAP (boundary − defect position) is monotone increasing [OBSERVED]:** defect
+  events give gap `= 21,27,37,63,77,111,129` (widths 33,55,97,267,569,2203,5101; times 232..1.4·10^7). The
+  gap grows, so the defect stays away from the boundary — empirically non-halting.
+- **DECISION LEAD [the most promising of all 19]:** unlike the exponential cryptids, o4 is polynomial-time
+  with a **monotone gap**. **If "gap is always increasing" (or bounded below by a positive growing
+  function) can be PROVEN from the defect dynamics, o4 is decided non-halting = a real BB(6) holdout
+  settled.** The defect event-timing is irregular (ratios 2.9–17.9), so it is not a trivial bouncer, but
+  polynomial time + monotone gap is far closer to a provable invariant than any Mahler machine. **Flag for a
+  focused Tier-3 decision attempt.**
+- **Status:** [REDUCED — third type: polynomial-time single-defect; non-halt ⟺ gap stays positive]. Not
+  yet decided (gap-monotonicity unproven); the most tractable decision target found. No decision claimed.

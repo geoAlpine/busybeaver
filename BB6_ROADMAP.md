@@ -80,3 +80,12 @@ one-sided density bound) is real progress short of the full prize.
 
 **Next concrete action:** Tier 1, machine `o16` (`1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE`) — moderate size. Run the pipeline; does it
 stay in {Mahler 3/2, Erdős ternary} or open a new family?
+
+## Note 2026-06-24 — batch auto-reduction of the remaining 9 slow-width cryptids was UNRELIABLE
+Attempted to batch-classify Space Needle, o2,o3,o4,o11,o12,o13,o14,o16 by automated multiplier detection.
+Two epoch-detection methods (width-jump vs time-gap) DISAGREED (e.g. Space Needle 8/3 vs 16/9), due to
+per-machine epoch-structure variation + nesting (o8/o10-type) + threshold sensitivity. **No confident
+family assignments from automation.** Weak evidence only: all detected multipliers fall in the `2^a/3^b`
+Mahler range (1.3–2.7) with NO exotic/non-Mahler structure — consistent with the ~2-family hypothesis but
+not a confirmation. **Decision: hand-reduce the remaining 9 one at a time (the reliable o5/o7/o8 method).**
+No noisy multiplier recorded as a fact (soundness discipline).
