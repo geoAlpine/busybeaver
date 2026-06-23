@@ -275,6 +275,33 @@ genuinely new, verified arithmetic — and pins the wall to a precise bit-positi
   and not reachable by re-encoding. (Soundness note: an intermediate buggy script "verified" a false target;
   re-checked with consistent moduli and traced to `Ψ=3·id` — no false claim recorded.)
 
+### 4g. Targeted literature attack #2 (2026-06-23, deep-research, sum-product / digit / anti-concentration toolset) — the gap is a REGIME, named precisely
+A second, *different* literature sweep (the first, §4b, was Mahler/`(3/2)ⁿ`; this one is sum-product /
+exponential-sum / digit-sum / carry anti-concentration). Verdict (high confidence, 100-agent adversarial):
+**still unconditionally OPEN — and the obstruction is now named as a precise *regime mismatch*.**
+- **Sum-product / exponential sums (Bourgain–Konyagin, Bourgain–Glibichuk–Konyagin, Bourgain–Chang,
+  Kurlberg).** These bound `|Σ_{x∈H} e(ax/q)|` for a multiplicative subgroup `H` of a **fixed** modulus,
+  and require `H` to be **polynomially large**: `|H| ≥ q^δ`. Antihydra needs the carry-bit `~n` of
+  `{3^j mod 2^k}` with `k ~ cn` **moving**, where the orbit has size `~n ~ log₂ q` — **logarithmic in the
+  modulus, exponentially below the `q^δ` threshold.** So the *right kind of tool* (2,3 multiplicative
+  independence ⇒ mixing) **provably does not reach this regime.** (Vandehey/Korobov differencing: same —
+  fixed modulus, growing `N`; nontrivial only for `N ≥ exp(log q/log₂log q)`, never `N ~ log q`.)
+- **Closest result, exactly the right shape — but for the wrong object.** Ridout / the Schmidt **Subspace
+  Theorem** gives, for a **fixed algebraic irrational**, maximal 0-block at position `n` of length
+  `ℓ(n) = o(n)` — precisely "depth `= o(n)`"! **Gap:** it applies to the digits of *one fixed* algebraic
+  real, not to the *moving sequence of distinct integers* `c_n = ⌊…(3/2)ⁿ⌋`; no single algebraic number's
+  base-2 digits encode Antihydra's moving carry-bit.
+- **Digit-sum literature (Spiegelhofer; Drmota–Spiegelhofer 2025, arXiv:2501.00850)** is about digit sums
+  of *generic* integers `n`, giving existence/density-of-range only — no anti-concentration, no run-length,
+  no statement about digits of `3ⁿ`. **Carry-propagation anti-concentration (Izsák–Pippenger)** is
+  average-case over random input — does not transfer to the deterministic `3ⁿ`.
+- **What a proof would need (now precise).** Either (a) sum-product / mixing estimates in the **log-size
+  subgroup / moving-modulus regime** — a recognized hard frontier of analytic number theory with *no*
+  unconditional results — or (b) a way to realize Antihydra's moving carry-bit as the digits of a single
+  algebraic-type object, so the Subspace Theorem applies. **The summit sits exactly behind these two named
+  frontiers.** Community status (bbchallenge/Stérin–Woods/sligocki): non-halting rests *only* on the
+  random-walk heuristic; connected *analogically* (not by proven reduction) to Mahler's 3/2 — itself open.
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
