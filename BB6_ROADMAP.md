@@ -69,7 +69,11 @@ one-sided density bound) is real progress short of the full prize.
 ## Tier-1 progress log
 - **o5 — DONE (2026-06-24):** reduced to **Mahler 4/3 = 2²/3** → Erdős ternary-digits-of-2^{2n} family (joins
   o15/o18). Tape `(10)^k` + moving `11`-defect; width `×4/3` per major epoch; halt = defect digit/carry
-  event. See `CRYPTID_REDUCTIONS.md` Tier-1 entry. Catalogue: Erdős cluster now {o5, o15, o18}.
+  event. Catalogue: Erdős cluster now {o5, o15, o18}.
+- **o7 — DONE (2026-06-24):** reduced to **Mahler 3/2** (the Antihydra family: Antihydra, o10-inner, o7).
+  Two-counter `1^a 0 1^b`; width `×3/2` per clean epoch (ratios → 1.500).
+- **PATTERN (after o5, o7):** both new reductions joined EXISTING families — no new family. The 19 cryptids
+  may cluster into just ~2 named problems (Mahler 3/2, Erdős ternary-digits-of-2^m). Continue to test it.
 
-**Next concrete action:** Tier 1, machine `o8` (`1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE`) — 34 milestones. Run the pipeline; produce o8's reduction.
-next-fastest. Run the per-cryptid pipeline; produce `o7`'s reduction (which family does it join?).
+**Next concrete action:** Tier 1, machine `o8` (`1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE`) — 34 milestones.
+Run the pipeline; produce o8's reduction (does it join Mahler 3/2 / Erdős, or open a new family?).
