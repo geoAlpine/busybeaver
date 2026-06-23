@@ -80,3 +80,27 @@ achieved**: an exact `ℤ₂` endomorphism whose only obstruction is the seed's 
 **dynamical picture** (residence time near the odd-trap `c≡1`, bounded by growth). The remaining gap is one
 crisp statement: *the deterministic orbit cannot stay `≡1 mod 2^k` for linearly-many steps* — still open,
 still equivalent to the core, but now sharply dynamical. No decision; soundness intact.
+
+## 7. RE-ANALYSIS — the depth is a renewal process (proven countdown + geometric jumps) (2026-06-24)
+Measuring the depth drift `E[d_{n+1}−d_n | d_n]` exposed an exact, partly-PROVEN structure that is the
+sharpest form of the kernel.
+- **[PROVEN] When `d_n = v2(c_n−1) ≥ 1`, the depth decreases by exactly 1.** Then `c_n` is odd, so
+  `c_{n+1}−1 = (3c_n−1)/2 − 1 = 3(c_n−1)/2`, giving `v2(c_{n+1}−1) = v2(c_n−1) − 1`. Verified: across
+  `d=1..11`, `E[Δd] = −1.0000`, `P(Δd≥0)=0.000` (no exceptions in 3×10⁵ steps). The depth never rises while
+  positive — it counts straight down.
+- **[the only randomness] At `d_n=0` (`c_n` even `=2c'`), the depth JUMPS to `D = v2(3c'−1)`,** which is
+  geometric: `P(D≥k) = P(c' ≡ 3⁻¹ mod 2^k) = 2^{−k}` (verified: `P(d≥k)=2^{−k}` to 5 digits, k≤14).
+- **So the depth is a RENEWAL process:** deterministic countdown `D, D−1, …, 1, 0` then a fresh geometric
+  jump `D'` at the next even-step. The peaks are exactly the jump heights `D_j = v2(3c'_j−1)` at even-steps.
+- **Sharpest reductions [equivalent to non-halt]:**
+  - `depth = o(n)` (non-halt) ⟺ `max_{j} D_j = o(n)` ⟺ the jump heights `D_j = v2(3c'_j − 1)` have no
+    heavy tail ⟺ the even-step values `c'_j = c_n/2` **equidistribute mod 2^k** (`c'_j ≡ 3⁻¹ mod 2^k` has
+    density `2^{−k}`).
+  - even-density `> 1/3` ⟺ **average jump height `< 2`** (true value `E[D]=1`); a *one-sided, averaged*
+    target, strictly weaker than full equidistribution.
+- **New concrete direction:** attack the **first-return-to-even induced map** `F(c'_j) → c'_{j+1}` (collapse
+  each deterministic countdown into one step). The whole problem is the distribution of `v2(3c'_j−1)` under
+  `F`; `F` may have cleaner structure than the raw orbit. The renewal form also makes the **odd-trap** exact:
+  a long odd-run = a large jump `D_j` = `c'_j ≡ 3⁻¹ mod 2^{D_j}`, and growth (`c'_j→∞`) forbids `c'_j` being
+  the *fixed* 2-adic point `3⁻¹` — so the open kernel is "the even-subsequence `c'_j` does not approach `3⁻¹`
+  2-adically too fast." This is the cleanest single statement the programme has produced.
