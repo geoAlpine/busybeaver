@@ -218,6 +218,28 @@ wall pinned to a single constant.
   real unconditional ceiling, but the final pitch — `depth = o(n)` / the `0.585`-to-`0.5` gap — remains the
   irreducible analytic core. **This is the sharpest statement of exactly what a proof must supply.**
 
+### 4e. The renewal route (the most promising remaining handle) — and why it too needs the 2-adic recurrence
+The Φ-walk (§4c) drops by `(L′−2)` when a depth-`L′` run starts, then drifts `+½` per step. **Renewal
+structure (measured):** distinct depth-`≥L` runs are separated by `mean ~2^L` steps (depth must be
+re-manufactured from scratch after §3c's descent burns it off), and the **minimum inter-run separation is
+`≳ L`** (`L=4→5, 6→7, 8→9, 10→21, 12→451`). So a rare large drop `(L′−2)` is followed by `~2^{L′}` steps of
+`+½` drift — recovery `~2^{L′−1} ≫ L′` — i.e. Φ is a walk whose **down-jumps are exponentially rare in
+their own size**. This is the cleanest "why it never halts" structure: a renewal/supermartingale where big
+drops can't accumulate because each is preceded by exponential build-up.
+- **What a proof needs:** an *unconditional lower bound on the inter-run separation* — that depth `≥L`
+  recurs only every `≥ c·L` (even linear would help) — equivalently that the orbit's low `L` bits return to
+  residue `1 (mod 2^L)` no faster than `~L` steps. **This is a 2-adic recurrence-time lower bound for the
+  iterated orbit** — the same open equidistribution, now in renewal dress. Measured min-separation `~L` is
+  even borderline (drift recovers `~L/2 < L′` per separation), so the renewal needs the *mean/typical*
+  `~2^L`, not just the min — i.e. the full distribution, not a worst-case bound.
+- **Honest verdict.** Every concrete handle — depth-ceiling (§4d), Φ-walk (§4c), renewal (§4e),
+  self-reference, exponential sums, multiplicative structure, literature (§4b) — **provably reduces to the
+  same object: the 2-adic equidistribution / recurrence of the iterated orbit `c_{n+1}=⌊3c_n/2⌋`.** The
+  structural shortcuts are no-go'd (§4a′); the analytic core is genuine open number theory (Mahler-class).
+  The summit is **open, not impossible**, now mapped to a single precise statement (`depth = o(n)`, the
+  `0.585`-vs-`0.5` gap) with the renewal structure as the most promising line of future attack — but
+  closing it requires a real breakthrough on the 2-adic recurrence that is not in reach of this analysis.
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
