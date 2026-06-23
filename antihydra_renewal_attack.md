@@ -51,3 +51,32 @@ a blank wall.
 - This reframes the path: **the complete proof's Antihydra-cluster kernel is a 2-adic shift-renewal closure**,
   materially more promising than the bare Mahler-3/2 equidistribution (which has no mixing mechanism). The
   same shift structure applies to every two-counter / `⌊·/2⌋`-using cryptid. No decision; soundness intact.
+
+## 6. Attacking the bootstrap closure — honest result (2026-06-24)
+Pushed hard on closing the self-reference (`bootstrap.py`, `minmeancycle.py`, `oddtrap.py`). Outcome: the
+closure does **NOT** become unconditional, but the attack produced real structure and a weakened target.
+- **[RIGOROUS, new] `T(x)=⌊3x/2⌋` is a measure-preserving 2-to-1 EXACT endomorphism of `ℤ₂`** (verified:
+  every residue mod `2^k` has *exactly* 2 preimages; each branch `x=(2y+ε)/3` contracts 2-adic measure by
+  `½`). So Haar-a.e. orbit equidistributes — the difficulty is purely that the seed `8` lives in `ℤ` (Haar-
+  null), the same a.e.-vs-specific wall, now in its cleanest form.
+- **[WEAKENED TARGET] even-density `>1/3` is robust to incoming-bit BIAS.** With iid Bernoulli(`q`) incoming
+  bits the stationary even-density exceeds `1/3` for **all `q∈[0.01,0.99]`** (q=.01→.774, .5→.500, .99→.381).
+  So the closure needs only **balanced + decorrelated** incoming bits, *not* full uniformity — a materially
+  weaker sufficient condition than "the digit is exactly `½`".
+- **[OBSTRUCTION, honest] low-bit mixing ALONE is insufficient.** The adversarial minimum even-density over
+  *all* incoming-bit sequences is **`0`** (min-mean-cycle, k=4..10): correlated incoming bits *can* drive the
+  model all-odd. So non-halt genuinely requires the incoming bits to be **non-adversarial**.
+- **[DYNAMICAL MEANING] the adversarial trap = the orbit staying `c ≡ 1 mod 2^k` = the "odd-trap".** Verified
+  exactly: every odd-run has length `= v2(c_start − 1)`, so `depth_n = v2(c_n−1)` is the **distance from the
+  odd-trap** `c≡1`. The real orbit's **growth** (`c_n→∞`) forbids *permanent* trapping (staying `≡1 mod 2^k`
+  forever forces `c=1`); **non-halt ⟺ residence near the trap is `o(n)`** — which is exactly the original
+  `depth=o(n)`. The incoming bits that would realise the trap are the orbit's own high bits, so the closure
+  is **self-contained and equivalent to the original kernel** (no external randomness escapes it).
+
+**Verdict of the closure attack.** The bootstrap is **equivalent to `depth=o(n)`** (hence to Mahler /
+`S_n` 2-adic equidistribution) — it does not break the circularity. But it is the **cleanest framing
+achieved**: an exact `ℤ₂` endomorphism whose only obstruction is the seed's non-exceptionality, with a
+**weakened sufficient condition** (balanced+decorrelated incoming bits, not uniform) and a concrete
+**dynamical picture** (residence time near the odd-trap `c≡1`, bounded by growth). The remaining gap is one
+crisp statement: *the deterministic orbit cannot stay `≡1 mod 2^k` for linearly-many steps* — still open,
+still equivalent to the core, but now sharply dynamical. No decision; soundness intact.
