@@ -53,3 +53,18 @@ o15 is Mahler-8/3 but parity-irregular (no clean map). See `CRYPTID_REDUCTIONS.m
 - **[done]** census built + reproducible (`cryptid_census.py`); frontier shown heterogeneous.
 - **[next, achievable]** apply the §3c exact-reduction to the Collatz core (o10/o15/o17/o18) → catalogue.
 - **[open]** everything those reductions land on (Collatz-hard) + the hierarchy [OPEN] top.
+
+## UPDATE 2026-06-23 — the deferred slow-width 15 were attacked at depth: all genuinely hard
+The slow-width majority (Space Needle, o2,o3,o4,o5,o7,o8,o11,o12,o13,o14,o16) — deferred above as "needs
+per-machine analysis" — were given a real shot (the one untried route to deciding an actual BB(6) holdout):
+- **GENEROUS sound-suite sweep, all HOLDOUT:** translated-cycler (time 3M, space 300k), single/word/wall
+  bouncers (200k steps, 20k macro), FAR (Ns≤12000, ks≤6), CEGAR (120 rounds), halt-segment (W=24). Far
+  larger parameters than the defaults — none decided.
+- **Deep characterization (1.5M steps): all IRREGULAR.** Even o13 (tagged "~LINEAR width") has genuinely
+  irregular *content*: its block-vector reconfigures complexly ([1]→[3]→[1,3]→[6]→[4,3]→[2,6]→[9]→
+  [2,1,1,1,1,1]→[10,4]→…), block count and lengths jumping — a bouncer-shaped envelope with Collatz-like
+  content, which is why bouncer/FAR methods correctly hold out.
+**Conclusion:** the slow-width 15 are not "missed by small parameters" — they are genuinely hard
+(community-recognized cryptids for good reason). Our toolset, generously applied + hand analysis, decides
+none. So **all 19 named cryptids are uniformly hard**; the one untried "decide a real holdout" route is now
+honestly closed (no decision; soundness intact).
