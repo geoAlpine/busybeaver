@@ -86,6 +86,25 @@ about to start, `P(L') = 2^{−(L'+1)}` empirically, mean `1`, so mean drift `+1
     *average-case* over random inputs. Stewart 1980: `#nonzero binary digits of 3^n ≳ log n/log log n`
     (a *count*, density→0, not a run-length / moving-bit statement).
 
+## 5b. Additional angles already evaluated (do NOT re-propose without resolving the stated obstruction)
+- **Markov-ization with a finite "carry state" (even non-stationary).** No finite stationary chain exists:
+  the depth/parity is provably **not** a function of any bounded window of recent parities (full-2-shift
+  no-go), and the carry-state determining `depth_n` grows like `depth_n ~ log n` (unbounded). A
+  non-stationary chain with growing state just re-describes the orbit; it yields a bound only if its
+  transition kernel has provable structure = the equidistribution. (Cleanest framing: bound the
+  **carry-chain length** of the `×3 + injection` process — connects to Izsák–Pippenger carry propagation,
+  but that is **average-case** over random inputs and does not transfer to the single deterministic orbit.)
+- **Transfer-operator / weighted-shift spectral analysis on ℤ₂.** Right framework, but by the no-go the
+  relevant operator is the **full-shift** (entropy `log 2`) operator; its spectral gap gives equidistribution
+  for **a.e. point / the Bernoulli invariant measure** = exactly the heuristic, **NOT** the specific orbit
+  from `8` (a measure-zero point, invisible to spectral/measure methods). Same obstruction that stops
+  Furstenberg/Rudolph rigidity from resolving Mahler.
+- **Kolmogorov incompressibility of `S_n` / the parity sequence.** False premise: the sequence is
+  **computable** (Kolmogorov complexity `O(log n)`), hence maximally **compressible**, not incompressible.
+  The real intuition ("too pseudorandom to conspire to halt") formalizes as **normality / pseudorandomness
+  of a specific computable sequence** — itself the open equidistribution (cf. normality of π), not capturable
+  by Kolmogorov complexity.
+
 ## 6. The precise question for you
 **Non-halting ⟺ `depth_n = v2(c_n − 1) = o(n)` for the iterated-floor orbit** `c_{n+1}=floor(3c_n/2)`,
 `c_0=8`, equivalently a one-sided lower bound `even-density(c_0,…,c_{n-1}) > 1/3` for all `n`,
