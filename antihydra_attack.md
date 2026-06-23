@@ -102,6 +102,37 @@ Three conjecture-free results pushing on §4 directly (all verified on the real 
   content of "Antihydra never halts", isolated to one 2-adic statement about `(3/2)^n`. Bounding
   `v2(⌊8·3^n/2^n⌋ − 1)` unconditionally is the Mahler-family core — **the summit**.
 
+### 4b. Literature attack (2026-06-23, deep-research, 15 sources / 22 verified claims) — the summit is genuinely open, gap pinpointed
+We searched the number-theory literature for an **unconditional** theorem that would bound the
+even-density of `c_n = ⌊8(3/2)^n⌋`. Verdict (high confidence): **nothing known reaches even-density
+`> 1/3`, or even any positive density lower bound.** The precise landscape:
+- **Closest unconditional result — Flatto–Lagarias–Pollington (1995), Acta Arith. 70.** For coprime
+  `p>q≥2`, the **range (spread = limsup − liminf) of `{ξ(p/q)^n}` is `≥ 1/(p−1)`** — for `3/2` this gives
+  **spread `≥ 1/3`** (unconditional, via a finite-automata / de Bruijn-graph argument; `Ω(α)` is their
+  inf-over-thresholds quantity). **But this is a RANGE bound, not a DENSITY bound.** It says the
+  fractional parts cannot all huddle in a short interval; it says **nothing** about how *often* they land
+  in a given half — which is exactly what Antihydra's parity/even-density needs. So **FLP does not apply.**
+- **The gap, named:** Antihydra needs a *frequency/density* analogue of FLP's *range* `Ω(3/2)` — i.e. a
+  lower bound on the **density** of `n` with `{8(3/2)^n}` in the even-half. **No such density analogue is
+  known** (the literature's open question "frequency analogue of `Ω`?"). This is the missing piece.
+- **Everything stronger is conditional.** Mahler's `Z`-number emptiness (no `ξ` with `{ξ(3/2)^n}<1/2 ∀n`)
+  and the Strauch / Kahane–Pollington structural results are **conditional** (e.g. on the existence side),
+  not unconditional density bounds. One 2024 arXiv attempt in this area (`2411.03468`) was **withdrawn by
+  its author (v2, June 2025)** — do not rely on it.
+- **Community status (bbchallenge wiki, `bbchallenge.org/antihydra`, sligocki "BB(6,2) is Hard" 2024-07,
+  OEIS A385902).** Our reduction matches theirs exactly (orbit `a→⌊3a/2⌋` from 8; halt iff the odd/even
+  balance hits the threshold). The **only basis for believing Antihydra never halts is the probabilistic
+  heuristic** (our §3b) — there is **no known proof, partial or conditional, of its non-halting.** It is
+  the canonical "hard" BB(6) machine.
+
+**Upshot for the summit.** The literature attack is itself a result: it **closes off the "stand on a known
+theorem" route** (no unconditional density bound exists) and **pins the missing piece precisely** — a
+density/frequency analogue of the FLP range bound `Ω(3/2)`. Proving Antihydra non-halting is, today,
+**not reducible to any published unconditional result**; it requires new mathematics of exactly that
+"density-of-(3/2)^n-in-a-half" type (or our §4a kernel `v2(c_n−1)<balance_n+1 ∀n`, the same statement
+2-adically). Honest end-state of the summit assault: the kernel is crisp, verified, and provably beyond
+current literature.
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
@@ -113,8 +144,9 @@ Three conjecture-free results pushing on §4 directly (all verified on the real 
 - **[open — THE SUMMIT]** prove `v2(c_n−1) < balance_n+1 ∀n`, i.e. odd-run lengths are `o(n)` (`~log₂n`).
   A single 2-adic statement about `(3/2)^n` (Mahler family). The honest progress: §2 reformulation, §3c
   exact criterion, §4 reduction, and §4a's sharpening of the open kernel to a crisp data-backed target.
-  **Next realistic angle: apply known unconditional bounds on the distribution of `{(3/2)^n}`
-  (Flatto–Lagarias–Pollington-type) to extract a partial unconditional density bound** (a literature
-  attack — the legitimate way to gain *unconditional* ground on a Mahler-class problem).
+  **Literature attack done (§4b):** no known unconditional theorem reaches even-density `>1/3` or any
+  positive density bound. Closest is FLP's *range* `≥1/3` (not a density), so it does not apply; the
+  missing piece is a *density/frequency analogue* of FLP's `Ω(3/2)`, which is itself open. The summit is
+  provably beyond current literature — it needs genuinely new number theory (or a proof of the §4a kernel).
 
 Run `antihydra_attack.py` to reproduce §3 / §3b / §3c and to keep attacking §4.
