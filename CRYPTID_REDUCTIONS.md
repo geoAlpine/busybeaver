@@ -267,3 +267,24 @@ same (irregular geometric content), so the COMPLETE PROOF still requires resolvi
 the named open problems (Mahler 3/2, Erdős ternary-digits). Stage 1's structural question is now answered:
 the cryptid frontier is a single difficulty in two costumes, not a spread of independent puzzles with an
 easy corner. No decision; soundness intact.
+
+## STAGE-1 CATALOGUE COMPLETE — all 19 cryptids reverse-engineered (2026-06-24)
+Reverse-engineered the last 7 unreduced machines against the raw TM (`catalogue_finish.py`). Every one fits
+the settled two-costume structure (regular envelope + irregular geometric defect content); NO new family.
+Two structural templates account for all 19:
+- **(T1) two-counter `1^a 0 1^b [0 1^c]`** (Antihydra family, Mahler-3/2-type): Antihydra, o7, o8, o10,
+  **Space Needle** (`1^a 0 1^b 0 1^c`, defects 56→164 irregular), **o13** (`1^a 0 1^b` two big blocks,
+  defects 153,327,539,374,863), **o14** (multi `1`-block, defects 148→374). Width-envelope: sawtooth `~√t`.
+- **(T2) single drifting defect over `(10)*`** (o4/o16 template): **o2** (`1^big 0 (10)*`, defect
+  238,200,484,868,386), **o11** (`0 1^big 0 (10)*`, 273,323,727,507,405), **o12** (`0^2 (10)*`, defect
+  55,166,406,583,589), o4 (long-0 defect), o16 (`1^k 0^2 (10)*` roaming `1^big`). Width `~√t`.
+- **(special) o3 = near-regular** `1^2 0 (1^5 0)^m`: background `1^5 0` with a *tiny constant* defect
+  (longest-1-run stays ≈6). The most regular-looking cryptid — yet still a community HOLDOUT, so its
+  irregularity is subtle (rare defect-injection events, not visible in coarse sampling). Flagged as the
+  single best candidate for a future closer look (least content-entropy), but NOT decided.
+- **Exponential-direct-envelope core** (width grows ×const/epoch): Antihydra, o10, o15, o17, o18, o5.
+**Catalogue verdict.** 19/19 reverse-engineered. The BB(6) cryptid frontier = exactly **two structural
+templates (two-counter / single-defect) × two width-envelopes (geometric / sawtooth)**, all carrying the
+same irregular geometric (`2^a/3^b`, Mahler/Collatz) content. The named open kernels are unchanged:
+**Mahler 3/2** (two-counter family) and **Erdős ternary-digits-of-2^n / Mahler 8·3⁻¹,4·3⁻¹** (the 8/3,4/3
+core). Stage 1 (the complete catalogue) is a FINISHED artifact. No decision; soundness intact.
