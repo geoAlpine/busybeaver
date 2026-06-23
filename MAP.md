@@ -2,6 +2,11 @@
 
 このファイルが現状の唯一の地図。数値は `suite.py` 実行で再現できる authoritative 値のみ。
 
+> **完全証明が何を要求するかの決定版 = `BB6_OPEN_CORE.md`**(2026-06-24 capstone)。
+> 全 19 cryptid を統一停止述語(`×2^a/3^b` 軌道の base-2/3 carry が可動 frontier と整列)に還元、
+> 相互還元不能な open クラスタ {Mahler 3/2, Erdős ternary, odometer} を特定。Antihydra と o18 は
+> Antihydra 級に精密化済(`antihydra_attack.md` §4, `o18_attack.md`)。机 decide 0、偽証明 0。
+
 ---
 
 ## 0. 目標と現在地(正直に)
