@@ -104,3 +104,20 @@ sharpest form of the kernel.
   a long odd-run = a large jump `D_j` = `c'_j ≡ 3⁻¹ mod 2^{D_j}`, and growth (`c'_j→∞`) forbids `c'_j` being
   the *fixed* 2-adic point `3⁻¹` — so the open kernel is "the even-subsequence `c'_j` does not approach `3⁻¹`
   2-adically too fast." This is the cleanest single statement the programme has produced.
+
+## 8. Path 1 (induced map / jump heights) — attacked, cleanest framing, wall intact (2026-06-24)
+Derived and verified the first-return-to-even induced map (`induced_map.py`, `path1_bookkeeping.py`):
+```
+F(c') = (3^D·u + 1)/2 ,   D = v2(3c'−1) ,  u = (3c'−1)/2^D (odd) ;   jump height = D.
+```
+- [VERIFIED] `F` reproduces the orbit's even-subsequence exactly; jump heights `D_j` are **iid-geometric**
+  (`P(D≥k)=2^{−k}` to 4 digits, mean `1.005 < 2`, consecutive autocorr `−0.003 ≈ 0`).
+- [the wall, demonstrated] **growth is parity-blind:** `log₂(c_n) = 0.58496·n + 3` (slope `=log₂(3/2)` to 5
+  digits) **independent of the parities**, so it yields *no* lower bound on even-density. The exact bookkeeping
+  `Σ_{i<j} D_i = n_j − j` is therefore a **tautology** (`avg jump < 2 ⟺ even-density > 1/3`).
+- [no drift to exploit] the centered partial sums `Σ(D_j − 1)` fluctuate like `√N` (random-walk; max `329` vs
+  `√N=316`) — **no supermartingale / conserved quantity** in the jump heights.
+**Conclusion:** path 1 produces the *cleanest possible framing* (renewal map `F`, iid-geometric jumps, exact
+bookkeeping) but does **not** break the circularity — proving `avg jump < 2` still requires the `c'_j mod 2^k`
+equidistribution, and neither growth (parity-blind) nor a drift (random-walk) gives an unconditional handle.
+The complete proof via this route needs the same specific-orbit equidistribution. No decision; soundness intact.
