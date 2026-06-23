@@ -115,3 +115,24 @@ carry, no clean scalar orbit) > o10 (two hard problems stacked). **No machine de
 open.** The honest gain: the BB(6) Collatz core is now mapped onto **two named number-theory problems**
 (Mahler 3/2 for Antihydra/o10; Erdős ternary-2ⁿ for o15/o18/o17), each missing the same *one-sided density
 lower bound*.
+
+## TIER-1 REDUCTION 2026-06-24 — o5 = Mahler 4/3 = 2²/3 (Erdős ternary family)
+First of the slow-width cryptids reduced (per `BB6_ROADMAP.md`). `o5 = 1RB0LB_1LC0RE_1LA1LD_0LC---_0RB0RF_1RE1RB`,
+halt = state D reads 1 (entered as `C:1→1LD`, then D reads the left cell = halt iff it is `1`).
+- **Mechanism [VERIFIED vs raw TM]:** the tape is a periodic background `(10)^k` carrying a small moving
+  **defect** (a `11`-block, occasionally `111`). The right-extreme-in-B milestone shows a near-clean
+  `(10)^k` of width `w` growing `+1` per step with **epoch jumps** (`+3,+4,+7,+9`) where the defect
+  interacts with the boundary. Halt ⟺ the `C→D` head reads the defect `11` in the lethal configuration
+  (the only `11` in the otherwise `(10)*` field).
+- **Multiplier [VERIFIED ~4/3 asymptotically]:** at major epochs the width grows by `×4/3` — major-epoch
+  widths `…,184,248,338,450,604,798,1063,1408,1872,2501,3325` have geometric-mean ratio `≈1.336 ≈ 4/3`
+  (per-epoch ratios oscillate `1.32–1.36` around `4/3`, the Mahler fluctuation). So `width ~ c·(4/3)^n`.
+- **Family:** `4/3 = 2²/3`, so `(4/3)^n = 2^{2n}/3^n` — the halting digit/carry event lives in the **base-3
+  digits of `2^{2n}`**, i.e. the **Erdős ternary-digits-of-powers-of-2 family** (same as o15/o18's `8/3 =
+  2³/3`). The jump alphabet `{3,4,7,9}` is the digit/carry sequence.
+- **Status:** [REDUCED to family + multiplier] like o15 (Mahler-8/3, no clean scalar map); the exact
+  digit-event halt criterion is not fully derived (the defect dynamics are intricate). [OPEN] — joins the
+  Erdős ternary family, which has Narkiewicz's unconditional upper bound but no lower bound (§see o15/o18).
+- **Catalogue update:** the BB(6) cryptid families are now {Mahler 3/2: Antihydra, o10-inner}, {Mahler 2^a/3
+  → Erdős ternary: o5 (4/3), o15, o18 (8/3)}, {base-3 odometer: o17}, {nested: o10}. **o5 consolidates the
+  Erdős cluster** (now 3 machines). No decision; soundness intact.
