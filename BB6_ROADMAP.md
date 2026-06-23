@@ -66,5 +66,10 @@ one-sided density bound) is real progress short of the full prize.
   short (the §4b/§4g-style regime analysis).
 - **Stretch (Tier 3):** crack the most tractable one.
 
-**Next concrete action:** Tier 1, machine `o5` (`1RB0LB_1LC0RE_1LA1LD_0LC---_0RB0RF_1RE1RB`) — fewest
-milestones, fastest to reverse-engineer. Run the per-cryptid pipeline; produce `o5`'s exact reduction.
+## Tier-1 progress log
+- **o5 — DONE (2026-06-24):** reduced to **Mahler 4/3 = 2²/3** → Erdős ternary-digits-of-2^{2n} family (joins
+  o15/o18). Tape `(10)^k` + moving `11`-defect; width `×4/3` per major epoch; halt = defect digit/carry
+  event. See `CRYPTID_REDUCTIONS.md` Tier-1 entry. Catalogue: Erdős cluster now {o5, o15, o18}.
+
+**Next concrete action:** Tier 1, machine `o7` (`1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`) — 28 milestones,
+next-fastest. Run the per-cryptid pipeline; produce `o7`'s reduction (which family does it join?).
