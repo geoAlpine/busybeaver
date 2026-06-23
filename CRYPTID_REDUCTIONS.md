@@ -136,3 +136,25 @@ halt = state D reads 1 (entered as `C:1→1LD`, then D reads the left cell = hal
 - **Catalogue update:** the BB(6) cryptid families are now {Mahler 3/2: Antihydra, o10-inner}, {Mahler 2^a/3
   → Erdős ternary: o5 (4/3), o15, o18 (8/3)}, {base-3 odometer: o17}, {nested: o10}. **o5 consolidates the
   Erdős cluster** (now 3 machines). No decision; soundness intact.
+
+## TIER-1 REDUCTION 2026-06-24 — o7 = Mahler 3/2 (Antihydra family)
+Second slow-width cryptid reduced. `o7 = 1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`, halt = state F reads 0
+(F entered via `C:0→1LF`).
+- **Mechanism [VERIFIED vs raw TM]:** the tape is **two unary counters `1^a 0 1^b`** (same shape as
+  Antihydra). The R-extreme-in-C milestone sweeps `b→b−1, a→a+1` then, when `b` is small, **resets**
+  (`a→1`, `b→` a large value), exactly Antihydra's balance/Hydra two-counter pattern.
+- **Multiplier [VERIFIED 3/2]:** at clean resets `[1, b]` the width grows by `×3/2` — clean-reset widths
+  `…,319,479,719,1079,1619` have ratios `1.502, 1.501, 1.501, 1.500` → **3/2**. So `width ~ c·(3/2)^n`.
+- **Family: Mahler 3/2 — the Antihydra family** (Antihydra, o10-inner). Halting is a 2-adic digit/carry
+  event of the `(3/2)^n` orbit (the analogue of Antihydra's `v2(c_n−1) ≥ balance_n+1`).
+- **Status:** [REDUCED to family + multiplier]; exact 2-adic halt criterion not separately derived. [OPEN].
+
+### Catalogue convergence (after o5, o7)
+**Both newly-reduced slow-width cryptids joined EXISTING families — no new family appeared:**
+- **Mahler 3/2** (the Antihydra family): Antihydra, o10-inner, **o7**.
+- **Erdős ternary = `2^a/3` Mahler**: **o5** (4/3), o15, o18 (8/3).
+- **base-3 odometer**: o17. **nested**: o10.
+**Pattern [emerging, not proven]:** the 19 BB(6) cryptids appear to cluster into ~2 number-theory families
+(Mahler 3/2 and Erdős ternary-digits-of-2^m), not a sprawl of distinct problems. If this holds across the
+remaining 12 slow-width machines, "solving BB(6)" collapses to resolving ~2 named open problems — a far
+cleaner picture than "19 separate hard problems." Continue Tier-1 to test the pattern.

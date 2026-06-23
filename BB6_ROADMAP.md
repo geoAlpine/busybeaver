@@ -71,5 +71,5 @@ one-sided density bound) is real progress short of the full prize.
   o15/o18). Tape `(10)^k` + moving `11`-defect; width `×4/3` per major epoch; halt = defect digit/carry
   event. See `CRYPTID_REDUCTIONS.md` Tier-1 entry. Catalogue: Erdős cluster now {o5, o15, o18}.
 
-**Next concrete action:** Tier 1, machine `o7` (`1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`) — 28 milestones,
+**Next concrete action:** Tier 1, machine `o8` (`1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE`) — 34 milestones. Run the pipeline; produce o8's reduction.
 next-fastest. Run the per-cryptid pipeline; produce `o7`'s reduction (which family does it join?).
