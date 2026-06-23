@@ -195,6 +195,29 @@ prefix-vs-period gap), the Φ-walk (martingale, drift in expectation only), and 
 handle). The remaining content is irreducibly a one-sided 2-adic *equidistribution* statement about the
 iterated orbit — genuine open analytic number theory; the Φ-walk drift-positivity is its cleanest packaging.
 
+### 4d. The climbing route (2026-06-23) — summit ⟺ "depth = o(n)", wall located at `log₂(3/2) > ½`
+Not a structural shortcut (those are no-go'd) but the cleanest **route up the analytic face**, with the
+wall pinned to a single constant.
+- **[PROVEN, trivial-but-unconditional] depth ceiling.** `depth_n := v2(c_n−1) ≤ ⌊log₂ c_n⌋`, because
+  `2^{depth_n} | (c_n−1) < c_n`. Since `c_n ~ A·(3/2)ⁿ` (`A=7.864`), this is **`depth_n ≤ n·log₂(3/2) +
+  O(1) ≈ 0.585 n`** — the first *unconditional* upper bound on odd-run length (verified 0 violations to
+  `n=2·10⁵`).
+- **The halt threshold is `½ n`.** Halt needs `depth_n ≥ balance_n + 1` and `balance_n ~ ½ n`. So the
+  unconditional ceiling `0.585 n` sits **just above** the halt threshold `0.5 n` — the gap is exactly the
+  constant **`log₂(3/2) − ½ = 0.0849…`**. Counting alone *cannot* close it (`0.585 > 0.5`); this is the
+  same "danger only at the start" wall (§3b) now pinned to one number.
+- **Summit ⟺ a sublinearity statement.** Non-halting ⟺ **`depth_n = o(n)`** (odd-runs grow sub-linearly).
+  Unconditional: `depth_n ≤ 0.585 n` (linear). Empirical: `depth_n ~ log₂ n` (verified max `depth/n → 0`),
+  because **depth is "manufactured" slowly**: the first `n` reaching depth `L` is `first_n(L) ~ 2^L`
+  (measured: `L=10→2927, 15→54211, 20→67940`), so `depth_n ~ log₂ n ≪ n`. **The entire climb is closing
+  "linear ⟶ sub-linear"**, and the `2^L` manufacturing rate is the empirical reason it's logarithmic —
+  but proving it *is* the open 2-adic equidistribution of the orbit's low bits.
+- **Why no bootstrap (honest).** One cannot self-consistently bound balance from the depth bound: a
+  max-run bound `R` only forces even-density `≥ 1/(R+1)` (useless unless `R<2`), since density depends on
+  the run-length *distribution* (mean), not the max. So the route reframes the climb crisply and gives a
+  real unconditional ceiling, but the final pitch — `depth = o(n)` / the `0.585`-to-`0.5` gap — remains the
+  irreducible analytic core. **This is the sharpest statement of exactly what a proof must supply.**
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
