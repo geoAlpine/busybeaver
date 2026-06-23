@@ -181,25 +181,30 @@ So *extending the hierarchy reduces to exhibiting a check-`S`-machine for a set 
 complexity.* This is the engine behind (e) `S={2ⁿ}` and (f) `S={n²}`; it also streamlines (e)'s lower
 half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is impossible").
 
-- **(f) [PROVEN, conjecture-free — 2-automatic ⊊ arithmetic, fourth strict separation]** Witness **SQW**
-  (`sqw_machine.py`), the squares-analogue of POW2W: an explicit ~45-state / 8-symbol TM that **checks
-  "is a perfect square" every cycle**. Cycle-start `CS`; each cycle from `(CS,1^v)`: DUPLICATE, then
-  CHECK the copy by subtracting consecutive odds `1,3,5,…` (a square is `1+3+…+(2k−1)=k²`; exact 0 ⇒
+- **(f) [PROVEN, conjecture-free — context-free ⊊ context-sensitive, fourth strict separation]** Witness
+  **SQW** (`sqw_machine.py`), the squares-analogue of POW2W: an explicit ~45-state / 8-symbol TM that
+  **checks "is a perfect square" every cycle**. Cycle-start `CS`; each cycle from `(CS,1^v)`: DUPLICATE,
+  then CHECK the copy by subtracting consecutive odds `1,3,5,…` (a square is `1+3+…+(2k−1)=k²`; exact 0 ⇒
   `v=k²`, overshoot ⇒ HALT), then advance the original by `+(2k+1)` to `(CS, 1^{(k+1)²})`. Verified
   (sound gate, independently re-checked): from `(CS,1^1)` it runs forever visiting CS-milestones
   `1,4,9,16,…,100,…` (squares); `(CS,1^w)` HALTS for every non-square `w` (`w=1..100`, 0 mismatches);
   and every clean left-anchored block in any state (`CS`, `PASS_HOME2`) has square length (no trap).
   - By the Squeeze Lemma, every step-closed halt-free certificate has CS-value-set exactly `S = {n²}`.
-  - `{n²}` is **not 2-automatic** — the perfect squares are not recognised by a finite automaton in any
-    base (Minsky–Papert, *Unrecognizable sets of numbers*, JACM 1966). So **no 2-automatic certificate**.
-  - `{n²}` **is** decidable/arithmetic (`∃k. v=k·k`) and its base-2 language is context-sensitive (an LBA
-    checks perfect-squareness in linear space); the reachable set is `⟨ℕ,+,×⟩`-definable ("`v=k²` ∧
-    bounded progress"), so a certificate at the arithmetic/context-sensitive level exists.
-  - Therefore **`2-automatic ⊊ arithmetic` for non-halting certification**, with an explicit verified
-    witness — the fourth strict level. (Lower half airtight via Minsky–Papert; the gap to the named upper
-    class is larger here because Cobham–Semenov blocks the obvious valuation-based rung just above
-    2-automatic — adding `V₃` collapses back to semilinear — so the next *clean* describable class up is
-    the multiplicative/arithmetic one.)
+  - **`{n²}` is NOT context-free (base-2).** The base-`q` representation of the range of a polynomial is
+    context-free **iff the polynomial is linear** (answering a question of Shallit); `n²` is non-linear, so
+    `{base-2(n²)}` is **not context-free** — hence a fortiori **not 2-automatic** (not base-2 regular).
+    *(Ref: "The range of non-linear natural polynomials cannot be context-free", arXiv:1901.03913; proof
+    via the Interchange lemma + a generalised Pumping lemma. NB: the clean unary fact "`{1^{n²}}` not CF"
+    is weaker — it only gives `{n²} ∉` SLIN — because over a 1-letter alphabet CF = regular; the base-2
+    non-CF result is the one this rung needs, and it is genuinely stronger.)*  So **no context-free
+    certificate** (and none 2-automatic).
+  - **`{n²}` IS context-sensitive (base-2):** an LBA checks perfect-squareness in linear space (`⌊√v⌋²=v`).
+    The reachable set is `⟨ℕ,+,×⟩`-definable ("`v=k²` ∧ bounded progress"), so a context-sensitive (indeed
+    arithmetic) certificate exists.
+  - Therefore **`context-free ⊊ context-sensitive` for non-halting certification** (and `2-automatic ⊊ CS`),
+    with an explicit verified witness — placing `{n²}` strictly **above** the context-free rung (g, PALW
+    binary palindromes) and at the context-sensitive level. Combined with (e),(g) this gives the clean
+    Chomsky tower `2-automatic (= base-2 regular) ⊊ context-free (g) ⊊ context-sensitive (f) ⊊ arithmetic`.
 
 - **(g) [PROVEN, conjecture-free — 2-automatic ⊊ context-free, fifth strict separation]** Witness **PALW**
   (`palw_machine.py`), a check-S-every-cycle machine for `S = {n : base-2(n) is a palindrome}` (OEIS
@@ -223,18 +228,21 @@ half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is
     the mode-flag discipline is what preserves property (C). Lower half airtight; upper half via the same
     Squeeze-Lemma within-cycle-CF-definability argument as (e)/(f).
 
-### Standing summary — the hierarchy, with FIVE strict separations now PROVEN
+### Standing summary — the hierarchy, with FIVE strict separations now PROVEN (a clean linear Chomsky tower)
 ```
- k-window ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ context-free ⊊ … ⊊ arithmetic ⊆ … ⊆ beyond (Collatz)
-   └(d)parity┘ └(a)EQ┘ └(e)POW2W{2ⁿ}┘ └(g)PALW bin-palindromes┘ └(f)SQW{n²}┘  └(cryptids:OPEN)┘
+ k-window ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ context-free ⊊ context-sensitive ⊊ … ⊆ beyond (Collatz)
+   └(d)parity┘ └(a)EQ┘ └(e)POW2W{2ⁿ}┘ └(g)PALW palindromes┘ └(f)SQW{n²}┘        └(cryptids:OPEN)┘
 ```
 - **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
-- **[PROVEN, conjecture-free]** five strict levels, each with an explicit simulation-verified witness:
+- **[PROVEN, conjecture-free]** five strict separations forming a linear tower, each with an explicit
+  simulation-verified witness:
   **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), **SLIN ⊊ 2-automatic**
-  (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ context-free** (g, PALW, `S=`binary palindromes), and
-  **(context-free ⊊ …) ⊊ arithmetic** (f, SQW, `S={n²}`, via Minsky–Papert). Bricks (e),(f),(g) share
-  the **Squeeze Lemma**: certificate-complexity = descriptive complexity of the checked set `S`, so each
-  new rung is just a check-`S` witness for an `S` of the target class.
+  (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ context-free** (g, PALW, binary palindromes), **context-free ⊊
+  context-sensitive** (f, SQW, `S={n²}`, via arXiv:1901.03913 — non-linear-polynomial range not CF — + LBA).
+  Above 2-automatic this is exactly the **Chomsky tower on base-2 numeration languages**
+  (regular ⊊ CF ⊊ CS). Bricks (e),(f),(g) share the **Squeeze Lemma**: certificate-complexity = descriptive
+  complexity of the checked set `S`, so each new rung is just a check-`S` witness for an `S` of the target
+  class. **arithmetic ⊋ CS** is the next target (a witness whose base-2 language is arithmetic-but-not-CS).
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
