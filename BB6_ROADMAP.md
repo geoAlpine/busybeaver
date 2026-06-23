@@ -72,8 +72,11 @@ one-sided density bound) is real progress short of the full prize.
   event. Catalogue: Erdős cluster now {o5, o15, o18}.
 - **o7 — DONE (2026-06-24):** reduced to **Mahler 3/2** (the Antihydra family: Antihydra, o10-inner, o7).
   Two-counter `1^a 0 1^b`; width `×3/2` per clean epoch (ratios → 1.500).
-- **PATTERN (after o5, o7):** both new reductions joined EXISTING families — no new family. The 19 cryptids
-  may cluster into just ~2 named problems (Mahler 3/2, Erdős ternary-digits-of-2^m). Continue to test it.
+- **o8 — DONE (2026-06-24):** reduced to **Mahler 3/2 (nested, o10-type)** — Antihydra family. Two-counter
+  `1^a 0 1^b`; inner ×3/2 (clean run 33,49,73,109,163 → 1.5) inside a meta-epoch cycle.
+- **PATTERN (after o5, o7, o8):** both new reductions joined EXISTING families — no new family. The 19 cryptids
+  cluster into just ~2 named problems (Mahler 3/2, Erdős ternary). 3/3 new reductions joined existing
+  families; 8/19 reduced, 2 families. Continue to test across the remaining slow-width machines.
 
-**Next concrete action:** Tier 1, machine `o8` (`1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE`) — 34 milestones.
-Run the pipeline; produce o8's reduction (does it join Mahler 3/2 / Erdős, or open a new family?).
+**Next concrete action:** Tier 1, machine `o16` (`1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE`) — moderate size. Run the pipeline; does it
+stay in {Mahler 3/2, Erdős ternary} or open a new family?

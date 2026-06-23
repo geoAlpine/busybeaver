@@ -158,3 +158,24 @@ Second slow-width cryptid reduced. `o7 = 1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1
 (Mahler 3/2 and Erdős ternary-digits-of-2^m), not a sprawl of distinct problems. If this holds across the
 remaining 12 slow-width machines, "solving BB(6)" collapses to resolving ~2 named open problems — a far
 cleaner picture than "19 separate hard problems." Continue Tier-1 to test the pattern.
+
+## TIER-1 REDUCTION 2026-06-24 — o8 = Mahler 3/2, nested (Antihydra family)
+Third slow-width cryptid reduced. `o8 = 1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE`, halt = state F reads 0.
+- **Mechanism [VERIFIED vs raw TM]:** two unary counters `1^a 0 1^b` (Antihydra shape); sweep `b→b−1,
+  a→a+1` then reset.
+- **Multiplier [VERIFIED inner ×3/2]:** the clean-reset widths run `33,49,73,109,163` with ratios
+  `1.485, 1.490, 1.493, 1.495 → 3/2`. So the inner multiplier is **3/2**. But there are larger jumps
+  (e.g. `163→523 ≈ (3/2)^3`), i.e. a **nested / meta-epoch** structure (like o10): inner ×3/2 inside an
+  outer meta-cycle.
+- **Family: Mahler 3/2 (nested) — the Antihydra family.** [REDUCED to family + inner multiplier; the outer
+  meta-structure not fully derived, like o10.] [OPEN].
+
+### Catalogue convergence — 3/3 (o5, o7, o8 all joined existing families)
+- **Mahler 3/2** (Antihydra family): Antihydra, o10, **o7**, **o8** (4 machines).
+- **Erdős ternary = `2^a/3` Mahler**: **o5** (4/3), o15, o18 (8/3) (3 machines).
+- **base-3 odometer**: o17.
+**Strengthening pattern:** all three newly-reduced slow-width cryptids landed in the two existing families;
+zero new families. Of the 19, **8 are now reduced and they occupy just 2 number-theory families** (Mahler
+3/2; Erdős ternary-digits-of-2^m). The "~2 families" hypothesis is gaining support — if it holds for the
+remaining slow-width machines, **BB(6)'s open core ≈ two named problems** (the 2-adic distribution of
+`(3/2)^n`, and the base-3 digits of powers of 2), a dramatically cleaner picture than 19 separate problems.
