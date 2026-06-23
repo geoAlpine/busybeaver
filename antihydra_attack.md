@@ -263,6 +263,17 @@ genuinely new, verified arithmetic — and pins the wall to a precise bit-positi
   yet another (now very precise) dress: the structured part is `×3 mod 2^M`; the unstructured part is the
   carry into bit `n`. Honest: the tools built here *solve everything except the carry into bit n*, and that
   carry is the summit. (No machine decided; no non-halt claimed.)
+- **[PROVEN, verified] the 2-adic partial-sum direction is TAUTOLOGICAL — a dead end, now closed.** Define
+  the 2-adic functional `Ψ(c) = Σ_{j≥0, T^j(c) odd}(2/3)^j` (the `(2/3)`-sum over the orbit from `c`; it
+  converges since `|2/3|₂=½`). It satisfies `Ψ(c) = [c odd] + (2/3)Ψ(⌊3c/2⌋)`, and **`Ψ(c) = 3c` solves it
+  exactly** (check both parities) — so `Ψ ≡ 3·id`. Hence the "universal constant" `T_∞ = Ψ(8) = 24` is just
+  `3·8`, and the partial-sum reformulation `depth_n = v2(Ψ(c_n) − 3) = v2(3c_n − 3) = v2(c_n − 1)` **collapses
+  back to the definition**. The clean 2-adic verifications (`T_n ≡ 24 − 2ⁿ3^{1−n}`, 380 cases; `3κ ≡ 24`)
+  are all consequences of `Ψ=3·id`. **Verdict:** dressing the kernel in 2-adic partial sums adds no handle —
+  it is circular by an exact identity. The genuine new content of §4f is only the *archimedean* `κ` closed
+  form and the `×3` low-bit lemma; the depth/carry is untouched, confirming the wall is the equidistribution
+  and not reachable by re-encoding. (Soundness note: an intermediate buggy script "verified" a false target;
+  re-checked with consistent moduli and traced to `Ψ=3·id` — no false claim recorded.)
 
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
