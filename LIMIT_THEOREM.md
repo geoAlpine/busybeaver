@@ -242,7 +242,33 @@ half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is
   Above 2-automatic this is exactly the **Chomsky tower on base-2 numeration languages**
   (regular ⊊ CF ⊊ CS). Bricks (e),(f),(g) share the **Squeeze Lemma**: certificate-complexity = descriptive
   complexity of the checked set `S`, so each new rung is just a check-`S` witness for an `S` of the target
-  class. **arithmetic ⊋ CS** is the next target (a witness whose base-2 language is arithmetic-but-not-CS).
+  class. **arithmetic ⊋ CS** — see the ceiling analysis just below.
+
+### Above context-sensitive — where the explicit tower ends, and why (2026-06-23)
+Pushing past CS hits a *structural* boundary of the Squeeze method, worth stating precisely.
+- **The Squeeze witness forces `S` to be DECIDABLE.** A check-`S`-every-cycle machine must HALT from
+  `(CS,1^v)` for every `v∉S` — so membership in `S` is decided by a halting computation. Hence the
+  CS-value-set of *any* Squeeze witness is a **recursive (decidable)** set, and the reachable set is
+  recursive. So this method can witness separations only **up to the recursive ceiling**.
+- **`context-sensitive ⊊ recursive` [PROVEN, but the witness is non-explicit].** By the Space Hierarchy
+  Theorem `NSPACE(n) = CS ⊊ DSPACE(2ⁿ) ⊆ recursive`, there is a **decidable** set `S` whose base-2 language
+  is **not** context-sensitive (membership provably needs super-linear space in the bit-length). `S`
+  decidable ⇒ a check-`S` machine exists ⇒ by the Squeeze Lemma its certificate value-set is exactly `S ∉
+  CS`, so **no CS certificate**, while a recursive certificate exists. This is a genuine separation — but
+  unlike (e),(f),(g) its witness comes from diagonalization, **not an explicit simulation-verified TM**.
+  *So the explicit, machine-checked tower tops out at CS; above it the rungs hold by general principles but
+  lose the "small explicit witness" character that anchors the lower five.*
+- **`recursive ⊊ arithmetic` holds as classes but is NOT Squeeze-witnessable.** Arithmetic (`⟨ℕ,+,×⟩`-
+  definable) sets include undecidable ones, but a check-`S` machine with undecidable `S` would have a
+  non-halting check — forbidden. So our witness method cannot reach the undecidable part of arithmetic.
+- **Reframing — the cryptid top is a DIFFERENT axis.** The tower `REG ⊊ CF ⊊ CS ⊊ recursive` measures the
+  descriptive complexity of the **exact reachable set**. A cryptid's reachable value-set (e.g. Antihydra's
+  `{⌊8(3/2)ⁿ⌋}`) is itself *recursive* (even CS-ish — the orbit is computable), so the cryptid does **not**
+  sit high on this descriptive tower. The cryptid `[OPEN]` is on the **over-approximation axis**: does any
+  *halt-free* certificate `L ⊇ reachable` exist in a tame class? That is independent of how complex the
+  exact reachable set is — and it is the genuineness-limit barrier. **Climbing the descriptive tower does
+  not approach the cryptids; the two are orthogonal.** The clean explicit tower (regular⊊CF⊊CS) is the
+  *anchor*; the cryptid over-approximation gap is the *frontier*.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
