@@ -106,3 +106,43 @@ Probing the carry structure of `3ⁿ mod 2ⁿ` directly (`carry_b.py`, `koksma_b
   scale `1/N²`, defeating the large sieve.* This is the precise, measured content of "regime mismatch" — and
   it mirrors obstruction (a): generic/averaged methods succeed, the specific orbit is the open case. No
   theorem; the partial that exists (Koksma mean-square) is real but provably cannot be made pointwise here.
+
+## 9. Deep-dive on obstruction (a): the dynamical dissection — and (a) ≡ (b) UNIFIED (2026-06-24)
+Building the actual dynamics (`transfer_a.py`, `skew_a.py`, `adic_a.py`) resolves (a) to the same level as
+(b) — and reveals the two obstructions are **literally the same object**.
+- **The natural circle map HAS a spectral gap [computed].** `{(3/2)ⁿ}` is *almost* an orbit of the
+  β-transformation `T(x)=(3/2)x mod 1`. Its Perron–Frobenius (Ulam, K=3000) operator has leading eigenvalue
+  `1` and `|λ₂| = 0.730`: **spectral gap `0.27`, mixing time ≈ 3 steps.** The β-map is exponentially mixing,
+  so a.e. point under `T_β` equidistributes fast. *This is the generic tool that works* — the analogue of
+  (b)'s Koksma mean-square.
+- **But `{(3/2)ⁿ}` is NOT a `T_β` orbit [verified].** The exact recurrence is
+  `x_{n+1} = {(3/2)x_n + ε_n/2}` with a **carry** `ε_n = ⌊(3/2)ⁿ⌋ mod 2` (verified to reproduce the orbit).
+  The carry is `≠0` about half the time (0.524), so the orbit leaves the gap-bearing β-map constantly.
+- **THE UNIFICATION [verified]: `ε_n = bit_n(3ⁿ)`** — the carry of (a) is *exactly* the **diagonal bit** of
+  (b) (the `n`-th binary digit of `3ⁿ`, ` = ⌊(3/2)ⁿ⌋ mod 2`). So **obstruction (a) and obstruction (b) are
+  the same arithmetic object**, viewed dynamically vs arithmetically. The entire Mahler-3/2 problem is the
+  single sequence `ε_n = bit_n(3ⁿ)`; `ε_n` has near-full block entropy (ratio 0.99 — near-iid fair bits).
+- **Why no dynamical gap reaches it [the correct two-place picture, verified].** Split `×(3/2)` by the
+  product formula `|3/2|_∞·|3/2|_2·|3/2|_3 = (3/2)(2)(1/3) = 1`:
+  - **Real place** = the `T_β` map: **has a gap (0.27)** but is the projection that **discards the carry** —
+    it does not carry the bit information.
+  - **2-adic place** = `×3` on `ℤ₂`: since `|3|_2 = 1`, this is an **ISOMETRY** — zero entropy, **no spectral
+    gap**. Verified: every *fixed* 2-adic digit `bit_k(3ⁿ)` is **periodic in `n`** (period `2^{k-1}`: k=3→4,
+    k=5→16). This factor **carries all the bits** but, being an isometry, offers **no mixing to exploit**.
+  - `bit_n(3ⁿ)` is the **diagonal read** of the zero-entropy 2-adic isometry at the *moving* position `n`:
+    the bit-bearing factor has only periodic (rigid) structure, and reading it diagonally is precisely where
+    that rigidity gives no help. The one mixing factor (real β-map) is bit-blind.
+
+## 10. Unified verdict — Mahler-3/2 = equidistribution of the single diagonal bit `bit_n(3ⁿ)`
+Both obstructions collapse to one crisp kernel:
+> **Antihydra non-halting / Mahler-3/2 ⟺ the diagonal bit sequence `ε_n = bit_n(3ⁿ) = ⌊(3/2)ⁿ⌋ mod 2`
+> equidistributes (density of 1s `→ ½` with enough independence that `Eₙ/n > 1/3`).**
+- (b) arithmetic face: `ε_n` is the **diagonal** of the 2-parameter family `3ᵃ mod 2ᵇ`, whose **rows are
+  exactly equidistributed** (off-diagonal complete sums `= 0`) — diagonal extraction is the open case.
+- (a) dynamical face: `ε_n` is the **diagonal read** of the **zero-entropy 2-adic isometry** `×3`, whose
+  **fixed coordinates are periodic** — the moving diagonal is the open case; the only spectral gap lives in
+  the bit-blind real factor.
+Each available tool (Koksma mean-square; β-map spectral gap; row-equidistribution; fixed-digit periodicity)
+controls a **generic/averaged/fixed** slice perfectly, and **all fail identically on the specific diagonal**.
+That single failure — extract/equidistribute the diagonal bit `bit_n(3ⁿ)` — IS Mahler's 3/2 problem, now
+exhibited as one object with both faces measured. No theorem; the wall is one crisp, named, measured kernel.
