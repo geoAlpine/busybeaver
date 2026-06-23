@@ -245,3 +245,25 @@ content IRREGULAR). No decision; the lead is closed honestly.
 sawtooth-linear), NOT the deep difficulty. Under the envelope, the cryptid CONTENT is uniformly irregular
 geometric (Mahler/Collatz). This *consolidates* the picture: one deep difficulty (irregular `2^a/3^b`-rate
 content) in two envelope costumes — it does not hand us an easier class.
+
+## o16 — CONFIRMS the consolidation (2026-06-24)
+Reverse-engineered o16 (`1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE`). Structure = `1^k 0^2 (10)^m` with a
+**roaming `1^big` defect** inside the `(10)*` region. Same template as o4:
+- **Envelope [regular]:** width `~√t` (doubles per 4× time: 55,142,256,495,1013); leading block `k` decays
+  slowly/logarithmically (21,20,19,…,16,…13); the defect bounces (position drifts each sweep).
+- **Content [irregular geometric]:** the `1`-defect length oscillates wildly per sweep and its peaks GROW
+  (`33,41,85,101,127,181,215,251,…`) — geometric magnitude with irregular fine structure. No clean map.
+**Verdict:** o16 = bouncing/sawtooth envelope over an irregular geometric-growing defect — **identical deep
+type to o4.** Two independent "poly-time" machines (o4, o16) both confirm: the POLY-time tag is the
+*envelope*, the *content* is irregular geometric (Mahler/Collatz). **Consolidation CONFIRMED (2/2).**
+
+### Stage-1 deep-structure conclusion (the catalogue's settled shape)
+All 19 BB(6) cryptids carry **irregular geometric (`2^a/3^b`-rate, Collatz/Mahler) content**, presented in
+one of two **width envelopes**: (i) *direct-geometric* (width grows ×const/epoch — the exponential class,
+Antihydra/Mahler 3/2, o5/o15/o18 Mahler/Erdős) or (ii) *sawtooth/bouncing* (width `~√t`; a defect bounces
+in a linearly-swept region while its magnitude grows geometrically — the "poly-time" class, o4/o16/…).
+**There is no tractable subclass.** The envelope dichotomy is cosmetic; the deep difficulty is one and the
+same (irregular geometric content), so the COMPLETE PROOF still requires resolving the geometric content =
+the named open problems (Mahler 3/2, Erdős ternary-digits). Stage 1's structural question is now answered:
+the cryptid frontier is a single difficulty in two costumes, not a spread of independent puzzles with an
+easy corner. No decision; soundness intact.

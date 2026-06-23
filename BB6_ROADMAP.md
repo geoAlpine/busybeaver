@@ -78,8 +78,17 @@ one-sided density bound) is real progress short of the full prize.
   cluster into just ~2 named problems (Mahler 3/2, Erdős ternary). 3/3 new reductions joined existing
   families; 8/19 reduced, 2 families. Continue to test across the remaining slow-width machines.
 
-**Next concrete action:** Tier 1, machine `o16` (`1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE`) — moderate size. Run the pipeline; does it
-stay in {Mahler 3/2, Erdős ternary} or open a new family?
+- **GROWTH DICHOTOMY + o4 (2026-06-24):** classified all 19 by `w/√t` → POLY-time envelope (o2,o3,o4,o11,
+  o12,o13,o14,o16) vs EXPONENTIAL-Mahler (rest). Then deep-reduced **o4** and found the dichotomy is about
+  the **width ENVELOPE**, not difficulty: o4 = `(10)*`+long-0 defect; within-epoch −3 sawtooth (clean) but
+  epoch peaks `101,143,193,266,360,490,652` grow geometrically ~×1.36 (Mahler-class) with IRREGULAR fine
+  structure. **RETRACTED** the earlier "o4 = decision lead / monotone gap" (it was the −3 sawtooth misread
+  as a global invariant). Consolidation: under both envelopes the CONTENT is uniformly irregular geometric
+  (Mahler/Collatz). No easy class; no decision. (`CRYPTID_REDUCTIONS.md` o4 note.)
+
+**Next concrete action:** confirm the consolidation on a 2nd poly-time machine (`o16`
+`1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE`): does it too show sawtooth-envelope-over-geometric-content?
+If yes, Stage-1 deep structure is settled (one difficulty, irregular geometric content, two envelopes).
 
 ## Note 2026-06-24 — batch auto-reduction of the remaining 9 slow-width cryptids was UNRELIABLE
 Attempted to batch-classify Space Needle, o2,o3,o4,o11,o12,o13,o14,o16 by automated multiplier detection.
