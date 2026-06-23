@@ -72,3 +72,42 @@ tools fall short *in the same way*:
 BB(15), arXiv:2107.12475), and o18 supplies a clean orbit `⌊8N/3⌋+2`. The required result: *a base-3 carry
 of the `×(8/3)` orbit never aligns with the moving frontier* (a per-position, not density, ternary-digit
 statement). This is the single best entry point; it remains world-open.
+
+## 6. THE UNIFIED KERNEL — diagonal base-p digit equidistribution (2026-06-24)
+Porting the diagonal-bit dissection (`mahler_equidistribution_attack.md` §8–10) from the Mahler-3/2 cluster
+to the Erdős-8/3 cluster succeeds **identically** (`erdos_diag.py`, `erdos_beta.py`). Both clusters collapse
+to ONE principle. For a cluster with multiplier `2^a/3^b` (the `×3/2`, `×8/3`, `×4/3` machines), let `p` be
+the **shrinking base** (`p=2` for `3/2`; `p=3` for `8/3, 4/3`) and define the **diagonal base-`p` digit**
+```
+δ_n = ⌊(2^a/3^b)ⁿ⌋ mod p        ( = the n-th base-p digit of the numerator orbit )
+```
+**Claim (measured for both clusters): every cryptid cluster ⟺ the sequence `δ_n` equidistributes over
+`{0,…,p−1}`** (Mahler: `bit_n(3ⁿ)` over `{0,1}`, even-density `→½`; Erdős: `⌊(8/3)ⁿ⌋ mod 3` over `{0,1,2}`,
+and `δ_n = 2` is exactly **Erdős's digit-2**). Both show the **same four measured facts** and the **same
+two-faced wall**:
+
+| measured fact | Mahler 3/2 (p=2) | Erdős 8/3 (p=3) |
+|---|---|---|
+| diagonal digit `δ_n` distribution | balanced `0.4998` | uniform `0.336,0.343,0.320` |
+| `δ_n` autocorrelation | `≈0` | `≈0` |
+| **(b)** off-diagonal `\|Σ e(·/p^M)\|` (full row) | `=0` exactly | `=1` (i.e. `/√ord → 0`) |
+| **(a)** real β-map spectral gap | `0.27` (`\|λ₂\|=0.73`) | `0.60` (`\|λ₂\|=0.40`) |
+| **(a)** p-adic `×(2^a)` is an isometry → fixed digits **periodic in n** | period `2^{k-1}` ✓ | period `2·3^{k-1}` ✓ |
+
+**The single open kernel, both faces (identical across clusters):**
+- **(b) arithmetic face:** `δ_n` is the **diagonal** of the 2-parameter family `(2^a)ⁿ mod (3^b)^M`, whose
+  **rows are exactly equidistributed** (complete subgroup sums cancel). *Diagonal extraction is open.*
+- **(a) dynamical face:** the real β-map `x ↦ (2^a/3^b)x mod 1` is **exponentially mixing (has a gap)** but is
+  **digit-blind**; the digit-bearing factor (`×2^a` on `ℤ_p`, `|2^a|_p = 1`) is a **zero-entropy isometry**
+  with **periodic fixed digits**. `δ_n` reads that rigid isometry at the **moving diagonal position n** —
+  where periodicity gives no help and the mixing factor cannot see.
+
+**Consequence for BB(6).** The whole open core (§2) — Mahler-3/2 AND Erdős-ternary, hence Antihydra, o7, o8,
+o10, o5, o15, o18 — is **a single family of diagonal base-`p` digit-equidistribution problems**, each with the
+*identical* "generic/averaged/fixed slice is controlled, the specific diagonal is open" obstruction. This is
+the sharpest possible statement of what a BB(6) completion needs: **a method that equidistributes the diagonal
+digit `⌊(2^a/3^b)ⁿ⌋ mod p` of a single multiplicatively-defined orbit** — currently beyond every tool
+(spectral gap is digit-blind; the digit factor is a rigid isometry; the averaged bound has a measure-zero
+exceptional set; the orbit self-clusters at `1/N²` defeating the sieve). The base-3 odometer (o17) and the
+nested machine (o10) are the same `p`-adic-isometry phenomenon. **No decision; one crisp, measured, unified
+kernel.**
