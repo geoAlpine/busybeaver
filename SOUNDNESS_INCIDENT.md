@@ -123,3 +123,23 @@ sound for any m≥1 — the rigorous version of what the chain docstring always 
 the wsim level; in the `exps_valid` regime wsim matches the trusted sim cell-for-cell; full suite still
 **63/63, 0 false**, coverage held (stricter chain dropped a few word/wall proofs; `halt_segment`+FAR
 absorbed them). Both layers (root fix + concrete gate) are kept.
+
+## INCIDENT 3 (2026-06-23) — §4c conflated the iterated-floor orbit with ⌊8(3/2)^n⌋
+**What:** `antihydra_attack.md` §4c (and the prose "c_n = ⌊8(3/2)^n⌋" in §3b–§4b) identified the real
+Antihydra orbit with the closed form `⌊8·3^n/2^n⌋ = ⌊3^n/2^{n-3}⌋`, and built a `3^n mod 2^k` dyadic-window
+reformulation on it. **The real orbit is the ITERATED floor** `c_{n+1}=⌊3c_n/2⌋` from 8 (bbchallenge's
+definition), which **diverges at n=6** (`90` vs `91`) — the iterated floor loses a low bit each step.
+**Caught by:** a parallel fan-out agent (one of three on a number-theory attack), flagged as a correction.
+**Verified by me:** real orbit 8,12,18,27,40,60,90,135 vs ⌊8(3/2)^n⌋ …,60,91,136 diverge at n=6; §4c
+reformulation fails 12/31 on the real orbit, 0/31 on the closed form.
+**Blast radius — contained:** §3c (odd-run=v2(c-1)) re-verified on the real orbit (50034 runs, 0 fail);
+§3b/§4/§4a/§4a′/§4b were all COMPUTED on the iterated orbit (code `c=3*c//2`), so their RESULTS stand —
+only the closed-form identification in prose was wrong. Two parallel agents' `3^n mod 2^k` results
+(zero-block bridge, exponential-sum vanishing) were about the WRONG sequence `⌊3^n/2^{n-3}⌋` and were NOT
+recorded as Antihydra results.
+**Fix:** §4c retracted + rewritten around the corrected identity `2^n c_n = 8·3^n − S_n` (growth `A(3/2)^n`,
+A=8−κ≈7.864) and the Φ-potential (`Φ_n=balance_n−v2(c_n−1)`, frozen on odd-runs, +1 mean drift on even,
+HALT⟺Φ≤−1), both verified on the real orbit. The Mahler framing survives (still a (3/2)^n object).
+**Lesson:** even a "closed form" that matches for several terms (n≤5 here) can diverge; verify the
+identification against the actual machine, not just the first few values. The discipline held — caught
+and corrected before it propagated into a claimed result.

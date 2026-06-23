@@ -99,8 +99,9 @@ Three conjecture-free results pushing on §4 directly (all verified on the real 
   be `~8·(3/2^{3/2})^n = 8·(1.06)^n`, no contradiction) — so the gap is real but not closed by counting.
 - **Open kernel, now crisp:** prove **`v2(c_n − 1) < balance_n + 1` for all `n`** — equivalently
   **odd-run lengths grow sub-linearly** (`= o(n)`; empirically `~log₂ n`). This is the entire remaining
-  content of "Antihydra never halts", isolated to one 2-adic statement about `(3/2)^n`. Bounding
-  `v2(⌊8·3^n/2^n⌋ − 1)` unconditionally is the Mahler-family core — **the summit**.
+  content of "Antihydra never halts", isolated to one 2-adic statement about the iterated orbit
+  (`c_{n+1}=⌊3c_n/2⌋`, growth `~A(3/2)^n`, `A≈7.864`). Bounding `v2(c_n − 1)` unconditionally is the
+  Mahler-family core — **the summit**. *(NB: `c_n ≠ ⌊8(3/2)^n⌋` for `n≥6` — see §4c correction.)*
 
 ### 4a′. Transfer-operator NO-GO (2026-06-23) — [PROVEN, conjecture-free] the dynamics alone bound nothing
 A structural attack on the kernel, with a **proven negative**: no finite transfer operator / parity
@@ -152,22 +153,36 @@ density/frequency analogue of the FLP range bound `Ω(3/2)`. Proving Antihydra n
 2-adically). Honest end-state of the summit assault: the kernel is crisp, verified, and provably beyond
 current literature.
 
-### 4c. Point-specific attack (2026-06-23) — the kernel as a dyadic-interval hit of `3ⁿ mod 2ᵏ` [PROVEN reformulation]
-The §4a′ no-go says any proof must use the arithmetic of the specific point `c_n = ⌊8·3ⁿ/2ⁿ⌋ = ⌊3ⁿ/2^{n-3}⌋`
-(for `n≥3`, an exact bit-shift: `c_n` = the high bits of `3ⁿ`). Pushing into that arithmetic gives a clean
-**equivalent form** of the kernel (verified `n=3..399`, all `L`):
-> **`v2(c_n − 1) ≥ L  ⟺  3ⁿ mod 2^{n−3+L} ∈ [2^{n−3}, 2^{n−2})`** (the residue lands in a single dyadic
-> interval), because `c_n ≡ 1 (mod 2^L)` ⟺ bits `[n−3, n−3+L)` of `3ⁿ` read `0…01`. Hence
-> **Antihydra HALTS ⟺ ∃ n : `3ⁿ mod 2^{n−3+balance_n+1}` ∈ `[2^{n−3}, 2^{n−2})`.**
-So the entire question is a **2-adic equidistribution of the orbit `3ⁿ mod 2ᵏ`** (`k ≈ 1.5n`) in a moving
-dyadic window — a fully arithmetic object where the multiplicative structure is known: `ord_{2ᵏ}(3) =
-2^{k−2}`, so `3ⁿ mod 2ᵏ` is periodic in `n` with period `2^{k−2}`, and `⟨3⟩` is the index-2 subgroup
-`{x ≡ ±1 mod 8}` of `(ℤ/2ᵏ)*`. **The difficulty (honest):** the modulus `2^{n−3+L}` *grows with n*, and the
-window's low end (bit `n−3`) depends on `n mod 2^{n−4} = n` — past the periodic regime — so the known
-low-bit periodicity does not reach the window. This is the Mahler wall in its sharpest arithmetic dress;
-but the form is now a concrete target for analytic tools (exponential sums / discrepancy of `3ⁿ/2ᵏ`) and
-for new structural lemmas, not a dynamics black box. **This is the live attack surface** (see attached
-number-theory probes).
+### 4c. RETRACTED + corrected (2026-06-23) — the orbit is the ITERATED floor, not `⌊8(3/2)ⁿ⌋`; the new tool is the Φ-potential
+> ⚠ **SOUNDNESS CORRECTION (a fan-out agent caught it; I verified).** The first version of §4c claimed
+> `c_n = ⌊8·3ⁿ/2ⁿ⌋ = ⌊3ⁿ/2^{n−3}⌋` and reduced halting to a `3ⁿ mod 2ᵏ` dyadic-window hit. **This is WRONG.**
+> The real Antihydra orbit is the **iterated floor** `c_{n+1} = ⌊3c_n/2⌋` from `c_0=8` (= the bbchallenge
+> definition: `8,12,18,27,40,60,90,135,202,…`), which **diverges from `⌊8(3/2)ⁿ⌋`** (`…,60,91,136,…`)
+> **at n=6** (`90 ≠ 91`): the iterated floor loses one low bit per step and the loss never carries back.
+> The `3ⁿ mod 2ᵏ` reformulation holds for `⌊3ⁿ/2^{n−3}⌋` (0/31) but **FAILS on the real orbit (12/31)**, so
+> it is retracted. **What still stands:** §3b, §3c (odd-run `= v2(c−1)`, re-verified 50 034 runs on the real
+> orbit), §4, §4a, §4a′, §4b — all were *computed on the iterated orbit* (the code, `c=3*c//2`); only the
+> *closed-form identification* in the prose was wrong. (Replace stray "`⌊8(3/2)ⁿ⌋`" by "the iterated orbit".)
+> **The Mahler framing survives:** the real orbit grows like `A·(3/2)ⁿ` with `A = 8 − κ = 7.864177262…`
+> (`κ = 0.135822738…`), so it is still a `(3/2)ⁿ`-family object with the same open one-sided-density core.
+
+**[PROVEN, verified] corrected exact identity.** `2ⁿ·c_n = 8·3ⁿ − S_n` (verified `n=0..199`), where the
+self-referential `S_n` collects the lost low bits: `S_{n+1} = 3·S_n + 2ⁿ·[c_n odd]`, `S_0=0`. So
+`c_n = (8 − κ_n)(3/2)ⁿ`, `κ_n = S_n/3ⁿ → κ`. This is the term the wrong §4c dropped.
+
+**[PROVEN, verified] the Φ-potential (the genuine new tool).** Let `Φ_n = balance_n − v2(c_n − 1)`. Then by
+§3c, **Antihydra HALTS ⟺ ∃ n: Φ_n ≤ −1.** Exact step rule (0 violations over `2·10⁵` steps):
+- **inside an odd-run (`c_n` odd): `Φ_{n+1} = Φ_n` — Φ is FROZEN** (the run drops `v2` by 1 and the balance
+  by 1 in lockstep; §3c's "v2 drops by 1" exactly cancels the −1 balance hit);
+- **at an even step: `Φ_{n+1} = Φ_n + (2 − L′)`**, where `L′` = length of the odd-run about to start
+  (`P(L′)=2^{−(L′+1)}`, `E[L′]=1`, so mean drift `+1` per even step).
+So **"Antihydra never halts" ⟺ the one-sided walk Φ — frozen on odd-runs, mean-drift `+1` on even steps —
+never reaches `−1`.** Measured `min Φ = 2` over `n ≤ 2·10⁵` (the min is at the very start). This localizes the
+open kernel to a single **drift-positivity** statement (a martingale, not a dynamics black box) — the honest
+replacement for the retracted §4c. It does **not** close the problem (the drift is in expectation, not
+adversarially bounded — the same Mahler wall, now in martingale dress), but it is a clean, conjecture-free,
+verified new handle. (The parallel `3ⁿ mod 2ᵏ` and exponential-sum probes were about the *wrong* sequence
+`⌊3ⁿ/2^{n−3}⌋` and are NOT recorded as Antihydra results.)
 
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
