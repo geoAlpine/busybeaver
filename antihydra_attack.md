@@ -152,6 +152,23 @@ density/frequency analogue of the FLP range bound `Ω(3/2)`. Proving Antihydra n
 2-adically). Honest end-state of the summit assault: the kernel is crisp, verified, and provably beyond
 current literature.
 
+### 4c. Point-specific attack (2026-06-23) — the kernel as a dyadic-interval hit of `3ⁿ mod 2ᵏ` [PROVEN reformulation]
+The §4a′ no-go says any proof must use the arithmetic of the specific point `c_n = ⌊8·3ⁿ/2ⁿ⌋ = ⌊3ⁿ/2^{n-3}⌋`
+(for `n≥3`, an exact bit-shift: `c_n` = the high bits of `3ⁿ`). Pushing into that arithmetic gives a clean
+**equivalent form** of the kernel (verified `n=3..399`, all `L`):
+> **`v2(c_n − 1) ≥ L  ⟺  3ⁿ mod 2^{n−3+L} ∈ [2^{n−3}, 2^{n−2})`** (the residue lands in a single dyadic
+> interval), because `c_n ≡ 1 (mod 2^L)` ⟺ bits `[n−3, n−3+L)` of `3ⁿ` read `0…01`. Hence
+> **Antihydra HALTS ⟺ ∃ n : `3ⁿ mod 2^{n−3+balance_n+1}` ∈ `[2^{n−3}, 2^{n−2})`.**
+So the entire question is a **2-adic equidistribution of the orbit `3ⁿ mod 2ᵏ`** (`k ≈ 1.5n`) in a moving
+dyadic window — a fully arithmetic object where the multiplicative structure is known: `ord_{2ᵏ}(3) =
+2^{k−2}`, so `3ⁿ mod 2ᵏ` is periodic in `n` with period `2^{k−2}`, and `⟨3⟩` is the index-2 subgroup
+`{x ≡ ±1 mod 8}` of `(ℤ/2ᵏ)*`. **The difficulty (honest):** the modulus `2^{n−3+L}` *grows with n*, and the
+window's low end (bit `n−3`) depends on `n mod 2^{n−4} = n` — past the periodic regime — so the known
+low-bit periodicity does not reach the window. This is the Mahler wall in its sharpest arithmetic dress;
+but the form is now a concrete target for analytic tools (exponential sums / discrepancy of `3ⁿ/2ᵏ`) and
+for new structural lemmas, not a dynamics black box. **This is the live attack surface** (see attached
+number-theory probes).
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
