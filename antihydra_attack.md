@@ -102,6 +102,25 @@ Three conjecture-free results pushing on §4 directly (all verified on the real 
   content of "Antihydra never halts", isolated to one 2-adic statement about `(3/2)^n`. Bounding
   `v2(⌊8·3^n/2^n⌋ − 1)` unconditionally is the Mahler-family core — **the summit**.
 
+### 4a′. Transfer-operator NO-GO (2026-06-23) — [PROVEN, conjecture-free] the dynamics alone bound nothing
+A structural attack on the kernel, with a **proven negative**: no finite transfer operator / parity
+automaton built from the map `T(c)=⌊3c/2⌋` can bound the even-density, because **the parity itinerary of
+`T` is the full 2-shift**.
+- **Engine lemma [PROVEN, verified 30000 cases].** For all integers `c` and `0 ≤ t ≤ j`:
+  `T^t(c+2^j) − T^t(c) = 3^t · 2^{j−t}` (floors never interfere — both trajectories share parities until
+  the gap's 2-adic valuation hits 0; this is the §3c "v2 drops by 1" mechanism). At `t=j` the gap is `3^j`
+  (odd), so **flipping bit `j` of `c` flips the `j`-th parity bit `bit₀(T^j c)`**.
+- **Consequence [PROVEN, verified: all 2^10 length-10 prefixes realized].** The coding
+  `c ↦ (bit₀(T^n c))_{n≥0}` is **surjective onto `{0,1}^ℕ`** (measure-preserving onto Bernoulli(½)). So
+  `T` realizes *every* parity sequence — including all-odd (the fixed point `T(1)=1`). Over the carry-free
+  automaton on `ℤ/2^k` (free incoming top bit), the min-mean even-density is **0** and max is **1** (Karp,
+  k=2..11): the recurrence permits **any** density in `[0,1]`.
+- **Upshot.** Any proof of `even-density > 1/3` **must use the arithmetic of the specific point**
+  `c_n = ⌊8·3^n/2^n⌋`, not the dynamics of `T`. This closes the "build a finite transfer operator
+  yourself" route, complementing §4b (which closes the "stand on a published theorem" route). The summit's
+  content is irreducibly the point-specific 2-adic behaviour of `8(3/2)^n`. (Reproduce: see the engine
+  lemma + surjectivity check; both machine-verified this session.)
+
 ### 4b. Literature attack (2026-06-23, deep-research, 15 sources / 22 verified claims) — the summit is genuinely open, gap pinpointed
 We searched the number-theory literature for an **unconditional** theorem that would bound the
 even-density of `c_n = ⌊8(3/2)^n⌋`. Verdict (high confidence): **nothing known reaches even-density

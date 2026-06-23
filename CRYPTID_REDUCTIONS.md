@@ -62,3 +62,45 @@ reachable**. o17 is Collatz-hard, not a tame counter. The whole Collatz core is 
 (5/5)**; o17's odometer was the last plausible tractable target and it fell. This sharpens the strategic
 conclusion: the decision route is closed for all five; only the **certificate-hierarchy theory** (⑥)
 remains as the BB(6)-related contribution. (A false "decided" was avoided — the soundness gate held.)
+
+## UPDATE 2026-06-23 — cross-cryptid meta-structure + a NAMED-PROBLEM lead (Erdős ternary)
+A parallel fan-out (4 agents; results re-verified here) produced a unifying picture and one concrete
+literature foothold.
+
+**Unifying meta-structure (all 5 core cryptids).** Every one is `⌊x·(2^a/3^b)^n⌋` dynamics with
+multiplier in `{3/2, 8/3}` (`8/3 = 2³/3`):
+
+| machine | multiplier | halt = forbidden digit/residue event |
+|---|---|---|
+| Antihydra, o10-inner | 3/2 | `c_n ≡ 1 (mod 2^{balance_n+1})` — a **2-adic depth** event (`v2(c_n−1) ≥ balance_n+1`) |
+| o15, o18 | 8/3 = 2³/3 | a **base-3 leading-digit / carry** event of the `×8/3` value |
+| o17 | base-3 odometer (`≈×8`) | **base-3 carry overflows** the top digit (left-frontier overflow) |
+| o10 | nested 3/2 + irregular doubly-exp refill | 2-adic inner feeding an irregular outer trigger |
+
+> **Shared barrier (named):** each halts ⟺ the orbit of `(2^a/3^b)^n` lands in a density-0 forbidden
+> digit configuration (2-adic valuation for the 3/2 machines, base-3 digit/carry for the 8/3 machines);
+> non-halting needs only a *one-sided* density bound (strictly weaker than full Mahler equidistribution),
+> and **no such unconditional density bound is known for any of them.**
+
+**[PROVEN, conjecture-free] transfer-operator no-go (the 3/2 machines).** The map `T(c)=⌊3c/2⌋` has parity
+itinerary = the **full 2-shift** (engine lemma `T^t(c+2^j)−T^t(c)=3^t·2^{j−t}`, re-verified 30000 cases;
+coding surjective onto `{0,1}^ℕ`). So the dynamics alone bound even-density **nowhere in [0,1]** — any
+proof must be point-specific. (Recorded in `antihydra_attack.md` §4a′.)
+
+**LEAD — o15/o18 (8/3) = the Erdős "ternary digits of 2ⁿ" problem (most attackable of the five).**
+Because `8/3 = 2³/3`, the base-3 digit dynamics of the `×8/3` value are about base-3 expansions of
+`2^{3n}` — i.e. **Erdős's 1979 problem**: *which `2^m` omit the digit 2 in base 3?* (re-verified: only
+`m ∈ {0,2,8}` for `m ≤ 400`; Erdős conjectured none for `m>8`). Literature (agent-found via web, to be
+double-checked at source): **Narkiewicz (1980) [unconditional]** bounds the count of `n≤X` with `2^n`
+omitting digit 2 by `≤ 1.62·X^{log₃2}` (density 0) — but this is an **upper bound on the bad set, no lower
+bound**, exactly the missing piece (same shape as Antihydra's missing density-analogue of FLP). **Lin–Xu
+(arXiv:2107.12475)** reportedly build a 15-state TM that halts ⟺ Erdős's conjecture is false — confirming
+the 8/3 family's halting *is* the Erdős problem. So o15/o18 map onto a **named, classical, partially-
+developed** open problem with an existing BB reduction: the strongest literature foothold among the five.
+
+**Attackability ranking (most → least):** o15/o18 (named Erdős problem, clears 2 at once, published
+partials) > Antihydra (most-studied, but §4b/§4a′ show it is provably beyond current tools) > o17 (base-3
+carry, no clean scalar orbit) > o10 (two hard problems stacked). **No machine decided; all summits remain
+open.** The honest gain: the BB(6) Collatz core is now mapped onto **two named number-theory problems**
+(Mahler 3/2 for Antihydra/o10; Erdős ternary-2ⁿ for o15/o18/o17), each missing the same *one-sided density
+lower bound*.

@@ -41,6 +41,18 @@ parity counter, where CEGAR with the verifier's counterexamples succeeded). The 
    until (S)(C)(H) all pass — or until a counterexample reveals a genuine non-regular obstruction
    (which would honestly downgrade o17 toward Mahler-hard).
 
+## CORRECTION (2026-06-23) — the halt is LEFT-FRONTIER OVERFLOW, not an interior `00` gap
+The earlier "halt ⟺ a `00` gap is read by D" framing is **too coarse**: a transient `00` forms (near the
+head) in *both* halters and non-halters, so it is not the halt criterion. Re-traced against the raw TM
+(verified): on the halter `0 A 0 1^6` the halt fires at step 206 with the **head at −2, left of the entire
+written region `[0,22]`**. The true mechanism: the `A↔D` zig-zag (`A:1→1LD`, `D:1→1LA`) sweeps left through
+the most-significant `1`-block; when `D` steps off its left edge it reads the left **blank** `0`
+(`D:0→0LF`), and `F` then reads a *second* blank `0` → HALT. So:
+> **o17 HALTS ⟺ a leftward odometer carry propagates PAST the most-significant base-3 digit into the blank
+> left region (the counter "overflows" its width).** Non-halt ⟺ every carry is forever re-absorbed by some
+> interior digit. (Reading each settled block of length `ℓ≡2 mod 3` as base-3 digit `d=(ℓ−2)/3`, o17 is a
+> **base-3 carrying odometer**.) This **sharpens, not weakens**, the no-regular-certificate conclusion.
+
 ## VERDICT (2026-06-23) — the tameness hypothesis is REFUTED: o17 is Collatz-hard
 The decision attempt was run three ways in parallel, each gated by the SOUND `far_dfa.verify`:
 (1) hand-built mod-3 DFA, (2) phase-aware CEGAR, (3) other sound engines (CTL window, halt-segment,
