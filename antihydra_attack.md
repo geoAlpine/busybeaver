@@ -240,6 +240,30 @@ drops can't accumulate because each is preceded by exponential build-up.
   `0.585`-vs-`0.5` gap) with the renewal structure as the most promising line of future attack — but
   closing it requires a real breakthrough on the 2-adic recurrence that is not in reach of this analysis.
 
+### 4f. Building the number theory (2026-06-23) — two new verified identities, and the tame/free bit-boundary
+Data analysis of the corrected `S_n` structure (`2ⁿc_n = 8·3ⁿ − S_n`, `S_{n+1}=3S_n+2ⁿ[c_n odd]`) yields
+genuinely new, verified arithmetic — and pins the wall to a precise bit-position.
+- **[PROVEN, verified] growth-constant closed form.** `A = 8 − κ` with **`κ = (1/3)·Σ_{k: c_k odd} (2/3)^k`**
+  (`= 0.135822737943…`, `A = 7.864177262…`). The orbit's growth constant is an explicit `(2/3)`-power
+  series over the parity sequence — exact, conjecture-free.
+- **[PROVEN, verified 6821 cases] the ×3 low-bit lemma.** For `n ≥ M`: **`S_n ≡ 3^{n−M}·S_M (mod 2^M)`**.
+  So the **low `M` bits of `S_n` evolve by pure `×3 mod 2^M`** — periodic in `n` with period `2^{M−2}`
+  (the order of 3). The low end of the orbit's arithmetic is completely *tame* (an explicit cyclic group
+  action), no equidistribution needed.
+- **The tame/free boundary is exactly bit `n`.** The depth `d_n = v2(c_n−1)` is read from **bits `[n, n+L)`
+  of `8·3ⁿ − S_n`** (`c_n`'s low bits). Bit `n` of `S_n` is a **carry-sum of essentially the whole parity
+  history** (`~0.6n` terms `2^k 3^{n−1−k}` reach bit `n` via long carries), and the depth is provably **not
+  a bounded function of any window of recent parities** (verified: depth-class contradictory for last-10,
+  last-20 windows — the §4a′ no-go again). So: **low bits (`< n`) = ×3-tame; depth bits (`≥ n`) =
+  carry-mixed/free.** The climb lives entirely in the free zone.
+- **What this says about building a proof.** The new identities are real structure (the constant and the
+  low bits are *solved*), but the depth — the climbing quantity — sits exactly where the parity history
+  carry-mixes, i.e. at the 2-adic equidistribution. **Building number theory that climbs the wall = proving
+  an anti-concentration / carry-mixing bound for `S_n`'s bits near position `n`**, which is the open core in
+  yet another (now very precise) dress: the structured part is `×3 mod 2^M`; the unstructured part is the
+  carry into bit `n`. Honest: the tools built here *solve everything except the carry into bit n*, and that
+  carry is the summit. (No machine decided; no non-halt claimed.)
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
