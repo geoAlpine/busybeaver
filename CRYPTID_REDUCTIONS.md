@@ -218,3 +218,30 @@ Robust growth-rate classification (width at `t=10^4,10^5,10^6,10^7`; `w/√t` co
 **Catalogue status:** all 19 cryptids classified by growth class; 9 reduced to a named structure
 (Antihydra,o10,o15,o17,o18,o5,o7,o8,o4). Remaining to characterise individually: o2,o3,o11,o12,o13,o14,o16,
 Space Needle (now known: 7 poly-time, 1 exponential).
+
+## o4 — DEEP REDUCTION + RETRACTION of the "decision lead" (2026-06-24)  [SOUNDNESS CORRECTION]
+Reverse-engineered o4 (`1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---`) against the raw TM.
+**Exact mechanism.** Tape = `(10)^*` background carrying ONE macroscopic **long-0 defect** (a 0-block whose
+length is a large fraction of the swept width), bounded by a `1^2` left-marker and a `0^2` right-edge.
+- **Within an epoch [CLEAN, local rule]:** the long-0 block shrinks by exactly **−3 per drift event**
+  (verified sawtooth: `360,318,312,306,303,297,294,…,15,12`; decrements −3, occasional −6), i.e. the defect
+  drifts deterministically toward the right boundary. This local rule is provable and regular.
+- **Epoch reset [IRREGULAR, geometric]:** when the block bottoms out (residue ~11–16, itself varying), it
+  **resets to a new peak**. Clean ascending peak series `101,143,193,266,360,490,652` grows **geometrically
+  ~×1.36** (Mahler-class, near `4/3=1.333` with finite-size drift), BUT the fine structure is irregular
+  (automated peak detection returns a noisy, non-monotone stream `…191,66,160,26,226…` = multiple
+  sawteeth + varying bottoms). The reset value is set by a carry/Collatz-type process, not a clean map.
+**Classification:** o4's *content* is **geometric/Mahler-class (irregular)** — it joins the irregular core,
+NOT a tractable poly-time target. Its earlier "POLYNOMIAL-time" tag (the dichotomy above) is an **ENVELOPE**
+property only: width `~√t` because the head sweeps a linearly-growing region, while the defect content grows
+geometrically per epoch *inside* that region. **Poly-time envelope ≠ tractable content.**
+**RETRACTION (soundness discipline).** The earlier note "o4 = decision LEAD, monotone gap
+21,27,37,63,77,111,129" is **RETRACTED.** That "monotone gap" was the within-epoch **−3 sawtooth** (the one
+clean local rule) misread as a *global* invariant. Globally the epoch peaks/bottoms are irregular
+(geometric-with-Collatz-content), so there is **no clean monotone non-halting invariant** for o4. o4 is NOT
+a decidable-looking target; it is as hard as the rest (consistent with `CRYPTID_CENSUS.md`: all slow-width
+content IRREGULAR). No decision; the lead is closed honestly.
+**Catalogue consequence.** The poly/exp dichotomy is about the **width envelope** (direct-geometric vs
+sawtooth-linear), NOT the deep difficulty. Under the envelope, the cryptid CONTENT is uniformly irregular
+geometric (Mahler/Collatz). This *consolidates* the picture: one deep difficulty (irregular `2^a/3^b`-rate
+content) in two envelope costumes — it does not hand us an easier class.
