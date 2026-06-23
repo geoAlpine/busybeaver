@@ -73,3 +73,36 @@ or one-sided argument, and the only unconditional bound stays the trivial `depth
   in-modulus carry anti-concentration). The weaker one-sided density is open by the same wall. **No theorem
   proved; the wall is now localized to two named, demonstrated failures** — the precise statement of what a
   Mahler-3/2 breakthrough must supply. No decision; soundness intact.
+
+## 8. Deep-dive on obstruction (b): it is DIAGONAL EXTRACTION, and the averaged bound exists but can't localize (2026-06-24)
+Probing the carry structure of `3ⁿ mod 2ⁿ` directly (`carry_b.py`, `koksma_b.py`) sharpens (b) from a vague
+"regime mismatch" to an exact diagnosis.
+- **The bits are perfect coins [measured]:** bit-density of `3ⁿ mod 2ⁿ → ½`; the top bit (which decides
+  `{(3/2)ⁿ} ≷ ½`) is balanced (0.4998 over 4000 n) with autocorrelations `≈ 0` (lags 1–4: `+.012,−.021,
+  +.000,−.004`) and decorrelates under a modulus shift (`corr ≈ −.06..−.01`). Randomness is numerically total.
+- **The off-diagonal vanishes EXACTLY [measured]:** for *fixed* modulus `2^M`, `Σ_{n<ord(3)} e(3ⁿ/2^M) =
+  0.00` (a complete sum over the cyclic group `⟨3⟩` = the units = a Ramanujan sum `c_{2^M}(1)=0`). So the
+  2-parameter family `3ᵃ mod 2ᵇ` is **perfectly equidistributed off the diagonal**; the ENTIRE difficulty is
+  the **diagonal `a=b=n`**. Obstruction (b) is precisely a **diagonal-extraction problem**: extract the
+  diagonal of a 2-parameter arithmetic family that is equidistributed in each row.
+- **The averaged bound DOES exist [classical, confirmed]:** the mean over multipliers `(1/H)Σ_{h≤H}|S_N(h)|²
+  = 4219 ≈ N = 4000` ⇒ square-root cancellation holds **in mean**. This is the Koksma (1935) / Weyl-a.e.
+  regime: *for almost every* `t`, `{t·(3/2)ⁿ}` equidistributes. **An unconditional partial result is real —
+  but it is an "almost-all", not a pointwise, statement.**
+- **Why it cannot reach the specific point [two demonstrated reasons]:**
+  1. **Measure-zero exceptional set.** Koksma's a.e.-statement leaves a null set of bad `t`; nothing excludes
+     the specific `θ=3/2`, `t=1` from it. (Numerically `t=1` is not an outlier — `|S_N(1)|=13.2` vs median
+     `57.2` — so it *behaves*, but "behaves numerically" ≠ "provably outside the exceptional set".)
+  2. **The orbit points cluster too tightly for the large sieve.** The large sieve is the tool that would
+     upgrade mean-square to pointwise, but it needs the points `δ`-separated with `δ ≫ 1/N`. Measured: the
+     `N=4000` points `{(3/2)ⁿ}` have **min gap `3.4×10⁻⁷ ≈ 1/N²`** (vs uniform `1/N = 2.5×10⁻⁴`), i.e.
+     `δ ~ 1/N²`, so the large-sieve bound `Σ|S(tᵣ)|² ≤ (N + δ⁻¹)‖a‖²` degrades to `~N²` — **useless**. The
+     tight clustering is itself a Diophantine fact (`(3/2)ⁿ−(3/2)ᵐ ≈ ℤ` near-coincidences from the same
+     properties of `3/2`), so the obstruction is self-referential: the orbit's own Diophantine structure
+     blocks the sieve that would tame it.
+- **Sharp restatement of (b):** *Mahler-3/2 is the diagonal of a 2-parameter family whose rows are exactly
+  equidistributed; the averaged (almost-all-multiplier) bound is classical, but pointwise localization fails
+  because the specific multiplier sits in a measure-zero exceptional set AND the orbit points self-cluster at
+  scale `1/N²`, defeating the large sieve.* This is the precise, measured content of "regime mismatch" — and
+  it mirrors obstruction (a): generic/averaged methods succeed, the specific orbit is the open case. No
+  theorem; the partial that exists (Koksma mean-square) is real but provably cannot be made pointwise here.
