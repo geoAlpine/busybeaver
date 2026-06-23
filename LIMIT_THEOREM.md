@@ -230,13 +230,15 @@ half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is
 
 ### Standing summary — the hierarchy, with FIVE strict separations now PROVEN (a clean linear Chomsky tower)
 ```
- k-window ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ context-free ⊊ context-sensitive ⊊ … ⊆ beyond (Collatz)
-   └(d)parity┘ └(a)EQ┘ └(e)POW2W{2ⁿ}┘ └(g)PALW palindromes┘ └(f)SQW{n²}┘        └(cryptids:OPEN)┘
+ star-free ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ context-free ⊊ context-sensitive ⊊ … ⊆ beyond (Collatz)
+   └(d)parity ℤ/2┘ └(a)EQ┘ └(e)POW2W{2ⁿ}┘ └(g)PALW palindromes┘ └(f)SQW{n²}┘   └(cryptids:OPEN)┘
+   (below REG the star-free interval definite⊆SLT⊆LT⊆PT COLLAPSES for certification — Lemma A)
 ```
 - **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
 - **[PROVEN, conjecture-free]** five strict separations forming a linear tower, each with an explicit
   simulation-verified witness:
-  **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), **SLIN ⊊ 2-automatic**
+  **star-free ⊊ REG** (d, parity counter — gap is the ℤ/2 group language `(11)*1`; the star-free interval
+  below collapses, Lemma A), **REG ⊊ SLIN** (a, EQ machine), **SLIN ⊊ 2-automatic**
   (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ context-free** (g, PALW, binary palindromes), **context-free ⊊
   context-sensitive** (f, SQW, `S={n²}`, via arXiv:1901.03913 — non-linear-polynomial range not CF — + LBA).
   Above 2-automatic this is exactly the **Chomsky tower on base-2 numeration languages**
@@ -269,6 +271,36 @@ Pushing past CS hits a *structural* boundary of the Squeeze method, worth statin
   exact reachable set is — and it is the genuineness-limit barrier. **Climbing the descriptive tower does
   not approach the cryptids; the two are orthogonal.** The clean explicit tower (regular⊊CF⊊CS) is the
   *anchor*; the cryptid over-approximation gap is the *frontier*.
+
+### Below REG — the sub-regular floor collapses, and brick (d) lands outside star-free (2026-06-23)
+Probing *beneath* the bottom rung (the sub-regular landscape `definite ⊆ SLT ⊆ LT(=k-window) ⊆ PT ⊆
+star-free`) gave two conjecture-free results and one honest negative — all re-verified here.
+- **[PROVEN, structural] Lemma A (halt-locality).** In the head-marker config encoding, a config is a HALT
+  iff its string contains a forbidden length-2 factor `(state)(symbol)` (the marker sitting on a cell whose
+  transition is undefined). So **halt-freeness is a strictly-locally-testable (SLT, m=2) property**, and
+  even the minimal SLT invariant excludes every halt. *Consequence:* the boolean-combination power that
+  separates `definite / SLT / LT / PT` is **never needed to exclude halts** — only step-closure can fail —
+  so the whole star-free sub-regular interval **collapses onto SLT for non-halting certification**. No
+  clean explicit witness separates these sub-rungs (verified via the purpose-built "AGREE" machine, whose
+  intended LT-not-SLT certificate is rendered SLT-sufficient by Lemma A). (`far_dfa.py`'s FAR engine is
+  exactly this SLT/all-m-window class.)
+- **[PROVEN, conjecture-free] brick (d) strengthened: the bottom jump lands OUTSIDE star-free.** The parity
+  counter `1RB0LZ_1LC1RA_0RA0LC` has `1^m [B] 0` halting ⟺ `m` even (re-verified m=1..24), so its
+  non-halting reachable fiber at state `B` is exactly `{1^m : m odd} = (11)*1`. This is **non-aperiodic**
+  (syntactic monoid `= ℤ/2`), hence **not star-free** (Schützenberger / McNaughton–Papert). So the real
+  bottom separation is **`star-free ⊊ REG`, with the gap realized by a modular-counting (group) language** —
+  strictly stronger than the old "k-window ⊊ REG" framing; the *entire* star-free landscape (incl. LT, PT)
+  is invisible to this machine's certification.
+- **[honest negative] the over-approximation axis — "no k-window certificate for a cryptid" does NOT follow
+  from off-orbit halters.** Off-orbit halting configs DO exist (Antihydra `0 1^2 0 0 1^9 0` HALTs at 15466
+  while reachable `0 1^2 0 0 1^6 0` runs; o17's `0 A 0 1^k`, `k≢0 mod 3`). But a cryptid's halt trigger is
+  **head-local** (Antihydra: balance read at state F; o17: carry overflow at the head), so for window size
+  larger than the (bounded) left-frontier structure, a k-window can **gate on the halt condition at the
+  marker** and exclude the off-orbit halters while keeping reachable. Hence those halters are *not* forced
+  into `L_G`, and **no contradiction arises** — k-window certificates are *not* provably too weak here. The
+  brick-(d) trick (`1^k` all-or-nothing in an unbounded clean run) does **not** transfer, because the
+  cryptids carry their discriminating feature next to the head, not in an unbounded run. So impossibility on
+  the over-approximation axis stays **[OPEN]**, and the barrier sits at REG, not below.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
