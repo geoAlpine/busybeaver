@@ -62,3 +62,29 @@ orbit** — structurally the **Erdős ternary-digits-of-2^{3k} family** (`8^k = 
 - [DERIVED] the exact halt predicate = base-3-carry/defect alignment with the moving F-frontier.
 - [HONEST] it sits in the Erdős ternary family; the one unconditional tool (Narkiewicz) gives only a density
   upper bound and cannot reach the specific-alignment question. Open core identified; no decision claimed.
+
+## 6. The interior-F mechanism + Borel-Cantelli heuristic (2026-06-24, all verified)
+Pushed the direct simulation to **9×10⁸ steps** (reaches epoch 8; epoch 9 needs ~10⁹, simulation exhausted).
+- **o18 is NOT a trivial doubler [VERIFIED — refutes a tempting wrong "decidable" claim].** In the *clean*
+  regime state F only ever reads the virgin-0 frontier (→ would be trivially non-halting). BUT at the
+  **epoch-7 defect epoch**, F is routed to an **interior read** (step 23 492 737, pos +9, value 0). So
+  defects *do* route F into the interior where the cell *could* be 1. **Sharpened halt predicate:**
+  `o18 HALTS ⟺ some interior F-read (which occurs only during a base-3-carry defect epoch) reads a 1.`
+  (Checked, not assumed — the one observed interior read was 0, so no halt; o18 stays a genuine open cryptid.)
+- **Defect trigger [VERIFIED]:** the lone defect (epoch 7) follows predecessor `N_6=3890` whose base-3 form
+  `12100002` ends in a trailing-2 (`…0002`). The clean map `⌊8N/3⌋+2` *dropped its +2* exactly there
+  (10373 = ⌊8·3890/3⌋, not +2) — i.e. the defect = a base-3 carry the clean rebuild couldn't absorb. So the
+  epoch map is **not a function of N alone**; it carries forward carry-state (why no finite-state closure in N).
+- **Borel-Cantelli heuristic [parallels Antihydra §4]:** the ideal orbit's base-3 digit-2 density is
+  **1/3** (equidistributed, units digit uniform — numerically verified over 4000 epochs). A halt needs an
+  interior F-read to align with a residual 1; `P(align at epoch k) ~ O(1/N_k)` and `Σ_{k≥7} 1/N_k ≈
+  1.54×10⁻⁴ ≪ 1` (geometric, ratio 3/8). **⇒ expected number of halt-alignments ≈ 0 ⇒ o18 almost surely
+  NON-HALTS.** Same heuristic verdict as Antihydra.
+- **The irreducible gap [HONEST]:** Borel-Cantelli needs **independence**, but the alignment positions are
+  *deterministically* fixed by the orbit's base-3 carries. Proving non-alignment = proving a specific digit
+  of a `×(8/3)` orbit never lands at a self-referentially-determined spot = an **Erdős-class ternary-digit
+  statement**. No unconditional tool reaches it (Narkiewicz: density upper bound only). **World-open.**
+
+**o18 status = Antihydra status (now symmetric):** exact mechanism + sharp halt predicate + heuristic
+non-halt (digit density argument) + the same deterministic-alignment wall. The breakthrough required is the
+ternary-digit (Erdős/Mahler-8/3) result. No decision; soundness intact.
