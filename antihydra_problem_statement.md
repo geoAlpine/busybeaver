@@ -105,6 +105,25 @@ about to start, `P(L') = 2^{−(L'+1)}` empirically, mean `1`, so mean drift `+1
   of a specific computable sequence** — itself the open equidistribution (cf. normality of π), not capturable
   by Kolmogorov complexity.
 
+## 5c. Tropical / information-flow / moving-modulus reframings — evaluated, same wall
+A good high-level reframing ("exponential-weighted information geometry / carry propagation") suggests
+three languages; each was tested and reduces to the same obstruction:
+- **Tropical / max-plus (saddle point of the bit-`n` contribution).** [TESTED] The term magnitudes
+  `2^k 3^{n-1-k}` are **monotone decreasing in `k`** (argmax at `k=0`, leading bit `~1.585n`, irrelevant to
+  bit `n`); the Newton polygon gives only `v2(S_n)=3` (the tame low end). **All `~n` terms contribute to
+  bit `n` comparably (genuine mixing) — there is no interior saddle / dominant term to exploit.**
+- **Information flow (inflow/leakage, "deterministic drift inequality").** This is the `Φ`-potential
+  (§Φ-walk) re-named; the inflow/leakage split yields no conserved quantity. The drift is `+1` **in
+  expectation only**; a *deterministic* drift lower bound is exactly what is missing (= the problem).
+- **Moving modulus → cut of a single 2-adic object.** [RIGHT SHAPE — matches the Subspace-theorem
+  direction] but the relevant single object is the orbit's own generating constant, which is **not
+  algebraic** (orbit-defined; 2-adically degenerate: `3κ = 24`, i.e. `κ = 8`, `A = 0` in `ℤ₂`). The
+  Subspace Theorem needs an algebraic number — so "realize the carry-bit as digits of one object" hits the
+  already-named gap (no *algebraic* object encodes the moving carry-bit).
+
+**Meta:** these are the right *vocabulary* for the problem, but re-describing the specific-point /
+non-algebraicity wall in tropical / information / 2-adic language does not supply a tool that crosses it.
+
 ## 6. The precise question for you
 **Non-halting ⟺ `depth_n = v2(c_n − 1) = o(n)` for the iterated-floor orbit** `c_{n+1}=floor(3c_n/2)`,
 `c_0=8`, equivalently a one-sided lower bound `even-density(c_0,…,c_{n-1}) > 1/3` for all `n`,
