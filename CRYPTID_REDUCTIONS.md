@@ -87,16 +87,27 @@ itinerary = the **full 2-shift** (engine lemma `T^t(c+2^j)−T^t(c)=3^t·2^{j−
 coding surjective onto `{0,1}^ℕ`). So the dynamics alone bound even-density **nowhere in [0,1]** — any
 proof must be point-specific. (Recorded in `antihydra_attack.md` §4a′.)
 
-**LEAD — o15/o18 (8/3) = the Erdős "ternary digits of 2ⁿ" problem (most attackable of the five).**
-Because `8/3 = 2³/3`, the base-3 digit dynamics of the `×8/3` value are about base-3 expansions of
-`2^{3n}` — i.e. **Erdős's 1979 problem**: *which `2^m` omit the digit 2 in base 3?* (re-verified: only
-`m ∈ {0,2,8}` for `m ≤ 400`; Erdős conjectured none for `m>8`). Literature (agent-found via web, to be
-double-checked at source): **Narkiewicz (1980) [unconditional]** bounds the count of `n≤X` with `2^n`
-omitting digit 2 by `≤ 1.62·X^{log₃2}` (density 0) — but this is an **upper bound on the bad set, no lower
-bound**, exactly the missing piece (same shape as Antihydra's missing density-analogue of FLP). **Lin–Xu
-(arXiv:2107.12475)** reportedly build a 15-state TM that halts ⟺ Erdős's conjecture is false — confirming
-the 8/3 family's halting *is* the Erdős problem. So o15/o18 map onto a **named, classical, partially-
-developed** open problem with an existing BB reduction: the strongest literature foothold among the five.
+**LEAD — o15/o18 (8/3) are in the Erdős "ternary digits of 2ⁿ" FAMILY (most attackable; analogy, not exact reduction).**
+*Refined + corrected by a second pass (verified against the raw TM).* **Exact halt kernels [PROVEN]:**
+o18 halts ⟺ the leftward sweep (`D:1→1LF`, then F) finds a `1` at the left frontier = **the `⌊x·(8/3)ⁿ⌋`
+base-3 odometer's leading digit overflows its width** (verified: all 10 F-visits to 200M steps read `0`);
+o15 halts ⟺ symmetric **right-frontier `11`-collision** = the new top base-3 digit lands on occupied tape
+(all 9 A-visits read `0`). Both are *forbidden base-3 leading-digit/carry events of a `(2³/3)ⁿ` orbit.*
+**Tightness — honest [ANALOGY, not reduction]:** because `8/3 = 2³/3`, these live in the *same family* as
+Erdős's base-3-digits-of-`2^{3n}` problem, **but o18's halting is NOT the literal "2^{3n} omits a base-3
+digit"** — the width orbit is *not* `9·8ⁿ/3ⁿ` (it drifts), and the carry-correction is governed by the
+orbit's own `W_n mod 3` (seed-dependent), not by `8ⁿ`'s digits. So it is a **strong structural analogy**
+(same multiplier, same "does a digit/carry event ever occur" shape, same missing one-sided density bound),
+not an exact reduction.
+**Erdős literature [re-confirmed at source]:** `2^m` omits base-3 digit 2 only for `m∈{0,2,8}` (recomputed
+to `m≤5000`; verified in the literature to `≈6×10²¹`); Erdős (1979) conjectured none for `m>8`.
+**Narkiewicz (1980) [unconditional]:** `#{n≤x : (2ⁿ)₃ omits digit 2} ≤ 1.62·x^{α₀}`, `α₀=log₃2≈0.631` —
+an **upper bound only; the set is not even known to be finite** (no lower bound = the missing piece, same
+shape as Antihydra's missing FLP density-analogue). The 15-state BB↔Erdős machine is **Stérin–Woods,
+"Hardness of busy beaver value BB(15)" (arXiv:2107.12475)** (halts ⟺ Erdős's conjecture is false) — *not
+"Lin–Xu" (earlier mis-attribution, corrected)*. (See also Saye, arXiv:2202.13256.) So o15/o18 sit in a
+**named, classical, partially-developed** open family with an existing BB reduction — the strongest
+literature foothold among the five, though the exact o15/o18-to-Erdős reduction is an analogy, not derived.
 
 **Attackability ranking (most → least):** o15/o18 (named Erdős problem, clears 2 at once, published
 partials) > Antihydra (most-studied, but §4b/§4a′ show it is provably beyond current tools) > o17 (base-3

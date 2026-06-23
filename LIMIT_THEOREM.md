@@ -201,17 +201,40 @@ half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is
     2-automatic — adding `V₃` collapses back to semilinear — so the next *clean* describable class up is
     the multiplicative/arithmetic one.)
 
-### Standing summary — the hierarchy, with FOUR strict separations now PROVEN
+- **(g) [PROVEN, conjecture-free — 2-automatic ⊊ context-free, fifth strict separation]** Witness **PALW**
+  (`palw_machine.py`), a check-S-every-cycle machine for `S = {n : base-2(n) is a palindrome}` (OEIS
+  A006995: 1,3,5,7,9,15,17,21,27,31,33,…). 56-state/12-symbol TM: each cycle DUPLICATE, CONVERT the copy
+  unary→binary (repeated halving), PALINDROME-test the binary digit string (two-pointer), HALT if not a
+  palindrome, else ADVANCE to the next binary palindrome and return to CS. Independently re-verified:
+  from `(CS,1^1)` it visits CS-milestones `1,3,5,7,9,15,17,21,27,31,33,45,51,63,65,73,85,93,99,107`
+  (exactly A006995, increasing); `(CS,1^w)` HALTS iff `w` is not a binary palindrome (`w=1..50`,
+  0 mismatches); and the **only** state hosting a blank-rest clean left-block is `CS`, all binary-palindrome
+  lengths (no trap — the advance-search's intermediate integers are kept non-clean by a mode-flag at a
+  fixed cell, the separation-critical discipline).
+  - By the Squeeze Lemma the CS-value-set of any certificate is exactly `S`. **`S` is not 2-automatic**:
+    `S` is 2-automatic iff its base-2 language is regular, but binary palindromes are the canonical
+    **non-regular context-free** language (pumping lemma) ⇒ **no 2-automatic certificate** (lower half,
+    airtight). **A context-free certificate exists**: binary palindromes are CF (`P→0P0|1P1|0|1|ε`), so
+    the reachable set is at the context-free-numeration level. Hence **2-automatic ⊊ context-free**.
+  - **Placement (honest):** this is a *refinement between* 2-automatic and arithmetic, not a new ceiling:
+    `2-automatic ⊊ CF (g, palindromes) ⊊ CS ⊊ arithmetic (f, {n²})`. PALW differs structurally from
+    POW2W/SQW (which advance by a closed-form step, so no state ever holds a non-target clean block);
+    PALW must *search* for the next palindrome, materialising every intermediate integer in scratch —
+    the mode-flag discipline is what preserves property (C). Lower half airtight; upper half via the same
+    Squeeze-Lemma within-cycle-CF-definability argument as (e)/(f).
+
+### Standing summary — the hierarchy, with FIVE strict separations now PROVEN
 ```
- k-window ⊊ REG ⊊ semilinear (SLIN) ⊊ 2-automatic ⊊ arithmetic ⊆ ... ⊆ beyond (Collatz)
-   └(d)parity┘ └(a)EQ machine┘    └(e)POW2W {2ⁿ}┘ └(f)SQW {n²}┘      └(cryptids: OPEN)┘
+ k-window ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ context-free ⊊ … ⊊ arithmetic ⊆ … ⊆ beyond (Collatz)
+   └(d)parity┘ └(a)EQ┘ └(e)POW2W{2ⁿ}┘ └(g)PALW bin-palindromes┘ └(f)SQW{n²}┘  └(cryptids:OPEN)┘
 ```
 - **[PROVEN]** REG suffices at n=3 (63 explicit certificates).
-- **[PROVEN, conjecture-free]** four strict levels, each with an explicit simulation-verified witness:
+- **[PROVEN, conjecture-free]** five strict levels, each with an explicit simulation-verified witness:
   **k-window ⊊ REG** (d, parity counter), **REG ⊊ SLIN** (a, EQ machine), **SLIN ⊊ 2-automatic**
-  (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ arithmetic** (f, SQW, `S={n²}`, via the Squeeze Lemma +
-  Minsky–Papert). Bricks (e),(f) share the Squeeze Lemma: certificate-complexity = descriptive
-  complexity of the checked set `S`.
+  (e, POW2W, `S={2ⁿ}`), **2-automatic ⊊ context-free** (g, PALW, `S=`binary palindromes), and
+  **(context-free ⊊ …) ⊊ arithmetic** (f, SQW, `S={n²}`, via Minsky–Papert). Bricks (e),(f),(g) share
+  the **Squeeze Lemma**: certificate-complexity = descriptive complexity of the checked set `S`, so each
+  new rung is just a check-`S` witness for an `S` of the target class.
 - **[CONDITIONAL]** cryptid never-halts ⇒ reachable language non-regular (gap = orbit unbounded);
   distinguishability made concrete (b), and for Antihydra the gap is now a named 2-adic
   equidistribution statement, not a hand-wave (b′, `v2(c_n−1) < balance_n+1` ∀n).
