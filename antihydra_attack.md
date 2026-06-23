@@ -184,6 +184,17 @@ adversarially bounded — the same Mahler wall, now in martingale dress), but it
 verified new handle. (The parallel `3ⁿ mod 2ᵏ` and exponential-sum probes were about the *wrong* sequence
 `⌊3ⁿ/2^{n−3}⌋` and are NOT recorded as Antihydra results.)
 
+**[verified] the self-referential angle is also the no-go.** The corrected identity makes the parity stream
+`p_n = c_n mod 2` self-referential (`S_{n+1}=3S_n+2ⁿp_n`). But the parity is **not a finite-state function of
+its own past**: for window depth `k=4,8,12` **every** length-`k` parity window is *contradictory* (both `0`
+and `1` follow it, over `3·10⁵` steps) — so no bounded history predicts the next parity. The `S_n` identity
+is an *exact 2-adic equation* with **no finite handle** — i.e. the self-referential angle collapses onto the
+§4a′ full-2-shift no-go. **All structural angles now provably reduce to the same wall:** dynamics (§4a′
+no-go), literature (§4b, none), multiplicative/exponential-sum (full-period equidistribution but a
+prefix-vs-period gap), the Φ-walk (martingale, drift in expectation only), and self-reference (no finite
+handle). The remaining content is irreducibly a one-sided 2-adic *equidistribution* statement about the
+iterated orbit — genuine open analytic number theory; the Φ-walk drift-positivity is its cleanest packaging.
+
 ## 5. Status / open
 - **[understood, recorded]** mechanism §1, reformulation §2, empirics §3, random-coin heuristic §3b
   (sigma-to-halt `= sqrt(n)/3 → ∞`, halt-prob `~ exp(-n/18)`, Borel–Cantelli ⇒ halts w.p. 0 in the model).
