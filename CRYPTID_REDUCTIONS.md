@@ -199,3 +199,22 @@ remaining slow-width machines, **BB(6)'s open core ≈ two named problems** (the
   focused Tier-3 decision attempt.**
 - **Status:** [REDUCED — third type: polynomial-time single-defect; non-halt ⟺ gap stays positive]. Not
   yet decided (gap-monotonicity unproven); the most tractable decision target found. No decision claimed.
+
+## STRUCTURAL DICHOTOMY 2026-06-24 — the 19 cryptids split into TWO growth classes (toward the complete catalogue)
+Robust growth-rate classification (width at `t=10^4,10^5,10^6,10^7`; `w/√t` constant ⟺ time `~ width²`):
+- **POLYNOMIAL-TIME (bouncer-envelope, time `~ width²`), 8 machines [VERIFIED via `w/√t`]:**
+  `o2, o3, o4, o11, o12, o13, o14, o16`. The head sweeps a linearly-growing region (width `~ √t`), but the
+  tape CONTENT is Collatz-irregular (verified: o4 = single drifting `11`-defect, monotone gap; o13/o16 =
+  multi-block reconfiguration). These are *bouncer-shaped with irregular content* — which is exactly why
+  bouncer/FAR deciders hold out (the envelope is regular, the content is not).
+- **EXPONENTIAL (Mahler `2^a/3^b`), the rest:** Antihydra, o10, o15, o17, o18 (core), o5 (4/3), o7 (3/2),
+  o8 (3/2, nested), Space Needle (width grows slower than `√t` ⇒ time super-quadratic/exponential).
+**Why this matters for the COMPLETE PROOF.** The cryptid problem set is now structured, not a sprawl:
+1. **Exponential family** → ~2 named open problems (Mahler-3/2 distribution; Erdős ternary-digits-of-2^m).
+   World-open (`antihydra_attack.md` §4 maps the precise frontier).
+2. **Polynomial-time family (8 machines)** → bouncer-envelope + Collatz content; potentially **more
+   tractable** than the exponential ones (e.g. o4's gap is monotone — a candidate provable invariant).
+   These are the place to look for actual DECISIONS (each decided = a brick in the complete proof).
+**Catalogue status:** all 19 cryptids classified by growth class; 9 reduced to a named structure
+(Antihydra,o10,o15,o17,o18,o5,o7,o8,o4). Remaining to characterise individually: o2,o3,o11,o12,o13,o14,o16,
+Space Needle (now known: 7 poly-time, 1 exponential).
