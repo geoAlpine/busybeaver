@@ -478,3 +478,33 @@ genuinely Mahler-class) but mapped it completely from the dynamical side, with v
   both the arithmetic and dynamical sides, one named missing tool). This is the natural endpoint of the
   "specify the wall" phase. Further progress requires either (a) external expert input (the note is ready) or
   (b) a multi-year investment in the rank-1 effective-equidistribution mechanism.
+
+---
+
+## 2026-06-25c — Route C (cross-cryptid): the Mahler cryptids share ONE kernel + ONE obstruction map (verified)
+Ran the non-circular self-attack from STRATEGY_BRIEF (C): does the Antihydra Q9-trilogy dissection PORT to the
+other BB(6) Mahler cryptids? **Yes, verified** (`cross_cryptid.py`, exact p-adic arithmetic; writeup
+`CRYPTID_KERNEL.md`):
+- For `μ=2^a/3^b` with denominator prime `p` (`v_p(μ)=−1`), `T_μ(x)=⌊μx⌋` is a **`p`-to-1 exact endomorphism of
+  ℤ_p**; renewal density `→1/p`, avg gap `→p`, **exact identity `Σ(gap−1)=#non-renewal`**; induced map =
+  **full-branch piecewise-affine expanding Gibbs–Markov on ℤ_p** (slopes `μ^g`) with a **ℤ_p fixed point on
+  every branch** (Q9(b) obstruction). Verified for `3/2`(p=2, Antihydra/o10-inner), `8/3`(p=3, o18/o15),
+  control `9/2`(p=2) — all `8/8` branches affine+fixed.
+- Only difference: branch alphabet. `p=2` → gap-indexed (intermediate residue forced); `p=3` → itinerary-word
+  indexed (residues `{1,2}`), finer but still full-branch (o18: word `()`→fix 0, `(1)`→2/55, `(2)`→1/55, …,
+  all ℤ_3; 2463 word-branches seen).
+- **Consequences.** (1) ONE kernel: every Mahler cryptid's non-halting is governed by single-orbit
+  equidistribution of `⌊μ^n⌋ mod p` (the moving p-adic diagonal). (2) ONE obstruction map: the Q9-trilogy walls
+  are structural properties of `T_μ` on ℤ_p, hence machine-independent (§7.5 is not Antihydra-specific).
+  (3) ONE missing tool — rank-1 effective equidistribution of `⌊μ^n⌋ mod p` w/ Diophantine input on `log_q p`
+  — resolves the whole sub-family at once, so `EXPERT_ASK.md` Q1 is a question about a family.
+- **Scope/honesty.** Mahler-`2^a/3^b` sub-family = 4 of 5 core cryptids (Antihydra, o10-inner, o18, o15); o17 is
+  an odometer outlier (NOT claimed isomorphic); slow-width 15 separate. **Decides no machine** — the halt
+  predicate differs per machine (Antihydra even-density / o18 frontier-bit / o15 block-collision); what is
+  isomorphic is the equidistribution kernel + obstruction (why hard / what one tool cracks them), not a decision
+  procedure. `v_p(μ)=−1` is the clean regime (`9/4` v_2=−2 is not single-floor p-to-1, verified).
+- **Why it matters (deliverable D).** Converts "Antihydra is Mahler-hard" into a **classification**: the Collatz
+  core of BB(6) is, up to the per-machine halt predicate, ONE number-theoretic kernel with ONE obstruction map
+  and ONE missing tool. The cryptid vertex (no tame certificate) is a single shared object across the family,
+  not four coincidentally-hard machines — recordable structural contribution, independent of resolving any
+  cryptid. 0 false proofs; no non-halting claimed.
