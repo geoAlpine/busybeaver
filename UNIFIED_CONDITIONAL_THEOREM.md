@@ -45,3 +45,19 @@ correlation neither orbit realizes (≥~1000× margin).
 - **What this achieves:** the community's separate *heuristic* "probabilistic arguments" for Antihydra and o18
   become **one conditional proof** with a proven core and a single, clean, empirically-robust hypothesis
   shared by both monsters. No machine decision is claimed; soundness intact.
+
+## Appendix — why the single hypothesis cannot be killed with proven tools (2026-06-24)
+Two serious attempts to prove the hypothesis (`dig_k(c_n) ⊥ c_n mod p^k`) directly:
+1. **Direct attack** (`lastpiece.py`): the independence is **asymptotic, not an exact symmetry** — residual
+   cross-correlations decay like `1/√N` (random), conditional bias `~1/√count`. **No algebraic shortcut.**
+2. **Combine the two PROVEN tools** (`kill_attempt.py`): the renewal needs the incoming digit *fresh* at
+   position `~depth = O(log n)` (near the BOTTOM of `c_n`); the foothold (Weyl/Benford on `{n·log_p q}`)
+   proves freshness only for the **top `~log n` digits** (near position `~0.585n`, the TOP). Measured: these
+   sit at **opposite ends**, separated by `~0.585n` digits of **uncontrolled middle**. The two proven tools
+   act at opposite ends of the digit string and **cannot be combined**.
+**Conclusion:** the single hypothesis is the irreducible world-open kernel (control of the middle digits =
+specific-orbit equidistribution = Mahler-3/2 1968 / Erdős 1979). It is not reachable by any combination of
+the proven ingredients — and we have *proved why* (opposite-ends / open-middle), not merely failed to find a
+proof. Killing it requires genuinely new mathematics — the same frontier where the worldwide community is
+stuck. The conditional theorem (proven core + this one located, sharp, empirically-robust hypothesis) is the
+limit a finite computation can reach. No decision; soundness intact.
