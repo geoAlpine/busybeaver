@@ -330,3 +330,27 @@ The non-crude (2nd/higher-moment) attack on Route B yields a genuinely new **con
   in logarithms may bound `v2(c'_i − c'_j)`**, and additive-energy machinery may bound the moment. This is the
   natural place for additive-combinatorics expertise.
 - Discipline: the implication is verified; the moment bound is NOT claimed (conditional). No over-claim.
+
+## 2026-06-24 (cont.) — §6.5 attack: the induced map F is a NON-UNIFORMLY EXPANDING 2-adic map (new framework)
+Attacking the §6.5 additive-energy hypothesis, examined the 2-adic local structure of the induced map
+`F(c')=(3^D u+1)/2` (`F_expansion2.py`). [Caught & fixed my own error: `v2(3^D)=0` not `D` — 10th over-claim
+avoided by verification.] **VERIFIED (100%, 2.9×10^5 trials):**
+> `v2(F(c') − F(c'')) = v2(c' − c'') − D − 1`, where `D = v2(3c'−1)` (when jumps match, i.e. `D < separation`).
+So **F is 2-adically EXPANDING with local factor `2^{D+1} ≥ 2`** — NON-UNIFORMLY (bigger jumps expand more,
+but are geometrically rarer).
+**Why this is a genuinely new route (not in the obstruction map):**
+- The §6.5 additive-energy / collision bound `#{(i,j): v2(c'_i−c'_j) ≥ k} = O(J^2/2^k)` is exactly a
+  **decay-of-correlations** statement, which a **transfer-operator (Ruelle–Perron–Frobenius) spectral gap**
+  for the expanding map F would give. **Transfer operators work at RANK 1** (single map) — unlike measure
+  rigidity (rank ≥ 2), which is why this evades that obstruction.
+- The technical crux is the **non-uniformity** (large jumps `D` = strong but rare expansion) = the renewal
+  tail, but this is precisely the regime of **non-uniform hyperbolicity machinery (Young towers, inducing,
+  the induced map IS the inducing!)** — a real, developed area.
+- **Honest status:** F is verified non-uniformly 2-adically expanding; the additive-energy bound is RECAST as
+  a transfer-operator spectral gap / decay-of-correlations for F. This is a candidate framework, NOT a proof
+  (the spectral gap for this specific 2-adic non-uniformly-expanding map, and the specific-orbit-vs-SRB-measure
+  step, remain to establish — though additive energy is a 2nd-order/mixing statistic, possibly more amenable
+  than pointwise equidistribution). New target: **a spectral gap / exponential mixing for the transfer
+  operator of F on `ℤ₂`** (with the renewal/Young-tower handling the large-jump tail).
+- This adds a column to the obstruction map's *opposite*: thermodynamic formalism for the INDUCED expanding
+  map is rank-1-compatible and aims at the (weaker) additive energy, not full equidistribution. Best lead.
