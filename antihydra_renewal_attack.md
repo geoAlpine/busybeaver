@@ -121,3 +121,21 @@ F(c') = (3^D·u + 1)/2 ,   D = v2(3c'−1) ,  u = (3c'−1)/2^D (odd) ;   jump h
 bookkeeping) but does **not** break the circularity — proving `avg jump < 2` still requires the `c'_j mod 2^k`
 equidistribution, and neither growth (parity-blind) nor a drift (random-walk) gives an unconditional handle.
 The complete proof via this route needs the same specific-orbit equidistribution. No decision; soundness intact.
+
+## 9. Path 3 — port to Erdős (base-3) + a STRUCTURAL DIFFERENCE / possible new path (2026-06-24)
+Ported the shift-renewal to the Erdős cluster (`erdos_renewal.py`). The mechanism is **universal**:
+- `T₃(N)=⌊8N/3⌋ = (×8 isometry on ℤ₃) ∘ (÷3 = 3-adic shift)` is a measure-preserving **3-to-1 exact
+  endomorphism of ℤ₃** (preimage counts exactly 3); the low-3-adic-digit Markov chain has gap **0.9995**
+  (even larger than base-2's 0.99) with uniform stationary. Both clusters share the same shift-renewal core.
+- **NEW — the two clusters have different HALT-CONDITION TYPES:**
+  - **Antihydra (base 2) = DENSITY type:** non-halt ⟺ even-density `> 1/3` (a *thick*, positive-fraction
+    condition on the digit). Margin `½` vs `1/3`.
+  - **o18 (base 3) = ALIGNMENT type:** non-halt ⟺ a base-3 carry never lands on the moving F-frontier (a
+    *thin* condition; `Σ_k 1/N_k ≈ 1.5×10⁻⁴` converges — Borel–Cantelli almost-sure avoidance,
+    `o18_attack.md`).
+- **The new path this opens (alignment-type only):** a *thin* alignment event can in principle be killed
+  **unconditionally by a congruence/parity obstruction** — show the carry-defect position and the F-test
+  position lie in incompatible residue classes, so they can **never** coincide. This route is **unavailable
+  for density-type** cryptids (Antihydra) but is exactly suited to o18/o15. If such an obstruction exists,
+  it **decides o18 outright** (no equidistribution needed). Worth a direct structural check of o18's
+  interior-F geometry. [LEAD — see §10.]
