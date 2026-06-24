@@ -183,6 +183,32 @@ Constraints (from failed leads): must engage the state↔incoming coupling (not 
 intrinsically 2-adic (archimedean misses the depth); must be single-orbit (not almost-all); must survive
 verification on the real orbit.
 
+## 7.5 Direct attack on (α) — outcome [NEW: two exact identities + a circularity result; the wall, mapped]
+We attacked (α) — *force the single seed-`8` orbit's empirical measure to Haar* — head-on. We did **not** breach
+it (it is genuinely Mahler-class), but we mapped it completely from the dynamical side and isolated two exact
+identities and why the natural attack is circular. All verified (`alpha_attack.py`, exact integer arithmetic):
+- **[EXACT identity, verified diff `0` over `2·10^5` steps] `Σ_{j<J} v2(3c'_j−1) = #odd steps`**, hence
+  **`avg jump = #odd/#even` exactly** and `even-density = 1/(1+avg jump)`. So the transfer-operator
+  reformulation does not merely lie in "the same class" as even-density — it **collapses to it as an exact
+  identity**. Every reformulation in this note (the four languages of §5 + the Gibbs–Markov route of §6.5)
+  reduces to **even-density ≥ 1/3, with no slack**. *No-free-lunch, made exact.*
+- **[EXACT telescoping, verified] `2c'_{j+1} − 1 = (3/2)^{D_j}(3c'_j − 1)`** (`D_j=v2(3c'_j−1)`). Summing logs:
+  `log b_J = log(3/2)·(J + Σ D_j) + ε`, `b_j=2c'_j−1`, with `ε = Σ log(1+1/(3b_j)) → 0.1164` **bounded**
+  (verified; `b_j` grows like `(9/4)^j`). **But** independently `log b_J ≈ log(2c'_J)` and `c'_J ≈ c(3/2)^n`
+  with `n = #even+#odd = J + Σ D_j` — the **same identity**. So the growth relation is a **tautology**: `Σ D_j`
+  cancels and yields **no inequality**. **⇒ counting / growth-rate arguments are intrinsically circular for
+  (α)** (a new, verified entry in the §4 obstruction map — the one route that looked elementary is closed).
+- **The three mechanisms that force a *single* orbit to equidistribute are each structurally unavailable:**
+  (i) **unique ergodicity** — fails: `F` is full-branch expanding, with a continuum of invariant measures
+  (every Bernoulli measure on the branch-coding; we built explicit non-Haar-generic orbits in §6.5/Q9b);
+  (ii) **rank-≥2 rigidity** — fails: the orbit is rank 1 (§4);
+  (iii) **character-sum cancellation** (Weyl/van der Corput) — fails: closed on `(3/2)^n` (§4).
+- **Net.** (α) is confirmed to be exactly the open kernel (= even-density ≥ 1/3), not a strictly weaker target;
+  the elementary (growth/counting) attack is provably circular; and the soft ergodic mechanisms are all
+  unavailable. What remains is precisely a **new rank-1 effective-equidistribution mechanism with a Diophantine
+  input on `log2 3`** — stated in §7. This section is the honest result of attacking the wall directly: it is
+  mapped on every side, and the residue is a single, sharply-specified missing tool.
+
 ## 8. Candidate seeds we have not been able to develop
 2-adic renewal/thermodynamic formalism (a transfer operator on the *orbit's* law, not the state's); a theory
 of self-referentially-defined 2-adic constants' digit normality (`S_n/3^{n−1} → Σ_{e_j=1}(2/3)^j`); adapting

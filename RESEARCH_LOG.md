@@ -449,3 +449,32 @@ by a **decisive construction** (`Q9b_sufficiency.py`, verified):
 - **Discipline.** Negative/limitative result, stated as such; no claim Antihydra is proved. This is the
   programme's "specify the wall" phase delivering a sharp, decisive boundary. 0 false proofs maintained
   (the construction was the guard: had non-shadowing sufficed, no such orbit would exist — it does).
+
+---
+
+## 2026-06-25b — Direct attack on (α): two exact identities + growth-argument is circular (the wall, fully mapped)
+Attacked (α) = "force the single seed-8 orbit's empirical measure to Haar" head-on. Did NOT breach it (it is
+genuinely Mahler-class) but mapped it completely from the dynamical side, with verified content
+(`alpha_attack.py`):
+- **[EXACT, verified diff 0 over 2·10^5 steps] `Σ_{j<J} v2(3c'_j−1) = #odd steps`** ⇒ **`avg jump = #odd/#even`
+  exactly**, `even-density = 1/(1+avg jump)`. The transfer-operator/renewal reformulation **collapses to
+  even-density ≥ 1/3 as an exact identity** (not merely "same class") — no-free-lunch made exact. Confirms the
+  Q9(b) sufficiency finding at the sharpest level: nothing we built is weaker than the original criterion.
+- **[EXACT telescoping, verified] `2c'_{j+1}−1 = (3/2)^{D_j}(3c'_j−1)`** ⇒ `log b_J = log(3/2)(J+Σ D_j)+ε`,
+  `ε→0.1164` bounded (`b_j=2c'_j−1 ~ (9/4)^j`). Independently `log b_J ≈ log(2c'_J)`, `c'_J ~ c(3/2)^n`,
+  `n=#even+#odd=J+Σ D_j` — the SAME identity ⇒ the growth relation is a **TAUTOLOGY**: `Σ D_j` cancels, giving
+  no inequality. **⇒ counting/growth-rate arguments are intrinsically CIRCULAR for (α)** — new verified entry
+  in the obstruction map; the one elementary-looking route is closed.
+- **Single-orbit-equidistribution mechanisms all unavailable:** (i) unique ergodicity FAILS (F full-branch
+  expanding, continuum of invariant measures — the §6.5/Q9b non-Haar-generic orbits); (ii) rank-≥2 rigidity
+  FAILS (rank 1); (iii) character cancellation FAILS (van der Corput closed on (3/2)^n).
+- **Net / honest.** (α) IS the open kernel (= even-density ≥ 1/3) exactly; the elementary attack is provably
+  circular; the soft ergodic mechanisms are structurally unavailable. Residue = a single sharply-specified
+  missing tool: **rank-1 effective equidistribution with a Diophantine input on log2 3** (§7 α). Wrote §7.5 in
+  STATE_FOR_REVIEW. This closes the "attack the wall directly" line: the wall is mapped on every side; breaching
+  it is genuinely new mathematics (multi-year), not a missed trick. 0 false proofs; no claim (α) is proved.
+- **Assessment for the programme.** The Q8→Q9→(i)/(ii)→(α) sequence has converged: the BB(6)/Antihydra kernel
+  is now a *fully-specified* open problem (exact criterion, exact reformulations, complete obstruction map on
+  both the arithmetic and dynamical sides, one named missing tool). This is the natural endpoint of the
+  "specify the wall" phase. Further progress requires either (a) external expert input (the note is ready) or
+  (b) a multi-year investment in the rank-1 effective-equidistribution mechanism.
