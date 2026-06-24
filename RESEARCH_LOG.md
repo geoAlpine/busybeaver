@@ -293,3 +293,20 @@ the rank-1 slice into a rank-≥2 / mixing structure (resisted by the 1-D slice)
 **Net:** Route B gives the single most tractable open target (`Σ v2(3c'_j−1) = O(J)`, positive density, 250×
 margin); Q7 clarifies that re-coordinatization alone won't escape (rank-1 is intrinsic). Both fed into
 `STATE_FOR_REVIEW.md` (§6, Q7). 0 false proofs.
+
+## 2026-06-24 (cont.) — Route B crude attack: Markov/growth/Lyapunov all fail; gap = first-moment vs distribution
+Attacked the weakest target `Σ_{j≤J} v2(3c'_j−1) = O(J)` (positive density) with crude methods (`routeB_crude.py`):
+- **Pigeonhole/Markov gives NOTHING.** `#{D_j ≥ k} ≤ (Σ D_j)/k` is just the identity `Σ D = Σ_k #{D≥k}` —
+  auto-consistent, no constraint on `Σ D`. **Crisp data:** the actual `#{D_j ≥ k}` matches **equidistribution
+  `J/2^k`** to ~1%, while the only *provable* bound is **Markov `Σ D / k`** which is 2× too weak at k=2 and
+  exponentially too weak (3000×) at k=16. **The gap between provable (first moment `Σ D/k`) and truth
+  (distribution `J/2^k`) IS the kernel.** (Second moment `Σ D²` via Markov is likewise useless.)
+- **Growth/Lyapunov fails.** The target `Σ D = O(J)` ⟺ induced orbit `c'_J` grows `≤ exp(O(J))` ⟺ bounded
+  average per-step factor `(3/2)^{D+1}`; but the trivial `depth ≤ 0.585·pos` allows that factor **unbounded**
+  (large D), so no unconditional growth bound. (Growth is parity-blind, as always.)
+- **Finite-state Lyapunov is PROVABLY impossible** (earlier min-mean-cycle: adversarial even-density = 0).
+**Verdict:** the 250× margin is real, but every crude method (first-moment / growth / finite-state Lyapunov)
+fails — controlling `Σ v2(3c'−1)` needs the **distribution** of `c'_j mod 2^k`, not just its first moment, and
+that is the (one-sided) kernel. The live hope (a non-crude method beating the first moment with the huge
+margin) remains, but no concrete such method yet. This sharpens the Route-B target to: **beat the trivial
+first-moment bound `#{D_j≥k} ≤ ΣD/k` toward `O(J·2^{−k})` (or even just summable) by ANY unconditional means.**
