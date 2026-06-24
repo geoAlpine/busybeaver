@@ -22,6 +22,38 @@ the cryptid classification, **D** the certificate-hierarchy (recordable theory),
 
 ## A. The central open core — the hard wall (one problem, several faces)
 
+### A0 · [OPEN] **THE SUMMIT — what the complete proof actually requires** (re-centred 2026-06-25)
+The goal is the **complete proof** of Antihydra non-halt, not a partial. Exactly (verified):
+```
+non-halt  ⟺  balance_n = 3E_n − n ≥ 0  for all n  ⟺  avg jump ≤ 2  (running, all prefixes),
+            avg jump = (1/J) Σ_{k≥1} N_k ,   N_k = #{j<J : c'_j ≡ 3^{-1} mod 2^k}.
+```
+**Key reframing (verified):** `avg jump = (1/J)Σⱼ v2(c'ⱼ − 1/3)` = the orbit's **average 2-adic proximity to the
+single fixed point `1/3 ∈ ℤ₂`**; `N_k/J` = visit frequency to the shrinking ball `2^{−k}` around `1/3`. So the
+complete proof is a **single-target shrinking-target / one-sided anti-concentration** statement.
+- **What the complete proof needs vs the neighbours (verified true value `avg jump ≈ 1.004`):**
+  | target | bound | what it is |
+  |---|---|---|
+  | positive density (B2) | `avg jump ≤` any const | a *partial*, **NOT** the proof |
+  | **complete proof (A0)** | **`avg jump ≤ 2`** | one-sided, **factor-2 margin** over the truth |
+  | equidistribution (A1) | `avg jump → 1` | the knife-edge, *stronger* than needed |
+- **Crucial point (verified):** the complete proof does **NOT** require A1 (equidistribution). The condition
+  `avg jump ≤ 2` is **strictly weaker as a condition** — we *constructed* a non-Haar orbit with `avg jump = 1.56`
+  that satisfies it without equidistributing. So `{measures with avg jump ≤ 2} ⊋ {Haar}`.
+- **The budget decomposition (verified):** complete proof `⟸ [k=1 term ≤ 1, trivial] + [Σ_{k≥2} N_k/J ≤ 1]`
+  (true value of the tail `≈ 0.50`, so a **2× margin**). The tail splits again: **large-k** = deep approaches to
+  `1/3` = the **Baker / separation** regime (B1, accessible); **k=2,3** = the irreducible **small-k** core.
+- **★ THE SHARP OPEN QUESTION (the real frontier for the complete proof):**
+  > Is the one-sided, margin-2 bound `avg jump ≤ 2` (equivalently `N_k/J ≤ C·2^{−k}` summing to `≤ 2`)
+  > **provably easier** for the seed-8 orbit than full equidistribution `avg jump → 1`, **or** does the
+  > small-k part `k=2,3` make it just as hard?
+  - If **easier** → the complete proof is reachable **without solving Mahler 3/2** (a margin-exploiting,
+    one-sided argument on the orbit's distribution mod `4, 8`). This is the *best* hope for a real proof.
+  - If **just as hard** → the complete proof `=` A1 `=` new mathematics (multi-year).
+  - **Status:** UNRESOLVED. We proved non-shadowing is insufficient and that small-k binds; we have **not**
+    shown the one-sided/margin version equals equidistribution, nor found an argument that exploits the margin.
+    *This is the single most important question for the complete proof — put it to the meeting first.*
+
 ### A1 · [OPEN] Single-orbit rank-1 effective equidistribution
 **Statement.** For `μ=2^a/3^b` with `v_p(μ)=−1`, does the empirical measure of the **one** forward orbit
 `x, T_μx, T_μ²x, …` (`T_μ=⌊μ·⌋` on `ℤ_p`, specific seed e.g. 8) converge to Haar? Equivalently: does
@@ -67,9 +99,12 @@ differences). The differences `c'ᵢ − c'ⱼ` are **S-unit-like**.
   direct Baker application is *not immediate*.
 - **Difficulty / who.** Medium-hard; analytic number theorist (transcendence/linear forms). `EXPERT_ASK.md` Q2.
 
-### B2 · [OPEN] Any unconditional *positive* even-density bound? (improve `Ω(log n)`)
+### B2 · [OPEN] Any unconditional *positive* even-density bound? (improve `Ω(log n)`) — **scaffold, not summit**
 **Statement.** Prove even-density `≥ c` for some explicit `c > 0` (currently only `E_n = Ω(log n)`, i.e.
-density `→ 0` is all that's unconditional). Even `c = 0.01` would be a real first.
+density `→ 0` is all that's unconditional). Even `c = 0.01` would be a real first. **NB: this is a partial that
+does NOT prove non-halt** (non-halt needs `c ≥ 1/3`, A0). It is a scaffold / feasibility probe — if even
+`c > 0` is circular, the margin in A0 is illusory; if `c > 0` is reachable via the Baker tail (B1≡B2 below),
+the A0 summit is one small-k bound away.
 - **Ruled out.** Growth/counting arguments (provably circular, A1). The trivial 2-adic bound gives nothing
   positive.
 - **What would close it.** Unclear — possibly an averaged/second-moment argument that gets a one-sided density
@@ -140,10 +175,13 @@ conjecture). **Status:** [OPEN], = the genuineness-limit avatar. Not expected to
 
 ## E. Strategic / meta open questions (for the ChatGPT session)
 
-1. **Routing.** Of A2a/A2b (the one-sided/LDP cracks), B1 (Baker tail), B2 (any positive density), B3
-   (loose-constant moment) — which is the **best single question to put to a human expert**, and which to a
-   focused ChatGPT brainstorm? (Our guess: A2a/B3 to an ergodic-theory/additive-combinatorics specialist; B1 to
-   a transcendence specialist; B2 to a brainstorm.)
+1. **Routing (complete-proof first).** The headline question for the meeting is **A0's sharp question** — is
+   the one-sided/margin-2 bound `avg jump ≤ 2` provably easier than equidistribution, or does small-k (`k=2,3`)
+   make it equally hard? Put this **first** (to an ergodic-theory / additive-combinatorics specialist and to a
+   ChatGPT brainstorm: are there *margin-exploiting one-sided* arguments — one-sided ergodic theorems,
+   sub-additivity, a Lyapunov/drift on the renewal map `F` — that bound a single orbit's visit frequency to a
+   fixed small cylinder from one side without proving equidistribution?). Then the supports: B1 (Baker tail) to
+   a transcendence specialist; B3 (loose-constant moment) to additive combinatorics.
 2. **The o17 lottery.** Is C2 (decide o17 via its halt predicate, bypassing equidistribution) worth a dedicated
    sprint? It is the **only** remaining route to *deciding an actual BB(6) holdout* (route i) we haven't
    exhausted at the predicate level.
@@ -159,9 +197,12 @@ conjecture). **Status:** [OPEN], = the genuineness-limit avatar. Not expected to
 
 ---
 
-## One-line status
-The programme has converged to a **single, named, literature-anchored open wall (A1 = single-orbit Mahler 3/2)**,
-a small set of **possibly-easier partials (B1–B3)** that do not require it, a **mostly-tractable classification
-to finish (C1–C4)**, and **recordable conjecture-free theory bricks (D1–D2)**. The honest question for the
-session is **where to spend effort**, given that A1 itself is a 57-year problem and the real near-term value is
-in B, C, and D.
+## One-line status (re-centred on the complete proof)
+**The summit is A0: `avg jump ≤ 2` (one-sided, factor-2 margin) — the complete proof, which is strictly weaker
+than equidistribution (A1) yet still has a small-k core we have not cracked.** The decisive question is whether
+that one-sided/margin gap makes the complete proof reachable *without* solving Mahler 3/2 — **UNRESOLVED, and
+the first thing to put to the meeting.** Everything else is support: A1 is the knife-edge (harder than needed);
+B1≡B2 (the Baker tail) is the scaffold that would secure the large-k half and give positive density; C is the
+cross-cryptid classification (one tool lifts the family); D is the recordable certificate-hierarchy theory.
+**For the complete proof specifically, the live target is the small-k one-sided bound `Σ_{k≥2} N_k/J ≤ 1`** —
+not the partials.

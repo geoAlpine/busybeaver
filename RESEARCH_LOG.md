@@ -536,3 +536,27 @@ odometer-halt-predicate). → CRYPTID_KERNEL classification + placement sections
 genuineness-limit avatar is now a *named* open problem; one tool lifts the whole vertex.
 **Net:** the external triage independently validated the obstruction map (orbit-blindness = the a.e. nature of
 all known machinery) and revealed we had reconstructed Tao's state-of-the-art structure ourselves. 0 false proofs.
+
+---
+
+## 2026-06-25e — Re-centre on the COMPLETE PROOF (user reminder): summit = one-sided avg jump ≤ 2, NOT a partial
+User: "最終目標は完全証明だぞ." Correct — recent drift toward B2 (positive density) was a partial, not the goal.
+Re-derived precisely what the complete proof needs and updated the meeting materials (verified,
+`complete_proof_target.py`):
+- **Complete proof ⟺ `avg jump ≤ 2` running** (all prefixes), `avg jump = (1/J)Σ_j v2(c'_j − 1/3)` = the
+  orbit's average 2-adic proximity to the **single point 1/3 ∈ ℤ₂** (a shrinking-target statement; `N_k/J` =
+  visit frequency to the ball `2^{−k}` around 1/3).
+- **The complete proof does NOT require equidistribution (A1).** `avg jump ≤ 2` is one-sided with a **factor-2
+  margin** over the true value `≈1.004`, and is **strictly weaker as a condition**: constructed a non-Haar orbit
+  with `avg jump = 1.56 ∈ (1,2)` satisfying non-halt without equidistributing (D-dist ratios 0.76–1.64 ≠ 1).
+  So `{avg jump ≤ 2} ⊋ {Haar}`.
+- **Budget:** complete proof `⟸ [k=1 ≤ 1 trivial] + [Σ_{k≥2} N_k/J ≤ 1]` (tail true `≈0.50`, margin 2×). Tail
+  splits: large-k = deep approach to 1/3 = Baker/separation (B1); k=2,3 = irreducible small-k core.
+- **★ THE SHARP OPEN QUESTION (the real frontier):** is the one-sided/margin-2 bound `avg jump ≤ 2` *provably
+  easier* for the seed-8 orbit than equidistribution `avg jump → 1`, or does small-k (k=2,3) make it equally
+  hard? If easier → complete proof reachable **without Mahler** (margin-exploiting one-sided argument); if equal
+  → complete proof = A1 = new mathematics. UNRESOLVED — we proved non-shadowing insufficient & small-k binds,
+  but did NOT settle one-sided-vs-equidistribution. This is the first thing for the ChatGPT meeting.
+- Updated OPEN_PROBLEMS (new §A0 = the summit; B2 relabelled scaffold; routing puts A0 first), EXPERT_ASK
+  (new Q0 foregrounded), `complete_proof_target.py`. Discipline: the partials (B/C/D) are explicitly NOT the
+  summit; the live complete-proof target is the small-k one-sided bound. 0 false proofs.

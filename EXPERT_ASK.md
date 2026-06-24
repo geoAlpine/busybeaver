@@ -36,7 +36,20 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
   (closed on the multiplicative recurrence `(3/2)^n`).
 
 ## The question
-> **Q1 (main).** Is there *any* mechanism in the literature that forces a **single** rank-1 orbit of an
+> **Q0 (the complete-proof frontier — ask this first).** Non-halting needs only the **one-sided** bound
+> `avg jump ≤ 2` (running), where `avg jump = (1/J)Σ_j v2(c'_j − 1/3)` is the orbit's average 2-adic proximity
+> to the single point `1/3 ∈ ℤ₂` — equivalently `N_k/J ≤ C·2^{−k}` (visit frequency to the shrinking ball
+> around `1/3`) summing to `≤ 2`. The true value is `≈ 1`, so there is a **factor-2 margin**, and the condition
+> is *strictly weaker* than equidistribution (we exhibit non-Haar orbits with `avg jump ∈ (1,2)`). **Is this
+> one-sided, margin-2 visit-frequency bound for a single orbit provably easier than full equidistribution**
+> (`avg jump → 1` = Mahler 3/2) — e.g. via a *margin-exploiting one-sided* argument (a one-sided ergodic
+> theorem, sub-additivity, or a Lyapunov/drift on the renewal map), bounding the orbit's visit frequency to the
+> fixed small cylinders `c' ≡ 3 mod 4`, `≡ 3 mod 8` *from one side* without proving the exact frequency? Or
+> does the small-`k` part make it just as hard? (The large-`k` tail = deep approaches to `1/3` is separately a
+> p-adic-Baker target, Q2.) **This is the decisive question for whether a complete proof is reachable without
+> Mahler.**
+>
+> **Q1 (the equidistribution wall, if Q0 is "just as hard").** Is there *any* mechanism in the literature that forces a **single** rank-1 orbit of an
 > expanding `×(2^a/3^b)`-type Gibbs–Markov map on `ℤ_p` to equidistribute (empirical measure → Haar), given a
 > **Diophantine input on `log₂3`** — beyond the rank-≥2 scope of Furstenberg/Rudolph/Lindenstrauss and beyond
 > the off-diagonal reach of Fourier/large-sieve? If not, what is the **closest** known result and the exact gap?
