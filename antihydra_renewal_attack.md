@@ -139,3 +139,22 @@ Ported the shift-renewal to the Erdős cluster (`erdos_renewal.py`). The mechani
   for density-type** cryptids (Antihydra) but is exactly suited to o18/o15. If such an obstruction exists,
   it **decides o18 outright** (no equidistribution needed). Worth a direct structural check of o18's
   interior-F geometry. [LEAD — see §10.]
+
+## 10. The new lead checked — congruence/invariant route does NOT decide o18 (honest) (2026-06-24)
+Chased the alignment-type lead (`o18_congruence.py`, `o18_invariant.py`).
+- **Positional congruence FAILS:** o18's halt is `state F reads 1`; F is entered only from `D·read-1`
+  (`D:1→1LF`), so **halt ⟺ when D reads a 1, the cell to its left is also 1**. The F-test positions across
+  the reachable orbit are **mixed mod 2 and mod 3** (`pos%2∈{0,1}`, `pos%3∈{0,1,2}`) — no fixed residue
+  class, so no positional obstruction kills the alignment.
+- **Structural invariant is the halting question itself, and is NOT free:** the equivalent invariant "D only
+  ever reads the **left-end** `1` of a run (left neighbour `0`)" holds for all reachable events — but there
+  are only **9** such events (one per epoch; ~`10⁹` steps needed for more), and the defect epochs (base-3
+  carries) are exactly where it could fail = the Erdős-hard part. Decisively: **if this invariant were
+  structurally provable, the sound FAR/CEGAR deciders would already have decided o18** — but o18 is a
+  verified FAR/CEGAR **HOLDOUT** (`CRYPTID_CENSUS.md`). So no regular/local invariant decides it; the
+  alignment genuinely depends on the base-3 carry distribution = Erdős. **The new lead does NOT yield a
+  decision.**
+- **What Path 3 did establish (kept):** the shift-renewal mechanism is **universal** (base-2 and base-3 both
+  exact `ℤ_p` endomorphisms with near-total gap), and the clusters split by **halt-condition type**
+  (Antihydra = density `>1/3`; o18 = thin Borel–Cantelli alignment). The taxonomy is real; the hoped-for
+  free decision for alignment-type is not (consistent with the FAR-holdout status). No decision; soundness intact.
