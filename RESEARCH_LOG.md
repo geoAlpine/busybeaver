@@ -248,3 +248,25 @@ equidistribution.*
 
 **Reviewer's meta-point (agreed):** even with no proof, the achieved reduction — Antihydra non-halting to a
 **single-orbit, moving-digit equidistribution of Mahler-3/2 / Erdős-ternary type** — is itself the value.
+
+## 2026-06-24 (cont.) — 3rd review pass: soften "iid", clarify Q5 self-reference, ADD Q7 (coordinate-artifact)
+Incorporated a third reviewer round (all valid):
+- "Renewal jumps are iid-geometric" → "**behave as** an iid-geometric renewal process" (established:
+  geometric tail + lag-k decorrelation + renewal mixing; full independence NOT claimed).
+- Q5: "linear in the bits" → "linear in the parity variables `e_j` **once the orbit is fixed**" (the `e_j`
+  are self-referential — preempts the obvious objection).
+- **Added Q7 (deep):** is the moving-2-adic-diagonal obstruction *intrinsic*, or an **artifact of our
+  coordinates**? Is there a coordinate change / solenoid extension / symbolic realization making it a FIXED
+  observable? (A breakthrough may be a re-coordinatization, not a new theorem.)
+
+**Our own first thought on Q7 [worth recording]:** the *natural* coordinate change — to the (2,3)-solenoid,
+where `α=×(3/2)` acts — DOES convert the moving 2-adic diagonal into a **fixed observable `f` evaluated along
+the orbit `α^n(x_0)`**. But that is exactly **(α): rank-1 specific-orbit equidistribution**, which rigidity
+does not reach (rank-1 in any coordinate). So the solenoid re-coordinatization **links (β) ⟷ (α)** — the
+moving-diagonal (arithmetic) and the rank-1-orbit (dynamical) are the SAME obstruction in two coordinate
+systems, and the natural change moves between them without escaping. **Open (the real content of Q7):** is
+there a *non-obvious* re-coordinatization (not the solenoid) landing in a regime where standard
+mixing/equidistribution applies? If yes, that — not a new theorem — is the breakthrough.
+
+**Strategic note (agreed with reviewer):** Route B (prove one-sided `density > 1/3` only, via `avg jump ≤ 2`
+with its factor-2 margin) is more attractive than Route A (solve Mahler-3/2 fully). Prioritise B.

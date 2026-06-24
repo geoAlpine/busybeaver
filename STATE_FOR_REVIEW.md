@@ -53,7 +53,9 @@ ternary-digit-of-2^n problem.)
 - `bit_k(c_n) ⊥ c_n mod 2^k`: mutual information ≈ 0 (~1000× margin) — i.e. (H) holds empirically.
 - 2-adic ⊥ 3-adic (MI≈0); the 3-adic expansion re-encodes the parity history (`c_n mod 9 ↔ (parity_{n−1},
   parity_{n−2})` bijectively).
-- Renewal jump heights are iid-geometric with **zero drift** (centered sums ~ `√N` random walk).
+- Renewal jump heights **behave as an iid-geometric renewal process** with zero drift (centered sums ~ `√N`
+  random walk). [What is established: geometric tail, lag-k decorrelation/`MI≈0`, renewal mixing; full
+  independence is NOT claimed.]
 - **The parity sequence has MAXIMAL linear complexity (= M/2, Berlekamp–Massey)**: it is the nonlinear filter
   (the moving bit-n extraction) of the linear-feedback carry `S_n` — a max-complexity self-referential generator.
 
@@ -115,10 +117,17 @@ coefficients at a moving modulus.
 4. Is there a known conditional reduction of Mahler-3/2 (or single-orbit Collatz equidistribution) to a more
    standard conjecture (effective `×2,×3`; GRH-type; abc; a Diophantine statement on `log2 3`)?
 5. For the linear depth-form `depth_n ≥ L ⟺ S_n ≡ 8·3^n − 2^n (mod 2^{n+L})` with explicit
-   `2^j 3^{n−1−j}` coefficients: is the moving-modulus exponential sum amenable to any method (it is *linear*
-   in the bits, unlike the nonlinear Mahler sum)?
+   `2^j 3^{n−1−j}` coefficients: is the moving-modulus exponential sum amenable to any method? (It is
+   *linear in the parity variables `e_j` once the orbit is fixed* — unlike the nonlinear Mahler sum — though
+   the `e_j` are themselves the orbit's bits, so the form is self-referential.)
 6. **[from review — the most promising weakening]** Antihydra needs only a **one-sided** statement
    (running even-density `≥ 1/3`), NOT full equidistribution (`= 1/2`). **Is there any known method giving a
    one-sided lower bound on the frequency of a single MOVING digit** (e.g. "the diagonal bit is 0 with
    density `≥ 1/3`") that falls short of, and is easier than, full equidistribution? Our only unconditional
    one-sided result is `E_n = Ω(log n)`; can the `> 1/3` target admit a weaker-than-equidistribution tool?
+7. **[from review — is the obstruction intrinsic or an artifact?]** Our obstruction map says every known tool
+   fails at the **moving 2-adic diagonal**. But "moving diagonal" is a feature of *our* coordinates
+   (`bit_n` of `3^n`, modulus `2^{n+L}`). **Is there any known coordinate change, group/solenoid extension, or
+   symbolic realization that converts this moving diagonal into a FIXED observable** (where standard
+   equidistribution/mixing tools would apply)? A breakthrough may come from re-coordinatizing the problem
+   before any new theorem.
