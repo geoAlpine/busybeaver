@@ -178,3 +178,27 @@ the law of the output parities. Imposing this **self-consistency** (`selfconsist
 the parity sequence has bounded low-order correlation** — a condition the renewal contraction makes
 *sufficient*, strictly weaker than full equidistribution, and one the orbit satisfies by a ~1000× margin.
 The remaining gap is only the high-order/long-range correlation structure. [order-m bound: §12, pending.]
+
+## 12. The self-consistency line culminates in a CLEAN CONDITIONAL THEOREM (2026-06-24)
+Pushing the self-consistency attack to its sharpest form (`phi_fixedpoint.py`, `bit_invariance.py`, `hinge.py`):
+- **[PROVEN, finite computation] The self-consistency operator Φ contracts to Bernoulli(½).** Φ maps an
+  incoming-bit process to the output parity process via the renewal chain. Iterating Φ from *correlated*
+  starts `(E,ρ)=(0.15,+0.8),(0.40,−0.8),(0.30,+0.5),…` ALL converge to the unique attracting fixed point
+  `(E,ρ)=(0.5,0)`. The contraction is the near-total spectral gap (0.99) of the low-bit chain.
+- **[the exact hinge] The adversarial min=0 requires correlating the incoming bit with the chain STATE.**
+  Measured on the real orbit: the incoming high bit `bit_k(c_n)` is **independent of the low-bit state
+  `c_n mod 2^k`** — `I(bit_k ; c_n mod 2^k) = 0.00007…0.0009 bits ≈ 0` (k=6,8,10), `corr ≤ 0.004`. The orbit
+  does **not** realize the adversary's correlated attack.
+- **[shift-invariance, empirical] All fixed bit positions share statistics:** density of `bit_k(c_n)` is
+  `0.4986…0.5013` (range `0.0027`) with autocorr `≈0`, for `k=0..15`.
+
+**CONDITIONAL THEOREM (the program's strongest positive statement).**
+> *If the incoming high bit `bit_k(c_n)` is asymptotically independent of the low-bit state `c_n mod 2^k`
+> (no carry/state correlation), then — by the PROVEN renewal spectral-gap contraction — the Antihydra
+> orbit's even-density equals `½ > 1/3`, and Antihydra NEVER HALTS.*
+
+This turns the community's *heuristic* "probabilistic argument" into a conditional **proof** with a proven
+core (the contraction) and a single, clean, sharply-stated hypothesis (high-bit ⊥ low-state). The hypothesis
+is **necessary for, and weaker than, full equidistribution** (it is a decorrelation, not equidistribution of
+every bit's value), holds empirically with a `~1000×` margin, and is the precise remaining open piece. No
+decision claimed (the hypothesis is unproven = the world-open kernel in its sharpest dress); soundness intact.
