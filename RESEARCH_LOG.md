@@ -124,3 +124,28 @@ Continued D3 by testing van der Corput on the linear/parity sum (`D3_vdc.py`):
   linear form, checking whether the *linear* points avoid the `1/N²` self-clustering that killed the
   nonlinear sieve; (ii) look up / derive the exact Stewart-type bound on binary-digit runs of `3^m` and test
   if it bounds the depth. (Marathon: D3 alive, no quick win, walls mapped.)
+
+## 2026-06-24 (cont.) — D3: large-sieve + Stewart both tested, both ruled out; core is a 2-adic diagonal sum
+Tested D3's remaining two tools (`D3_sieve_stewart.py`):
+- **Large-sieve: ruled out.** The linear form `S_n mod 2^M` avoids the `1/N²` Diophantine self-clustering
+  that killed the nonlinear sieve (good) — but it lives on the **×3-coset, a thin subgroup of size `2^{M−2}`**.
+  The 2nd moment `(1/(2^M-1))Σ_t|Σ_n e(t S_n/2^M)|² ≈ 189·N ≫ N`: the points concentrate on the subgroup
+  (many collisions), so the large sieve over `ℤ/2^M` gives no useful bound. The off-diagonal is already
+  handled by the character sum; the sieve adds nothing.
+- **Stewart–Baker: ruled out (disconnected).** `corr(depth_n, #nonzero-binary-digits(3^n)) = +0.03 ≈ 0`.
+  Stewart bounds the **archimedean/global digit COUNT** of `3^n` (→∞, ~161 by n=400); the depth is the
+  **2-adic TRAILING-zero count** of `c_n−1` (`O(log n)`, max 20). Archimedean tools do not see the 2-adic
+  depth.
+- **Synthesis [honest].** All standard tools for the linear exponential sum — vdC, large-sieve, Stewart —
+  are now **ruled out for D3's core**. The reason is unified: the linear/2-adic structure controls the
+  **off-diagonal (low bits, ×3-subgroup, character-sum cancellation)** unconditionally, but the depth /
+  even-density live at the **moving-modulus diagonal (middle/position-n bits)**, and no archimedean or
+  fixed-modulus Fourier tool reaches it. D3 is **mapped, not dead**: the linear structure is a real asset
+  (off-diagonal control), but the **core is a genuinely-new 2-adic diagonal sum** — the same new-math need,
+  now pinned in the linear/2-adic language.
+- **Programme status:** D2 closed (circular); D3 core isolated (needs a novel 2-adic tool, not vdC/sieve/
+  Stewart). **The remaining external hope is D1 (effective measure rigidity / ELV)** — not yet engaged; it
+  is the one framework designed to control a *specific* orbit (coupling intact) and the live 2020s frontier.
+- **Next:** engage D1 — read into effective equidistribution (Einsiedler–Lindenstrauss–Venkatesh / BLMV),
+  identify the precise Diophantine-genericity condition, and test whether the Antihydra seed/orbit could
+  satisfy it. (Marathon: all in-house Fourier/sieve routes mapped; the 2-adic-diagonal core and D1 remain.)
