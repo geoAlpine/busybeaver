@@ -310,3 +310,23 @@ fails — controlling `Σ v2(3c'−1)` needs the **distribution** of `c'_j mod 2
 that is the (one-sided) kernel. The live hope (a non-crude method beating the first moment with the huge
 margin) remains, but no concrete such method yet. This sharpens the Route-B target to: **beat the trivial
 first-moment bound `#{D_j≥k} ≤ ΣD/k` toward `O(J·2^{−k})` (or even just summable) by ANY unconditional means.**
+
+## 2026-06-24 (cont.) — ROUTE B BREAKTHROUGH (conditional): the MOMENT / additive-energy method
+The non-crude (2nd/higher-moment) attack on Route B yields a genuinely new **conditional theorem**
+(`routeB_energy.py`, `routeB_moments.py`):
+- `avg jump = (1/J) Σ_k N_k`, `N_k = #{j≤J : c'_j ≡ 3^{−1} mod 2^k}`. Hölder: `N_k ≤ (Σ_r count_r(k)^{2m})^{1/2m}`.
+- If the `2m`-th moment `M_{2m}(k)=Σ_r count_r^{2m} = O(J^{2m}/2^{(2m−1)k})` (random order), then
+  `N_k = O(J·2^{−k(2m−1)/2m})` and `avg jump ≤ C^{1/2m}·Σ_{k≥1} 2^{−k(2m−1)/2m}`.
+- **Thresholds:** 2nd moment ⟹ even-density `≥ 0.293` (near-miss); **4th moment ⟹ `≥ 0.405 > 1/3`** ✓;
+  6th ⟹ `0.44`. With the *empirical* constant `C≈1.3` (need `C≤3.45`), the 4th-moment bound gives
+  even-density `≥ 0.39 > 1/3` — comfortable margin.
+- **CONDITIONAL THEOREM [logic rigorous, hypothesis open]:** *if the 4th additive-energy moment
+  `Σ_r count_r(k)^4 ≤ C·J^4/2^{3k}` (`C ≤ 3.45`) for the induced-orbit residues `c'_j mod 2^k`, then
+  even-density `≥ 1/3` and Antihydra never halts.* Empirically the 4th moment is `~1.3×` random.
+- **Why this is the strongest lead:** it reduces non-halt from **full equidistribution** (the Mahler kernel)
+  to a **4th additive-energy / moment bound** — a DIFFERENT, additive-combinatorial target. The relevant
+  object is `#{(i₁,…,i₄): c'_{i₁}≡…≡c'_{i₄} mod 2^k}` ⟺ `v2(c'_i − c'_j) ≥ k` collisions of a geometric-growth
+  induced orbit (`c'_{j+1} ≈ (9/4) c'_j`); the differences are S-unit-like, so **p-adic Baker / linear forms
+  in logarithms may bound `v2(c'_i − c'_j)`**, and additive-energy machinery may bound the moment. This is the
+  natural place for additive-combinatorics expertise.
+- Discipline: the implication is verified; the moment bound is NOT claimed (conditional). No over-claim.
