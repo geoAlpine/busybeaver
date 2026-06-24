@@ -122,16 +122,26 @@ the natural place for additive-combinatorics / Diophantine expertise.)
 verified (100%, exact) to be a **full-branch, piecewise-affine, expanding map of `ℤ₂`**: on each cylinder
 `P_D = {v2(3c'−1)=D}` (Haar measure `2^{−(D+1)}`, geometric), `F` is affine with 2-adic slope `(3/2)^{D+1}`,
 **expansion `2^{D+1} ≥ 2`, zero distortion**, and each branch maps **onto all of `ℤ₂`**; `F` preserves Haar
-(Kac). This is a **Gibbs–Markov system** — the cleanest setting for Ruelle–Perron–Frobenius transfer operators.
-The required additive-energy / collision bound `#{(i,j): v2(c'_i−c'_j) ≥ k} = O(J^2/2^k)` is a
-**decay-of-correlations** statement, and the relevant **function space is locally-constant / Lipschitz
-functions w.r.t. the 2-adic metric** — in which the additive-energy observables (`2^k`-cylinder indicators)
-sit (they are locally constant). For Gibbs–Markov maps, **exponential decay of correlations on Lipschitz is
-classical**. Crucially transfer operators are **rank-1-compatible**, evading the rank-≥2 rigidity obstruction.
-**The one honest gap:** decay of correlations is for the invariant (Haar) measure, whereas the additive energy
-is along the *specific* orbit — connecting the two (or showing the *one-sided* `≤ C·random` bound follows
-robustly from the spectral gap) is the precise remaining question (see Q9). This places the problem on a
-different, well-developed battlefield rather than the moving-diagonal wall.
+(Kac). These verified facts (full branches, affine, expanding, **zero distortion**) are exactly the structural
+hypotheses of a **Gibbs–Markov map**, so `F` **appears to satisfy the standard Gibbs–Markov hypotheses** — the
+cleanest setting for Ruelle–Perron–Frobenius transfer operators (we state this as a structural match, not a
+proven classification; the tail/big-image conditions should be confirmed by a specialist).
+**A sharpening of the target (NEW, verified 100%): the induced map advances the renewal sequence,
+`c'_{i+1} = F(c'_i)`** (exact, `ok=1999/1999`). Hence `F^d(c'_i) = c'_{i+d}`, and the additive energy
+`E_2(k) = Σ_d #{i: F^d(c'_i) ≡ c'_i} = #{(i,j): v2(c'_i−c'_j) ≥ k}` **is literally the 2-adic self-correlation
+(collision count) of the renewal sequence at the moving diagonal.** This is a **decay-of-correlations**
+statement, and the relevant **function space is locally-constant / Lipschitz functions w.r.t. the 2-adic
+metric** — in which the additive-energy observables (`2^k`-cylinder indicators) sit (they are locally
+constant). For Gibbs–Markov maps, **exponential decay of correlations on Lipschitz is classical**. Crucially
+transfer operators are **rank-1-compatible**, evading the rank-≥2 rigidity obstruction. (Measured: the
+collision count is `J` (the trivial diagonal) `+ J^2/2^k` (random) to high precision — no over-concentration —
+but this is the *specific orbit*, which is the open part.) **The one honest gap:** decay of correlations is for
+the invariant (Haar) measure, whereas the additive energy is along the *specific* orbit. In `L²` terms the
+needed bound is equivalent to a **one-sided anti-concentration** — *no `2^k`-cylinder is over-visited by the
+orbit* — which is formally **weaker** than equidistribution but is still a single-orbit (not measure)
+statement. Connecting the two (or showing the one-sided `≤ C·random` bound follows robustly from the spectral
+gap) is the precise remaining question (see Q9). This places the problem on a different, well-developed
+battlefield rather than the moving-diagonal wall.
 
 ## 7. What a proof needs (precise targets for a new tool)
 - **(α)** equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` — i.e. effective "rank-1
@@ -190,14 +200,21 @@ coefficients at a moving modulus.
    `v2(c'_i − c'_j)` for such an orbit (the differences are S-unit-like)? By §6.5 this would prove Antihydra
    never halts.
 9. **[the most promising — Gibbs–Markov / transfer operator]** `F` is verified to be a **full-branch,
-   piecewise-affine, expanding (Gibbs–Markov) map of `ℤ₂`** (affine slopes `(3/2)^{D+1}`, zero distortion,
-   full branches, Haar-preserving). (a) Does its Ruelle operator have a **spectral gap on 2-adic-Lipschitz
-   functions** (presumably yes by classical Gibbs–Markov theory — please confirm the tail/big-image
-   conditions are met by the geometric branch widths `2^{−(D+1)}`)? (b) **The crux:** the additive energy is
-   along the *specific* orbit, `E_2(k)=Σ_d #{i≤J: F^d(c'_i)≡c'_i (mod 2^k)}`, while decay of correlations is
-   for the Haar measure — does the spectral gap give the *one-sided* bound `E_4 ≤ C·J^4/2^{3k}` for a single
-   orbit (`§6.5` only needs `≤ C·random`, not equidistribution), or does this reduce back to specific-orbit
-   equidistribution? This is the precise question on which the whole transfer-operator route turns.
+   piecewise-affine, expanding map of `ℤ₂`** (affine slopes `(3/2)^{D+1}`, zero distortion, full branches,
+   Haar-preserving) — i.e. it **appears to satisfy the standard Gibbs–Markov hypotheses** (we state the
+   structural match, not a proven classification). And (verified 100%) **the induced map advances the renewal
+   sequence**: `c'_{i+1}=F(c'_i)`, so `F^d(c'_i)=c'_{i+d}` and the additive energy is exactly the renewal
+   sequence's 2-adic self-correlation `#{(i,j): v2(c'_i−c'_j)≥k}`. (a) Does its Ruelle operator have a
+   **spectral gap on 2-adic-Lipschitz functions** (please confirm the tail/big-image conditions are met by the
+   geometric branch widths `2^{−(D+1)}`)? (b) **The crux:** decay of correlations is for the Haar measure, but
+   the additive energy is along the *specific* orbit. In `L²` the needed bound is a **one-sided
+   anti-concentration** — no `2^k`-cylinder is over-visited by the orbit — formally **weaker** than
+   equidistribution but still single-orbit. Does the spectral gap give this one-sided bound
+   `E_4 ≤ C·J^4/2^{3k}` for a single orbit (`§6.5` needs only `≤ C·random`, not equidistribution) — e.g. via a
+   large-deviation bound on cylinder visit counts — or does even the one-sided `L²` bound reduce back to
+   specific-orbit equidistribution? This is the precise question on which the whole transfer-operator route
+   turns, and (the reviewer's framing) it may be the *real* open core — **single-orbit extraction from a
+   Gibbs–Markov system** — rather than Mahler-3/2 per se.
 
 ---
 
