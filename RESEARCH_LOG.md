@@ -180,3 +180,25 @@ genuinely new, years-scale.
 stated paste-ready in `BB6_KERNEL_PROBLEM.md`; it is the clean special case "rank-1 `2^a/3^b`-orbit
 equidistribution" of (α). No standard conjecture *more tractable than Mahler* implies it. Discipline intact:
 0 false proofs; 7 tempting leads retracted on scrutiny across the session.
+
+## 2026-06-24 (cont.) — (alpha)/(beta) frameworks built; first unconditional partial; honest phase-2 boundary
+**(beta) first genuine partial [UNCONDITIONAL]:** `E_n = Ω(log n)` even terms. Proof: consecutive even
+positions satisfy `p_{i+1} ≤ p_i + depth_{p_i} ≤ p_i + log2(c_{p_i}) ≈ 1.585 p_i` (geometric), so
+`E_n ≥ log N / log 1.585 ≈ 2.2 log N`. Verified (`alphabeta_build.py`; empirical gap ratio ≤ 1.19, provable
+≤ 1.585). Beyond "infinitely many evens"; still far below positive density. **New open core (beta):** improve
+the trivial `depth_n ≤ 0.585n` to `o(n)` — a sub-linear 2-adic depth bound for the self-referential
+linear-feedback carry `S_n`. (Linear structure controls off-diagonal; `o(n)` needs the diagonal.)
+**(alpha) framework:** target `Σ e(h(3/2)^n)=o(N)`; provable input `{n log2 3}` equidist (Benford, top
+`log n` bits); required NEW input = rank-1 effective Furstenberg reaching depth `εn`, with a Diophantine
+condition on `log2 3` (CF `[1,1,1,2,2,3,1,5,2,23,...]`, max pq 55, not Liouville; discrepancy `(log N)/N`
+controls only `O(log n)` top bits = the foothold wall).
+
+**HONEST PHASE-2 BOUNDARY.** Across the marathon: 10 attacks + 4 directions mapped, 7 leads retracted on
+scrutiny, all data distilled (`NEW_MATH_MATERIALS.md`), (alpha)/(beta) frameworks + first partials built. The
+*foundational* work — translating BB(6)'s kernel into one precisely-characterised object with stated
+new-tool requirements and first unconditional partials — is DONE. **Constructing the new tools themselves
+((alpha) rank-1 effective equidistribution; (beta) sub-linear self-referential 2-adic depth bound) is a
+years-scale research frontier and is NOT completed here** — no existing technique reaches it (the obstruction
+map proves why), and inventing a new one is beyond a single effort. This is stated plainly, not as defeat:
+the marathon delivered the *substrate and the map*, which is exactly the prerequisite an eventual proof is
+built on (Taniyama–Shimura before Wiles; Thurston before Perelman). Discipline intact: 0 false proofs.
