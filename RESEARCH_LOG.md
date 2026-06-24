@@ -202,3 +202,23 @@ years-scale research frontier and is NOT completed here** — no existing techni
 map proves why), and inventing a new one is beyond a single effort. This is stated plainly, not as defeat:
 the marathon delivered the *substrate and the map*, which is exactly the prerequisite an eventual proof is
 built on (Taniyama–Shimura before Wiles; Thurston before Perelman). Discipline intact: 0 false proofs.
+
+## 2026-06-24 (cont.) — Phase-2: engaged Tao (2019), the closest frontier tool; confirms (beta) is beyond SOTA
+Engaged the most relevant recent technique: **Tao (2019), "Almost all orbits of the Collatz map attain almost
+bounded values"** — transport/entropy machinery on the Syracuse distribution, built for exactly 3x+1-type
+carry dynamics (`phase2_tao.py`):
+- Our Syracuse-type object (renewal jump heights `D_j=v2(3c'−1)`) along the single orbit: mean `0.9993→1`,
+  geometric tail, `√N` concentration — matches Tao's transport prediction.
+- **BUT Tao's theorem is for ALMOST ALL starting points (log-density 1); it explicitly decides NO single
+  orbit.** Antihydra is ONE specific orbit (seed 8). Tao's machinery equidistributes the digit distribution
+  *averaged over starts*; for a fixed orbit it gives nothing — the same specific-vs-generic wall.
+- **Conclusion:** Tao's method is the **closest existing technique to (beta)** yet still hits the wall. The
+  new tool must do **for one orbit what Tao does for almost all** — open even post-Tao (single-orbit
+  Collatz-type bounds remain unproven). Added to the obstruction map.
+
+**Updated obstruction map (now includes the SOTA):** the new tool must surpass *all* of: van der Corput
+(closed), sum-product (regime), Fourier/sieve/Stewart (off-diagonal), rigidity/ELV (rank≥2), self-consistency
+(circular), subspace (fixed-vs-moving), **and Tao-transport (almost-all-vs-single-orbit)**. Every known
+technique — including the 2019 frontier — fails on the *single specific orbit*. **Phase-2 = building a
+single-orbit equidistribution method beyond Tao** — the genuine open frontier; not session-completable.
+Discipline intact: 0 false proofs; the Tao engagement was assessed honestly (it does NOT apply), not claimed.
