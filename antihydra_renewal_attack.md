@@ -202,3 +202,22 @@ core (the contraction) and a single, clean, sharply-stated hypothesis (high-bit 
 is **necessary for, and weaker than, full equidistribution** (it is a decorrelation, not equidistribution of
 every bit's value), holds empirically with a `~1000×` margin, and is the precise remaining open piece. No
 decision claimed (the hypothesis is unproven = the world-open kernel in its sharpest dress); soundness intact.
+
+## 13. TIER-0 challenge — the recursion/cascade idea, scrutinized and honestly rejected (2026-06-24)
+A genuinely new attempt: does the PROVEN top-freshness (Benford/Weyl on `{n log₂3}`) propagate DOWN to the
+parity through the `×3/2` carry, via a step-by-step recursion (not direct transfer)? Tested (`tier0_recursion.py`,
+`tier0_decisive.py`):
+- **Looked promising:** a cascade injecting fresh bits only at the TOP of a depth-`k` window yields parity
+  even-density `≈0.5`, decorrelated — and feeding a *proven-equidistributed rotation* `{t·log₂3}` (Benford
+  source) as the top gives the same `≈0.5`. Momentarily this looked like a reduction of Antihydra non-halt
+  to Benford (proven).
+- **Scrutiny kills it [discipline]:** a deliberately **non-equidistributed periodic top source ALSO gives
+  even-density ≈0.5**. So the `½` is NOT driven by the top's equidistribution — it comes from the one thing
+  all three top sources share: each is a function of `t` only, **independent of the state `s`**. The cascade
+  **injects an external top bit decoupled from the low state — which is precisely the hypothesis
+  (`top ⊥ state`) assumed, not proven.** In the real orbit the top and low bits are digits of the *same*
+  `c_n`, coupled a priori; the cascade assumes that coupling away.
+- **Verdict:** no crack. The recursion idea reduces — once the model is made faithful — to the identical
+  open kernel (`top ⊥ state`). Recorded as a 4th tempting over-claim caught *before* assertion (soundness
+  discipline holds: 0 false claims). TIER 0 remains the world-open wall; the proven foothold cannot drive
+  the parity because making it do so already requires the independence it would need to prove.
