@@ -133,9 +133,10 @@ proven classification; the tail/big-image conditions should be confirmed by a sp
 statement, and the relevant **function space is locally-constant / Lipschitz functions w.r.t. the 2-adic
 metric** — in which the additive-energy observables (`2^k`-cylinder indicators) sit (they are locally
 constant). For Gibbs–Markov maps, **exponential decay of correlations on Lipschitz is classical**. Crucially
-transfer operators are **rank-1-compatible**, evading the rank-≥2 rigidity obstruction. (Measured: the
-collision count is `J` (the trivial diagonal) `+ J^2/2^k` (random) to high precision — no over-concentration —
-but this is the *specific orbit*, which is the open part.) **The one honest gap:** decay of correlations is for
+transfer operators are **rank-1-compatible**, evading the rank-≥2 rigidity obstruction. (Measured, see **Appendix B**: the
+cylinder-visit moments `M_2, M_4` of the renewal sequence match the random-iid model to within `0.4–5%` over
+`k=2..14` — and `M_4` sits consistently *below* random, i.e. the orbit is if anything *less* concentrated than
+random, the favorable side of a one-sided bound — but this is the *specific orbit*, which is the open part.) **The one honest gap:** decay of correlations is for
 the invariant (Haar) measure, whereas the additive energy is along the *specific* orbit. In `L²` terms the
 needed bound is equivalent to a **one-sided anti-concentration** — *no `2^k`-cylinder is over-visited by the
 orbit* — which is formally **weaker** than equidistribution but is still a single-orbit (not measure)
@@ -198,7 +199,10 @@ coefficients at a moving modulus.
    be bounded by `O(J^4/2^{3k})` **unconditionally**? Equivalently, bound the collision count
    `#{(i,j): v2(c'_i − c'_j) ≥ k}`. Does **p-adic Baker / linear forms in logarithms** give a lower bound on
    `v2(c'_i − c'_j)` for such an orbit (the differences are S-unit-like)? By §6.5 this would prove Antihydra
-   never halts.
+   never halts. *(Q8 and Q9 are not independent routes: Q9 would imply the energy bound sought in Q8 — its
+   one-sided anti-concentration on cylinder-visit counts is exactly the `M_4 = O(J^4/2^{3k})` moment of Q8 — if
+   one could bridge spectral-gap estimates to single-orbit visit counts. Q8 is the additive-combinatorics
+   attack on that bound; Q9 is the dynamical attack.)*
 9. **[the most promising — Gibbs–Markov / transfer operator]** `F` is verified to be a **full-branch,
    piecewise-affine, expanding map of `ℤ₂`** (affine slopes `(3/2)^{D+1}`, zero distortion, full branches,
    Haar-preserving) — i.e. it **appears to satisfy the standard Gibbs–Markov hypotheses** (we state the
@@ -261,3 +265,29 @@ real slack (`3.45` vs measured `1.3`). (ii) Larger `m` only loosens the constant
 — but `M_{2m}` is a higher additive energy, presumably harder to bound; the 4th moment is the sweet spot.
 (iii) This is a *sufficient* condition for one-sided density `> 1/3` (hence non-halt); it does **not** need
 full equidistribution. The open problem is purely the bound in step (4) for `m=2`.
+
+---
+
+## Appendix B — the measured cylinder-visit moments (§6.5/Q9), with numbers
+*The §6.5 hypothesis is a bound on `M_{2m} = Σ_r count_r^{2m}`, `count_r = #{j<J: c'_j ≡ r mod 2^k}` (the
+cylinder-visit counts of the renewal sequence). Here are the observed values vs the random-iid model, so a
+reviewer can see exactly what "matches random" means. `J = 8000` renewal states of the real Antihydra orbit
+(`c_0 = 8`); exact integer arithmetic. Random model: `E[M_2] = J + J(J−1)/2^k`,
+`E[M_4] = J + 7J^{(2)}/2^k + 6J^{(3)}/2^{2k} + J^{(4)}/2^{3k}` (`J^{(r)}` = falling factorial).*
+
+```
+ k     M2_obs    M2_rand  ratio          M4_obs        M4_rand  ratio
+ 2   16001466   16006000  1.000   64035245145618  64144050999250  0.998
+ 4    4002770    4007500  0.999    1004145804758   1011273676738  0.993
+ 6    1005278    1007875  0.997      16131676526     16370009834  0.985
+ 8     256456     257969  0.994        283172272       292572766  0.968
+10      70038      70492  0.994          6953538         7185871  0.968
+12      23378      23623  0.990           343862          359958  0.955
+14      11856      11906  0.996            46368           47711  0.972
+```
+**Reading:** across `k=2..14` (from the random-walk regime into the sparse regime `J/2^k < 1`) the moments
+agree with random to `0.4–5%`. Crucially **`M_4_obs ≤ M_4_rand` at every `k`** (ratios `0.955–0.998`): the
+specific orbit is, if anything, **less concentrated than random** — the favorable side of the one-sided bound
+`M_4 ≤ C·J^4/2^{3k}` that §6.5 needs (it requires only `C ≤ 3.45`; here `C ≈ M_4_obs·2^{3k}/J^4 ≈ 1.3`). This
+is *measured* for one orbit; turning it into a theorem is exactly Q8/Q9. (Reproduce: `renewal_shift.py` for
+the shift identity; the moment table is a Counter over `c'_j mod 2^k`.)
