@@ -270,3 +270,26 @@ mixing/equidistribution applies? If yes, that — not a new theorem — is the b
 
 **Strategic note (agreed with reviewer):** Route B (prove one-sided `density > 1/3` only, via `avg jump ≤ 2`
 with its factor-2 margin) is more attractive than Route A (solve Mahler-3/2 fully). Prioritise B.
+
+## 2026-06-24 (cont.) — Attacked Route B (one-sided) and Q7 (coordinates), in order
+**Route B [sharpened, `routeB.py`].** Renewal reframing: `non-halt ⟺ centered jump-sum Σ_{j≤J}(D_j−1) ≤ J
+for all J` (J = #even-steps). Measured: max centered sum `792` vs the bound `J ≈ 2×10^5` — a **~250× margin**
+(true ~`√J`, need `≤ J`). The weakest sufficient target: **`Σ_{j≤J} v2(3c'_j−1) = O(J)` for ANY constant C**
+(= positive even-density `≥ 1/C`; `C ≤ 2` gives `> 1/3`), strictly weaker than equidistribution (exact C=2
+with `o(J)` error). **Still open:** trivial `depth ≤ 0.585·pos` gives only `n_J ≤ 1.585^J` (exponential ⇒
+`Ω(log)` evens), far from the needed `n_J ≤ 3J`. **Sharp Route-B sub-problem (the most tractable target in
+the whole programme): prove `Σ_{j≤J} v2(3c'_j−1) = O(J)` unconditionally** — bounded *average* 2-adic
+valuation of `3c'_j−1` along the induced orbit. (A crude pigeonhole/energy bound, not equidistribution, might
+suffice given the 250× margin — this is the live hope.)
+**Q7 [analysed, `Q7_coords.py`] — the obstruction is part-artifact, part-intrinsic.** Both the (2,3)-solenoid
+and the induced first-return map convert the moving 2-adic diagonal into a **fixed observable** (e.g.
+`D_j=v2(3c'_j−1)` is a fixed function of `c'_j`). So the *moving diagonal* IS a removable coordinate artifact.
+BUT every such coordinate keeps the orbit **rank-1** (one map), and rank is coordinate-invariant; the natural
+changes merely move between the arithmetic (β) and dynamical (α) faces. The orbit is the diagonal `a=b=n`
+slice of `3^a/2^b` and does not fill the rank-2 `{×2,×3}` action (verified: not `×2`/`×3`-invariant), so no
+rank-2 embedding from this slice. **Verdict:** breakthrough needs either a *non-obvious* coordinate embedding
+the rank-1 slice into a rank-≥2 / mixing structure (resisted by the 1-D slice), or a new rank-1 tool. The
+*intrinsic* obstruction is **rank-1 specific-orbit**, not the (removable) moving diagonal.
+**Net:** Route B gives the single most tractable open target (`Σ v2(3c'_j−1) = O(J)`, positive density, 250×
+margin); Q7 clarifies that re-coordinatization alone won't escape (rank-1 is intrinsic). Both fed into
+`STATE_FOR_REVIEW.md` (§6, Q7). 0 false proofs.

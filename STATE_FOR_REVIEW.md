@@ -125,9 +125,18 @@ coefficients at a moving modulus.
    one-sided lower bound on the frequency of a single MOVING digit** (e.g. "the diagonal bit is 0 with
    density `≥ 1/3`") that falls short of, and is easier than, full equidistribution? Our only unconditional
    one-sided result is `E_n = Ω(log n)`; can the `> 1/3` target admit a weaker-than-equidistribution tool?
+   *(Sharpened: in renewal terms `non-halt ⟺ Σ_{j≤J}(D_j−1) ≤ J ∀J`, `D_j=v2(3c'_j−1)`; the true centered
+   sum is ~`√J` while we only need `≤ J` — a ~250× margin empirically. The weakest sufficient target is
+   `Σ_{j≤J} v2(3c'_j−1) = O(J)` for ANY constant, i.e. just **positive** even-density `≥ 1/C` — strictly
+   weaker than equidistribution. Still open: the trivial `depth ≤ 0.585·pos` gives only `Ω(log)` evens.)*
 7. **[from review — is the obstruction intrinsic or an artifact?]** Our obstruction map says every known tool
    fails at the **moving 2-adic diagonal**. But "moving diagonal" is a feature of *our* coordinates
    (`bit_n` of `3^n`, modulus `2^{n+L}`). **Is there any known coordinate change, group/solenoid extension, or
    symbolic realization that converts this moving diagonal into a FIXED observable** (where standard
    equidistribution/mixing tools would apply)? A breakthrough may come from re-coordinatizing the problem
-   before any new theorem.
+   before any new theorem. *(Our preliminary view: the solenoid and the induced first-return map both DO turn
+   the moving diagonal into a fixed observable — but along a **rank-1** orbit, and rank is coordinate-
+   invariant; so the moving diagonal looks like a removable artifact while the **rank-1 specific-orbit**
+   obstruction underneath looks intrinsic. The orbit is the diagonal `a=b=n` slice of `3^a/2^b` and does not
+   fill the rank-2 action — is there a non-obvious coordinate embedding the rank-1 slice into a genuinely
+   rank-≥2 / mixing structure?)*
