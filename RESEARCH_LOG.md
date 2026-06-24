@@ -414,3 +414,38 @@ Attacked the construction "spectral gap ⟹ single-orbit visit-count bound." It 
   identical. Verified assets: fixed-point list + shadowing demo (`Q9b_obstruction.py`).
 - **Discipline:** this is a NEGATIVE result, stated as such; no claim that Antihydra is proved. It is the
   honest localization the programme is now producing ("specify the wall" phase). 0 false proofs maintained.
+
+---
+
+## 2026-06-25 — Q9(b) sufficiency RESOLVED: (i) non-shadowing NOT sufficient; (ii) NOT weaker than equidistribution
+Pushed on the sharpened question (does non-shadowing/Diophantine input + spectral gap suffice for the
+avg-jump/M_4 bound, and is it strictly weaker than Mahler-type equidistribution?). Both answers are negative,
+by a **decisive construction** (`Q9b_sufficiency.py`, verified):
+- **Setup.** The needed bound is `avg jump = (1/J) Σ_{k≥1} N_k ≤ 2`, `N_k = #{j<J: c'_j ≡ 3^{-1} mod 2^k}`
+  (a single nested cylinder's visit count); even-density `= 1/(1+avg jump)`, threshold `avg jump ≤ 2`. Haar
+  gives `avg jump = 1`. §6.5 bounds each `N_k` through the symmetric moment `M_4`.
+- **(i) NO — non-shadowing is NOT sufficient.** Using the full-branch coding (`F` ≅ a full shift), every
+  branch itinerary is realized by a unique point (inverse branches `g_D(y)=(2^{D+1}y+3^D−2^D)/3^{D+1}`,
+  verified: forward itinerary matches the prescribed one 900/900 and 1800/1800). Prescribing a **fully
+  supported, aperiodic** itinerary (biased-geometric, mean ≈3, all `D≥0` present) builds an orbit that is
+  **dense in ℤ₂** (178/256 cylinders mod 2^8, `D`-distribution covers `0..7+`), i.e. **maximally
+  non-shadowing** — yet `avg jump = 3.098 > 2`, **violating the bound**. So the bound is NOT implied by
+  non-shadowing / spreading; it forces the empirical measure to be **Haar specifically**, not merely
+  "spread out." (Generic for a non-Haar Bernoulli measure `ν`, the orbit equidistributes w.r.t. `ν` and
+  `avg jump = E_ν[v2(3x−1)]`, freely `>2`.)
+- **(ii) NOT strictly weaker.** Decomposing `avg jump = (1/J)Σ_k N_k` by scale (verified, `J=20000`): it is
+  **dominated by small `k`** — `k≤3` contributes `0.879` of the total `1.004`, with `N_k/J ≈ 2^{−k}`. The
+  small-`k` terms ARE fixed-`k` cylinder counts = **fixed-`k` equidistribution** (empirical measure → Haar at
+  the low cylinders), in the **same open class as the original even-density problem**. The genuinely weaker
+  large-`k` part (separation / anti-clustering of orbit differences, plausibly Baker-accessible) is
+  **negligible** for avg jump. So the binding residual input ≈ Haar-equidistribution; the transfer-operator
+  framework does **not lower the bar** at the binding scale.
+- **Net (the value, honest).** Route C is now fully mapped: it **relocates and re-derives** the wall but does
+  **not weaken** it. The reviewer's "single-orbit extraction from a Gibbs–Markov system" IS the real core, and
+  it equals **empirical-measure-→-Haar of the specific orbit**, whose binding difficulty lives at **small /
+  fixed `k` (the low cylinders / moving 2-adic diagonal)** — re-confirming the §5 obstruction map from the
+  dynamical side. The framework cleanly **separates** a binding equidistribution core (small `k`) from a
+  non-binding Diophantine tail (large `k`); only the latter is plausibly accessible, and it is not what binds.
+- **Discipline.** Negative/limitative result, stated as such; no claim Antihydra is proved. This is the
+  programme's "specify the wall" phase delivering a sharp, decisive boundary. 0 false proofs maintained
+  (the construction was the guard: had non-shadowing sufficed, no such orbit would exist — it does).

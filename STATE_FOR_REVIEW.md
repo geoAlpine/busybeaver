@@ -156,6 +156,23 @@ battlefield rather than the moving-diagonal wall.
 > rate function — so Route C **re-derives the central reduction** ("seed is non-exceptional", §5 language 2)
 > and pins the residual input to a sharp, named target. The single-orbit wall is **relocated, not removed** —
 > precisely the reviewer's "single-orbit extraction" core. (`Q9b_obstruction.py`.)
+>
+> **Sufficiency of that residual input — resolved [NEW, rigorous — closes Q9(b)].** Is the non-shadowing /
+> 2-adic-Diophantine condition (i) *sufficient* for the bound, and (ii) *strictly weaker* than
+> Haar-equidistribution? **Both: NO.** The needed quantity is `avg jump = (1/J)Σ_{k≥1} N_k`,
+> `N_k=#{j<J: c'_j≡3^{-1} mod 2^k}` (`even-density = 1/(1+avg jump)`, threshold `≤2`, Haar gives `1`).
+> **(i) NO:** via the full-branch coding (`F` ≅ a full shift) we *construct* an orbit generic for a non-Haar
+> Bernoulli measure — **fully supported, dense in `ℤ₂` (178/256 cylinders), aperiodic = maximally
+> non-shadowing** — yet `avg jump = 3.098 > 2`, violating the bound (`Q9b_sufficiency.py`, inverse-branch
+> construction verified, forward itinerary matches 1800/1800). So the bound forces the empirical measure to be
+> **Haar specifically**, not merely "spread out." **(ii) NO:** `avg jump` is **dominated by small `k`**
+> (`k≤3` = `0.879` of `1.004`, with `N_k/J≈2^{−k}`); those terms are fixed-`k` cylinder counts =
+> **fixed-`k` equidistribution**, the same open class as the original even-density problem. The genuinely
+> weaker large-`k` part (separation / anti-clustering, plausibly Baker-accessible) is **negligible** for
+> `avg jump`. **Conclusion:** Route C **relocates and re-derives the wall but does not weaken it**; the binding
+> residual input ≈ empirical-measure-→-Haar at the **low cylinders / moving 2-adic diagonal** — re-confirming
+> §4's obstruction map from the dynamical side. The framework's value is **separation of scales** (binding
+> equidistribution core at small `k`, non-binding Diophantine tail at large `k`), not a lowered bar.
 
 ## 7. What a proof needs (precise targets for a new tool)
 - **(α)** equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` — i.e. effective "rank-1
@@ -232,12 +249,17 @@ coefficients at a moving modulus.
    `M_4=O(J^4/2^{3k})`. So the bound is **intrinsically orbit-specific**. **The sharpened question that
    actually matters:** the gap *does* give the bound for `μ`-a.e. seed, plus the exact mean/variance and a
    **large-deviation rate function** for visit counts; so the residual input is precisely *"seed `6` is
-   non-exceptional / does not shadow periodic points"* (a non-shadowing / 2-adic-Diophantine condition). **Is
-   that condition (i) sufficient — via gap + large deviations — for the one-sided `M_4` bound, and (ii)
-   strictly weaker than full Mahler-type equidistribution?** If yes to both, Route C genuinely reduces the
-   difficulty; if (i) needs full equidistribution, the wall is confirmed identical. This is the **real open
-   core — single-orbit extraction from a Gibbs–Markov system** — rather than Mahler-3/2 per se (the reviewer's
-   framing, now made precise).
+   non-exceptional / does not shadow periodic points"* (a non-shadowing / 2-adic-Diophantine condition). **We
+   then resolved the sufficiency of that input — see the §6.5 box — and both parts are NO:** (i) non-shadowing
+   is *not* sufficient (we construct a fully-supported, dense, aperiodic — maximally non-shadowing — orbit with
+   `avg jump = 3.098 > 2`, violating the bound; only empirical-measure-`=`-Haar excludes it), and (ii) it is
+   *not* strictly weaker than equidistribution (`avg jump` is dominated by small-`k` fixed-cylinder counts =
+   fixed-`k` equidistribution, the original open class; the genuinely weaker large-`k` separation tail is
+   negligible). So Route C **relocates and re-derives the wall but does not weaken it** — the **real open core
+   is single-orbit extraction from a Gibbs–Markov system = empirical-measure-→-Haar of the seed-6 orbit**,
+   binding at the low cylinders / moving 2-adic diagonal. The residual open question for experts is therefore
+   the *positive* one: is there **any** mechanism (effective rank-1 equidistribution; a Diophantine input on
+   `log2 3`) that forces a *single* Gibbs–Markov orbit's empirical measure to Haar — i.e. §7's (α)?
 
 ---
 
