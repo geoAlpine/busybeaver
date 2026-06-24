@@ -378,3 +378,39 @@ Pinned down F's structure (`F_piecewise.py`), answering the reviewer's "which fu
   function space is identified; the spectral gap is classical for the measure; the only question is the
   measure→specific-orbit step for the (one-sided) additive energy. Strongest and most novel lead of the
   programme. (Added to STATE_FOR_REVIEW Q9 / §6.5.)
+
+---
+
+## 2026-06-24 — Q9(b) RESOLVED (negative, rigorous): spectral gap is orbit-blind; the bound is orbit-specific
+Attacked the construction "spectral gap ⟹ single-orbit visit-count bound." It does NOT exist, and this is a
+**provable obstruction** (not a gap to be bridged). Verified, `Q9b_obstruction.py`:
+- **(1) The transfer operator `L` and its spectral gap depend on `(F, Haar)` ALONE** — they are insensitive
+  to any individual orbit. [definitional]
+- **(2) F has a fixed point `x_D = (3^D−2^D)/(3^{D+1}−2^{D+1}) ∈ ℤ₂` on EVERY branch `D`** (verified exactly:
+  `0, 1/5, 5/19, 19/65, 65/211, 211/665, …`; all odd-denominator ⇒ genuine 2-adic integers; `F(x)=x` and the
+  branch condition `v2(3x−1)=D` both hold exactly). Being full-branch expanding, F has periodic points of all
+  periods (a full shift). A constant/periodic orbit visits a single (resp. `p`) `2^k`-cylinder(s), giving
+  `M_4 = J^4` (resp. `J^4/p^3`) `≫ J^4/2^{3k}` = the random target. **So the M_4 bound is FALSE for these
+  orbits of F.**
+- **(3) Even integer seeds shadow these periodic points and over-concentrate on a window** (verified): the
+  integer `≡ 1/5 (mod 2^60)` shadows the fixed point for ~27 steps and has `M_4` up to **~7000× the random
+  target** on the shadow window. So the failure is concrete, not exotic.
+- **Conclusion (rigorous).** A property of `(F,Haar)` alone (the spectral gap, by (1)) cannot imply a bound
+  that is false for some orbits (by (2)–(3)). **∴ spectral gap ⇏ single-orbit M_4 bound. The bound is
+  intrinsically orbit-specific** and requires orbit-specific input on the seed (`c'_0 = 6`): at minimum a
+  **non-shadowing / 2-adic-Diophantine** property (the seed is not too-well approximable by periodic points).
+- **This is the SAME single-orbit wall, precisely relocated** — confirming the reviewer's intuition that the
+  real open core is "single-orbit extraction from a Gibbs–Markov system," NOT Mahler-3/2 per se. It is the
+  exact analogue of Tao(2019)'s almost-all-vs-single-orbit barrier, now seen inside the transfer-operator
+  framework.
+- **Positive residue (what the gap DOES give).** For `μ`-almost-every seed the bound holds; the gap gives the
+  exact mean `J·2^{−k}`, variance `O(J·2^{−k})`, and a large-deviation rate function for the visit counts.
+  So Route C **re-derives the central reduction** ("seed 8/6 is non-exceptional" = language 2 of §5) and pins
+  the residual input to a sharp, named, more concrete target than "Mahler."
+- **Sharpened open question (for experts), replacing the vague Q9(b):** is a non-shadowing / 2-adic-Diophantine
+  condition on the seed (a) *sufficient*, via the spectral gap + large-deviation machinery, for the one-sided
+  `M_4 = O(J^4/2^{3k})` bound, and (b) *strictly weaker* than full Mahler-type equidistribution? If yes to
+  both, Route C genuinely reduces the difficulty; if (a) needs full equidistribution, the wall is confirmed
+  identical. Verified assets: fixed-point list + shadowing demo (`Q9b_obstruction.py`).
+- **Discipline:** this is a NEGATIVE result, stated as such; no claim that Antihydra is proved. It is the
+  honest localization the programme is now producing ("specify the wall" phase). 0 false proofs maintained.

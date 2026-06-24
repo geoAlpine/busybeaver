@@ -144,6 +144,19 @@ statement. Connecting the two (or showing the one-sided `≤ C·random` bound fo
 gap) is the precise remaining question (see Q9). This places the problem on a different, well-developed
 battlefield rather than the moving-diagonal wall.
 
+> **Partial resolution of the transfer-operator route [NEW, rigorous — a negative that localizes the wall].**
+> The spectral gap **alone cannot** prove the bound: it is a property of `(F, Haar)` *only* (orbit-blind),
+> whereas the bound is **false for some orbits**. Verified: `F` has a fixed point
+> `x_D=(3^D−2^D)/(3^{D+1}−2^{D+1})∈ℤ₂` on every branch `D` (`0, 1/5, 5/19, 19/65, …`, all genuine 2-adic
+> integers, `F(x)=x` exactly), and being full-branch expanding it has periodic points of every period; a
+> period-`p` orbit gives `M_4 = J^4/p^3 ≫ J^4/2^{3k}`. Even *integer* seeds shadowing them over-concentrate
+> (`≡1/5 mod 2^60` ⇒ `M_4` up to `~7000×` random on a `~27`-step window). **Hence the bound is intrinsically
+> orbit-specific; the gap must be supplemented by a non-shadowing / 2-adic-Diophantine property of the seed
+> `6`.** What the gap *does* give: the bound for `μ`-a.e. seed, exact mean/variance, and a large-deviation
+> rate function — so Route C **re-derives the central reduction** ("seed is non-exceptional", §5 language 2)
+> and pins the residual input to a sharp, named target. The single-orbit wall is **relocated, not removed** —
+> precisely the reviewer's "single-orbit extraction" core. (`Q9b_obstruction.py`.)
+
 ## 7. What a proof needs (precise targets for a new tool)
 - **(α)** equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` — i.e. effective "rank-1
   Furstenberg" with a Diophantine condition on `log2 3`; OR
@@ -210,15 +223,21 @@ coefficients at a moving modulus.
    sequence**: `c'_{i+1}=F(c'_i)`, so `F^d(c'_i)=c'_{i+d}` and the additive energy is exactly the renewal
    sequence's 2-adic self-correlation `#{(i,j): v2(c'_i−c'_j)≥k}`. (a) Does its Ruelle operator have a
    **spectral gap on 2-adic-Lipschitz functions** (please confirm the tail/big-image conditions are met by the
-   geometric branch widths `2^{−(D+1)}`)? (b) **The crux:** decay of correlations is for the Haar measure, but
-   the additive energy is along the *specific* orbit. In `L²` the needed bound is a **one-sided
-   anti-concentration** — no `2^k`-cylinder is over-visited by the orbit — formally **weaker** than
-   equidistribution but still single-orbit. Does the spectral gap give this one-sided bound
-   `E_4 ≤ C·J^4/2^{3k}` for a single orbit (`§6.5` needs only `≤ C·random`, not equidistribution) — e.g. via a
-   large-deviation bound on cylinder visit counts — or does even the one-sided `L²` bound reduce back to
-   specific-orbit equidistribution? This is the precise question on which the whole transfer-operator route
-   turns, and (the reviewer's framing) it may be the *real* open core — **single-orbit extraction from a
-   Gibbs–Markov system** — rather than Mahler-3/2 per se.
+   geometric branch widths `2^{−(D+1)}`)?
+   **(b) [we resolved the literal version — negative — see the box below].** The spectral gap **alone cannot**
+   give the single-orbit bound, because it is a property of `(F, Haar)` *alone* (orbit-blind) while the bound
+   is *false for some orbits*: `F` has a fixed point `x_D=(3^D−2^D)/(3^{D+1}−2^{D+1})∈ℤ₂` on every branch `D`
+   (verified exactly: `0,1/5,5/19,19/65,…`), and constant/periodic orbits — plus integer seeds that *shadow*
+   them (an integer `≡1/5 mod 2^60` over-concentrates `~7000×` for `~27` steps, verified) — violate
+   `M_4=O(J^4/2^{3k})`. So the bound is **intrinsically orbit-specific**. **The sharpened question that
+   actually matters:** the gap *does* give the bound for `μ`-a.e. seed, plus the exact mean/variance and a
+   **large-deviation rate function** for visit counts; so the residual input is precisely *"seed `6` is
+   non-exceptional / does not shadow periodic points"* (a non-shadowing / 2-adic-Diophantine condition). **Is
+   that condition (i) sufficient — via gap + large deviations — for the one-sided `M_4` bound, and (ii)
+   strictly weaker than full Mahler-type equidistribution?** If yes to both, Route C genuinely reduces the
+   difficulty; if (i) needs full equidistribution, the wall is confirmed identical. This is the **real open
+   core — single-orbit extraction from a Gibbs–Markov system** — rather than Mahler-3/2 per se (the reviewer's
+   framing, now made precise).
 
 ---
 
