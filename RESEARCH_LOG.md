@@ -53,3 +53,27 @@ are about. The in-house D2 shortcut does not exist.
   line: model the carry of `×3` into the moving bit directly and seek any unconditional anti-concentration,
   however weak (Milestone M2: any non-trivial unconditional bound). And begin reading into **D1** (effective
   equidistribution) as the external frontier.
+
+## 2026-06-24 (cont.) — D3 carry calculus: foundation laid + a genuine AFFINE structural lead
+Pivoted to D3 (coupling-respecting, in-house). Set up and **verified** the carry calculus
+(`D3_carrycalculus.py`, `D3_linear.py`):
+- **Exact identities [verified]:** `2^n c_n = 8·3^n − S_n`, `S_{n+1}=3S_n+2^n[c_n odd]`, and
+  `depth_n = v2(8·3^n − S_n − 2^n) − n`.
+- **Trivial bound only:** empirically `depth_n ≤ 0.319·log2(c_n)`, but the provable (trivial) ceiling is
+  `depth_n ≤ log2(c_n) ≈ 0.585n`. Closing even this factor-3 gap unconditionally is open (Milestone M2).
+- **★ Structural lead [verified, genuinely new handle]:** `S_n = Σ_{j<n, c_j odd} 2^j 3^{n−1−j}` is **LINEAR
+  in the parity bits** `e_j=[c_j odd]` (explicit coefficients), so **`depth_n ≥ L ⟺ S_n ≡ 8·3^n−2^n
+  (mod 2^{n+L})` is an AFFINE condition on the parity history.** The even-density / depth statistics are
+  therefore controlled by **linear forms** in `(e_0,…,e_{n−1})` with explicit `2^j3^{n−1−j}` coefficients.
+- **Why it's promising (and honest about limits):** linear/affine conditions are the regime where
+  **exponential-sum / Fourier methods** can succeed even when the nonlinear digit-equidistribution cannot
+  (cf. the Mahler wall is fundamentally *nonlinear*). This is a handle the other directions lacked. The
+  self-reference (`e_j` is itself a low bit of the orbit) is NOT removed — but the concrete D3 sub-problem is
+  now sharp: **bound the linear-form exponential sum `Σ_n e(t·Φ_n(e))`** where `Φ_n` is the explicit affine
+  depth-form, using the `2^j3^{n−1−j}` (mixed 2,3) coefficient structure. *Not* the same as the general
+  equidistribution — a genuinely different, more linear target.
+- **Status:** D3 foundation + lead established; **no unconditional bound yet** (no over-claim — this is a
+  framework + a sharp sub-problem, not a result). This is now the most promising live in-house direction.
+- **Next (D3/M2):** (i) write the affine depth-form `Φ_n(e)` explicitly; (ii) attempt a 2nd-moment / large-
+  sieve bound on `Σ_n e(t·Φ_n)` exploiting the linearity (where the nonlinear large sieve died on self-
+  clustering, the *linear* form may separate); (iii) target any unconditional `even-density ≥ ε` partial.
