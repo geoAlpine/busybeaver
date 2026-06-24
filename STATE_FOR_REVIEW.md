@@ -28,9 +28,10 @@ depth_n := v2(c_n − 1) = v2(8·3^n − S_n − 2^n) − n
 non-halt  ⟺  balance_n = 3 E_n − n ≥ 0  for ALL n   ⟺   running even-density E_n/n ≥ 1/3 at every prefix.
 ```
 The following are **SUFFICIENT** (the standard heuristic), NOT equivalent — non-halt does not force `depth`
-sublinear:
+sublinear, and *fixed-k* equidistribution alone is not enough (one needs control as the window grows with n):
 ```
-[ equidistribution of c'_j mod 2^k ]  ⟹  even-density → 1/2  &  depth_n = o(n)  ⟹  balance_n ≥ 0 ∀n  ⟹  non-halt.
+[ suitable growing-window equidistribution of the renewal states c'_j mod 2^k ]
+      ⟹  even-density → 1/2  and  geometric depth tails  ⟹  depth_n = o(n)  and  balance_n ≥ 0 ∀n  ⟹  non-halt.
 ```
 **The 2-adic engine (verified, exact arithmetic):** `T(x)=floor(3x/2)` is a measure-preserving 2-to-1 EXACT
 endomorphism of ℤ₂. The induced low-digit chain on ℤ/2^k has Dobrushin coefficient `δ(P^k)=0` (it forgets its
@@ -70,8 +71,10 @@ ternary-digit-of-2^n problem.)
 **Unified diagnosis.** Every known tool controls a *generic / averaged / fixed / off-diagonal* slice perfectly
 and fails identically on the **specific orbit at the moving 2-adic diagonal**.
 
-## 5. The open kernel in four equivalent languages
-1. **Arithmetic:** `floor((3/2)^n) mod 2` equidistributes (Mahler-3/2; for base 3: Erdős ternary).
+## 5. The open kernel as seen from four closely related viewpoints
+*(These are tightly linked under the renewal coding, not asserted as strictly equivalent.)*
+1. **Arithmetic:** a sufficient / essentially controlling form is that `floor((3/2)^n) mod 2` equidistributes
+   (Mahler-3/2; for base 3: Erdős ternary).
 2. **Dynamical:** the seed `8 ∈ ℤ` (a Haar-null point) is non-exceptional for the exact ℤ₂-endomorphism `T`.
 3. **Probabilistic:** (H) — incoming high digit ⊥ low-digit state.
 4. **Sequence-design:** the even-density of the nonlinear-filtered, max-linear-complexity carry `S_n` is 1/2.
