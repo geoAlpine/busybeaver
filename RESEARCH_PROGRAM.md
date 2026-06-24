@@ -27,12 +27,12 @@ a.e.** / **control of the uncontrolled middle bits**.
 touch a single orbit; an *effective* version with a Diophantine-genericity input on the seed might. This is
 the most likely external source of the eventual tool. *Programme task:* learn the effective machinery; find
 the precise Diophantine condition; test whether seed 8 / the orbit satisfies it.
-**(D2) A uniqueness theorem for SELF-GENERATED processes** — *ours to build*, grounded in our proven renewal
+**(D2) [CLOSED 2026-06-24 — presupposes (H)]** A uniqueness theorem for SELF-GENERATED processes — *attempted; found equivalent to the conditional theorem*, grounded in our proven renewal
 contraction. The orbit's parity law is a fixed point of Φ under the *diagonal* constraint (incoming law =
 output law, because the bits are one sequence). The adversarial min=0 shows free fixed points are bad, but
 the diagonal self-coupling is a strong extra constraint. *Conjecture to prove:* the only diagonally-self-
 consistent shift-invariant fixed point of Φ is Bernoulli(1/p). This may be provable by ergodic/algebraic
-means WITHOUT the full equidistribution. **Most promising in-house direction.**
+means WITHOUT the full equidistribution. **CLOSED: any independent-feeding analysis assumes (H); the real orbit's state-incoming coupling is untouched. Redirect to D3.**
 **(D3) A carry calculus / additive combinatorics of the ×3-in-base-2 carry** — the core object (the
 "carry into bit n of 3^n") is under-theorised. Build the combinatorics/anti-concentration of these carries
 directly (beyond sum-product's regime). *Programme task:* develop the carry-propagation algebra; seek an

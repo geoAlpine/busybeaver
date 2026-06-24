@@ -29,3 +29,27 @@ M1 research line.
 3. Compute the fixed point's even-density exactly (= 1/p) from the bijection F_k structure.
 4. Then: connect "Φ-unique-fixed-point = Bernoulli" to "the real orbit's empirical bit-measure is a Φ-fixed
    point" — the remaining bridge (this is where (H)'s residue concentrates).
+
+## 2026-06-24 (cont.) — M1 structural attempt: D2 clarified as EQUIVALENT to the conditional theorem (redirect)
+Pursued M1's structural proof (`δ(P^k)=0 → Φ contraction → uniqueness`). Two findings, both honest negatives:
+1. **Φ is NOT a pathwise contraction** (`M1_influence.py`): a single incoming-bit flip's influence on the
+   future parity does **not decay** — it jumps to `~0.5` at lag k and stays there (sum of influence diverges).
+   So `δ(P^k)=0` (forgets the START) does **not** give forgetting of incoming PERTURBATIONS. The Banach-via-
+   pathwise-coupling route fails.
+2. **The fixed-point uniqueness is equivalent to (H), not a step past it** [the key realisation]. The
+   fixed-point simulations feed incoming bits from an RNG = **independent of the state**. But state-
+   independence *is* (H). So "the unique self-consistent process is Bernoulli" really proves
+   `(H) ⟹ Bernoulli ⟹ even-density ½ ⟹ non-halt` = **the conditional theorem we already hold**. The real
+   orbit's incoming is *state-coupled* (incoming `bit_k(c_n)` and state `c_n mod 2^k` are digits of the same
+   `c_n`); RNG-feeding erases exactly that coupling. **D2 presupposes (H); it does not advance toward proving it.**
+
+**Consequence for the programme.** **D2 (self-generated-process uniqueness) is closed** as a route to (H):
+any analysis that feeds the incoming independently of the state assumes (H). A genuine attack must engage the
+**state–incoming coupling of the actual deterministic orbit** — which is exactly what D1 (effective measure
+rigidity: control a specific orbit, coupling intact) and D3 (carry calculus: the arithmetic of the coupling)
+are about. The in-house D2 shortcut does not exist.
+- **6th tempting result caught on scrutiny** (the M1 "partial" assumed (H)). Discipline holds: 0 false claims.
+- **Revised next step:** pivot to **D3 (carry calculus)** — the most concrete coupling-respecting in-house
+  line: model the carry of `×3` into the moving bit directly and seek any unconditional anti-concentration,
+  however weak (Milestone M2: any non-trivial unconditional bound). And begin reading into **D1** (effective
+  equidistribution) as the external frontier.
