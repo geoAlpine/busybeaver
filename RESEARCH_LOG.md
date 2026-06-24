@@ -222,3 +222,29 @@ carry dynamics (`phase2_tao.py`):
 technique — including the 2019 frontier — fails on the *single specific orbit*. **Phase-2 = building a
 single-orbit equidistribution method beyond Tao** — the genuine open frontier; not session-completable.
 Discipline intact: 0 false proofs; the Tao engagement was assessed honestly (it does NOT apply), not claimed.
+
+## 2026-06-24 (cont.) — External review (a number theorist): 2 corrections + the one-sided-density reframing
+A reviewer gave sharp feedback on `STATE_FOR_REVIEW.md`. Both technical points were CORRECT and are fixed
+(an 8th over-claim, caught externally — discipline working as intended):
+1. **"non-halt ⟺ depth=o(n)" was OVERSTATED.** Verified (`verify_criterion.py`): the EXACT criterion is
+   `non-halt ⟺ balance_n = 3E_n − n ≥ 0 for ALL n ⟺ running even-density ≥ 1/3 at every prefix`. `depth=o(n)`
+   and equidistribution are **SUFFICIENT** (the heuristic), not equivalent; non-halt does not force `depth`
+   sublinear. Corrected the ⟺ chain to an implication chain.
+2. **"(H) ⟺ diagonal equidistribution" weakened** to "(H) is sufficient for non-halt; under the renewal
+   coding it reduces to / is implied by diagonal-digit equidistribution."
+
+**The reframing (reviewer's best point) — NEW PRIORITY DIRECTION:** Antihydra needs only the **one-sided**
+`even-density > 1/3`, NOT full equidistribution `= 1/2`. In renewal terms:
+```
+even-density = 1/(1 + avg jump),   so   even-density > 1/3  ⟺  avg jump height  D_j = v2(3c'_j − 1)  ≤ 2.
+```
+The true value is `avg D = 1`, so the target `≤ 2` has a **factor-2 margin** — a *crude* one-sided method that
+loses constants could still land it. Equivalently: `Σ_k density{ c'_j ≡ 3^{−1} (mod 2^k) } ≤ 2` (one-sided
+summability), strictly weaker than the `= 2^{−k}` of equidistribution. **This is the most hopeful near-term
+target** and may admit a weaker-than-equidistribution tool. (Our only current one-sided result is
+`E_n = Ω(log n)`; the trivial depth bound `D_j ≤ 0.585·position` gives only `E_n ≥ O(1)`.) Added as
+**question 6** for reviewers and as the prioritised (β)-variant: *prove `avg jump ≤ 2` (one-sided), not full
+equidistribution.*
+
+**Reviewer's meta-point (agreed):** even with no proof, the achieved reduction — Antihydra non-halting to a
+**single-orbit, moving-digit equidistribution of Mahler-3/2 / Erdős-ternary type** — is itself the value.

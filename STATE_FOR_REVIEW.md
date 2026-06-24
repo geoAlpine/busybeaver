@@ -23,9 +23,14 @@ Define the parity bits `e_j = [c_j odd]`. Exact identities (verified):
 depth_n := v2(c_n − 1) = v2(8·3^n − S_n − 2^n) − n
 ```
 **Renewal structure (verified):** `depth_n` counts down deterministically (`d≥1 ⇒ d−1`) and, at even steps
-(`c=2c'`), jumps to a fresh `D = v2(3c' − 1)`. Hence
+(`c=2c'`), jumps to a fresh `D = v2(3c' − 1)`. **Exact halting criterion** [corrected after review]:
 ```
-non-halt  ⟺  depth_n = o(n)  ⟺  even-density > 1/3  ⟺  avg jump height < 2  ⟺  c'_j mod 2^k equidistributes.
+non-halt  ⟺  balance_n = 3 E_n − n ≥ 0  for ALL n   ⟺   running even-density E_n/n ≥ 1/3 at every prefix.
+```
+The following are **SUFFICIENT** (the standard heuristic), NOT equivalent — non-halt does not force `depth`
+sublinear:
+```
+[ equidistribution of c'_j mod 2^k ]  ⟹  even-density → 1/2  &  depth_n = o(n)  ⟹  balance_n ≥ 0 ∀n  ⟹  non-halt.
 ```
 **The 2-adic engine (verified, exact arithmetic):** `T(x)=floor(3x/2)` is a measure-preserving 2-to-1 EXACT
 endomorphism of ℤ₂. The induced low-digit chain on ℤ/2^k has Dobrushin coefficient `δ(P^k)=0` (it forgets its
@@ -33,8 +38,10 @@ state in exactly k steps), and the k-step map (k incoming high digits → state 
 This yields a **rigorous conditional theorem**:
 > **(Conditional theorem.)** If the incoming high digit `bit_k(c_n)` is asymptotically independent of the
 > low-digit state `c_n mod 2^k`  [call this **(H)**], then even-density = 1/2 and Antihydra never halts.
-Everything except (H) is unconditional. **(H) ⟺ the diagonal bit `bit_n(3^n) = floor((3/2)^n) mod 2`
-equidistributes.** (The same structure unifies the other cryptids: multiplier `2^a/3^b`, shrinking base `p`,
+Everything except (H) is unconditional. **(H) is SUFFICIENT for non-halt, and — under the renewal coding —
+is essentially equivalent to (more precisely, reduces to / is implied by) equidistribution of the diagonal
+bit `bit_n(3^n) = floor((3/2)^n) mod 2`.** [weakened from "⟺" after review.] (The same structure unifies
+the other cryptids: multiplier `2^a/3^b`, shrinking base `p`,
 diagonal digit `floor((2^a/3^b)^n) mod p`; e.g. o18 uses 8/3, p=3, where the digit `=2` is literally Erdős's
 ternary-digit-of-2^n problem.)
 
@@ -107,3 +114,8 @@ coefficients at a moving modulus.
 5. For the linear depth-form `depth_n ≥ L ⟺ S_n ≡ 8·3^n − 2^n (mod 2^{n+L})` with explicit
    `2^j 3^{n−1−j}` coefficients: is the moving-modulus exponential sum amenable to any method (it is *linear*
    in the bits, unlike the nonlinear Mahler sum)?
+6. **[from review — the most promising weakening]** Antihydra needs only a **one-sided** statement
+   (running even-density `≥ 1/3`), NOT full equidistribution (`= 1/2`). **Is there any known method giving a
+   one-sided lower bound on the frequency of a single MOVING digit** (e.g. "the diagonal bit is 0 with
+   density `≥ 1/3`") that falls short of, and is easier than, full equidistribution? Our only unconditional
+   one-sided result is `E_n = Ω(log n)`; can the `> 1/3` target admit a weaker-than-equidistribution tool?
