@@ -158,3 +158,23 @@ Chased the alignment-type lead (`o18_congruence.py`, `o18_invariant.py`).
   exact `ℤ_p` endomorphisms with near-total gap), and the clusters split by **halt-condition type**
   (Antihydra = density `>1/3`; o18 = thin Borel–Cantelli alignment). The taxonomy is real; the hoped-for
   free decision for alignment-type is not (consistent with the FAR-holdout status). No decision; soundness intact.
+
+## 11. Self-consistency attack — the most hopeful structure found (2026-06-24)
+A genuinely new line: the incoming bits are NOT free (the adversarial min=0 used arbitrary sequences) —
+they are the orbit's OWN parities (`bit_k(c_n)=parity(c_{n+k})`), so the law of the incoming bits must EQUAL
+the law of the output parities. Imposing this **self-consistency** (`selfconsistent.py`, `correlation_margin.py`):
+- **Self-consistency forces even-density = ½ uniquely.** The map `E ↦ Efun(1−E)` (output even-density given
+  incoming bias `1−E`) has a **unique, globally attracting fixed point at E=0.5** — and it is a *strong
+  contraction*: for ANY incoming even-density `E∈[0.1,0.7]` the output is `≈0.5`. Fixed-point iteration from
+  starts `0.05…0.8` all converge to `0.5`. The renewal mixing pulls the density to ½ regardless of input.
+- **Pairwise correlation is provably harmless.** Modelling incoming bits as a 2-state Markov source with
+  lag-1 correlation `ρ`, the output even-density stays `≈0.5` for **all** `ρ∈[−0.9,+0.9]`; the threshold to
+  reach `1/3` is `ρ*≈−0.99` (near-impossible). The measured orbit autocorrelation is `~0.001` — a **~1000×
+  margin**. So no amount of *pairwise* correlation can push even-density below `1/3`.
+- **Consequence:** the adversarial min=0 must require **higher-order / long-range** structure (a specific
+  long periodic pattern). The real orbit is decorrelated (`autocorr~0.001`) and Mahler-complex (not
+  eventually periodic), i.e. extraordinarily far from the bad pattern.
+**Sharpened reduction [the strongest positive statement of the programme]:** Antihydra non-halts **provided
+the parity sequence has bounded low-order correlation** — a condition the renewal contraction makes
+*sufficient*, strictly weaker than full equidistribution, and one the orbit satisfies by a ~1000× margin.
+The remaining gap is only the high-order/long-range correlation structure. [order-m bound: §12, pending.]
