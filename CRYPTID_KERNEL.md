@@ -40,6 +40,29 @@ expanding for every `μ` with `|μ|_p = p`.
    **every** Mahler cryptid at once (`3/2` *and* `8/3`), not just Antihydra. The expert ask (`EXPERT_ASK.md`
    Q1) is therefore a question about a *family*, which strengthens it.
 
+## The classification theorem (which multipliers give the kernel — verified)
+`T_μ(x)=⌊μx⌋` is a **clean `|μ|_p`-to-1 exact endomorphism of `ℤ_p`** (the structure above) **iff `v_p(μ) = −1`**
+(`|μ|_p = p`). Verified over a grid (`cross_cryptid.py` characterization run): clean for `3/2, 8/3, 9/2, 2/3,
+4/3, 16/3, 27/2, 5/2` (all `v_p=−1`, multiplicity exactly `p`); **not** clean for `9/4, 16/9, 27/4, 8/9`
+(`v_p=−2`, mixed multiplicities `{1,2,3,4}` — they over-contract unevenly and need a 2-step framing). So the
+cryptid kernel is exactly the **one-parameter-per-prime family `{μ=2^a/3^b : v_p(μ)=−1}`**; the BB(6)
+instances `3/2` (p=2) and `8/3` (p=3) are two points of it. This makes "the Mahler core is one kernel" a
+precise statement, not an analogy.
+
+## Placing o15 and o17 (the other two core machines) — honestly
+- **o15 ∈ the `8/3` (p=3) kernel class.** Its *value* grows doubly-exponentially (`v→v^{8/3}`), i.e. its
+  **width/exponent follows the `×8/3` Mahler map** — the census widths `…,107,289,772` have ratios
+  `2.70, 2.67 → 8/3`. So o15 shares the *same* `p=3` kernel object `⌊(8/3)^n⌋ mod 3`. Its extra
+  "parity-irregularity" lives in the **halt predicate** (a block-collision event), not in the kernel — so o15
+  is in-family for the obstruction, with a messier halting encoding.
+- **o17 is a genuine outlier — and interestingly the *opposite* kind of hardness.** Its base object is a
+  **carrying odometer** (`x→x+1` with base-≈3 carries), which is an **isometry of `ℤ_p`, not an expanding
+  `⌊μx⌋` map** — and odometers are **uniquely ergodic**, so equidistribution is *automatic* for them. Hence
+  o17's wall is **not** the equidistribution kernel at all; it is its **halt predicate** (the Collatz-irregular
+  family `0 A 0 1^k`, halting by `k mod 3` with proven halters interleaved — see `o17_attack.md`). So the BB(6)
+  Collatz core splits into **two** obstruction types: *(equidistribution kernel)* Antihydra, o10-inner, o18,
+  o15; vs *(odometer with a Collatz-irregular halt predicate)* o17.
+
 ## Scope and honesty
 - **This is the Mahler-`2^a/3^b` sub-family: 4 of the 5 core cryptids** (Antihydra, o10-inner, o18, o15).
   **o17 is an odometer outlier** (a carrying base-≈3 counter, not a single `×μ` orbit) and is *not* claimed
@@ -58,6 +81,17 @@ machine-specific halt predicate, **one number-theoretic kernel** (`⌊(2^a/3^b)^
 "cryptid complexity theory" deliverable (`LIMIT_THEOREM.md`, `STRATEGY_BRIEF.md` D): the cryptid vertex (no
 tame certificate) is now shown to be a *single shared object* across the family, not four coincidentally-hard
 machines — a recordable structural contribution independent of resolving any cryptid.
+
+## Literature anchoring (2026-06-25 triage)
+The shared kernel is a **recognized open problem**, not our artifact. It is the single-orbit case of **Mahler's
+3/2 problem (1968)**. The *closest* technique is **Tao (2019/2022)** (*Forum Math. Pi*, arXiv:1909.03562), which
+controls the **same** p-adic skew-random-walk / renewal / Gibbs–Markov statistic we reconstruct — but for a
+**log-density-1** set of seeds, never one specified seed (exact gap = remove the density average).
+**Flatto–Lagarias–Pollington (1995)** gives only a *range* bound (`1/p`), not a density. A **2025** paper
+(arXiv:2510.11723) poses single-orbit normality in rational-base systems as an explicit *conjecture*; the
+bbchallenge reduction (arXiv:2509.12337, 2025) matches ours. So one tool — rank-1 effective *single-orbit*
+equidistribution of `⌊μ^n⌋ mod p` — would lift the whole vertex, and the literature confirms no such tool
+exists yet. *(Caution: arXiv:2411.03468 claims to resolve Mahler 3/2 — unverified, likely flawed; not relied on.)*
 
 ## Reproduce
 `python3.11 cross_cryptid.py` (the table); `python3.11 alpha_attack.py` (the Antihydra identities the port

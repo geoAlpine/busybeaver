@@ -68,7 +68,7 @@ ternary-digit-of-2^n problem.)
 | measure rigidity (Furstenberg–Rudolph–Lindenstrauss / ELV) | a **rank ≥ 2** phenomenon (full `{×2,×3}` action); the orbit iterates ONE map `×3/2` = **rank 1**; rank-1 has a continuum of invariant measures, no rigidity. (Verified: the orbit is not `×2`- or `×3`-invariant) |
 | subspace theorem (Schmidt/Ridout) | gives `o(n)` digit-runs for a **fixed algebraic number**; ours is a **moving integer orbit** |
 | self-consistency / fixed-point uniqueness | **circular**: feeding the incoming digit independently of the state already assumes (H) |
-| **Tao (2019) Collatz transport/entropy** | proves equidistribution for **almost all** starting points (log-density 1); decides **no single orbit**. Antihydra is one specific orbit (seed 8). This is the **closest existing technique** and it still hits the same single-orbit wall |
+| **Tao (2019/2022) Collatz** (*Forum Math. Pi*, arXiv:1909.03562) | proves equidistribution for **almost all** starting points (log-density 1); decides **no single orbit**. Notably its proof controls the **same** p-adic skew-random-walk / renewal / Gibbs–Markov statistic we reconstruct here (independent confirmation the structure is right). This is the **closest existing technique**; the exact gap is **removing the density average** to pin seed 8 — the single-orbit content of Mahler's 3/2 problem |
 
 **Unified diagnosis.** Every known tool controls a *generic / averaged / fixed / off-diagonal* slice perfectly
 and fails identically on the **specific orbit at the moving 2-adic diagonal**.
@@ -89,6 +89,16 @@ and fails identically on the **specific orbit at the moving 2-adic diagonal**.
 - Off-diagonal (fixed-modulus) character-sum cancellation, unconditional.
 - Top `~log n` bits equidistribute (Weyl/Benford on `{n log2 3}`; `log2 3` is not Liouville, CF max partial
   quotient 55 in first 25 terms). Hard barrier: this reaches only `Θ(log n)` bits, the diagonal is at `Θ(n)`.
+
+**Literature anchoring (2026-06-25 triage).** Our kernel is the single-orbit case of **Mahler's 3/2 problem
+(1968)**, confirmed open: **Flatto–Lagarias–Pollington (1995)** gives only a *range* bound (an orbit
+`{ξ(p/q)^n}` cannot lie in an interval shorter than `1/p`) — support, not density; **Koksma (1935)** is a.e.;
+**Tao (2022)** is the closest technique but a.e. (above). A **2025** paper (arXiv:2510.11723) poses single-orbit
+normality in rational-base systems as an explicit *conjecture*; the community's Antihydra reduction
+(bbchallenge, arXiv:2509.12337, 2025) matches ours. No partial/conditional non-halting result exists. *(One 2024
+preprint, arXiv:2411.03468, claims to resolve Mahler 3/2 — unverified, treated as likely flawed; we do not rely
+on it.)* **The cross-cryptid result (`CRYPTID_KERNEL.md`): this open vertex is *shared* — Antihydra/o10-inner
+(`3/2`), o18/o15 (`8/3`) reduce to the same `⌊μ^n⌋ mod p` object (`v_p(μ)=−1`), so one tool lifts the family.**
 
 ## 6.5 NEW conditional theorem — the moment / additive-energy route (strongest concrete lead, NEW)
 

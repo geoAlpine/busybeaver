@@ -86,6 +86,29 @@ not LINEAR (bouncer), not AFFINE/GEOMETRIC (counter): a genuine Collatz-like rul
   witnessable by any finite-state abstraction. We conjecture this and note it is at least as hard as
   resolving Antihydra (a regular certificate would *decide* it).
 
+### 3′. The cryptid `[OPEN]` top is ONE shared vertex, not four machines (2026-06-25, `CRYPTID_KERNEL.md`)
+The §3 barrier is not Antihydra-specific. **[PROVEN, verified]** the BB(6) Mahler core (Antihydra, o10-inner,
+o18, o15) shares a single kernel: each reduces to the single-orbit equidistribution of `⌊μ^n⌋ mod p` for a
+multiplier `μ=2^a/3^b` with `v_p(μ)=−1`, via the *same* induced map — a **full-branch piecewise-affine
+expanding (Gibbs–Markov) endomorphism of `ℤ_p`**, with the same obstruction map (spectral gap orbit-blind,
+non-shadowing insufficient, growth circular, soft mechanisms unavailable). The classification is exact:
+`T_μ` is a clean `p`-to-1 exact endomorphism **iff `v_p(μ)=−1`** (verified grid). So the hierarchy's `[OPEN]`
+top — "no tame certificate for a cryptid" — is a **single mathematical object** indexed by `(a,b,p)`, shared
+across the family, not four coincidentally-hard instances. (o17 is a separate vertex: a uniquely-ergodic
+*odometer*, whose hardness is its Collatz-irregular **halt predicate**, not equidistribution — so the BB(6)
+Collatz core has exactly **two** non-halting obstruction types.)
+- **[literature-anchored, 2026-06-25 triage]** This shared vertex is a **recognized open problem**, not our
+  artifact: it is the single-orbit case of **Mahler's 3/2 problem (1968)**; the *closest* known technique is
+  **Tao 2019/2022** (*Forum Math. Pi*, arXiv:1909.03562), which controls the **same** p-adic skew-random-walk /
+  renewal / Gibbs–Markov statistic we reconstructed — but only for a **log-density-1** set of seeds, never one
+  specified seed (the exact gap = removing the density average). **Flatto–Lagarias–Pollington (1995)** gives
+  only a *range* bound (orbit can't stay in an interval shorter than `1/p`), not a density. A **2025** paper
+  (arXiv:2510.11723) poses single-orbit normality in rational-base systems as an explicit *conjecture*. The
+  community reduction matches ours (bbchallenge, arXiv:2509.12337, 2025). *(Caution: arXiv:2411.03468 claims to
+  resolve Mahler 3/2 — unverified, treat as likely flawed; we do not rely on it.)* So the `[OPEN]` top is
+  pinned to the literature's open frontier — the genuineness-limit avatar is a *named* open problem, and one
+  tool (rank-1 effective single-orbit equidistribution) would lift the whole vertex.
+
 ## 4. The spoofer game (the genuineness avatar)
 
 Phrase certification as a two-player game, exactly the spoofer game of the quantum genuineness work:

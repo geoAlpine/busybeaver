@@ -508,3 +508,31 @@ other BB(6) Mahler cryptids? **Yes, verified** (`cross_cryptid.py`, exact p-adic
   and ONE missing tool. The cryptid vertex (no tame certificate) is a single shared object across the family,
   not four coincidentally-hard machines — recordable structural contribution, independent of resolving any
   cryptid. 0 false proofs; no non-halting claimed.
+
+---
+
+## 2026-06-25d — A (literature triage) + C-extension (classification, o15/o17) + D (hierarchy integration)
+Ran all three remaining lines in parallel.
+**A — literature triage (background research agent):** our kernel = the single-orbit case of **Mahler's 3/2
+problem (1968)**, confirmed open. Findings (cited): (Q1) Flatto–Lagarias–Pollington 1995 gives only a *range*
+bound (orbit can't lie in an interval `< 1/p`), not density; Koksma 1935 a.e.; arXiv:2510.11723 (2025) poses
+single-orbit normality as an open *conjecture*. (Q2) ALL Gibbs–Markov / transfer-operator / shrinking-target /
+dynamical-Borel–Cantelli results are **μ-a.e. by construction** — independently confirms our orbit-blindness
+finding (i); no per-orbit-under-arithmetic-hypothesis theorem exists. (Q3) **Tao 2019/2022 (Forum Math Pi,
+arXiv:1909.03562) is the closest technique and uses the SAME p-adic skew-random-walk / renewal / Gibbs–Markov
+structure we reconstructed** — but log-density-1 a.e., not single-orbit; exact gap = remove the density average.
+(Q4) community reduction matches ours (bbchallenge arXiv:2509.12337, 2025); no partial/conditional non-halting
+result exists. CAUTION logged: arXiv:2411.03468 (2024) claims to resolve Mahler 3/2 — unverified, likely flawed,
+NOT relied on. → folded into STATE_FOR_REVIEW (§4 Tao row + §6 Literature anchoring), CRYPTID_KERNEL, LIMIT_THEOREM.
+**C-extension — classification + o15/o17:** verified `T_μ` is a clean `p`-to-1 exact endomorphism of `ℤ_p`
+**iff `v_p(μ)=−1`** (grid: clean 3/2,8/3,9/2,2/3,4/3,16/3,27/2,5/2; not-clean 9/4,16/9,27/4,8/9). So the kernel
+family = `{μ=2^a/3^b : v_p(μ)=−1}`, exact. Placement: **o15 ∈ 8/3 kernel class** (width follows ×8/3, ratios
+`107,289,772 → 8/3`; the parity-irregularity is in the halt predicate, not the kernel); **o17 = outlier**, a
+uniquely-ergodic **odometer** (isometry of ℤ_p, equidistribution automatic) whose hardness is its
+Collatz-irregular halt predicate — so the Collatz core has TWO obstruction types (equidistribution-kernel vs
+odometer-halt-predicate). → CRYPTID_KERNEL classification + placement sections.
+**D — hierarchy integration:** added LIMIT_THEOREM §3′: the `[OPEN]` cryptid top is ONE shared vertex indexed by
+`(a,b,p)` (not four machines), literature-anchored to Mahler 3/2 / Tao / the 2025 normality conjecture. The
+genuineness-limit avatar is now a *named* open problem; one tool lifts the whole vertex.
+**Net:** the external triage independently validated the obstruction map (orbit-blindness = the a.e. nature of
+all known machinery) and revealed we had reconstructed Tao's state-of-the-art structure ourselves. 0 false proofs.
