@@ -102,3 +102,25 @@ Evaluated the linear-form exponential sum `Σ_n e(t·S_n/2^M)` (`D3_linearsum.py
   (differencing a linear form may NOT be closed the way the multiplicative `(3/2)^n` was — worth checking);
   (ii) a large-sieve over the modulus family `{2^{n+L}}` exploiting linearity; (iii) connect to Stewart/Baker
   bounds on the digits of `3^n` (the coefficients are `3^{n−1−j}`).
+
+## 2026-06-24 (cont.) — D3: vdC tested (reduces to autocorrelation wall); M2 partials reduce to equidistribution
+Continued D3 by testing van der Corput on the linear/parity sum (`D3_vdc.py`):
+- **vdC does not open a new angle [tested].** The parity sum `Σ(-1)^{e_n}` already shows `√N` cancellation
+  (`|S|/√N=0.70`); vdC needs the lag-k autocorrelations `A_k` to be `o(1)` — they are `~0` empirically
+  (`|A_k/N| ≤ 0.005`) but proving `Σ_k A_k = o(N)` IS the equidistribution. The linearity is in the bits
+  `e_j`, not in `n`; vdC (which exploits `n`-smoothness) does not engage it. **Reduces to the wall.**
+- **M2 partials reduce to equidistribution [analysed].** `P(depth≥L)=2^{-L}` empirically to high precision.
+  But `depth_n≥L ⟺ c_n≡1 mod 2^L` ⟺ odd-run length ≥ L; the only *unconditional* bound from run-disjointness
+  is `#{runs ≥ L} ≤ N/L` (far weaker than the needed `N·2^{-L}`). `even-density ≥ ε` similarly needs the
+  orbit to hit `3 mod 4` with positive density = equidistribution mod 4.
+- **One genuine (tiny) unconditional fact [recorded]:** the orbit **cannot avoid `3 mod 4` forever**
+  (avoiding it forces `c_n≡1 mod 2^k ∀k ⇒ c=1`), and `c_n≡3 mod 4 ⇒ c_{n+1}` even ⇒ **infinitely many even
+  terms**. (Only "infinitely many", not positive density.)
+- **Status:** vdC ruled out for D3; M2 partials shown to reduce to equidistribution; the only provable
+  unconditional statement so far is "infinitely many evens". No over-claim. The sharp D3 target is unchanged
+  (moving-modulus linear exp-sum) but now to be attacked by **large-sieve / Stewart–Baker** (the coefficients
+  `3^{n-1-j}` are powers of 3 — Stewart bounds the nonzero binary digits of `3^m`), NOT by vdC.
+- **Next (D3):** (i) make precise the second-moment / large-sieve over the modulus family `{2^{n+L}}` for the
+  linear form, checking whether the *linear* points avoid the `1/N²` self-clustering that killed the
+  nonlinear sieve; (ii) look up / derive the exact Stewart-type bound on binary-digit runs of `3^m` and test
+  if it bounds the depth. (Marathon: D3 alive, no quick win, walls mapped.)
