@@ -354,3 +354,27 @@ but are geometrically rarer).
   operator of F on `ℤ₂`** (with the renewal/Young-tower handling the large-jump tail).
 - This adds a column to the obstruction map's *opposite*: thermodynamic formalism for the INDUCED expanding
   map is rank-1-compatible and aims at the (weaker) additive energy, not full equidistribution. Best lead.
+
+## 2026-06-24 (cont.) — §6.5/Q9: F is a FULL-BRANCH PIECEWISE-AFFINE EXPANDING (Gibbs-Markov) map of ℤ₂
+Pinned down F's structure (`F_piecewise.py`), answering the reviewer's "which function space?":
+- **VERIFIED (100%):** on each cylinder `P_D = {v2(3c'−1)=D}`, `F(c') = (3^{D+1}c' − 3^D + 2^D)/2^{D+1}` —
+  **piecewise affine**, 2-adic slope `(3/2)^{D+1}`, expansion `2^{D+1} ≥ 2`, **zero distortion** (affine).
+- **Full branches (Markov):** each `P_D` (Haar measure `2^{−(D+1)}`, geometric, summing to 1) maps **onto all
+  of ℤ₂** (F mod 256 hits 256/256 for D=0..3). So F is a **full-branch piecewise-affine expanding map of ℤ₂**,
+  Haar-preserving (Kac) — i.e. a **Gibbs–Markov system**, the cleanest classical setting for transfer operators.
+- **Function space [reviewer's Q, ANSWERED]:** the Ruelle operator acts on **locally-constant / Lipschitz
+  functions w.r.t. the 2-adic metric**; the additive-energy observables (`2^k`-cylinder indicators) are
+  locally constant ⇒ in the space. For Gibbs–Markov maps, **exponential decay of correlations on Lipschitz
+  is classical** (Aaronson–Denker; provided the standard tail/big-image conditions hold — plausible here,
+  full affine branches with geometric widths).
+- **The crux / honest remaining gap [11th over-claim guarded].** Decay of correlations is a statement for the
+  **invariant (Haar) measure**. The additive energy is along the **specific orbit** `c'_j`:
+  `E_2(k) = Σ_d #{i≤J : F^d(c'_i) ≡ c'_i (mod 2^k)}` = the orbit's visits to the (cylinder) return-sets. This
+  **may reduce to the specific-orbit equidistribution** (the same wall) — OR the *one-sided* additive-energy
+  bound (§6.5 only needs `≤ C·random`) may follow more robustly from the spectral gap than pointwise
+  equidistribution does. **This is the precise open question for an ergodic-theory expert.**
+- **Net:** the problem is now placed in the **classical Gibbs–Markov / transfer-operator framework** — a
+  different, well-developed battlefield, rank-1-compatible, aiming at the weaker additive-energy target. The
+  function space is identified; the spectral gap is classical for the measure; the only question is the
+  measure→specific-orbit step for the (one-sided) additive energy. Strongest and most novel lead of the
+  programme. (Added to STATE_FOR_REVIEW Q9 / §6.5.)
