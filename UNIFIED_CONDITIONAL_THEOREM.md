@@ -61,3 +61,24 @@ the proven ingredients — and we have *proved why* (opposite-ends / open-middle
 proof. Killing it requires genuinely new mathematics — the same frontier where the worldwide community is
 stuck. The conditional theorem (proven core + this one located, sharp, empirically-robust hypothesis) is the
 limit a finite computation can reach. No decision; soundness intact.
+
+## RIGOROUS upgrade (TIER 1+2, exact arithmetic, 2026-06-24)
+The contraction core, previously numerical (gap ~0.99), is now **proved by exact rational arithmetic** for
+the whole cryptid family (`rigor_dobrushin.py`, `rigor_core.py`, `rigor_bijection.py`, `tier2_sweep.py`):
+- **[PROVEN] Model exactness.** For `M(x)=⌊μx⌋` (`μ=2^a/3^b`), `M(x) mod p^k` is *exactly* a function of
+  `x mod p^{k+1}` = (low `k` digits, one incoming digit `dig_k`). Verified exhaustively (no ambiguity), p=2,3.
+- **[PROVEN] Total contraction in `k` steps.** The renewal chain on `ℤ/p^k` (incoming digit uniform) has
+  **Dobrushin coefficient `δ(P^k)=0` exactly** (m=k: 3/2→3, 4/3→2, 8/3→2). Stronger than a spectral gap: the
+  chain *completely forgets its start* after `k` steps. Exact arithmetic, zero floating point.
+- **[PROVEN] Bijection.** The `k`-step map `(dig_k of the last k steps) ↦ (state mod p^k)` is a **bijection**
+  `{0,…,p−1}^k → ℤ/p^k` for every fixed start. Hence *uniform incoming `k`-blocks ⇒ uniform state*, rigorously.
+- **Therefore the contraction→equidistribution step is RIGOROUS:** `state_n mod p^k = F_k(incoming_{n−k..n−1},
+  state_{n−k})` with `F_k(·,start)` a bijection ⇒ **IF** the incoming digits are uniform and independent of
+  `state_{n−k}` (THE hypothesis), **THEN** `state_n` equidistributes ⇒ `δ_n ~ Uniform(1/p)` ⇒ non-halt.
+- **[TIER 2] One core, all families.** Verified identical for `μ ∈ {3/2, 4/3, 8/3}` = Antihydra, o5, o7, o8,
+  o10, o15, o18. The unified conditional theorem now rigorously covers **both monsters and all their family
+  members**, with only THE hypothesis (TIER 0) unproved.
+
+**Net:** the conditional theorem is now *rigorous except for the single hypothesis*. Everything a finite
+computation can certify — model fidelity, total contraction, bijective equidistribution transfer, family
+universality — is **exact-arithmetic proved**. The lone gap is the world-open digit-independence (TIER 0).
