@@ -77,3 +77,28 @@ Pivoted to D3 (coupling-respecting, in-house). Set up and **verified** the carry
 - **Next (D3/M2):** (i) write the affine depth-form `Φ_n(e)` explicitly; (ii) attempt a 2nd-moment / large-
   sieve bound on `Σ_n e(t·Φ_n)` exploiting the linearity (where the nonlinear large sieve died on self-
   clustering, the *linear* form may separate); (iii) target any unconditional `even-density ≥ ε` partial.
+
+## 2026-06-24 (cont.) — D3 dive-in: linear-form sum evaluated; controls off-diagonal, diagonal still open
+Evaluated the linear-form exponential sum `Σ_n e(t·S_n/2^M)` (`D3_linearsum.py`, `D3_position.py`):
+- **Fixed-modulus cancellation is REAL and UNCONDITIONAL** [verified]: `|Σ e(t S_n/2^M)|/√N ≈ 0.01–0.12`
+  (sub-√N). Reason: for `n ≥ M`, `S_n ≡ 3^{n−M}S_M (mod 2^M)` — the `×3`-isometry coset; the character sum
+  over the coset is small (Gauss/Ramanujan-type), provably.
+- **But it controls the WRONG position** [7th over-claim AVOIDED by checking]: this cancellation is at the
+  **low bits** of `S_n` (`×3`-isometry, *off-diagonal*) — the part already known fine. The even-density /
+  depth need the bit at the **moving/middle position** (`parity e_n = bit_n(8·3^n−S_n)`; `c_n mod 2^k` =
+  bits `[n,n+k]`), i.e. the **diagonal**. The lowest set bit of `S_n` sits at position ~3 (bounded); the
+  depth-relevant bit at position ~`n` (grows). The linear structure controls the low end, not the middle.
+  **Same opposite-ends wall. NOT a crack.**
+- **D3 is NOT dead (unlike D2).** The linear structure is a genuine handle and the remaining target is **sharp
+  and genuinely linear**, unlike the general nonlinear equidistribution: *bound the MOVING-modulus linear
+  exponential sum `Σ_n e(t·Φ_n(e))` with the explicit `2^j 3^{n−1−j}` coefficients, where the modulus
+  `2^{n+L}` grows with `n`.* Fixed-modulus is solved (character sum); the moving-modulus linear sum is the
+  open core — but it is a LINEAR object, a different (and arguably more approachable) target than Mahler's
+  nonlinear wall.
+- **Status:** D3 mapped; off-diagonal part unconditionally controlled; the sharp open sub-problem isolated
+  (moving-modulus linear exp-sum). No unconditional even-density bound yet; no over-claim. D3 remains the
+  most promising live in-house direction.
+- **Next (D3):** attack the moving-modulus linear sum directly — (i) van der Corput on the LINEAR phase
+  (differencing a linear form may NOT be closed the way the multiplicative `(3/2)^n` was — worth checking);
+  (ii) a large-sieve over the modulus family `{2^{n+L}}` exploiting linearity; (iii) connect to Stewart/Baker
+  bounds on the digits of `3^n` (the coefficients are `3^{n−1−j}`).
