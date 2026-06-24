@@ -149,3 +149,34 @@ Tested D3's remaining two tools (`D3_sieve_stewart.py`):
 - **Next:** engage D1 — read into effective equidistribution (Einsiedler–Lindenstrauss–Venkatesh / BLMV),
   identify the precise Diophantine-genericity condition, and test whether the Antihydra seed/orbit could
   satisfy it. (Marathon: all in-house Fourier/sieve routes mapped; the 2-adic-diagonal core and D1 remain.)
+
+## 2026-06-24 (cont.) — D1: rigidity is RANK>=2, the orbit is RANK 1 (doesn't apply); FIRST-PASS SYNTHESIS
+**D1 assessment (`D1_rank.py`):** Antihydra iterates ONE map (`×3/2`) ⇒ the orbit is **RANK 1**. Measure
+rigidity / effective equidistribution (Furstenberg–Rudolph–Lindenstrauss–ELV/BLMV) are **RANK ≥ 2**
+phenomena (they classify measures invariant under the FULL `{×2,×3}` or higher-rank action). Rank-1 maps
+have a *continuum* of invariant measures — **no rigidity**. Verified: the `(3/2)ⁿ` orbit is not `×2`/`×3`-
+invariant (it is only the diagonal `×3/2` sub-direction of the rank-2 action). **D1 does not apply.** This
+names the earlier `×2,×3` obstruction precisely: **RANK**.
+
+## FIRST-PASS SYNTHESIS — the obstruction map (why every existing tool fails, precisely)
+All four programme directions + the 10 earlier attacks are now assessed. Each fails for a *precise,
+fundamental* reason:
+| tool / direction | precise reason it fails |
+|---|---|
+| van der Corput / Weyl differencing | **closed** on the multiplicative recurrence `(3/2)ⁿ` (fixed point of differencing) |
+| sum-product (Bourgain–Konyagin) | needs subgroup `≥ q^δ`; here `{3ʲ mod 2ᵏ}`, `k~cn`, is **log-size** — exp below threshold |
+| Fourier / large-sieve / Stewart (D3) | control the **off-diagonal** (low bits, `×3`-subgroup); the depth is a **2-adic moving-diagonal** they don't reach |
+| measure rigidity / ELV (D1) | a **rank ≥ 2** phenomenon; the orbit is **rank 1** (single map) |
+| self-consistency fixed point (D2) | **circular** — presupposes independence = (H) |
+| subspace theorem | fixed algebraic number vs **moving integer orbit** |
+**Net:** no existing framework applies. A proof of (H) requires a genuinely NEW tool that does at least one
+of: **(α)** establish equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` (beyond rigidity's
+rank-≥2 scope), or **(β)** control the **2-adic moving-diagonal digit** of such an orbit (beyond the
+off-diagonal reach of Fourier/sieve). These two are the precisely-characterised requirements for the new
+mathematics. The marathon's **phase 1 (map the terrain) is complete**; phase 2 is to **invent (α) or (β)** —
+genuinely new, years-scale.
+
+**Honest constructive deliverable now:** D4 — (H) is already a *named* open problem (Mahler-3/2 / Erdős),
+stated paste-ready in `BB6_KERNEL_PROBLEM.md`; it is the clean special case "rank-1 `2^a/3^b`-orbit
+equidistribution" of (α). No standard conjecture *more tractable than Mahler* implies it. Discipline intact:
+0 false proofs; 7 tempting leads retracted on scrutiny across the session.

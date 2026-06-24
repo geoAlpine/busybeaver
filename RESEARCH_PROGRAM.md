@@ -22,7 +22,7 @@ middle); CA randomization (model unfaithful — falsified). All converge to the 
 a.e.** / **control of the uncontrolled middle bits**.
 
 ## 2. Where new mathematics could genuinely come from (live directions, honestly ranked)
-**(D1) Effective measure rigidity for the specific orbit** — the Einsiedler–Lindenstrauss–Venkatesh
+**(D1) [ASSESSED 2026-06-24 — does NOT apply: rank-1 orbit vs rank>=2 rigidity]** Effective measure rigidity for the specific orbit — the Einsiedler–Lindenstrauss–Venkatesh
 *effective* equidistribution programme (active 2010s–2020s frontier). The non-effective ×2,×3 theory can't
 touch a single orbit; an *effective* version with a Diophantine-genericity input on the seed might. This is
 the most likely external source of the eventual tool. *Programme task:* learn the effective machinery; find
