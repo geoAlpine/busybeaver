@@ -221,3 +221,22 @@ parity through the `×3/2` carry, via a step-by-step recursion (not direct trans
   open kernel (`top ⊥ state`). Recorded as a 4th tempting over-claim caught *before* assertion (soundness
   discipline holds: 0 false claims). TIER 0 remains the world-open wall; the proven foothold cannot drive
   the parity because making it do so already requires the independence it would need to prove.
+
+## 14. New-math attempt — cellular-automaton randomization — pursued, then FALSIFIED (2026-06-24)
+A genuinely novel attack on TIER 0: the renewal's parity map is a **sliding-block code**; if it is an
+**affine, permutive cellular automaton**, the proven **randomization theorems** (Host–Maass–Martínez 2003;
+Pivato–Yassawi) force Cesàro-convergence to uniform Bernoulli = digit equidistribution — a real, unconditional
+tool. Structure found (`newmath_cacode.py`, `newmath_permutive.py`, `newmath_affineform.py`): the extracted
+parity code G is **LEFT-permutive and AFFINE over GF(2)** for k=4..7 — exactly the algebraic-CA regime.
+- **Exact form:** `G = b₀` (`|S|=1`) — a *pure delay*, predicting `parity(c_n) = bit_k(c_{n−k})`.
+- **VERIFICATION AGAINST THE REAL ORBIT FALSIFIES IT [discipline]:** the identity `parity(c_n)=bit_k(c_{n−k})`
+  holds only **37–49 %** (k=3,4,5,8), not ~100 %. So the model `G` is **NOT faithful**: iterating the
+  one-step low-bit map with single-bit injection over `k` steps **drops the multi-bit carry** that the real
+  `×3` propagates down through the window. (The one-step model-exactness is real; the `k`-step single-bit-
+  injection composition is not.)
+- **Verdict:** the affine/permutive structure was an artefact of an **unfaithful model**; the CA-randomization
+  chain does not apply to the real orbit. No crack. A genuine new-math attempt, **falsified by direct
+  verification before any claim** — the 5th tempting idea rejected on scrutiny (0 false claims intact).
+**Honest lesson:** attacking a 57-year wall, most novel ideas fail; the discipline is to verify the key
+prediction against ground truth and reject. The CA idea had real promise (algebraic-CA randomization IS a
+proven tool) but the bridge to the real orbit broke. TIER 0 stands.
