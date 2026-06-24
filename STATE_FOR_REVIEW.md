@@ -174,3 +174,49 @@ coefficients at a moving modulus.
    `#{(i,j): v2(c'_i − c'_j) ≥ k}`. Does **p-adic Baker / linear forms in logarithms** give a lower bound on
    `v2(c'_i − c'_j)` for such an orbit (the differences are S-unit-like)? By §6.5 this would prove Antihydra
    never halts.
+
+---
+
+## Appendix A — derivation of the moment-method thresholds (§6.5), line by line
+*So a reviewer can check exactly where `0.405` and the `C ≤ 3.45` threshold come from.*
+
+**Setup.** Renewal jumps `D_j = v2(3c'_j − 1)`, `j = 1..J`. `D_j ≥ k ⟺ c'_j ≡ 3^{−1} (mod 2^k)`. Write
+`N_k := #{ j ≤ J : D_j ≥ k } = count_{3^{−1}}(k)`, `count_r(k) := #{ j ≤ J : c'_j ≡ r (mod 2^k)}`.
+
+**(1) Even-density in terms of the average jump.** Each renewal cycle is one even step plus `D_j` odd steps,
+so total steps `n = J + Σ_j D_j` and `even-density = J / n = 1 / (1 + avg jump)`, `avg jump = (1/J) Σ_j D_j`.
+Therefore `even-density ≥ 1/3 ⟺ avg jump ≤ 2`.
+
+**(2) Average jump as a sum of tail counts.** `Σ_j D_j = Σ_j Σ_{k≥1} 1[D_j ≥ k] = Σ_{k≥1} N_k`, so
+`avg jump = (1/J) Σ_{k≥1} N_k`.
+
+**(3) Bound one tail count by a moment (Hölder/`ℓ^{2m}`).** For any integer `m ≥ 1`,
+`N_k = count_{3^{−1}}(k) ≤ ( Σ_r count_r(k)^{2m} )^{1/2m} =: M_{2m}(k)^{1/2m}`.
+
+**(4) The hypothesis (random-order `2m`-th moment).** Assume `M_{2m}(k) ≤ C · J^{2m} / 2^{(2m−1)k}` for all
+`k` (the value for a uniform distribution of `J` points over `2^k` residues is exactly `J^{2m}/2^{(2m−1)k}`
+to leading order; `C` measures the excess over uniform). Then
+`N_k ≤ C^{1/2m} · J · 2^{−k(2m−1)/2m}`.
+
+**(5) Sum the geometric series.** Let `θ = (2m−1)/2m` and `q = 2^{−θ}`. Then
+`avg jump ≤ C^{1/2m} · Σ_{k≥1} 2^{−kθ} = C^{1/2m} · q/(1−q) =: C^{1/2m} · g(m)`, with
+`g(m) = 2^{−θ}/(1 − 2^{−θ})`.
+
+**(6) Numbers.**
+```
+ m   2m   θ=(2m−1)/2m   g(m)=q/(1−q)   even-density at C=1 = 1/(1+g)   threshold  C ≤ (2/g)^{2m}
+ 1    2     0.500          2.4142             0.2929                       0.69     (cannot reach 1/3)
+ 2    4     0.750          1.4667             0.4054                       3.46  ←  the 4th-moment route
+ 3    6     0.833          1.2791             0.4388                      14.61
+ 4    8     0.875          1.1990             0.4547                      59.92
+```
+**(7) Where `3.45` comes from.** Even-density `≥ 1/3 ⟺ avg jump ≤ 2 ⟺ C^{1/2m} g(m) ≤ 2 ⟺
+C ≤ (2/g(m))^{2m}`. For `m = 2`: `(2/1.4667)^4 = 1.3636^4 = 3.457`. So the 4th-moment hypothesis with any
+constant `C ≤ 3.45` proves `even-density ≥ 1/3`. Measured 4th moment: `C ≈ 1.3` (comfortably inside).
+
+**Remarks.** (i) The 2nd moment alone is hopeless (`C ≤ 0.69` needs the moment *below* uniform, impossible
+since the diagonal `i=j` already forces `C ≥ 1`). The **4th moment is the first that can work**, and it has
+real slack (`3.45` vs measured `1.3`). (ii) Larger `m` only loosens the constant further (`C ≤ 14.6, 59.9, …`)
+— but `M_{2m}` is a higher additive energy, presumably harder to bound; the 4th moment is the sweet spot.
+(iii) This is a *sufficient* condition for one-sided density `> 1/3` (hence non-halt); it does **not** need
+full equidistribution. The open problem is purely the bound in step (4) for `m=2`.
