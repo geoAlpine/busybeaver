@@ -90,6 +90,24 @@ and fails identically on the **specific orbit at the moving 2-adic diagonal**.
 - Top `~log n` bits equidistribute (Weyl/Benford on `{n log2 3}`; `log2 3` is not Liouville, CF max partial
   quotient 55 in first 25 terms). Hard barrier: this reaches only `Θ(log n)` bits, the diagonal is at `Θ(n)`.
 
+## 6.5 NEW conditional theorem — the moment / additive-energy route (strongest concrete lead)
+Working with the renewal jumps `D_j = v2(3c'_j − 1)` (`c'_j` = the induced first-return orbit, `c'_{j+1} ≈
+(9/4)c'_j`): `avg jump = (1/J)Σ_k N_k` with `N_k = #{j≤J : c'_j ≡ 3^{−1} (mod 2^k)}`. By Hölder,
+`N_k ≤ (Σ_r count_r(k)^{2m})^{1/2m}` where `count_r(k)=#{j≤J: c'_j ≡ r}`. If the **2m-th moment**
+`M_{2m}(k)=Σ_r count_r(k)^{2m}` is of random order `O(J^{2m}/2^{(2m−1)k})`, then
+`avg jump ≤ C^{1/2m}·Σ_{k≥1} 2^{−k(2m−1)/2m}`. Thresholds: 2nd moment → even-density `≥ 0.293` (just under
+1/3); **4th moment → `≥ 0.405 > 1/3`**; 6th → `0.44`. Empirically the 4th moment is `~1.3×` random (need
+`≤ 3.45×`), giving even-density `≥ 0.39`.
+> **CONDITIONAL THEOREM [implication rigorous; hypothesis open].** If the 4th additive-energy moment
+> `Σ_r count_r(k)^4 ≤ C·J^4/2^{3k}` (`C ≤ 3.45`) holds for the induced orbit `c'_j mod 2^k`, then running
+> even-density `≥ 1/3` and **Antihydra never halts**.
+This **reduces non-halt from full equidistribution to a 4th additive-energy bound** — a different,
+additive-combinatorial target. The moment counts `#{(i₁..i₄): c'_{i₁}≡…≡c'_{i₄} mod 2^k}` = collisions
+`v2(c'_i − c'_j) ≥ k` of a **geometric-growth** induced orbit; the differences `c'_i − c'_j` are S-unit-like,
+so **p-adic Baker / linear forms in logarithms may bound `v2(c'_i − c'_j)`**, and additive-energy machinery
+may bound the moment. (This is the most promising near-term route and the natural place for
+additive-combinatorics / Diophantine expertise.)
+
 ## 7. What a proof needs (precise targets for a new tool)
 - **(α)** equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` — i.e. effective "rank-1
   Furstenberg" with a Diophantine condition on `log2 3`; OR
@@ -140,3 +158,9 @@ coefficients at a moving modulus.
    obstruction underneath looks intrinsic. The orbit is the diagonal `a=b=n` slice of `3^a/2^b` and does not
    fill the rank-2 action — is there a non-obvious coordinate embedding the rank-1 slice into a genuinely
    rank-≥2 / mixing structure?)*
+8. **[the most actionable — additive energy]** Can the **4th additive-energy moment**
+   `Σ_r #{j≤J: c'_j ≡ r mod 2^k}^4` of the geometric-growth induced orbit `c'_j` (where `c'_{j+1}≈(9/4)c'_j`)
+   be bounded by `O(J^4/2^{3k})` **unconditionally**? Equivalently, bound the collision count
+   `#{(i,j): v2(c'_i − c'_j) ≥ k}`. Does **p-adic Baker / linear forms in logarithms** give a lower bound on
+   `v2(c'_i − c'_j)` for such an orbit (the differences are S-unit-like)? By §6.5 this would prove Antihydra
+   never halts.
