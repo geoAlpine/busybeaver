@@ -118,6 +118,17 @@ application** (one must handle the fluctuating `A_j`). Equally, additive-energy 
 multiplicatively-structured sequences may bound the moment. (This is the most promising near-term route and
 the natural place for additive-combinatorics / Diophantine expertise.)
 
+**A second framing of the same hypothesis (NEW, possibly the more workable one).** The induced map
+`F(c')=(3^D u+1)/2` (`D=v2(3c'−1)`, `u=(3c'−1)/2^D`) is **2-adically expanding**: we verify exactly (100% over
+3×10^5 trials) that `v2(F(c')−F(c'')) = v2(c'−c'') − D − 1`, i.e. **`F` expands 2-adic distances by a local
+factor `2^{D+1} ≥ 2`, non-uniformly** (large jumps expand more but are geometrically rarer). The required
+4th-additive-energy / collision bound `#{(i,j): v2(c'_i−c'_j) ≥ k} = O(J^2/2^k)` is exactly a
+**decay-of-correlations** statement for `F`, which a **Ruelle–Perron–Frobenius transfer-operator spectral gap**
+would supply. Crucially this is a **rank-1-compatible** tool (transfer operators act on a single map), so it
+**evades the rank-≥2 obstruction** that kills measure rigidity. The only difficulty is the **non-uniformity**
+(the rare large jumps = the renewal tail), which is the home turf of **non-uniform hyperbolicity machinery
+(Young towers / inducing — and the induced map IS the inducing)**.
+
 ## 7. What a proof needs (precise targets for a new tool)
 - **(α)** equidistribution of a **rank-1 specific orbit** of `×(2^a/3^b)` — i.e. effective "rank-1
   Furstenberg" with a Diophantine condition on `log2 3`; OR
@@ -174,6 +185,12 @@ coefficients at a moving modulus.
    `#{(i,j): v2(c'_i − c'_j) ≥ k}`. Does **p-adic Baker / linear forms in logarithms** give a lower bound on
    `v2(c'_i − c'_j)` for such an orbit (the differences are S-unit-like)? By §6.5 this would prove Antihydra
    never halts.
+9. **[transfer-operator framing of Q8]** The induced map `F` is a **non-uniformly 2-adically expanding** map
+   (`v2(F(c')−F(c'')) = v2(c'−c'') − D − 1`, verified). Does its **Ruelle transfer operator on `ℤ₂` have a
+   spectral gap / exponential decay of correlations**, with the rare large jumps handled by a **Young tower /
+   inducing** scheme? Such a gap would give the §6.5 additive-energy bound — and transfer operators work at
+   **rank 1**, evading the measure-rigidity obstruction. Is this a standard exercise for known non-uniformly
+   expanding-map machinery, or does the `2^{D+1}` jump distribution pose a genuine obstacle?
 
 ---
 
