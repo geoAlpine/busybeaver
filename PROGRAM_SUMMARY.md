@@ -81,3 +81,41 @@ digit). Path 1 produced the **cleanest reduction the programme has** (renewal ma
 averaged target) but cannot break the circularity; path 2 has **no applicable unconditional theorem**. There
 is **no in-session route to an unconditional complete proof** — it requires resolving a ~50-year-open problem.
 This is the genuine mathematical frontier, now reached and documented, with `0` decisions and `0` false proofs.
+
+## G. The self-consistency culmination + world placement (2026-06-24)
+After the four kill-both routes (§D–F) all hit the same wall, a fifth line — **self-consistency** — produced
+the program's strongest positive result and the sharpest reduction.
+
+**The Antihydra conditional theorem** (`antihydra_renewal_attack.md` §11–12):
+- The real Antihydra map `c↦⌊3c/2⌋` carries a *mixing* 2-adic shift (unlike pure `(3/2)ⁿ`); the low-bit
+  renewal chain has a near-total spectral gap `0.99`.
+- **[PROVEN, finite]** the self-consistency operator Φ contracts to Bernoulli(½): correlated starts all
+  converge to the unique fixed point `(E,ρ)=(0.5,0)`.
+- **[the single hypothesis]** `bit_k(c_n) ⊥ (c_n mod 2^k)` — the incoming high bit is independent of the
+  low-bit state (`I≈0.0009 bits`, ~1000× margin). The adversarial min=0 needs state-correlated bits the
+  orbit does not realize.
+- **⇒ THEOREM:** *if that independence holds asymptotically, the proven contraction forces even-density
+  `½ > 1/3`, so Antihydra never halts.* This upgrades the community's heuristic "probabilistic argument"
+  to a conditional **proof** with a proven core and one clean hypothesis.
+- **[direct attack on the hypothesis]** the independence is **asymptotic, not an exact symmetry**:
+  cross-correlations decay like `1/√N` (random), conditional bias `~1/√count`. So there is **no algebraic
+  shortcut** — the hypothesis is the world-open kernel in its sharpest dress (a `√N` bit-decorrelation, same
+  Mahler-class difficulty).
+
+**World placement** (verified via bbchallenge, June 2026): **BB(5)=47,176,870 was solved in 2024** (Coq-
+verified; paper arXiv:2509.12337). **BB(6) is open and provably *Hard*** — Antihydra (found June 2024) made
+it concrete that BB(6) needs a Collatz-like resolution. `mxdys`'s holdout list has **1104 machines** (up to
+equivalence, April 2026) — the exact frontier this program worked on. **No cryptid has been decided by
+anyone.** Our independent results (Mahler-3/2 + Erdős-ternary monsters → one diagonal-digit kernel; the
+renewal conditional theorem) reconstruct and in places sharpen the global frontier.
+
+## H. Final honest state of the program
+- BB(6) complete proof needs **all** cryptids decided; each = the unified diagonal-digit kernel; **world-open**.
+- Antihydra (monster ①) is reduced to **one conditional theorem** (proven core + a single √N-decorrelation
+  hypothesis, no symmetry shortcut). o18/Erdős (monster ②) shares the renewal mechanism (base-3).
+- **Deliverables:** `BB6_KERNEL_PROBLEM.md` (citable problem), `antihydra_renewal_attack.md` (the conditional
+  theorem + full attack record), `BB6_OPEN_CORE.md` (unified kernel), the catalogue, this summary.
+- **Discipline kept throughout:** 0 machine decisions claimed, 0 false proofs, 2 over-claims self-retracted.
+- **What remains is genuinely new mathematics** (a `√N` bit-decorrelation / specific-orbit equidistribution),
+  the same frontier where the worldwide community is stuck. We pushed Antihydra to one clean, sharp, verified
+  hypothesis — the closest a finite computation can bring it.
