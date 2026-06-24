@@ -22,7 +22,7 @@ same irregular geometric (`2^a/3^b`) content; the envelope is a width artefact, 
 Our full sound suite (`suite.verdict`: translated-cyclers, bouncers, halt-segment, FAR-DFA, CEGAR) run on the
 frontier. Expected and confirmed result: **our suite decides essentially none** — these 1104 are precisely
 the residual that survived the community's *stronger* deciders, so a weaker sound suite cannot crack them.
-(Antihydra and the sampled machines all return HOLDOUT; 0 false proofs — the standing soundness gate.) This
+(**Sampled sweep: 0/120 decided — all HOLDOUT**, with a 3 s/machine cap; Antihydra also HOLDOUT; 0 false proofs — the standing soundness gate.) This
 is the honest, rigorous TIER-3 fact: **the frontier is genuinely undecided by available sound methods.**
 
 ## Classification 3 — kernel taxonomy (verified for representatives, structural for the bulk)
