@@ -1015,3 +1015,26 @@ formulation ("the way you've cut the problem is right"):
 The formulation is correct; the obstruction is named; it is genuinely Mahler-class with the reason-it-is-unknown
 explicit. Named multi-year target: invent effective single-orbit genericity for a rank-1 hyperbolic/S-arithmetic
 automorphism at a specified algebraic point. 0 false proofs.
+
+---
+
+## 2026-06-26j — Frontier grind: BFLM does not adapt to rank-1 because the action is SELF-DUAL (BFLM_GRIND.md)
+Ground the most promising single-orbit tool (Bourgain-Furman-Lindenstrauss-Mozes, JAMS 2011) against our problem.
+- **BFLM mechanism:** Fourier decay of `ν_N=(1/N)Σδ_{γ_n x}` via `ν̂_N(ξ)=(1/N)Σχ_{Â^nξ}(x)`, driven by the DUAL
+  orbit `{Â^nξ}` spreading (random-walk non-concentration of a Zariski-dense non-abelian Γ).
+- **Obstruction = SELF-DUALITY [exact]:** for `A=×(3/2)` on `X=(ℝ×ℚ₂×ℚ₃)/ℤ[1/6]`, `χ_ξ(Ax)=χ_{(3/2)ξ}(x)` ⇒
+  `Â=×(3/2)` — the SAME map. So "make the dual orbit `{(3/2)^nξ}` spread" = the same rank-1 equidistribution
+  problem ⇒ the Fourier-decay argument is **circular**. Empirically `|ν̂_N(ξ)|≈0.4–1.2/√N` (verified, exact
+  fractional parts) — equidist holds — but it IS the Mahler sum; BFLM can't force it (no random walk; self-dual).
+  BFLM breaks the circularity with a **rank-2 non-abelian Γ** (dual action LARGER than primal); our `⟨A⟩` is
+  rank-1 cyclic self-dual — no break. (= "the orbit uses only the self-dual combination `×3/2`, not the
+  independent pair `×2,×3`".)
+- **Renewal-pseudorandomness substitute is circular:** the randomness BFLM needs is in the dual frequency orbit
+  (self-dual = the conclusion), and `(D_j)`'s pseudorandomness IS the conclusion (pseudorandom orbit =
+  equidistributed orbit), not an input.
+- **Positive residue:** short-time dual spreading recovers exactly the `Θ(log N)` foothold; self-duality is what
+  CAPS the Fourier method there (no long-time spreading ⇒ can't reach the `Θ(n)` middle digit).
+- **Sharper multi-year target (in the tool's own language):** **defeat the self-duality of `×(3/2)` for a single
+  rank-1 orbit** — manufacture an effective second multiplicatively-independent direction (rank-2-like input the
+  cyclic orbit lacks), or replace Fourier-decay with a non-self-referential (entropy/additive) engine. Obstacle
+  now named precisely. 0 false proofs.
