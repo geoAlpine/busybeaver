@@ -26,6 +26,20 @@ is `8`).
 > input on `log₂3`) that forces a **single specified algebraic** orbit of a **cyclic** hyperbolic action to
 > equidistribute, where measure rigidity (rank ≥ 2) does not apply? Or is this provably out of current reach?
 
+## The precise locus — `amenable ∩ hyperbolic` (our own engine survey)
+We ground every single-orbit engine against `A`; they fail for **one** reason, which we phrase as a clean
+trichotomy you may find familiar:
+- **amenable + isometric** (a rotation `x↦x+α`, an odometer): tractable — Weyl / unique ergodicity;
+- **non-amenable + hyperbolic** (a rank-≥2 `×p,×q` / Cat-map action): tractable — measure rigidity;
+- **`A = ×(3/2)`: amenable + hyperbolic** — a **rank-1 Anosov automorphism** (the acting group is the *solvable,
+  amenable* `ℤ[1/6] ⋊ ⟨3/2⟩`; genuine stable `(ℚ₃)` + unstable `(ℝ,ℚ₂)` manifolds). **This intersection is the
+  empty spot in the toolbox.** Amenability kills the rigidity engines (Furstenberg/Lindenstrauss/BFLM all need a
+  non-amenable / semisimple second direction); hyperbolicity kills the rotation/Weyl engines. **Is there any
+  single-orbit equidistribution result for a specified point of an *amenable hyperbolic* (rank-1 Anosov) toral /
+  solenoid automorphism?** (We could not even manufacture an effective second direction from the renewal
+  structure: the natural non-abelian semigroup it generates is `ℤ[1/6] ⋊ ⟨3/2⟩` — *solvable*, hence amenable,
+  hence no spectral gap.)
+
 ## Why this is not covered by the standard tools (what we believe is ruled out)
 - **Rank-1 ⇒ no measure rigidity.** `⟨A⟩` is cyclic; Furstenberg/Rudolph–Johnson/Lindenstrauss rigidity needs two
   multiplicatively-independent maps (rank ≥ 2). Einsiedler–Lindenstrauss (JMD 2008) note rank-1 carries a rich

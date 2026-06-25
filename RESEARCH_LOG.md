@@ -1076,3 +1076,24 @@ ENGINE_SURVEY update.
   (a semisimple/expanding 2nd direction), which the problem fundamentally lacks. One principle behind all seven
   tools: non-amenable/semisimple actions have rigidity, ours doesn't. This resolves the rank-2 search (the last
   constructive route) with a precise reason and unifies the entire engine survey under amenability. 0 false proofs.
+
+---
+
+## 2026-06-26m — EXPERT_ASK_HOMOGENEOUS updated (amenable∩hyperbolic) + new-engine design-space mapped (NEW_ENGINE.md)
+Two tasks.
+- **EXPERT_ASK_HOMOGENEOUS** now states the precise locus: the wall is `amenable ∩ hyperbolic` (a rank-1 Anosov
+  automorphism), with the trichotomy (amenable+isometric=Weyl; non-amenable+hyperbolic=rigidity;
+  amenable+hyperbolic=empty toolbox) and the note that the renewal semigroup `ℤ[1/6]⋊⟨3/2⟩` is solvable/amenable.
+- **NEW_ENGINE.md — stepped into the invention.** Constraints: no rank-2, no a.e., no rotation/Weyl, compact
+  (Margulis-vacuous). Most promising attempt = the **two-scale bootstrap**: `c↦⌊3c/2⌋` is exactly 2-to-1
+  (verified) ⇒ `k`-step map is a bijection `{0,1}^k↔ℤ/2^k` (`δ(P^k)=0`) ⇒ equidist `mod 2^k` ⟺ the diagonal-bit
+  sequence is `k`-distributed. Bootstrap `k→k+1` is **not self-closing**: it needs the `(k+1)`-th diagonal bit
+  uniform given the previous `k` — *one fresh bit of randomness per scale* — not implied by `k`-distribution;
+  base case `k=1` is the even-density itself. Reduces to the wall, but **isolates the irreducible requirement**:
+  *supply one fresh per-scale bit from a deterministic algebraic seed = prove `⌊(3/2)^n⌋ mod 2` is normal.* Only
+  *constructed* sequences (Champernowne/Korobov) are provably normal; a given `⌊(p/q)^n⌋` is not (= Mahler/Borel
+  frontier). Other candidates (height/arithmetic, self-consistency, random-model, effective-summable) each
+  reduce. **Clean payoff:** the `δ(P^k)=0` bijection means the problem is *exactly* "one fresh bit per scale" with
+  no other obstruction — any future mechanism for provable normality of an explicit `⌊(p/q)^n⌋` plugs straight in
+  and resolves Antihydra + the whole cryptid family + Mahler 3/2. Design space mapped, irreducible core named;
+  no claim the engine is invented. 0 false proofs.
