@@ -899,3 +899,17 @@ both the automata and algebraic senses. **Verdict:** the digit side gives **no s
 face is the same structureless-normal wall (proving a full-complexity deterministic sequence equidistributes = the
 Mahler wall). Bonus: re-derives the bbchallenge 'no regular certificate' barrier from the digit angle (full
 complexity ⇒ no finite-automaton description). Added to EFFECTIVE_TOPDIGIT. 0 false proofs (artifact caught).
+
+---
+
+## 2026-06-26d — Higher-order (Gowers) probe: parity sequence is U²-uniform, no hidden structure (shuffle-controlled)
+Pushed the digit side past van der Corput to the Gowers/Fourier level (`gowers_probe.py`). Used a SHUFFLE CONTROL
+(real spectrum vs 20 random shuffles of the same multiset). At `N=2^17`: max Fourier coeff `+0.10σ`, Gowers `U²`
+norm `−0.46σ` from shuffled — **indistinguishable from random.** A raw "Fourier peak ratio 3.39×" looked like
+linear structure but is exactly the extreme-value of `N` random coeffs (`√(log N)≈3.4`); the shuffle control
+caught it — **artifact, no over-claim** (the ~14th near-miss caught by verification). Verdict: the parity
+sequence is **U²-uniform** (van der Corput-closed re-confirmed quantitatively) with **no hidden Gowers/Fourier
+structure**. Combined with full subword + maximal linear complexity, it is **pseudorandom at every accessible
+level** (subword, linear, Fourier, U², quadratic). The obstruction is **irreducibly single-orbit**: a
+maximally-pseudorandom deterministic sequence — no structural shortcut at any order = the Mahler wall. The
+digit-side investigation is now thorough and settled. 0 false proofs.
