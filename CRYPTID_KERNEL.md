@@ -40,14 +40,32 @@ expanding for every `μ` with `|μ|_p = p`.
    **every** Mahler cryptid at once (`3/2` *and* `8/3`), not just Antihydra. The expert ask (`EXPERT_ASK.md`
    Q1) is therefore a question about a *family*, which strengthens it.
 
-## The classification theorem (which multipliers give the kernel — verified)
-`T_μ(x)=⌊μx⌋` is a **clean `|μ|_p`-to-1 exact endomorphism of `ℤ_p`** (the structure above) **iff `v_p(μ) = −1`**
-(`|μ|_p = p`). Verified over a grid (`cross_cryptid.py` characterization run): clean for `3/2, 8/3, 9/2, 2/3,
-4/3, 16/3, 27/2, 5/2` (all `v_p=−1`, multiplicity exactly `p`); **not** clean for `9/4, 16/9, 27/4, 8/9`
-(`v_p=−2`, mixed multiplicities `{1,2,3,4}` — they over-contract unevenly and need a 2-step framing). So the
-cryptid kernel is exactly the **one-parameter-per-prime family `{μ=2^a/3^b : v_p(μ)=−1}`**; the BB(6)
-instances `3/2` (p=2) and `8/3` (p=3) are two points of it. This makes "the Mahler core is one kernel" a
-precise statement, not an analogy.
+## The classification theorem (which multipliers give the kernel — **PROVEN**)
+> **Theorem.** Let `μ = a/b` in lowest terms with `b = p^β` a prime power (`p` prime). Then `T_μ(x) = ⌊μx⌋` is a
+> **clean, measure-preserving, `p`-to-1 exact endomorphism of `ℤ_p`** if and only if `β = 1` (i.e. `b = p`),
+> equivalently **`v_p(μ) = −1`**.
+
+**Proof of the substantive direction (`b = p` ⇒ clean `p`-to-1), key step machine-checked.**
+1. *Well-defined on `ℤ_p`.* `T(x) mod p^k` depends only on `x mod p^{k+1}`: if `x ≡ x' (mod p^{k+1})`, write
+   `x = x' + m p^{k+1}`, so `ax = ax' + (am)p^{k+1}` and `⌊ax/p⌋ = ⌊ax'/p⌋ + (am)p^k ≡ ⌊ax'/p⌋ (mod p^k)`. Thus
+   `T` descends to `ℤ/p^{k+1} → ℤ/p^k` for every `k`, hence to a continuous self-map of `ℤ_p`.
+2. *Exactly `p`-to-1 onto.* Fix `t ∈ ℤ/p^k`. Then `⌊ax/p⌋ ≡ t (mod p^k)` `⟺` `ax ∈ [p(t+sp^k), p(t+sp^k)+p)`
+   for some `s` `⟺` `ax` lies in a window of **`p` consecutive integers** mod `p^{k+1}`. Since `gcd(a,p)=1`, `a`
+   is invertible mod `p^{k+1}`, so `x = a^{-1}·(those p consecutive residues)` gives **exactly `p` distinct**
+   residues mod `p^{k+1}`. Every target has exactly `p` preimages. *(Machine-checked: for each `t`, the `p`
+   preimages are `a^{-1}` of `p` consecutive residues — `cross_cryptid.py` classification run, all cases.)*
+3. *Measure-preserving.* Uniform `p`-to-1 onto ⇒ `T_*(`Haar`) = `Haar.
+4. *Exact endomorphism.* The maps `ℤ/p^{k+1} → ℤ/p^k` forget the lowest digit, so the low-digit chain has
+   Dobrushin coefficient `δ(P^k)=0` (state forgotten in `k` steps); the tail σ-algebra `⋂_n T^{-n}(ℬ)` is
+   trivial. (The `p=2` instance is the Antihydra engine of `STATE_FOR_REVIEW §2`.) ∎
+
+**Converse (`β ≥ 2` ⇒ not clean), by witness.** For `b = p²`, `⌊ax/p²⌋` distributes preimages **unevenly**
+(fiber sizes vary) — verified multiplicities `{1,2,3,4}` for `9/4`, `{2,3,4}` for `16/9`, `{1,2,3}` for `27/4`.
+So no clean `p`-to-1 endomorphism; one needs a 2-step (`T²`-type) framing. ∎ (witness)
+
+**So the cryptid kernel is exactly the one-parameter-per-prime family `{μ : v_p(μ)=−1}`** — `b` a single prime,
+`p ∤ a`. The BB(6) instances `3/2` (`p=2`) and `8/3` (`p=3`) are two points of it; "the Mahler core is one
+kernel" is now a *theorem*, not an analogy. (Restricting to `μ=2^a/3^b` gives the two BB(6) primes `p∈{2,3}`.)
 
 ## Placing o15 and o17 (the other two core machines) — honestly
 - **o15 ∈ the `8/3` (p=3) kernel class.** Its *value* grows doubly-exponentially (`v→v^{8/3}`), i.e. its
