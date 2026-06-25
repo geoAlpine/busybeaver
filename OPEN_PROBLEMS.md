@@ -45,13 +45,15 @@ complete proof is a **single-target shrinking-target / one-sided anti-concentrat
   `1/3` = the **Baker / separation** regime (B1, accessible); **k=2,3** = the irreducible **small-k** core.
   **So the real enemy is not the "moving diagonal" / Mahler — it is the orbit's frequency `mod 4` and `mod 8`**
   (`N_2, N_3`). A sharper, smaller-feeling target.
-- **Seed-universality (verified, `seed_universality.py`):** the bound is **not a pathology of seed 8**. Across
-  natural integer seeds (`8,12,…,8000003`), `avg jump = 1.003 ± 0.009`, `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` — all at
-  the Haar values, spread `< 1%`; seed 8 is not special. **The obstruction is a property of the *map*, not the
-  seed** — which *favours* a structural one-sided/drift argument (no seed-specific Diophantine input needed for
-  a typical seed). (Adversarial itinerary-coded seeds can still exceed 2 — §A2/Q9b — so "all integer seeds" is
-  false; but every *natural* seed is generic, so proving seed 8 generic is the a.e.→specific gap, now seen to
-  hold uniformly across observed seeds.)
+- **Seed-universality (verified, `seed_universality.py`) — what it does and does NOT imply.** Across natural
+  integer seeds (`8,12,…,8000003`), `avg jump = 1.003 ± 0.009`, `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` — all at the
+  Haar values, spread `< 1%`. **What this shows:** seed 8 is *not a special pathology*; it looks as generic as
+  any natural seed, so the difficulty is the standard **a.e.→specific gap**, not a seed-8 anomaly. **What it
+  does NOT show (correction — earlier draft over-read this):** it does **not** imply a structural/universal
+  argument exists, and "observed for many seeds" is *not* a theorem. In fact the **drift lemma below proves no
+  universal argument can exist** (the bound is false for adversarial seeds); seed-universality is an empirical
+  observation about typical seeds, fully consistent with that. So: a *weaker condition* and *typical-looking
+  seed* do **not** entail an *easier proof* — those are independent.
 - **★ THE SHARP OPEN QUESTION (the real frontier for the complete proof):**
   > **Does any known technique *distinguish* a one-sided shrinking-target / recurrence bound from full
   > equidistribution for a single orbit of a rank-1 expanding map?** — i.e. is there a *separating example*

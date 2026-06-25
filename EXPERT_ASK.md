@@ -1,4 +1,5 @@
-# A single-orbit equidistribution question (2-adic, rank-1) — short expert ask
+# One-sided recurrence vs equidistribution for a single rank-1 *p*-adic orbit — short expert ask
+*(framed via its BB(6)/Antihydra instance, but the question is the dynamical one in the title)*
 *One page. A specialist should be able to answer the boxed question yes/no/"closest known result" without
 reading anything else. Fuller context: `STATE_FOR_REVIEW.md`; all assertions below are machine-verified (exact
 integer/2-adic arithmetic) or labelled measured/open.*
@@ -43,9 +44,10 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > value is `≈ 1` (a **factor-2 margin**) and the condition is *strictly weaker* than equidistribution (we
 > exhibit non-Haar orbits with `avg jump ∈ (1,2)`). The whole difficulty localizes to **small `k` (`k=2,3`,
 > i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is a separable p-adic-Baker target
-> (Q2). Crucially the bound is **seed-universal**: every natural integer seed gives `avg jump ≈ 1`, `N_2/J ≈
-> 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`); seed 8 is not special — so the obstruction is a property of the *map*,
-> not a seed pathology.
+> (Q2). The bound is **seed-universal** (observed): every natural integer seed gives `avg jump ≈ 1`, `N_2/J ≈
+> 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`), so seed 8 is not a special pathology — the difficulty is the standard
+> a.e.→specific gap. (This is an observation, not evidence that a structural argument exists; a *universal* one
+> provably does not — see "already ruled out" below.)
 > **The question:** *Does any known technique **distinguish** a one-sided shrinking-target / recurrence bound
 > from full equidistribution for a single orbit of a rank-1 expanding map?* I.e. is there a setting where the
 > one-sided (margin) bound is **provably attainable while equidistribution is open** (a separating example), or
@@ -76,6 +78,8 @@ full equidistribution (`E[D] → 1`) is not.
 distinction is known or *impossible* in this setting; (ii) a counterexample / argument explaining why the
 one-sided shrinking-target bound is *as hard as* equidistribution here; or (iii) a technique that plausibly
 attacks the small-`k` shrinking-target estimate directly. A pointer ("see X, Y") is plenty — no write-up needed.
+**And if the answer is simply "no, it's as hard as equidistribution" — what is the precise obstruction?** (A
+reason is as valuable as a reference; experts often explain a "no" more sharply than a "yes.")
 
 ## Why this is well-posed (not "please solve Mahler")
 The point of the reduction is that the obstruction is now **localized**: it is exactly *single-orbit empirical

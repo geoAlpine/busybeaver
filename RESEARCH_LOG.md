@@ -625,3 +625,24 @@ factor-2 margin might open (`A0_feasibility_probe.py`). Verdict: NO.
   exactly where A1 sits — it needs a *new orbit-specific tool*, just a strictly weaker one. This is the honest
   input for the meeting: we have ruled out, ourselves, every standard route; the question for experts is whether
   any mechanism (known or new) delivers a one-sided single-orbit moment bound short of equidistribution. 0 false proofs.
+
+---
+
+## 2026-06-25i — reviewer correction: fix a hopeful logical slip (condition-weakness ≠ proof-ease)
+Reviewer caught a real error in the meeting materials, partly self-contradictory with our own drift lemma:
+- **The slip:** the flow "condition weaker → seed-universal → therefore a structural argument is favoured."
+  Neither implication is valid: "weaker condition" does NOT give "easier proof", and "observed for many seeds"
+  does NOT give "structure exists." Worse, the drift lemma (2026-06-25g) *proves* no universal/structural
+  argument can exist (the bound is false for adversarial seeds), directly contradicting "favours a structural
+  argument."
+- **Fix (OPEN_PROBLEMS §A0, MEETING_BRIEF §2, EXPERT_ASK):** seed-universality now states only what it shows —
+  seed 8 is not a special pathology, the difficulty is the standard a.e.→specific gap — and explicitly that it
+  does NOT imply an easier proof or a structural argument (a universal one provably does not exist). Condition-
+  strength and proof-difficulty labelled independent.
+- **Other reviewer points actioned:** (i) EXPERT_ASK Expected-answer-format now also asks "if it's as hard as
+  equidistribution, what is the precise obstruction?" (experts explain a "no" more sharply); (ii) reframed the
+  external theme/title to the *dynamical* object — "one-sided recurrence vs equidistribution for a single rank-1
+  p-adic orbit" — with Antihydra as the instance (EXPERT_ASK title, MEETING_BRIEF §4½); (iii) kept the
+  "enemy = mod 4 / mod 8" reframe (reviewer's favourite).
+This is the discipline working as intended: a hopeful slip caught and corrected; condition-weakness is not
+progress toward the proof. 0 false proofs.

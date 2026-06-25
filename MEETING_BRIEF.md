@@ -17,11 +17,14 @@ around `1/3`). True value `≈ 1.00`; threshold `2` ⇒ a **factor-2 margin**.
 | **COMPLETE PROOF** | **`avg jump ≤ 2`** | one-sided, factor-2 margin |
 | equidistribution (Mahler 3/2) | `avg jump → 1` | **stronger** than needed |
 
-**Key verified facts:** (a) the complete proof is **strictly weaker as a condition** than equidistribution — we
-built a non-Haar orbit with `avg jump = 1.56 ∈ (1,2)` that satisfies non-halt without equidistributing; (b) it is
-**seed-universal** — every natural seed gives `avg jump ≈ 1.00`, `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` (spread <1%),
-seed 8 is not special; (c) the difficulty localizes to **small `k` (`k=2,3`, the orbit mod 4 / mod 8)** — the
-large-`k` tail is a separable p-adic-Baker target.
+**Key verified facts:** (a) the complete proof is **strictly weaker as a *condition*** than equidistribution — we
+built a non-Haar orbit with `avg jump = 1.56 ∈ (1,2)` that satisfies non-halt without equidistributing. *(NB:
+"weaker condition" does not by itself mean "easier to prove" — those are independent; see §3–§4.)* (b) it is
+**seed-universal** — every natural seed gives `avg jump ≈ 1.00`, `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` (spread <1%), so
+seed 8 is not a special pathology (the difficulty is the standard a.e.→specific gap, not a seed-8 anomaly); this
+is an *observation*, not evidence that a structural argument exists — §3 proves no universal one does. (c) the
+difficulty localizes to **small `k` (`k=2,3`, the orbit mod 4 / mod 8)** — the large-`k` tail is a separable
+p-adic-Baker target.
 
 ## 3. Routes we have ruled out *ourselves* (the wall, mapped on every side — verified)
 | route to `avg jump ≤ 2` | why it fails | tag |
@@ -54,6 +57,12 @@ Mahler 3/2 sits — it needs a *new orbit-specific tool*, just a strictly weaker
 attainable while equidistribution open) — or a theorem that the two are **equivalent in difficulty**; (ii) any
 **shrinking-target / recurrence** machinery for a single rank-1 `p`-adic orbit under a Diophantine hypothesis;
 (iii) routing — which of these is best for a human ergodic-theory specialist vs an analytic number theorist.
+
+## 4½. The theme has become its own object (framing note)
+The question is no longer really "about Antihydra" — it is **"one-sided recurrence / shrinking-target vs
+equidistribution for a single orbit of a rank-1 expanding `p`-adic (Gibbs–Markov) map."** Antihydra is the
+concrete instance that motivates it, but the object is independent and is what will "land" with a dynamicist.
+If anything is written up or asked externally, lead with the *dynamical* statement, not the Turing machine.
 
 ## 5. Honest stance
 The complete proof is Mahler-3/2-class and we have **not** found a route; we have, rigorously, **closed every
