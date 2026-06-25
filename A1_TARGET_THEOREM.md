@@ -87,6 +87,39 @@ approaches — that needs control of how often the orbit re-approaches periodic 
 equidistribution-flavored (the remaining gap, Q-b/Q-e). What is rigorously gained: a fixed non-periodic seed's
 first shadow contributes only **finitely many** biased steps; permanent trapping is **impossible**.
 
+## Lemma 2 — the singularity-preimage class (ii), characterized [PROVEN]
+> **Lemma 2.** The singularity-preimage set `S = ⋃_{d≥0} F^{−d}({1/3})` consists of **rationals with
+> denominators that are powers of 3**; it is countable, dense in `ℤ_2`, **Haar-measure-zero**, and contains
+> **no integer**. Hence hypothesis (ii) excludes a measure-zero rational set, **automatic for every integer seed**.
+
+**Proof.** `F(y)=1/3` on branch `D` solves to `y_D=(2^{D+1}/3+3^D−2^D)/3^{D+1}` (verified: `F(y_D)=1/3`, on branch
+`D`, `∈ℤ_2`): `2/9, 7/27, 23/81, 73/243,…` — denominators `3^{D+1}`, never integer. `S` = countable union of
+finite preimage-sets ⇒ countable, dense (full-branch), Haar-null. An integer orbit stays integral and `1/3∉ℤ`,
+so no integer reaches the singularity. ∎
+
+**Corollary (hypotheses complete).** Lemmas 1–2: both excluded classes — (i) eventually-periodic and (ii)
+singularity-preimages — are **measure-zero rational sets disjoint from `ℤ`** (bar trivial fixed points). So
+**every integer seed satisfies (i),(ii) for free**; the corollary `A1 ⇒ Antihydra` needs no extra hypothesis.
+
+## Proposition 3 — a 2↔3 duality of the jump [PROVEN, new]
+> **Proposition 3.** For every `j`, ` D_j := v2(3c'_j − 1) = v3(2c'_{j+1} − 1) ` (verified `49999/49999`).
+
+**Proof.** The renewal recurrence gives `2c'_{j+1}−1 = 3^{D_j} u_j`, `u_j=(3c'_j−1)/2^{D_j}`. `u_j` is a unit at
+both 2 and 3: `v2(u_j)=0` (def of `D_j`) and `v3(u_j)=v3(3c'_j−1)=0` since `3c'_j−1≡−1 (mod 3)`. Hence
+`v3(2c'_{j+1}−1)=v3(3^{D_j})+v3(u_j)=D_j`. ∎
+
+**Consequences (a new 3-adic attack surface).**
+- **3-adic avatar:** `avg jump = (1/J)Σ_j v3(2c'_{j+1}−1)`, so non-halt `⟺` the 3-adic valuations
+  `v3(2c'_{j+1}−1)` average `≤ 2` — the whole even-density problem read 3-adically.
+- **2↔3 / 1/3↔1/2 symmetry:** `avg jump` = avg 2-adic proximity of `c'_j` to `1/3` = avg 3-adic proximity of
+  `c'_{j+1}` to `1/2`.
+- **Locked expansions:** `2c'_{j+1}−1 = 3^{D_j}·(2,3-unit)` ⇒ the orbit is `3`-power-rich; consecutive states'
+  2-adic and 3-adic expansions are **locked**. This **links the 2-adic Antihydra problem to the 3-adic `(p=3)`
+  cryptid family** (o18/o15, `μ=8/3`, kernel = 3-adic equidistribution): the two cryptid primes meet on one orbit.
+- **Honest status:** the two sides are *equal* — a new structural symmetry, not yet a proof tool — but it opens a
+  3-adic surface absent before (next probe: does a tool on the 3-adic side, e.g. the Erdős/ternary machinery of
+  the `8/3` family, bound `v3(2c'_{j+1}−1)` where the 2-adic side resisted?).
+
 ## Open sub-questions (the next counterexample searches / proof targets)
 - **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously
   (no orbit is asymptotically periodic unless eventually periodic; each shadow episode `≤` its approach depth).

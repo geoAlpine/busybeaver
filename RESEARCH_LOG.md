@@ -765,3 +765,21 @@ non-circular extract.** Did NOT attack Q-b circularly (discipline: don't re-hit 
 A1_TARGET_THEOREM. **Milestone:** the new programme's step-1 (correct theorem statement + counterexample
 refinement) is COMPLETE — Conjecture A1, with hypothesis (i) rigorously justified (Lemma 1), (ii) catalogued, no
 third obstruction; the proof (Q-e, one integer seed) is the named multi-year wall. 0 false proofs.
+
+---
+
+## 2026-06-25p — KEEP ATTACKING (project never closes): Lemma 2 + NEW 2↔3 duality (Proposition 3)
+Per the standing directive [[feedback_never_close_bb6]]: no exits — pivot straight to new bricks.
+- **Lemma 2 [PROVEN]:** the singularity-preimage class (ii) `S=⋃_d F^{−d}(1/3)` = rationals with `3`-power
+  denominators (`2/9,7/27,23/81,…`), countable/dense/Haar-null, **no integer**. With Lemma 1, both excluded
+  classes are measure-zero rational sets disjoint from ℤ ⇒ every integer seed satisfies (i),(ii) for free;
+  `A1 ⇒ Antihydra` needs no extra hypothesis.
+- **Proposition 3 [PROVEN, NEW] — 2↔3 duality of the jump:** `D_j = v2(3c'_j−1) = v3(2c'_{j+1}−1)` (verified
+  49999/49999). Proof: `2c'_{j+1}−1 = 3^{D_j}u_j`, `u_j` a unit at 2 AND 3 (`3c'_j−1≡−1 mod 3 ⇒ v3=0`). So
+  **even-density has an exact 3-adic avatar:** non-halt `⟺ (1/J)Σ v3(2c'_{j+1}−1) ≤ 2`. Symmetry: avg jump = avg
+  2-adic proximity to `1/3` = avg 3-adic proximity to `1/2`. The states are `3`-power-rich
+  (`2c'−1=3^{D}·unit`), **locking** the orbit's 2-adic & 3-adic expansions and **linking the 2-adic Antihydra
+  problem to the 3-adic `(p=3)` cryptid family** (o18/o15, `μ=8/3`). Honest: the two sides are equal (a new
+  structural symmetry, not yet a proof tool), but it opens a 3-adic attack surface absent before.
+- **Next probe (queued):** does a tool on the 3-adic side (the Erdős/ternary machinery governing the `8/3`
+  family) bound `v3(2c'_{j+1}−1)` where the 2-adic side resisted? Attacking next. 0 false proofs.
