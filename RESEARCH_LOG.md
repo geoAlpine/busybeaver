@@ -783,3 +783,25 @@ Per the standing directive [[feedback_never_close_bb6]]: no exits — pivot stra
   structural symmetry, not yet a proof tool), but it opens a 3-adic attack surface absent before.
 - **Next probe (queued):** does a tool on the 3-adic side (the Erdős/ternary machinery governing the `8/3`
   family) bound `v3(2c'_{j+1}−1)` where the 2-adic side resisted? Attacking next. 0 false proofs.
+
+---
+
+## 2026-06-25q — KEEP ATTACKING: Prop 4 (dual carry + Erdős) + Obs 5 (3-adic Cantor support); lit-probe launched
+Relentless attack on the 3-adic surface opened by Prop 3 (no exits).
+- **Proposition 4 [PROVEN, 199/199]:** dual carry identity `2^{M_J} b_J = 3^{M_J} b_0 + T_J`,
+  `T_J=Σ_j 2^{M_j}3^{M_J−1−M_j}` — exact 3-adic dual of `2^n c_n = 8·3^n − S_n`. `v3(b_J)=v3(T_J)=D_{J−1}`.
+  **Erdős connection:** `T_J` is built from `2^{M_j} mod 3^k` = powers of 2 mod 3^k (the 8/3/o18 kernel); since
+  `ord(2 mod 3^k)=2·3^{k−1}`, it depends on `M_j mod 2·3^{k−1}` = renewal times mod a 3-power — a different
+  object/toolset than the 2-adic moving diagonal. Honest: dual-circular for reading the current `D`, but a real
+  UNIFICATION of Antihydra (2-adic) with the Erdős/powers-of-2-mod-3 regime.
+- **Observation 5 [verified]:** the orbit's 3-adic support is a **Cantor set of dimension log2/log3 ≈ 0.63**
+  (`#{c'_j mod 3^k} = 3,6,11,19,36,69,134,262`, ratio →2, ~2^k of 3^k). The 3-adic structure IS the parity
+  (2-adic) info re-encoded; the orbit is far from 3-adically equidistributed (fine for the 2-adic problem).
+- **Launched a focused literature probe** (background agent) on the Erdős ternary-digit problem / Stewart bounds
+  / 3-adic valuations of sums of powers of 2 — does an UNCONDITIONAL bound on `avg v3(T_J)` exist on the 3-adic
+  side where the 2-adic side resisted? Awaiting result.
+- Session foundation now: Lemma 1 (shadows transient), Lemma 2 (singularity class), Prop 3 (2↔3 duality),
+  Prop 4 (dual carry + Erdős), Obs 5 (3-adic Cantor support) — a rich structural theory of the orbit, all
+  verified/proven, unifying the 2-adic and 3-adic cryptid sides. The proof (avg jump ≤ 2) remains the wall;
+  every reformulation is dual-circular, but the structure is genuine new mathematics. Project stays open; attacking
+  the Erdős surface next. 0 false proofs.

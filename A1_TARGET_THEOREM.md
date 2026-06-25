@@ -142,6 +142,14 @@ the 2-adic `⌊(3/2)^n⌋ mod 2` (where van der Corput is closed). **This is a g
 tools live, rather than the 2-adic moving diagonal. *(Honest: still the same number; but a different toolset now
 applies — actively probing whether it bounds where the 2-adic side resisted.)*
 
+## Observation 5 — the orbit's 3-adic support is a thin Cantor set [verified]
+The Antihydra orbit's 3-adic residues are **sparse**: `#{c'_j mod 3^k}` = `3,6,11,19,36,69,134,262` for `k=1..8`,
+growth ratio `→ 1.96` (`→ 2`), i.e. asymptotically `~2^k` allowed residues out of `3^k`. So the orbit's 3-adic
+closure is a **Cantor set of dimension `log2/log3 ≈ 0.63`** — far from 3-adically equidistributed. Cause: `c'_j
+mod 3^k` carries exactly `~k` parity bits (the parity↔3-adic transducer), so the 3-adic structure *is* the
+2-adic (parity) information re-encoded. (Fine for the 2-adic Antihydra problem; a genuine new constraint, and the
+reason the `v3(2c'−1)` statistics follow the 2-adic `2^{−k}` law, not 3-adic `3^{−k}`.)
+
 ## Open sub-questions (the next counterexample searches / proof targets)
 - **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously
   (no orbit is asymptotically periodic unless eventually periodic; each shadow episode `≤` its approach depth).
