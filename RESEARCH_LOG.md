@@ -560,3 +560,25 @@ Re-derived precisely what the complete proof needs and updated the meeting mater
 - Updated OPEN_PROBLEMS (new §A0 = the summit; B2 relabelled scaffold; routing puts A0 first), EXPERT_ASK
   (new Q0 foregrounded), `complete_proof_target.py`. Discipline: the partials (B/C/D) are explicitly NOT the
   summit; the live complete-proof target is the small-k one-sided bound. 0 false proofs.
+
+---
+
+## 2026-06-25f — reviewer feedback incorporated: seed-universality experiment + sharpened Q0 (distinguish, not "easier")
+Per the reviewer's four points on the meeting materials:
+- **NEW EXPERIMENT — seed universality (`seed_universality.py`, verified).** Is the complete-proof target a
+  pathology of seed 8 or universal? Across natural integer seeds (8,12,…,8000003): `avg jump = 1.003 ± 0.009`,
+  `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` — all Haar values, spread <1%; **seed 8 is NOT special**. The obstruction is
+  a property of the *map*, not the seed → favours a structural one-sided/drift argument. (Adversarial
+  itinerary-coded seeds can still exceed 2 per Q9b, so it's "every natural seed is generic", and proving seed 8
+  generic is the a.e.→specific gap — now seen uniform across observed seeds.)
+- **Reframe: the real enemy is `k=2,3` (the orbit's frequency mod 4 and mod 8), NOT the moving diagonal/Mahler.**
+  The tail (large k) is Baker-separable with margin; the irreducible core is mod-4/mod-8.
+- **Sharpened Q0** (reviewer): ask not "is the one-sided bound easier?" but "**does any known technique
+  *distinguish* one-sided shrinking-target/recurrence bounds from full equidistribution for a single rank-1
+  orbit?**" — a separating-example / equivalence-in-difficulty question a dynamicist answers with "yes/no/see X".
+- **Terminology** softened: "one-sided ergodic theorem" → "one-sided shrinking-target / recurrence estimate"
+  (avoids a different established meaning).
+- **Added "Expected answer format"** to EXPERT_ASK: (i) reference showing known/impossible, (ii) counterexample
+  why one-sided is as hard, (iii) a technique attacking the shrinking-target estimate directly.
+Updated EXPERT_ASK (Q0 reworded + terminology + expected-answer-format) and OPEN_PROBLEMS (§A0 seed-universality
++ k=2,3 enemy + distinguish-framing). The materials are now in their most expert-ready state. 0 false proofs.

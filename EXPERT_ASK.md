@@ -38,18 +38,23 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 ## The question
 > **Q0 (the complete-proof frontier — ask this first).** Non-halting needs only the **one-sided** bound
 > `avg jump ≤ 2` (running), where `avg jump = (1/J)Σ_j v2(c'_j − 1/3)` is the orbit's average 2-adic proximity
-> to the single point `1/3 ∈ ℤ₂` — equivalently `N_k/J ≤ C·2^{−k}` (visit frequency to the shrinking ball
-> around `1/3`) summing to `≤ 2`. The true value is `≈ 1`, so there is a **factor-2 margin**, and the condition
-> is *strictly weaker* than equidistribution (we exhibit non-Haar orbits with `avg jump ∈ (1,2)`). **Is this
-> one-sided, margin-2 visit-frequency bound for a single orbit provably easier than full equidistribution**
-> (`avg jump → 1` = Mahler 3/2) — e.g. via a *margin-exploiting one-sided* argument (a one-sided ergodic
-> theorem, sub-additivity, or a Lyapunov/drift on the renewal map), bounding the orbit's visit frequency to the
-> fixed small cylinders `c' ≡ 3 mod 4`, `≡ 3 mod 8` *from one side* without proving the exact frequency? Or
-> does the small-`k` part make it just as hard? (The large-`k` tail = deep approaches to `1/3` is separately a
-> p-adic-Baker target, Q2.) **This is the decisive question for whether a complete proof is reachable without
-> Mahler.**
+> to the single point `1/3 ∈ ℤ₂` — equivalently a **one-sided shrinking-target / recurrence estimate**
+> `N_k/J ≤ C·2^{−k}` (visit frequency to the shrinking ball `2^{−k}` around `1/3`) summing to `≤ 2`. The true
+> value is `≈ 1` (a **factor-2 margin**) and the condition is *strictly weaker* than equidistribution (we
+> exhibit non-Haar orbits with `avg jump ∈ (1,2)`). The whole difficulty localizes to **small `k` (`k=2,3`,
+> i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is a separable p-adic-Baker target
+> (Q2). Crucially the bound is **seed-universal**: every natural integer seed gives `avg jump ≈ 1`, `N_2/J ≈
+> 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`); seed 8 is not special — so the obstruction is a property of the *map*,
+> not a seed pathology.
+> **The question:** *Does any known technique **distinguish** a one-sided shrinking-target / recurrence bound
+> from full equidistribution for a single orbit of a rank-1 expanding map?* I.e. is there a setting where the
+> one-sided (margin) bound is **provably attainable while equidistribution is open** (a separating example), or
+> a theorem that the two are **equivalent in difficulty**? Concretely: any *one-sided recurrence / shrinking-
+> target estimate*, sub-additivity, or Lyapunov/drift on the renewal map bounding visit frequency to a fixed
+> small cylinder *from one side* without proving the exact frequency. **This decides whether a complete proof is
+> reachable without Mahler 3/2.**
 >
-> **Q1 (the equidistribution wall, if Q0 is "just as hard").** Is there *any* mechanism in the literature that forces a **single** rank-1 orbit of an
+> **Q1 (the equidistribution wall, if Q0 is "equivalent in difficulty").** Is there *any* mechanism in the literature that forces a **single** rank-1 orbit of an
 > expanding `×(2^a/3^b)`-type Gibbs–Markov map on `ℤ_p` to equidistribute (empirical measure → Haar), given a
 > **Diophantine input on `log₂3`** — beyond the rank-≥2 scope of Furstenberg/Rudolph/Lindenstrauss and beyond
 > the off-diagonal reach of Fourier/large-sieve? If not, what is the **closest** known result and the exact gap?
@@ -59,6 +64,11 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > differences are S-unit-like. Does **p-adic Baker / linear forms in logarithms** give an unconditional lower
 > bound on `v2(c'_i − c'_j)` (hence the separation bound)? (Note: this tail is *not* what binds `avg jump` — the
 > small-k equidistribution is — but a clean unconditional result here would still be a genuine partial.)
+
+**Expected answer format.** A useful reply could be (i) a reference showing the one-sided/equidistribution
+distinction is known or *impossible* in this setting; (ii) a counterexample / argument explaining why the
+one-sided shrinking-target bound is *as hard as* equidistribution here; or (iii) a technique that plausibly
+attacks the small-`k` shrinking-target estimate directly. A pointer ("see X, Y") is plenty — no write-up needed.
 
 ## Why this is well-posed (not "please solve Mahler")
 The point of the reduction is that the obstruction is now **localized**: it is exactly *single-orbit empirical

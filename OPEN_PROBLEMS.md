@@ -43,10 +43,21 @@ complete proof is a **single-target shrinking-target / one-sided anti-concentrat
 - **The budget decomposition (verified):** complete proof `⟸ [k=1 term ≤ 1, trivial] + [Σ_{k≥2} N_k/J ≤ 1]`
   (true value of the tail `≈ 0.50`, so a **2× margin**). The tail splits again: **large-k** = deep approaches to
   `1/3` = the **Baker / separation** regime (B1, accessible); **k=2,3** = the irreducible **small-k** core.
+  **So the real enemy is not the "moving diagonal" / Mahler — it is the orbit's frequency `mod 4` and `mod 8`**
+  (`N_2, N_3`). A sharper, smaller-feeling target.
+- **Seed-universality (verified, `seed_universality.py`):** the bound is **not a pathology of seed 8**. Across
+  natural integer seeds (`8,12,…,8000003`), `avg jump = 1.003 ± 0.009`, `N_2/J ≈ 0.25`, `N_3/J ≈ 0.125` — all at
+  the Haar values, spread `< 1%`; seed 8 is not special. **The obstruction is a property of the *map*, not the
+  seed** — which *favours* a structural one-sided/drift argument (no seed-specific Diophantine input needed for
+  a typical seed). (Adversarial itinerary-coded seeds can still exceed 2 — §A2/Q9b — so "all integer seeds" is
+  false; but every *natural* seed is generic, so proving seed 8 generic is the a.e.→specific gap, now seen to
+  hold uniformly across observed seeds.)
 - **★ THE SHARP OPEN QUESTION (the real frontier for the complete proof):**
-  > Is the one-sided, margin-2 bound `avg jump ≤ 2` (equivalently `N_k/J ≤ C·2^{−k}` summing to `≤ 2`)
-  > **provably easier** for the seed-8 orbit than full equidistribution `avg jump → 1`, **or** does the
-  > small-k part `k=2,3` make it just as hard?
+  > **Does any known technique *distinguish* a one-sided shrinking-target / recurrence bound from full
+  > equidistribution for a single orbit of a rank-1 expanding map?** — i.e. is there a *separating example*
+  > (one-sided attainable while equidistribution open), or are the two *equivalent in difficulty* here? For us:
+  > is `avg jump ≤ 2` (the `N_2, N_3 mod 4,8` frequencies, one-sided, margin 2) provably easier than
+  > `avg jump → 1` (Mahler), or does the small-k core make it just as hard?
   - If **easier** → the complete proof is reachable **without solving Mahler 3/2** (a margin-exploiting,
     one-sided argument on the orbit's distribution mod `4, 8`). This is the *best* hope for a real proof.
   - If **just as hard** → the complete proof `=` A1 `=` new mathematics (multi-year).
