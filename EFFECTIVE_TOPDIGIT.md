@@ -78,6 +78,18 @@ equidistribution and (2) one-sided shrinking-target / specific-orbit genericity:
 Predicted answer: **No** — and a clean "no" is valuable: it pins the wall as *moving-middle-digit-beyond-`Θ(log N)`*,
 a sharper, more answerable formulation than "solve Mahler."
 
+## Digit-side probe — the moving-diagonal sequence is maximally complex [verified]
+Probing whether the third face (the digit side) offers an automatic / low-complexity foothold: the
+moving-diagonal parity sequence `e_n = c_n mod 2 = bit_{n+3}(3^n)` has **full subword (factor) complexity**
+`p(k) = 2^k` (verified: `p(k)=2^k` exactly to `k=14` at `N=4·10^5`, the `k=16` shortfall is coupon-collector
+noise at `~6` samples/word). So the sequence is **pseudorandom — not automatic, not low-complexity** — and
+combined with its **maximal linear complexity** (Berlekamp–Massey `=M/2`, prior) it is maximally complex in
+**both** the automata and the algebraic senses. **Consequence:** the digit side offers **no structural
+foothold** (no automatic-sequence decision procedure, no forbidden patterns); the third face is the same
+*structureless-normal* wall — proving a fully-complex deterministic sequence equidistributes is exactly Mahler.
+(This also re-derives, from the digit angle, the bbchallenge "no regular certificate" barrier: a full-complexity
+sequence has no finite-automaton description.) `digit_complexity.py`.
+
 ## Status
 [PROVEN, unconditional] effective equidistribution of the top `Θ(log N)` digits, constants from `log₂3`'s CF;
 [PROVEN, sharp] the `Θ(log N)` barrier for the archimedean method; [PROVEN, verified] van der Corput closed;

@@ -885,3 +885,17 @@ Stewart digit-count not fixed-position). Acted:
   answer No — and a clean No pins the wall in a sharper, more answerable form than "solve Mahler."
 - Discipline: precision bug caught by re-derivation; 0 false proofs. Project stays open; the wall is now mapped
   from the digit side too and all three faces coincide (Mahler-class).
+
+---
+
+## 2026-06-26c — Digit-side probe: moving-diagonal sequence has FULL subword complexity (no automatic foothold)
+Attacked the third (digit) face: does the moving-diagonal parity sequence `e_n=c_n mod 2=bit_{n+3}(3^n)` have an
+automatic / low-complexity structure to exploit? **No (`digit_complexity.py`):** full subword (factor) complexity
+`p(k)=2^k`, verified exactly to `k=14` at `N=4·10^5` (the `k=16` shortfall `65396/65536` is coupon-collector
+noise, `~6` samples/word; the `k=14` 'missing word' at `N=150k` filled in by `N=400k` — a sampling artifact, NOT
+structure — caught before over-claiming). So the sequence is **pseudorandom**: not automatic, no forbidden
+patterns. Combined with its **maximal linear complexity** (Berlekamp–Massey, prior), it is maximally complex in
+both the automata and algebraic senses. **Verdict:** the digit side gives **no structural foothold**; the third
+face is the same structureless-normal wall (proving a full-complexity deterministic sequence equidistributes = the
+Mahler wall). Bonus: re-derives the bbchallenge 'no regular certificate' barrier from the digit angle (full
+complexity ⇒ no finite-automaton description). Added to EFFECTIVE_TOPDIGIT. 0 false proofs (artifact caught).
