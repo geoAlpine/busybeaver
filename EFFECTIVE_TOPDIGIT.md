@@ -44,7 +44,41 @@ beyond `Θ(log N)` (e.g. to `(log N)^{1+δ}` or `N^δ`) — that is the concrete
 new tool, and the first thing to ask experts: *is there any unconditional method reaching beyond `Θ(log N)`
 digits of `⌊(3/2)^n⌋` / of `3^n` at a moving (non-top, non-bottom) position?*
 
+## Meeting verdict (2026-06-25, second consultation) — barrier confirmed unbeatable by standard methods
+A method-by-method review confirmed **no known standard technique** beats the `Θ(log N)` foothold to reach the
+middle digit:
+- **Weyl / Erdős–Turán / Diophantine:** works on the top mantissa `{n log₂3}`, depth `log N` only (this file).
+- **van der Corput / high-order differencing:** **CLOSED** (now *verified*, see below) — the phase
+  `(3/2)^{n+h}−(3/2)^n = t'(3/2)^n` returns the *same exponential family*, so differencing is a fixed point and
+  gains nothing.
+- **effective metric theory (Koksma, Tao):** almost-all / log-density-1 only; never the single seed-8 orbit.
+- **Flatto–Lagarias–Pollington (1995):** range/spread lower bound, not a density or a digit frequency.
+- **digit-sum / Stewart / Stolarsky:** bound the *number* of nonzero digits, not a *moving fixed-position*
+  digit's frequency.
+
+**Verified: van der Corput is closed (`vdc_closed.py`).** With exact integer fractional parts
+`frac((3/2)^n)=(3^n mod 2^n)/2^n`, the Mahler sum `|Σ_{n≤N} e(t·(3/2)^n)| = O(1)·√N` (full √-cancellation,
+`0.39–1.18·√N` over `t=1..5`, `N=8000`), and the differenced sums `|Σ e(t((3/2)^{n+h}−(3/2)^n))|` are *also*
+`O(1)·√N` — **no improvement**. (Precision note: a first attempt at `mp.dps=60` was wrong — `(3/2)^n` for
+`n=4000` needs `~2340` bits; the exact-integer computation is the correct one. Caught and fixed.)
+
+## The wall, third face (from this baseline) — the sharpened expert ask
+The wall now has a **third equivalent characterization**, alongside (1) rank-1 single-orbit effective
+equidistribution and (2) one-sided shrinking-target / specific-orbit genericity:
+> **(3) Equidistribution of a *moving middle digit* of `a^n` in base `b`, beyond the `Θ(log N)` top/bottom
+> footholds.** For Antihydra: control `bit_{n+3}(3^n)` (the diagonal, fixed slope `c = 1` in `bit_{cn}(3^n)`)
+> along the single orbit.
+
+**Expert ask (the precise question to put first):**
+> *Is there any known method proving equidistribution of a **moving middle digit** of `a^n` in base `b` — i.e.
+> `bit_{cn}(a^n)` for a fixed `0 < c < log_b a` along one specific orbit — beyond the `Θ(log N)` top/bottom
+> footholds from Weyl/Diophantine approximation and fixed-modulus character sums? Can high-order van der Corput,
+> effective metric theory, or digital exponential-sum estimates reach a moving middle digit?*
+
+Predicted answer: **No** — and a clean "no" is valuable: it pins the wall as *moving-middle-digit-beyond-`Θ(log N)`*,
+a sharper, more answerable formulation than "solve Mahler."
+
 ## Status
 [PROVEN, unconditional] effective equidistribution of the top `Θ(log N)` digits, constants from `log₂3`'s CF;
-[PROVEN, sharp] the `Θ(log N)` barrier for the archimedean method; [OPEN] anything beyond `Θ(log N)` (= the
-moving diagonal = the wall). 0 false proofs.
+[PROVEN, sharp] the `Θ(log N)` barrier for the archimedean method; [PROVEN, verified] van der Corput closed;
+[OPEN] anything beyond `Θ(log N)` (= the moving diagonal = the wall). 0 false proofs.

@@ -866,3 +866,22 @@ Built the rigorous, unconditional baseline the new tool must extend.
   `log₂3` controls `Θ(log N)` digits; the gap to the diagonal is `Θ(n)`.
 - **The progress metric:** any unconditional push beyond `Θ(log N)` controllable digits (to `(log N)^{1+δ}` or
   `N^δ`) at a moving position is genuine new progress = the question for the next meeting. 0 false proofs.
+
+---
+
+## 2026-06-26b — Meeting verdict 2 + verified van der Corput closure; wall's THIRD face (moving middle digit)
+Second consultation confirmed `EFFECTIVE_TOPDIGIT.md`: no known standard method beats the `Θ(log N)` foothold
+to a middle digit. Method-by-method (Weyl/E-T depth log N; vdC closed; metric theory a.e.-only; FLP range-only;
+Stewart digit-count not fixed-position). Acted:
+- **Verified van der Corput CLOSED (`vdc_closed.py`)** — turned the meeting heuristic into a verified obstruction.
+  EXACT fractional parts `frac((3/2)^n)=(3^n mod 2^n)/2^n`: Mahler sum `|Σ e(t(3/2)^n)| = O(1)·√N` (full
+  √-cancellation, `0.39–1.18·√N`); differenced sums (phase `(3/2)^{n+h}−(3/2)^n = t'(3/2)^n`, same family) also
+  `O(1)·√N` — no gain. **Caught & fixed a precision bug** (a first `mp.dps=60` attempt was garbage: `(3/2)^4000`
+  needs `~2340` bits; the exact-integer computation is correct).
+- **Wall's THIRD equivalent face:** beyond (1) rank-1 single-orbit effective equidistribution and (2) one-sided
+  shrinking-target, the wall is **(3) equidistribution of a moving middle digit `bit_{cn}(a^n)` (`0<c<log_b a`)
+  of `a^n` base `b`, along one orbit, beyond `Θ(log N)`.** Sharpened expert ask written into EFFECTIVE_TOPDIGIT
+  + EXPERT_ASK: *is there ANY method reaching a moving middle digit beyond the `Θ(log N)` footholds?* Predicted
+  answer No — and a clean No pins the wall in a sharper, more answerable form than "solve Mahler."
+- Discipline: precision bug caught by re-derivation; 0 false proofs. Project stays open; the wall is now mapped
+  from the digit side too and all three faces coincide (Mahler-class).
