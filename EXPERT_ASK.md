@@ -1,6 +1,9 @@
 # One-sided recurrence vs equidistribution for a single rank-1 *p*-adic orbit — short expert ask
 
-> **Status (2026-06-26):** a first expert consultation judged the formulation **correct** and the problem **genuinely Mahler-class**; the obstruction is *specified-point genericity*, not recurrence. Canonical statement + verdict: `CANONICAL_PROBLEM.md`.
+> ## Does any theorem **separate** a one-sided shrinking-target / recurrence bound from full equidistribution for a **single specified** orbit of a rank-1 expanding map — or are they equivalent in difficulty?
+
+*That is the whole question (details in Q0). Everything else is context and what we have ruled out.
+**We would value most being told where this is wrong** — a sharper "no" is as useful as a "yes".*
 *(framed via its BB(6)/Antihydra instance, but the question is the dynamical one in the title)*
 *One page. A specialist should be able to answer the boxed question yes/no/"closest known result" without
 reading anything else. Fuller context: `STATE_FOR_REVIEW.md`; all assertions below are machine-verified (exact
@@ -108,6 +111,9 @@ the next move.
    gain). **Q3: does ANY method — high-order van der Corput, effective metric theory, digital exponential-sum
    estimates — reach a moving middle digit of `a^n` beyond `Θ(log N)`?** (Predicted: no; a clean *no* is as
    useful as a yes — it pins the wall as "moving-middle-digit-beyond-`Θ(log N)`", sharper than "solve Mahler".)
+   > **Q3′ (meta):** is the **"moving middle digit"** a *recognized standalone problem* with a name/literature of
+   > its own, distinct from Mahler 3/2? If there is no such concept, that absence is itself worth knowing — it may
+   > be the right way to frame this whole class.
 
 ## Where to ask
 - **bbchallenge community** (the Antihydra holdout is theirs): Discord / forum threads, contributors working on

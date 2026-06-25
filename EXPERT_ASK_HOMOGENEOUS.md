@@ -1,9 +1,9 @@
 # Single-orbit equidistribution for a rank-1 hyperbolic automorphism of an S-arithmetic solenoid — expert ask
 
-> **Status (2026-06-26):** a first expert consultation judged the formulation **correct** and the problem **genuinely Mahler-class**; the obstruction is *specified-point genericity*, not recurrence. Canonical statement + verdict: `CANONICAL_PROBLEM.md`.
 *For a homogeneous-dynamics / equidistribution specialist. One page; the boxed question is the point. The object
 is purely dynamical; the motivation (a Busy-Beaver / "Antihydra" non-halting problem) is at the end. All
-"verified" facts are machine-checked.*
+"verified" facts are machine-checked. **We would value most being told where this is wrong or incomplete** — in
+particular whether the obstruction is really what we think, or whether a known result reaches further.*
 
 > **If you only answer one thing, please answer the boxed Q.**
 
@@ -32,13 +32,13 @@ trichotomy you may find familiar:
 - **amenable + isometric** (a rotation `x↦x+α`, an odometer): tractable — Weyl / unique ergodicity;
 - **non-amenable + hyperbolic** (a rank-≥2 `×p,×q` / Cat-map action): tractable — measure rigidity;
 - **`A = ×(3/2)`: amenable + hyperbolic** — a **rank-1 Anosov automorphism** (the acting group is the *solvable,
-  amenable* `ℤ[1/6] ⋊ ⟨3/2⟩`; genuine stable `(ℚ₃)` + unstable `(ℝ,ℚ₂)` manifolds). **This intersection is the
-  empty spot in the toolbox.** Amenability kills the rigidity engines (Furstenberg/Lindenstrauss/BFLM all need a
-  non-amenable / semisimple second direction); hyperbolicity kills the rotation/Weyl engines. **Is there any
-  single-orbit equidistribution result for a specified point of an *amenable hyperbolic* (rank-1 Anosov) toral /
-  solenoid automorphism?** (We could not even manufacture an effective second direction from the renewal
-  structure: the natural non-abelian semigroup it generates is `ℤ[1/6] ⋊ ⟨3/2⟩` — *solvable*, hence amenable,
-  hence no spectral gap.)
+  amenable* `ℤ[1/6] ⋊ ⟨3/2⟩`; genuine stable `(ℚ₃)` + unstable `(ℝ,ℚ₂)` manifolds). **This intersection *appears
+  to be* an empty spot in the toolbox** (we would be glad to be corrected): amenability seems to block the
+  rigidity engines (Furstenberg/Lindenstrauss/BFLM all need a non-amenable / semisimple second direction), and
+  hyperbolicity blocks the rotation/Weyl engines. **Is there any single-orbit equidistribution result for a
+  specified point of an *amenable hyperbolic* (rank-1 Anosov) toral / solenoid automorphism?** (We could not even
+  manufacture an effective second direction from the renewal structure: the natural non-abelian semigroup it
+  generates is `ℤ[1/6] ⋊ ⟨3/2⟩` — *solvable*, hence amenable, hence no spectral gap.)
 
 ## Why this is not covered by the standard tools (what we believe is ruled out)
 - **Rank-1 ⇒ no measure rigidity.** `⟨A⟩` is cyclic; Furstenberg/Rudolph–Johnson/Lindenstrauss rigidity needs two
