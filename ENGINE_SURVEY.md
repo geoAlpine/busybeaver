@@ -1,0 +1,42 @@
+# Engine survey: every single-orbit-equidistribution tool, ground against the rank-1 action (2026-06-26)
+*The culmination of the frontier "grind the tools" phase: each known engine for proving a single orbit
+equidistributes, run against our rank-1 cyclic action `⟨×(3/2)⟩` on the `S`-arithmetic solenoid. They all fail
+for **one unified reason**. This is the deepest characterization of the wall the programme has produced. Each row
+is verified or structural; `bflm_grind.py`, `engine_survey.py`.*
+
+## The survey
+| engine | mechanism (how it proves single-orbit equidistribution) | verdict against `⟨×(3/2)⟩` |
+|---|---|---|
+| **Fourier / BFLM** (JAMS 2011) | Fourier decay of `ν̂_N(ξ)` via the **dual orbit `{Â^n ξ}` spreading** (random walk on a Zariski-dense non-abelian `Γ`) | **SELF-DUAL**: `Â = ×(3/2)` ⇒ "spread the dual orbit" is the same rank-1 problem ⇒ **circular**. Needs a rank-2 non-abelian `Γ`. |
+| **Entropy / Lindenstrauss–EKL** | positive entropy `+` **recurrence under a 2nd commuting element** ⇒ Haar | non-Haar invariant measures have **positive entropy** (verified: `1.67–4.99 log2` vs Haar `2 log2`) ⇒ entropy alone insufficient; the recurrence needs a **2nd commuting element (rank-2)** — absent. |
+| **Additive comb. / Bourgain–Gamburd** | **spectral gap** of a random walk (expansion) | needs a **free / non-abelian subgroup (≥ 2 generators)**; `⟨×3/2⟩` is cyclic abelian ⇒ **no spectral gap**. |
+| **Measure rigidity / Furstenberg** | `×2,×3` joint rigidity (no exotic invariant measures) | needs a **multiplicatively-independent pair (rank-2)**; the orbit uses only the combination `×3/2`. |
+| **Ratner / unipotent** | unipotent-flow equidistribution | **N/A**: `×(3/2)` is diagonal / **hyperbolic**, not unipotent. |
+| **Transfer operator / thermo.** | spectral gap on a function space | **orbit-blind**: gives Haar-`a.e.`, never the single specified seed. |
+| **Weyl / van der Corput** | character-sum cancellation | **closed** on `(3/2)^n`; reaches only the **`Θ(log N)` top foothold**. |
+
+## The unification (the single reason they all fail)
+Every engine that can prove a **single** orbit equidistributes needs one of:
+1. a **second multiplicatively-independent direction** (rank ≥ 2) — *Fourier/BFLM, entropy, additive, rigidity*;
+2. a **unipotent** structure — *Ratner* — which `×(3/2)` does not have; or
+3. it delivers only **`a.e.` / the `Θ(log N)` foothold** — *transfer operator, Weyl*.
+
+The rank-1 cyclic orbit `⟨×(3/2)⟩` provides **none** of these. And the four phrasings we met —
+> "**self-duality**" (BFLM) · "**missing recurrence**" (entropy) · "**no spectral gap**" (additive) ·
+> "**no `×2,×3` pair**" (rigidity)
+
+— are **all the same fact**:
+> ### The orbit carries only the rank-1 combination `×(3/2)`, never the rank-2 pair `×2, ×3` separately.
+The map factors as `×3` then `÷2`, but the *orbit* only ever sees the composite; the two primes are never
+available as independent directions. That single deficiency is the entire wall, seen through seven tools.
+
+## What this fixes as the multi-year target (precise, tool-independent)
+> **Manufacture an effective second multiplicatively-independent direction for the single rank-1 orbit of
+> `×(3/2)`** — i.e. recover rank-2 leverage from the one composite the orbit carries — **or** invent a genuinely
+> new single-orbit engine that needs neither rank-2 nor a.e. (the latter being, by this survey, unprecedented).
+
+This is sharper than "solve Mahler" or "adapt BFLM": it is a *structural* request (defeat rank-1-ness) that every
+known engine reduces to, and it explains — in one sentence — why three independent fields and seven tools all
+stop at the same place. Honest status: no mechanism recovers rank-2 from a single `×(3/2)` orbit, and whether one
+can exist is the open frontier. 0 false proofs; every "needs rank-2" is the tool's own structural requirement,
+not an assumption.

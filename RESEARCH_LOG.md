@@ -1038,3 +1038,23 @@ Ground the most promising single-orbit tool (Bourgain-Furman-Lindenstrauss-Mozes
   rank-1 orbit** — manufacture an effective second multiplicatively-independent direction (rank-2-like input the
   cyclic orbit lacks), or replace Fourier-decay with a non-self-referential (entropy/additive) engine. Obstacle
   now named precisely. 0 false proofs.
+
+---
+
+## 2026-06-26k — Complete engine survey: all single-orbit tools fail for ONE reason (the orbit is rank-1) — ENGINE_SURVEY.md
+Ground every known single-orbit-equidistribution engine against `⟨×(3/2)⟩` (`engine_survey.py`, ENGINE_SURVEY.md):
+- **Fourier/BFLM:** self-dual (`Â=×3/2`) ⇒ circular; needs rank-2 non-abelian Γ.
+- **Entropy/Lindenstrauss-EKL:** non-Haar measures have +entropy (verified `1.67–4.99 log2` vs Haar `2 log2`) ⇒
+  entropy alone insufficient; needs recurrence under a 2nd commuting element (rank-2).
+- **Additive/Bourgain-Gamburd:** needs a free/non-abelian subgroup (≥2 gens); `⟨×3/2⟩` cyclic abelian ⇒ no gap.
+- **Rigidity/Furstenberg:** needs a mult-indep pair (rank-2); orbit uses only `×3/2`.
+- **Ratner/unipotent:** N/A (`×3/2` diagonal/hyperbolic, not unipotent).
+- **Transfer operator:** orbit-blind (a.e. only). **Weyl/vdC:** closed, `Θ(log N)` foothold only.
+- **UNIFICATION:** every engine needs (i) a 2nd mult-indep direction (rank≥2), (ii) unipotent structure (absent),
+  or (iii) delivers only a.e./foothold. The four phrasings — self-duality / missing-recurrence / no-spectral-gap
+  / no-`×2,×3`-pair — are **ALL THE SAME FACT: the orbit carries only the rank-1 combination `×(3/2)`, never the
+  rank-2 pair `×2,×3` separately** (the map factors `×3` then `÷2`, but the orbit sees only the composite).
+- **Multi-year target (tool-independent):** manufacture an effective 2nd mult-indep direction from the single
+  `×(3/2)` orbit (recover rank-2), or invent a single-orbit engine needing neither rank-2 nor a.e. (unprecedented).
+  This is the deepest, most unified characterization of the wall the programme has produced — one sentence
+  explaining why 3 fields + 7 tools all stop at the same place. 0 false proofs.
