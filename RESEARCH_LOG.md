@@ -935,3 +935,24 @@ New tactic (not re-probing seed 8): map the tractable cousin models, their struc
   asset** the classical cousins exploit — it converts the problem to **rank-1 S-arithmetic equidistribution**, a
   named open target rather than "solve Mahler." This is the most structurally-promising multi-year direction; the
   rank-1 obstruction is stated, not hidden. 0 false proofs.
+
+---
+
+## 2026-06-26f — Route 3 RESOLVED: Antihydra = single-orbit equidist. of a hyperbolic S-arithmetic automorphism
+Attacked Route 3 (adelic) concretely; it CORRECTS the earlier "wrong-place" framing to a sharper, positive one
+(`route3_adelic.py`, TRACTABILITY_MAP Route 3 section):
+- **`×(3/2)` is a HYPERBOLIC automorphism of the solenoid `X=(ℝ×ℚ_2×ℚ_3)/ℤ[1/6]`** (`3/2∈ℤ[1/6]^*`): `|3/2|_∞=3/2`,
+  `|3/2|_2=2` expanding; `|3/2|_3=1/3` contracting (**stable manifold**); product `=1`, no neutral dir ⇒ hyperbolic.
+  **The 3-adic contraction is the stable direction — essential and GOOD, not "wrong place."**
+- **[PROVABLE, a.e.]** hyperbolic ⇒ ergodic+mixing ⇒ **a.e. orbit equidistributes** (S-arithmetic Cat-map analog).
+  The contraction delivers a.e. equidistribution rigorously.
+- **[WALL]** seed 8 = orbit of the single point 1; a single orbit of a hyperbolic automorphism need not
+  equidistribute. The **cleanest dynamical form of the wall: single-orbit equidistribution of a hyperbolic
+  S-arithmetic automorphism** (= the a.e.→specific / Tao wall).
+- **Pisot was the wrong analog:** ℚ has no Galois conjugates ⇒ no "trace∈ℤ" (product formula = product, not sum).
+  The right mechanism is hyperbolic mixing (a.e.), not Pisot (single).
+- **Named target:** places Antihydra in **homogeneous dynamics** (Einsiedler–Lindenstrauss). Their rigidity is
+  rank ≥ 2 (`⟨×2,×3⟩`); ours is **rank-1** cyclic `⟨×3/2⟩`, no rigidity ⇒ the frontier is **rank-1 single-orbit
+  equidistribution on a hyperbolic S-arithmetic solenoid** — a named, well-populated battlefield with the rank-1
+  gap as the explicit obstruction. This is the most precise and promising multi-year target the programme has
+  produced. 0 false proofs (the "wrong place" framing was corrected, not buried).

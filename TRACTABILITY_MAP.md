@@ -36,6 +36,30 @@ stays generic (`0.665, 0.059, 0.933, 0.397`), no decay.
   But the acting element is `(3/2)` generating a **rank-1** (cyclic) group, and rank-1 diagonal actions have **no
   Ratner/measure rigidity** — the same single-orbit wall, now in `S`-arithmetic clothing.
 
+## Route 3 — resolved [the cleanest dynamical home for the wall] (2026-06-26, `route3_adelic.py`)
+Attacking the adelic route concretely **corrects the earlier "Pisot/wrong-place" framing** to a sharper, more
+positive one:
+- **`×(3/2)` is a HYPERBOLIC automorphism of the S-arithmetic solenoid** `X = (ℝ×ℚ_2×ℚ_3)/ℤ[1/6]` (`3/2∈ℤ[1/6]^*`
+  so it descends to an automorphism). Dilations: `|3/2|_∞=3/2` and `|3/2|_2=2` **expanding**, `|3/2|_3=1/3`
+  **contracting** (the *stable manifold*). No neutral direction ⇒ **hyperbolic** (product formula `3/2·2·⅓=1`,
+  verified). **The 3-adic contraction is not "at the wrong place" — it is the stable direction that makes the
+  system hyperbolic**, exactly the structure the cousins exploit.
+- **[PROVABLE, a.e.]** hyperbolic ⇒ ergodic + mixing ⇒ **`a.e.` orbit equidistributes** (Birkhoff; the
+  `S`-arithmetic analogue of a hyperbolic toral automorphism / Cat map). So equidistribution is *rigorously true
+  for almost every seed* — the contraction delivers this.
+- **[WALL]** seed 8 is the orbit of the *single specified* point `1` (resp. `8`); a **single orbit** of a
+  hyperbolic automorphism need not equidistribute (periodic points don't). This is the **a.e.→specific** wall
+  again — now in its **cleanest dynamical form**: *single-orbit equidistribution of a hyperbolic `S`-arithmetic
+  automorphism.*
+- **Why Pisot was the wrong analog:** `ℚ` has no Galois conjugates, so there is no "trace `∈ℤ`" making `(3/2)^n`
+  close to an integer (the product formula gives a *product* `=1`, not a sum). The correct mechanism is
+  **hyperbolic mixing**, which gives `a.e.`, not the single orbit.
+- **The named target:** this places Antihydra in **homogeneous dynamics** — the home of Einsiedler–Lindenstrauss
+  measure rigidity. Their rigidity is for **rank ≥ 2** actions (`⟨×2,×3⟩`); our action is the **rank-1** cyclic
+  `⟨×(3/2)⟩`, with no rigidity — so the open frontier is precisely **rank-1 single-orbit equidistribution on a
+  hyperbolic `S`-arithmetic solenoid.** A genuine, named, well-populated battlefield (not "solve Mahler"), with
+  the rank-1 gap as the explicit obstruction.
+
 ## The deliverable: what the new tool must supply
 The new single-orbit tool for `3/2` must provide a **substitute for one of the three tractability structures**:
 1. a **rank-1 unique-ergodicity-type input** that pins one specified orbit (the dynamical face, A1/Q1); or
