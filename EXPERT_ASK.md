@@ -65,6 +65,13 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > bound on `v2(c'_i − c'_j)` (hence the separation bound)? (Note: this tail is *not* what binds `avg jump` — the
 > small-k equidistribution is — but a clean unconditional result here would still be a genuine partial.)
 
+**Already ruled out for Q0 (so you can skip these).** A *universal* (orbit-independent) one-sided certificate —
+Foster–Lyapunov drift, sub-additive potential, `V(F(c')) ≤ V(c') − v2(3c'−1) + b` — **cannot** prove
+`avg jump ≤ 2`: the bound is *false for some `ℤ₂` orbits* (we construct one with `avg jump = 3.1`), and
+telescoping any such `V` along it forces `b ≥ 3.1 > 2`. So any proof must use **seed-specific genericity**; the
+live question is whether the *weak one-sided moment* `E_{μ_J}[D] ≤ 2` (margin 2) is provable for seed 8 when
+full equidistribution (`E[D] → 1`) is not.
+
 **Expected answer format.** A useful reply could be (i) a reference showing the one-sided/equidistribution
 distinction is known or *impossible* in this setting; (ii) a counterexample / argument explaining why the
 one-sided shrinking-target bound is *as hard as* equidistribution here; or (iii) a technique that plausibly

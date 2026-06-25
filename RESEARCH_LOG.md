@@ -582,3 +582,24 @@ Per the reviewer's four points on the meeting materials:
   why one-sided is as hard, (iii) a technique attacking the shrinking-target estimate directly.
 Updated EXPERT_ASK (Q0 reworded + terminology + expected-answer-format) and OPEN_PROBLEMS (§A0 seed-universality
 + k=2,3 enemy + distinguish-framing). The materials are now in their most expert-ready state. 0 false proofs.
+
+---
+
+## 2026-06-25g — A0 attack: NO universal one-sided certificate (drift/Lyapunov/sub-additive) proves avg jump ≤ 2
+Attacked the A0 frontier directly (the reviewer's "margin-exploiting one-sided argument": one-sided ergodic /
+sub-additivity / Lyapunov-drift on the renewal map). **[PROVEN, negative]** (`A0_drift_impossible.py`):
+- Any `V ≥ 0` on `ℤ₂` with the Foster–Lyapunov drift `V(F(c')) ≤ V(c') − v2(3c'−1) + b`, telescoped along ANY
+  orbit, gives `avg jump ≤ b + V(c'_0)/J → b`. The constructed orbit (Q9b) has `avg jump = 3.1`, so any valid
+  universal `b ≥ 3.1 > 2`. **Hence no universal (orbit-independent) drift/sub-additive/potential certificate
+  proves `avg jump ≤ 2`** — the bound is *false for some `ℤ₂` orbits*.
+- **Consequence (sharpens A0):** the one-sided bound, though a strictly weaker *condition* than equidistribution,
+  admits no orbit-independent proof; **any proof must inject seed-specific genericity.** The margin only weakens
+  the *strength* of genericity needed — from `μ_J → Haar` (`E[D]→1`, A1) to the **one-sided moment
+  `E_{μ_J}[D] ≤ 2`** — not the *requirement* of orbit-specific input. A non-universal drift supported on seed
+  8's orbit closure would work, but proving the support avoids high-`D` shadowing IS the genericity input (no
+  bypass).
+- **Refined sharpest open question:** is `E_{μ_J}[D] ≤ 2` (one-sided, margin-2) provable for the seed-8 orbit
+  when full equidistribution is not? This is the irreducible A0 question.
+- Closes the drift/Lyapunov route the way growth was closed (2026-06-25b); folded into OPEN_PROBLEMS §A0 and
+  EXPERT_ASK ("already ruled out for Q0"). Honest negative; 0 false proofs. This is the right kind of progress —
+  ruling out a whole class of attacks and pinning the residue, rather than re-hitting the wall.

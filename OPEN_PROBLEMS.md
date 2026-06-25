@@ -64,6 +64,18 @@ complete proof is a **single-target shrinking-target / one-sided anti-concentrat
   - **Status:** UNRESOLVED. We proved non-shadowing is insufficient and that small-k binds; we have **not**
     shown the one-sided/margin version equals equidistribution, nor found an argument that exploits the margin.
     *This is the single most important question for the complete proof — put it to the meeting first.*
+  - **[PROVEN, negative — 2026-06-25, `A0_drift_impossible.py`] No *universal* one-sided certificate exists.**
+    Any Foster–Lyapunov **drift / sub-additive / potential** function `V ≥ 0` on `ℤ₂` with
+    `V(F(c')) ≤ V(c') − v2(3c'−1) + b` would, telescoped along *any* orbit, force `avg jump ≤ b`; but the
+    constructed orbit has `avg jump = 3.1`, so necessarily `b ≥ 3.1 > 2`. **Hence the entire class of
+    margin-exploiting universal certificates (drift/Lyapunov/sub-additive) is closed** — the bound `avg jump ≤ 2`
+    is *false for some `ℤ₂` orbits*, so no orbit-independent argument can prove it. **Any proof must inject
+    seed-specific genericity.** The margin only weakens the *strength* of genericity required, not the
+    *requirement*: it asks for the **one-sided moment bound `E_{μ_J}[D] ≤ 2`** on seed 8's empirical measure
+    `μ_J` (vs `μ_J → Haar`, i.e. `E[D] → 1`, for A1). **So the refined, sharpest form of the open question is:
+    is `E_{μ_J}[D] ≤ 2` (one-sided, margin-2) provable for the seed-8 orbit when full equidistribution is not?**
+    (A *non-universal* drift, supported only on seed 8's orbit closure, would work — but proving the support
+    avoids the high-`D` shadowing regions *is* exactly the genericity input. No bypass.)
 
 ### A1 · [OPEN] Single-orbit rank-1 effective equidistribution
 **Statement.** For `μ=2^a/3^b` with `v_p(μ)=−1`, does the empirical measure of the **one** forward orbit
