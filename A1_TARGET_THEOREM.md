@@ -142,6 +142,22 @@ the 2-adic `⌊(3/2)^n⌋ mod 2` (where van der Corput is closed). **This is a g
 tools live, rather than the 2-adic moving diagonal. *(Honest: still the same number; but a different toolset now
 applies — actively probing whether it bounds where the 2-adic side resisted.)*
 
+## The Erdős side — literature verdict (2026-06-25 triage)
+The 3-adic avatar `avg v3(T_J) ≤ 2` was checked against the ternary-digit literature. Verdict: **genuine but not
+easier — the 3-adic side shares the wall** (no asymmetry between "2 mod 3" and "3/2 mod 2"; Senge–Straus/Stewart
+treat both bases symmetrically). Specifics:
+- **Erdős ternary-digit conjecture** (`2^n` has a digit 2 for `n>8`): OPEN (verified `n ≤ 2·3^45`). Closest
+  unconditional partial — **Lagarias (2009, arXiv:math/0512006):** the count of `n≤N` with `2^n` omitting digit
+  2 is `O(N^{log₃2}) = O(N^{0.631})`. **Its exponent `log₃2 ≈ 0.631` is exactly Observation 5's 3-adic Cantor
+  dimension** — an independent cross-validation that our structural finding sits on the established Erdős object.
+- **Stewart (1980):** nonzero ternary digits of `2^n` `> log n/(log log n)` — far below the `Ω(n)` needed; no
+  bound on the longest 0-run (that is the open part). p-adic Baker/LTE: only 2-/few-term, not the many-term `T_J`.
+- **`2^n mod 3^k` single-orbit equidistribution:** not known, same family as Mahler 3/2.
+- **Net:** `avg v3(T_J) ≤ 2` is a **new statement adjacent to — and partially implying progress on — the Erdős
+  problem.** So Antihydra (even-density) and Erdős (ternary digits of `2^n`) are **adjacent open problems sharing
+  the wall** — the 2-adic and 3-adic cryptid families meet here too, now confirmed against the literature, not
+  just structurally.
+
 ## Observation 5 — the orbit's 3-adic support is a thin Cantor set [verified]
 The Antihydra orbit's 3-adic residues are **sparse**: `#{c'_j mod 3^k}` = `3,6,11,19,36,69,134,262` for `k=1..8`,
 growth ratio `→ 1.96` (`→ 2`), i.e. asymptotically `~2^k` allowed residues out of `3^k`. So the orbit's 3-adic

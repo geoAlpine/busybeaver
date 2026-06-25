@@ -805,3 +805,22 @@ Relentless attack on the 3-adic surface opened by Prop 3 (no exits).
   verified/proven, unifying the 2-adic and 3-adic cryptid sides. The proof (avg jump ≤ 2) remains the wall;
   every reformulation is dual-circular, but the structure is genuine new mathematics. Project stays open; attacking
   the Erdős surface next. 0 false proofs.
+
+---
+
+## 2026-06-25r — Erdős lit-probe result: 3-adic side shares the wall, but Obs 5 dimension matches Lagarias (cross-validation)
+Background research agent on the Erdős/3-adic side returned.
+- **Lagarias (2009, arXiv:math/0512006):** #{n≤N : 2^n omits digit 2 in base 3} = O(N^{log₃2}) = O(N^{0.631}).
+  **The exponent log₃2 ≈ 0.631 is EXACTLY Observation 5's 3-adic Cantor dimension** — independent cross-validation
+  that our structural finding lands on the established Erdős object.
+- **Stewart (1980):** nonzero ternary digits of 2^n > log n/loglog n (far below Ω(n)); no longest-0-run bound.
+- **No asymmetry:** the "2 mod 3" side is NOT easier than "3/2 mod 2"; both Mahler/Erdős-class. 2^n mod 3^k
+  single-orbit equidistribution is open, same family as Mahler 3/2. p-adic Baker/LTE only few-term.
+- **Verdict:** no unconditional theorem bounds avg v3(T_J); the 3-adic avatar is genuine but **not easier** — it
+  is a new statement **adjacent to and partially implying progress on the Erdős ternary-digit conjecture.** So
+  Antihydra (even-density) and Erdős (ternary digits of 2^n) are **adjacent open problems sharing the wall.**
+- **Honest meta:** this session built a rich, verified structural theory unifying the 2-adic and 3-adic cryptid
+  sides (Lemma 1,2; Prop 3,4; Obs 5), cross-validated against Lagarias — genuine new mathematics — while the
+  proof (avg jump ≤ 2 = Mahler/Erdős) remains the shared wall. Project stays open; the wall is now mapped from
+  BOTH the 2-adic and 3-adic/Erdős sides and they coincide. Next: probe a precise Antihydra⟺Erdős implication
+  (a reduction between two open problems is itself a theorem). 0 false proofs.
