@@ -59,11 +59,13 @@ trichotomy you may find familiar:
 ## What we have pinned (verified, so you can skip these)
 - `x₀` is **not eventually periodic** and **not** a preimage of the (3-power-denominator) singular set — both are
   Haar-null rational sets that every integer seed avoids automatically.
-- **No permanent trapping** (a *single-orbit* lemma we proved): the periodic points of `A` are 2-adically
-  **repelling** with sharp rate `v₂(Aⁿx − p) = v₂(x − p) − n(D+1)`; any approach to a periodic orbit at depth `m`
-  lasts `≤ m/(D+1)` steps and decouples. So no orbit is asymptotic to a periodic cycle unless eventually
-  periodic — i.e. the *periodic* part of the exceptional set is rigorously excluded. (The **positive-entropy**
-  Cantor-set part of the exceptional set is exactly what remains — and is the open question.)
+- **No permanent trapping** (a *single-orbit* lemma we proved): periodic points are 2-adically **repelling**
+  (the action expands at the prime 2, `|3/2|₂ = 2`), so an approach to a periodic orbit at 2-adic depth `m` is
+  **transient** — it decouples within `O(m)` steps and cannot persist. Hence no orbit is asymptotic to a periodic
+  cycle unless it is eventually periodic, and the *periodic* part of the exceptional set is rigorously excluded.
+  (Sharp form on the induced renewal map `F` — `A` restricted to its 2-adic return times: `v₂(Fᵗx − p) =
+  v₂(x − p) − t(D+1)`, branch `D`.) The **positive-entropy** Cantor-set part of the exceptional set is what
+  remains — and is the open question.
 - Empirically, **every** tested natural integer seed equidistributes (visit frequencies to cylinders match Haar
   to `< 1%`); the difficulty is the standard **a.e.→specific** gap for a named point, not a pathology of `x₀`.
 
