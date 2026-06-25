@@ -120,43 +120,46 @@ both 2 and 3: `v2(u_j)=0` (def of `D_j`) and `v3(u_j)=v3(3c'_j−1)=0` since `3c
   3-adic surface absent before (next probe: does a tool on the 3-adic side, e.g. the Erdős/ternary machinery of
   the `8/3` family, bound `v3(2c'_{j+1}−1)` where the 2-adic side resisted?).
 
-## Proposition 4 — the dual carry identity & the Erdős connection [PROVEN, new]
+## Proposition 4 — the dual carry identity [PROVEN, new] — and the RETRACTED Erdős connection
 > **Proposition 4.** With `b_j = 2c'_j − 1` and `M_j = Σ_{i<j}(D_i+1)` (the step-index of the `j`-th renewal),
 > ` 2^{M_J} b_J = 3^{M_J} b_0 + T_J ,  T_J = Σ_{j<J} 2^{M_j} 3^{M_J−1−M_j} ` (verified `199/199`). This is the
 > **exact 3-adic dual** of the 2-adic identity `2^n c_n = 8·3^n − S_n`, `S_n = Σ_{j<n,e_j=1} 2^j 3^{n−1−j}`.
-> Moreover `v3(b_J) = v3(T_J) = D_{J−1}` (verified): the orbit's **3-adic depth is governed by the carry `T_J`**.
+> Moreover `v3(b_J) = v3(T_J) = D_{J−1}` (verified).
 
 **Proof.** The recurrence `2^{D_j+1} b_{j+1} = 3^{D_j+1} b_j + 3^{D_j}` (from `F`) telescopes against
 `2^{M_j}/3^{M_j}`: setting `W_j = 2^{M_j}b_j/3^{M_j}`, `W_{j+1}−W_j = 2^{M_j}/3^{M_j+1}`, so
-`W_J = b_0 + Σ_{j<J}2^{M_j}/3^{M_j+1}`; clearing denominators gives the identity. `v3(2^{M_J}b_J)=v3(b_J)` and
-`v3(3^{M_J}b_0)=M_J` huge, so `v3(b_J)=v3(T_J)`; the lowest term (`j=J−1`) has 3-exponent `M_J−1−M_{J−1}=D_{J−1}`,
-matching Prop 3. ∎
+`W_J = b_0 + Σ_{j<J}2^{M_j}/3^{M_j+1}`; clearing denominators gives the identity. ∎
 
-**The Erdős connection (the new toolset).** `S_n` (2-adic) is `Σ 2^j 3^{n−1−j}` over *odd* steps; `T_J` (3-adic)
-is `Σ 2^{M_j} 3^{M_J−1−M_j}` over *renewal* (even) steps — a perfect `2↔3` dual. `v3(T_J) ≤ 2` on average
-(= non-halt) is a statement about **sums of `2^{M_j} 3^{·} mod 3^k`**, i.e. about **powers of 2 mod 3^k** — the
-**Erdős ternary-digit regime** (the kernel of the `8/3`/o18 family). Since `2` has order `2·3^{k−1}` mod `3^k`,
-`2^{M_j} mod 3^k` depends on `M_j mod 2·3^{k−1}` = the **renewal times mod a 3-power** — a *different* object from
-the 2-adic `⌊(3/2)^n⌋ mod 2` (where van der Corput is closed). **This is a genuinely new attack surface**: the
-3-adic depth is controlled by powers-of-2-mod-3^k / renewal-times-mod-3^k, where sum-product / digit-distribution
-tools live, rather than the 2-adic moving diagonal. *(Honest: still the same number; but a different toolset now
-applies — actively probing whether it bounds where the 2-adic side resisted.)*
+**⚠ RETRACTION (over-claim caught while constructing the implication, 2026-06-25).** Last draft claimed `T_J`
+links `avg jump` to the **Erdős ternary-digit problem** via "powers of 2 mod 3^k." **This is false and is
+withdrawn.** The terms of `T_J` have **all-distinct 3-exponents** `M_J−1−M_j` (`M_j` strictly increasing), so the
+lowest term (`j=J−1`, exponent `D_{J−1}`) is **alone at its 3-level** — hence `v3(T_J) = D_{J−1}` is forced by the
+**gap structure alone**, with **no cancellation** and **no dependence on the ternary digits** of the `2^{M_j}`
+(verified `148/148`). So the dual carry identity is real, but **its valuation carries zero ternary-digit
+content**: `avg jump` does **NOT** reduce to, and is **not** governed by, the Erdős problem through this route.
+The "new 3-adic toolset / attack surface" claim is retracted with it.
 
-## The Erdős side — literature verdict (2026-06-25 triage)
-The 3-adic avatar `avg v3(T_J) ≤ 2` was checked against the ternary-digit literature. Verdict: **genuine but not
-easier — the 3-adic side shares the wall** (no asymmetry between "2 mod 3" and "3/2 mod 2"; Senge–Straus/Stewart
-treat both bases symmetrically). Specifics:
-- **Erdős ternary-digit conjecture** (`2^n` has a digit 2 for `n>8`): OPEN (verified `n ≤ 2·3^45`). Closest
-  unconditional partial — **Lagarias (2009, arXiv:math/0512006):** the count of `n≤N` with `2^n` omitting digit
-  2 is `O(N^{log₃2}) = O(N^{0.631})`. **Its exponent `log₃2 ≈ 0.631` is exactly Observation 5's 3-adic Cantor
-  dimension** — an independent cross-validation that our structural finding sits on the established Erdős object.
-- **Stewart (1980):** nonzero ternary digits of `2^n` `> log n/(log log n)` — far below the `Ω(n)` needed; no
-  bound on the longest 0-run (that is the open part). p-adic Baker/LTE: only 2-/few-term, not the many-term `T_J`.
-- **`2^n mod 3^k` single-orbit equidistribution:** not known, same family as Mahler 3/2.
-- **Net:** `avg v3(T_J) ≤ 2` is a **new statement adjacent to — and partially implying progress on — the Erdős
-  problem.** So Antihydra (even-density) and Erdős (ternary digits of `2^n`) are **adjacent open problems sharing
-  the wall** — the 2-adic and 3-adic cryptid families meet here too, now confirmed against the literature, not
-  just structurally.
+**Honest status of "Antihydra ⟺ Erdős" (the implication we set out to construct):** *there is no reduction.*
+Antihydra (`⌊(3/2)^n⌋ mod 2`) and Erdős/o18 (`2^n`'s ternary digits / `⌊(8/3)^n⌋ mod 3`) are **parallel
+instances of the same single-orbit exponential-equidistribution meta-problem** (the classification of
+`CRYPTID_KERNEL.md`), sharing the obstruction map — but **neither reduces to the other**, and Prop 4's dual carry
+does **not** bridge them. The genuine content is the *internal* `2↔3` duality of the Antihydra orbit (Prop 3) and
+the dual identity (Prop 4) — not an external link to Erdős. *(The Lagarias `log₃2≈0.631` match with Observation 5
+is a real coincidence of the **support density** `2^k/3^k`, not evidence of a reduction.)*
+
+## The Erdős side — literature note (2026-06-25 triage) [with the connection retracted, see Prop 4]
+The ternary-digit literature was surveyed when the (now-retracted) `T_J`-to-Erdős link was conjectured. The
+**no-asymmetry** finding still stands and is useful context; the "avatar reduces to Erdős" framing does **not**
+(Prop 4 retraction).
+- **Erdős ternary-digit conjecture** (`2^n` has a digit 2 for `n>8`): OPEN (verified `n ≤ 2·3^45`).
+  **Lagarias (2009, arXiv:math/0512006):** `#{n≤N : 2^n omits digit 2} = O(N^{log₃2}) = O(N^{0.631})`.
+- **Stewart (1980):** nonzero ternary digits of `2^n` `> log n/(log log n)` (far below `Ω(n)`); no longest-0-run bound.
+- **`2^n mod 3^k` single-orbit equidistribution:** not known; same Mahler-3/2 family; **no "2 mod 3" vs "3/2 mod
+  2" asymmetry** known (Senge–Straus/Stewart treat both bases symmetrically).
+- **Net (corrected):** `avg jump` does **not** reduce to the Erdős problem (Prop 4 retraction). Antihydra and
+  Erdős/o18 are **parallel instances of one meta-problem** (sharing the obstruction map, per `CRYPTID_KERNEL`),
+  **not linked by a reduction.** The literature value here is the **no-asymmetry** datum: even if a clean link
+  existed, the 3-adic side is no easier — both are Mahler/Erdős-class.
 
 ## Observation 5 — the orbit's 3-adic support is a thin Cantor set [verified]
 The Antihydra orbit's 3-adic residues are **sparse**: `#{c'_j mod 3^k}` = `3,6,11,19,36,69,134,262` for `k=1..8`,
@@ -164,7 +167,9 @@ growth ratio `→ 1.96` (`→ 2`), i.e. asymptotically `~2^k` allowed residues o
 closure is a **Cantor set of dimension `log2/log3 ≈ 0.63`** — far from 3-adically equidistributed. Cause: `c'_j
 mod 3^k` carries exactly `~k` parity bits (the parity↔3-adic transducer), so the 3-adic structure *is* the
 2-adic (parity) information re-encoded. (Fine for the 2-adic Antihydra problem; a genuine new constraint, and the
-reason the `v3(2c'−1)` statistics follow the 2-adic `2^{−k}` law, not 3-adic `3^{−k}`.)
+reason the `v3(2c'−1)` statistics follow the 2-adic `2^{−k}` law, not 3-adic `3^{−k}`.) *(The numerical match of
+this dimension `log₃2` with Lagarias's Erdős exponent is a coincidence of the support density `2^k/3^k`, not a
+reduction — see the Prop 4 retraction.)*
 
 ## Open sub-questions (the next counterexample searches / proof targets)
 - **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously

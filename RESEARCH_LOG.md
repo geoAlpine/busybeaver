@@ -824,3 +824,26 @@ Background research agent on the Erdős/3-adic side returned.
   proof (avg jump ≤ 2 = Mahler/Erdős) remains the shared wall. Project stays open; the wall is now mapped from
   BOTH the 2-adic and 3-adic/Erdős sides and they coincide. Next: probe a precise Antihydra⟺Erdős implication
   (a reduction between two open problems is itself a theorem). 0 false proofs.
+
+---
+
+## 2026-06-25s — Constructing Antihydra⟺Erdős REFUTED the connection + caught a Prop-4 over-claim (honest walk-back)
+Set out to construct the Antihydra⟺Erdős implication. Result: **no reduction, and last turn's Prop-4 "Erdős
+connection" was an over-claim — retracted.**
+- **The test:** does `v3(T_J)` (the 3-adic depth = `D_{J−1}`) engage the **ternary digits** of the `2^{M_j}`
+  (genuine Erdős content), or just the lowest-term gap? **Verified (148/148, 298/298):** the terms of
+  `T_J = Σ 2^{M_j}3^{M_J−1−M_j}` have **all-distinct 3-exponents** (`M_j` strictly increasing), so the lowest term
+  (`j=J−1`) is **alone at its 3-level** ⇒ `v3(T_J)=D_{J−1}` is forced by the **gap alone**, no cancellation, **no
+  dependence on ternary digits**. So the dual carry's valuation carries **zero ternary-digit content**.
+- **Retraction:** the Prop-4 "Erdős connection / new 3-adic attack surface" claim (2026-06-25q) is **withdrawn**.
+  `avg jump` does NOT reduce to or get governed by the Erdős problem via `T_J`. The Lagarias `log₃2` match with
+  Obs 5 is a coincidence of the support density `2^k/3^k`, not a reduction. Corrected in A1_TARGET_THEOREM
+  (Prop 4, Erdős-side note, Obs 5).
+- **What survives (still true):** Prop 3 (internal `2↔3` duality `D_j=v3(2c'_{j+1}−1)`), Prop 4 (the dual carry
+  *identity* `2^{M_J}b_J=3^{M_J}b_0+T_J`), Obs 5 (3-adic Cantor support dim `log₃2`). These are internal
+  structure of the Antihydra orbit, not a bridge to Erdős.
+- **Honest verdict on the implication:** Antihydra and Erdős/o18 are **parallel instances of one
+  meta-problem** (sharing the obstruction map, per CRYPTID_KERNEL classification), **NOT reducible to each
+  other.** This is the ~13th over-claim caught by verification — constructing the implication is exactly what
+  exposed it. Discipline intact; 0 false proofs (the retracted claim never reached a "proof" label — it was
+  flagged "honest/probing" and is now corrected).
