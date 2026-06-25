@@ -47,6 +47,19 @@ The last constructive hope was to recover an effective rank-2 from the renewal d
   lacks. **The wall is amenability.** (This is why non-amenable, semisimple, rank-≥2 actions enjoy rigidity and
   ours does not — a single principle behind all seven tools.)
 
+## The sharpest form: the wall is `amenable ∩ hyperbolic` (a rank-1 Anosov single orbit)
+Why are the *amenable* cousins (rotation `{nα}`, odometer `x+1`) tractable while our (also amenable) `×(3/2)` is
+not? Because they are **isometric** (`|·|=1` everywhere) or **contracting-dominated** (Pisot). `×(3/2)` is
+**genuinely hyperbolic** — expanding at `∞,2`, contracting at `3`, product `1`, real stable+unstable manifolds:
+a **rank-1 Anosov automorphism** of the solenoid. So:
+- **amenable + isometric** (rotation/odometer) ⇒ Weyl / unique ergodicity — tractable;
+- **non-amenable + hyperbolic** (rank-≥2 Cat-map-type) ⇒ measure rigidity — tractable;
+- **amenable + hyperbolic** (`×(3/2)`, rank-1 Anosov) ⇒ **no tool** — the wall.
+The wall is precisely the **intersection** `amenable ∩ hyperbolic`: amenability kills the rigidity engines,
+hyperbolicity kills the rotation/Weyl engines, and a *single specified orbit* of a rank-1 Anosov automorphism is
+exactly the empty spot in the toolbox. (This is the open single-orbit problem for a hyperbolic toral/solenoid
+automorphism — the dynamical heart of Mahler 3/2.)
+
 ## What this fixes as the multi-year target (precise, tool-independent)
 > **Manufacture an effective second multiplicatively-independent direction for the single rank-1 orbit of
 > `×(3/2)`** — i.e. recover rank-2 leverage from the one composite the orbit carries — **or** invent a genuinely
