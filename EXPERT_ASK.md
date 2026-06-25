@@ -81,6 +81,13 @@ attacks the small-`k` shrinking-target estimate directly. A pointer ("see X, Y")
 **And if the answer is simply "no, it's as hard as equidistribution" — what is the precise obstruction?** (A
 reason is as valuable as a reference; experts often explain a "no" more sharply than a "yes.")
 
+**Sharpened closing form (a yes/no a specialist can answer):** *If no such separation is known for a natural
+single rank-1 orbit, is the correct obstruction that the one-sided bound is still controlled by the fixed
+low-cylinder (`mod 4`, `mod 8`) frequencies — hence requires **specific-orbit genericity**, not merely
+recurrence — in a **non-uniquely-ergodic full-branch** system where spectral/probabilistic tools only control
+measures, never a specified point's empirical measure?* *(Our provisional reading, from a first consultation, is
+**yes** — confirmation or a counter-pointer wanted.)*
+
 ## Why this is well-posed (not "please solve Mahler")
 The point of the reduction is that the obstruction is now **localized**: it is exactly *single-orbit empirical
 measure → Haar at the low cylinders* of an explicit Gibbs–Markov map, with every soft/elementary route

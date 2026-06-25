@@ -54,12 +54,24 @@ complete proof is a **single-target shrinking-target / one-sided anti-concentrat
   universal argument can exist** (the bound is false for adversarial seeds); seed-universality is an empirical
   observation about typical seeds, fully consistent with that. So: a *weaker condition* and *typical-looking
   seed* do **not** entail an *easier proof* — those are independent.
-- **★ THE SHARP OPEN QUESTION (the real frontier for the complete proof):**
+- **★ THE SHARP QUESTION — RESOLVED (provisional, expert consensus 2026-06-25; awaiting a referee-level check):**
   > **Does any known technique *distinguish* a one-sided shrinking-target / recurrence bound from full
-  > equidistribution for a single orbit of a rank-1 expanding map?** — i.e. is there a *separating example*
-  > (one-sided attainable while equidistribution open), or are the two *equivalent in difficulty* here? For us:
-  > is `avg jump ≤ 2` (the `N_2, N_3 mod 4,8` frequencies, one-sided, margin 2) provably easier than
-  > `avg jump → 1` (Mahler), or does the small-k core make it just as hard?
+  > equidistribution for a single orbit of a rank-1 expanding map?**
+  - **Verdict: the margin is a real opening as a *condition*, but the *same wall* by known proof technique.**
+    Abstract separations exist (simple-normality ⊊ normality; a single-observable Birkhoff average satisfied
+    without the empirical measure converging — isomorphic to our non-Haar construction), **but no known example
+    of the type we need** — a *natural rank-1 p-adic expanding map, specific seed, one-sided recurrence proved
+    without full equidistribution*. Shrinking-target theory is a.e./typical-point/measure-side; Tao is
+    almost-all; none pins a specified seed.
+  - **The obstruction, named (the key takeaway):** *spectral/probabilistic tools control **measures**, but the
+    bound needs a Birkhoff average of a **singular cylinder observable** along **one specified orbit** in a
+    **non-uniquely-ergodic full-branch system**.* Equivalently: **the margin loosens the average *threshold* but
+    not the necessity of proving seed-8's fixed low-cylinder (`mod 4`, `mod 8`) frequencies** — i.e. it still
+    requires *specific-orbit genericity*, not merely recurrence. (This is exactly why o17's odometer — which IS
+    uniquely ergodic — has its hardness in the halt predicate, not here.)
+  - **So `avg jump ≤ 2` is provably weaker as a condition but, by every known technique, exactly as hard to
+    prove as `avg jump → 1`.** The complete proof has no margin shortcut; it needs the new orbit-specific tool
+    (§A1). [Original framing kept below for the record.]
   - If **easier** → the complete proof is reachable **without solving Mahler 3/2** (a margin-exploiting,
     one-sided argument on the orbit's distribution mod `4, 8`). This is the *best* hope for a real proof.
   - If **just as hard** → the complete proof `=` A1 `=` new mathematics (multi-year).

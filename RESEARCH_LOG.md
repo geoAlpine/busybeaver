@@ -686,3 +686,27 @@ Continued the C+D track.
 - **Honest status:** this turn's rigorous output = the classification theorem (proven, 2026-06-25j) + family-wide
   obstruction (verified). C and D are both substantially complete; the remaining pieces (slow-width §3c reduction;
   the complete-proof top) are the hard walls, not low-hanging fruit. 0 false proofs.
+
+---
+
+## 2026-06-25l — Meeting verdict: A0 sharp question RESOLVED (provisional, external consult) — same wall, obstruction named
+Brought the complete-proof frontier (§A0) to an external consultation. Verdict (provisional, to be
+referee-checked) — it confirms and sharpens our own findings from an outside view:
+1. **The margin is a genuine opening as a CONDITION but the SAME WALL by known proof technique.** `avg jump ≤ 2`
+   is strictly weaker (non-Haar orbits satisfy it), but it is dominated by `k=2,3` (the `mod 4`/`mod 8`
+   fixed-cylinder frequencies of seed 8) — "prove seed 8's low-digit frequency", not a weak shrinking target.
+2. **Separations exist abstractly** (simple-normality ⊊ normality; a single-observable Birkhoff average met
+   without measure convergence = our non-Haar construction) **but none of the needed type** — a natural rank-1
+   p-adic expanding map, *specified seed*, one-sided recurrence without full equidistribution. Shrinking-target
+   literature is a.e./typical-point/measure-side; Tao is almost-all; none pins a seed.
+3. **Obstruction, named:** *spectral/probabilistic tools control MEASURES; the bound needs a Birkhoff average of
+   a SINGULAR CYLINDER OBSERVABLE along ONE SPECIFIED ORBIT in a NON-UNIQUELY-ERGODIC FULL-BRANCH system.* The
+   margin loosens the average *threshold* but not the necessity of proving seed-8's fixed low-cylinder
+   frequencies = *specific-orbit genericity, not merely recurrence.* (Exactly why o17's uniquely-ergodic
+   odometer has its hardness in the halt predicate, not here.)
+**Consequence:** the complete proof has **no margin shortcut**; it needs the new orbit-specific tool (A1). The
+"specify the wall" phase is now **complete and externally corroborated**. Folded into OPEN_PROBLEMS §A0 (sharp
+question marked RESOLVED/provisional), MEETING_BRIEF §4¾, EXPERT_ASK (sharpened closing yes/no). The durable
+outputs (classification theorem, the 5-separation certificate hierarchy, the family-wide obstruction map) stand
+independent of the complete proof. Path to the complete proof is now unambiguously the multi-year new-tool build.
+0 false proofs.

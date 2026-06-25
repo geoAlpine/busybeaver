@@ -64,6 +64,25 @@ equidistribution for a single orbit of a rank-1 expanding `p`-adic (Gibbs–Mark
 concrete instance that motivates it, but the object is independent and is what will "land" with a dynamicist.
 If anything is written up or asked externally, lead with the *dynamical* statement, not the Turing machine.
 
+## 4¾. Meeting verdict (2026-06-25, first consultation — provisional, to be referee-checked)
+The §4 question came back with a clear provisional answer:
+1. **The margin is a genuine opening as a *condition*** (`avg jump ≤ 2` is strictly weaker, non-Haar orbits
+   satisfy it) — **but the *same wall* by known proof technique.**
+2. **Separation examples exist abstractly** (simple-normality ⊊ normality; a single-observable Birkhoff average
+   met without measure convergence = our non-Haar construction) **but none of the type we need** — a natural
+   rank-1 p-adic expanding map, *specified seed*, one-sided recurrence without full equidistribution. The
+   shrinking-target / dynamical-Borel–Cantelli literature is a.e./typical-point; Tao is almost-all; none pins a
+   seed.
+3. **The obstruction, in one line:** *spectral/probabilistic tools control **measures**; the bound needs a
+   Birkhoff average of a **singular cylinder observable** along **one specified orbit** in a
+   **non-uniquely-ergodic full-branch** system.* The margin loosens the average **threshold** but not the need
+   to prove **seed-8's fixed `mod 4`/`mod 8` frequencies** — i.e. *specific-orbit genericity, not merely
+   recurrence.*
+**Consequence:** the complete proof has **no margin shortcut**; reaching it needs the new orbit-specific tool
+(rank-1 effective single-orbit equidistribution). This *confirms and sharpens* §3's self-found verdict from an
+outside view, and is the natural endpoint of the "specify the wall" phase. *(Provisional — a referee-level
+ergodic-theory check would firm it up.)*
+
 ## 5. Honest stance
 The complete proof is Mahler-3/2-class and we have **not** found a route; we have, rigorously, **closed every
 standard one** and pinned the residue to a single weaker-than-equidistribution target. This is the "specify the
