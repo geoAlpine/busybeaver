@@ -54,10 +54,43 @@ or genuinely needed? (No rational `μ` is available to violate it, so this is a 
 This catalogue is the content: *the only obstructions are arithmetic-special seeds (periodic / singular), and
 integer seeds avoid all of them.*
 
+## Lemma 1 — Shadows are transient; periodic points are 2-adically repelling [PROVEN]
+*Firms up hypothesis (i): the exclusion "not eventually periodic" is **tight** — there is no asymptotically-
+periodic-but-aperiodic orbit. (`shadow_transient.py`; the period-1 case is verified sharp.)*
+
+**Setup.** `F` is full-branch piecewise-affine on `ℤ_2`; on the branch `{v2(3x−1)=D}` it is affine with 2-adic
+slope `(3/2)^{D+1}`, so `|F(x)−F(y)|_2 = 2^{D+1}|x−y|_2` for `x,y` on the same branch (**expansion** by `≥ 2`).
+
+> **Lemma 1.** Let `p` be a fixed point of `F` on branch `D` (e.g. `p=5/19`, `D=2`). For any seed `x` with
+> `v2(x−p)=m ≥ D+1`,
+> ` v2(F^t(x) − p) = m − t(D+1) ` strictly decreasing, so the orbit **leaves `p`'s branch within
+> `t* ≤ m/(D+1) ≤ m` steps**. Hence every shadowing episode of `p` has length `≤ m` = the depth of approach,
+> and **no orbit converges to (is permanently trapped near) `p` unless it is eventually equal to `p`.**
+
+**Proof.** While `x_t:=F^t(x)` is on `p`'s branch, `v2(3x_t−1)=D`, so `F(x_t)−p = F(x_t)−F(p) =
+(3/2)^{D+1}(x_t−p)`, giving `v2(x_{t+1}−p) = v2(x_t−p) − (D+1)`. Inducting from `v2(x_0−p)=m`, the orbit stays
+on `p`'s branch while `v2(x_t−p) ≥ D+1` (i.e. `x_t ≡ p mod 2^{D+1}`); since `v2` drops by `D+1 ≥ 1` each step,
+this fails after `≤ m/(D+1)` steps, at which point `x_t`,`p` lie on different branches and decouple. ∎
+*(Verified sharp: integer seeds `≡ 5/19 mod 2^m` shadow for exactly `m/3` steps — `10,16,23,30` for
+`m=30,50,70,90` — with `v2(x_t−p)` decrementing by exactly `D+1=3` per step.)*
+
+**General period-`τ` cycle.** Apply the same to `F^τ`, affine near `p` with multiplier `σ = ∏_{i<τ}(3/2)^{D_i+1}`,
+`|σ|_2 = 2^{Σ(D_i+1)} > 1`; a shadow entered at depth `m` lasts `≤ τm/Σ(D_i+1) ≤ τm` steps.
+
+**Corollary (hypothesis (i) is tight).** The only orbits asymptotic to a periodic cycle are the eventually-
+periodic ones. So Conjecture A1's exclusion of eventually-periodic seeds removes **exactly** the permanently-
+trapped seeds — there is no grey zone.
+
+**Scope (honest).** Lemma 1 bounds each *single* episode by its approach depth and kills the "trapped forever"
+failure mode. It does **not** bound the *total* shadow time `Σ(episode lengths)` over infinitely many re-
+approaches — that needs control of how often the orbit re-approaches periodic points, which is itself
+equidistribution-flavored (the remaining gap, Q-b/Q-e). What is rigorously gained: a fixed non-periodic seed's
+first shadow contributes only **finitely many** biased steps; permanent trapping is **impossible**.
+
 ## Open sub-questions (the next counterexample searches / proof targets)
-- **Q-a [largely settled empirically]** rational seed not → Haar? — only if eventually-periodic or singular
-  (verified, no other). *Sharpen:* prove that a non-periodic rational orbit cannot remain biased (the
-  shadowing-is-transient lemma made rigorous).
+- **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously
+  (no orbit is asymptotically periodic unless eventually periodic; each shadow episode `≤` its approach depth).
+  *Remaining:* bound the *total* shadow time over re-approaches (= Q-b/Q-e, equidistribution-flavored).
 - **Q-b [settled empirically]** integer seed biased? — none (all → Haar; shadowers recover). *Prove:* an integer
   orbit's empirical measure → Haar (the actual theorem).
 - **Q-c [open, structural]** what is the exact Diophantine condition, and is it removable?

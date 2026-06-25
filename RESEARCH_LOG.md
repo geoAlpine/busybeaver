@@ -732,3 +732,22 @@ write the correct theorem statement and refine it by HUNTING counterexamples (`A
 - **Status:** a conjecture *shaped by counterexample* (correct target statement), not a theorem. The proof
   (Q-e, one integer seed) is the new-mathematics object = the wall named in the meeting. This is the productive,
   non-circular first step of the new programme. 0 false proofs.
+
+---
+
+## 2026-06-25n — Lemma 1 PROVEN: shadows are transient; periodic points are 2-adically repelling
+Rigorously firmed up Conjecture A1's hypothesis (i) (`shadow_transient.py`, A1_TARGET_THEOREM §Lemma 1).
+- **Mechanism:** `F` is expanding — on branch `D` it is affine with 2-adic slope `(3/2)^{D+1}`, so near a fixed
+  point `p`: `v2(F(x)−p) = v2(x−p) − (D+1)` (distance to `p` GROWS by `2^{D+1}`). An orbit entering `p`'s branch
+  at depth `m=v2(x−p)` has `v2` strictly decreasing by `D+1` per step ⇒ leaves in `≤ m/(D+1) ≤ m` steps.
+  Verified SHARP: integer `≡5/19 mod 2^m` shadows the fixed point `5/19` (D=2) for exactly `m/3` steps
+  (`10,16,23,30` for `m=30,50,70,90`), decrements exactly `D+1=3`. General period-`τ`: iterate `F^τ`, multiplier
+  `σ`, `|σ|_2=2^{Σ(D_i+1)}>1`.
+- **Corollary (i) is tight:** the only orbits asymptotic to a periodic cycle are the eventually-periodic ones —
+  no asymptotically-periodic-but-aperiodic grey zone. So A1's exclusion of eventually-periodic seeds removes
+  *exactly* the permanently-trapped seeds.
+- **Scope (honest):** bounds each SINGLE shadow episode by its approach depth; kills the "trapped forever"
+  failure mode. Does NOT bound TOTAL shadow time over infinitely many re-approaches (= the equidistribution gap,
+  Q-b/Q-e). A fixed non-periodic seed's first shadow = finitely many biased steps; permanent trapping impossible.
+- Q-a upgraded to [PARTIALLY PROVEN — Lemma 1]. First rigorous brick of the new programme (rank-1 single-orbit
+  equidistribution). 0 false proofs.
