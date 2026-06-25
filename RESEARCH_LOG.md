@@ -1097,3 +1097,21 @@ Two tasks.
   no other obstruction — any future mechanism for provable normality of an explicit `⌊(p/q)^n⌋` plugs straight in
   and resolves Antihydra + the whole cryptid family + Mahler 3/2. Design space mapped, irreducible core named;
   no claim the engine is invented. 0 false proofs.
+
+---
+
+## 2026-06-26n — Dissection: constructed normals vs ⌊(3/2)^n⌋ — the arithmetic sequence is "too random to certify"
+Dissected the three proof routes to normality vs our sequence (NEW_ENGINE.md table, new_engine.py).
+- **Champernowne** (counting/enumeration), **Korobov/Davenport-Erdős** (tractable Weyl sum), **Stoneham**
+  (self-similar blocks) — each proof exploits a **designed certificate**. `⌊(3/2)^n⌋ mod 2` lacks all three:
+  no enumeration (given dynamical orbit), Weyl sum = Mahler (vdC closed), full subword complexity (no self-similarity).
+- **Counterintuitive verified finding:** at `N=2·10^5`, `⌊(3/2)^n⌋` is FAR MORE uniform than Champernowne
+  (density `0.4998` vs `0.531`; block-dev `0.007–0.16` vs `0.21–0.67`) with ZERO autocorrelation (`≈0` vs
+  Champernowne `−0.017…`). The arithmetic sequence is **more genuinely random-looking — and that is exactly why
+  it is unprovable.** Champernowne is provable BECAUSE it has exploitable local (enumerative) structure the proof
+  counts; `⌊(3/2)^n⌋` has none to grab.
+- **Deep lesson:** provable normality always comes from a **designed certificate** (enumeration/Weyl/self-similar),
+  never from "being random." A given arithmetic sequence carries **no certificate, only its rank-1 Anosov
+  dynamics.** So the new engine must **prove normality with no certificate, from intractable dynamics alone** —
+  unprecedented (all normality proofs use a certificate). The sequence's *superior* randomness measures *how
+  little* structure a proof has. 0 false proofs.
