@@ -710,3 +710,25 @@ question marked RESOLVED/provisional), MEETING_BRIEF §4¾, EXPERT_ASK (sharpene
 outputs (classification theorem, the 5-separation certificate hierarchy, the family-wide obstruction map) stand
 independent of the complete proof. Path to the complete proof is now unambiguously the multi-year new-tool build.
 0 false proofs.
+
+---
+
+## 2026-06-25m — NEW PROGRAMME: A1 target theorem written + refined by counterexample hunt
+Reframed: not "solve Antihydra" but "build rank-1 single-orbit effective equidistribution." Step 1 (per plan):
+write the correct theorem statement and refine it by HUNTING counterexamples (`A1_TARGET_THEOREM.md`,
+`A1_counterexample_hunt.py`).
+- **Target Conjecture A1.** For `T_μ(x)=⌊μx⌋` on `ℤ_p` with `v_p(μ)=−1`, with a Diophantine condition on
+  `log_p a`: every seed that is (i) not eventually periodic and (ii) not a singularity(`s_μ`)-preimage has
+  empirical measures → Haar. **Corollary:** every integer seed (auto non-periodic, non-singular) equidistributes
+  ⇒ Antihydra non-halts (and the whole family).
+- **Counterexample hunt (verified) shaped the hypotheses:** the obstructions are exactly two dense rational
+  families — eventually-periodic seeds (the fixed points realize *every* `avg jump = D`; period-2 cycles
+  `2/19,3/19`) and singularity preimages (orbit hits `1/3`). Sweep of rationals `a/b` (`a≤15`,`b≤33`): **181 →
+  Haar, 10 biased-but-periodic, 4 singularity, 0 aperiodic-non-singular counterexamples.** Integer seeds all →
+  Haar; `1/5`-shadowing integers RECOVER (transient). Non-Haar-Bernoulli-generic points (§A2/Q9b) are never
+  rational/integer, so the seed restriction excludes them — consistent.
+- **Diophantine condition:** kept as the expected proof tool (not a counterexample-excluder); the hunt can't
+  vary `log_p a` so its necessity is structural/open. For `μ=3/2`, `log_2 3` is non-Liouville ⇒ holds.
+- **Status:** a conjecture *shaped by counterexample* (correct target statement), not a theorem. The proof
+  (Q-e, one integer seed) is the new-mathematics object = the wall named in the meeting. This is the productive,
+  non-circular first step of the new programme. 0 false proofs.
