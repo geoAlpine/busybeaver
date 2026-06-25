@@ -956,3 +956,21 @@ Attacked Route 3 (adelic) concretely; it CORRECTS the earlier "wrong-place" fram
   equidistribution on a hyperbolic S-arithmetic solenoid** — a named, well-populated battlefield with the rank-1
   gap as the explicit obstruction. This is the most precise and promising multi-year target the programme has
   produced. 0 false proofs (the "wrong place" framing was corrected, not buried).
+
+---
+
+## 2026-06-26g — Homogeneous-dynamics lit triage: confirms Route 3 placement; rank-1 single-orbit gap = our wall
+Third research consultation (homogeneous dynamics) independently confirms the Route 3 framing and that the wall =
+rank-1 single-orbit:
+- Closest: Koksma 1935 (a.e. {θ^n} equidist — right shape, a.e. only). Single-orbit on the torus exists only at
+  rank ≥ 2 (Bourgain–Furman–Lindenstrauss–Mozes, JAMS 2011, needs a non-abelian semigroup). Rank-1 has NO
+  rigidity (Einsiedler–Lindenstrauss JMD 2008; invariant Cantor sets). Effective equidist (Lindenstrauss–Mohammadi
+  2022 +successors) = unipotent/higher-rank only.
+- **Verdict: homogeneous dynamics offers NO single-orbit tool for a rank-1 hyperbolic action.** Every positive
+  single-orbit result needs rank ≥ 2 / non-elementary group / unipotent. The exact gap (remove a.e. to reach the
+  named cyclic orbit of ×(3/2)) IS Mahler-3/2 / Antihydra.
+- Net: Route 3 doesn't breach the wall but places it on the most-developed equidistribution battlefield, with the
+  obstruction named (rank-1 single-orbit) and anchored to theorems + their precise deficiency. The wall is now
+  confirmed from THREE independent fields (analytic NT/Mahler; Erdős/ternary; homogeneous dynamics) + all
+  computational probes — all coincide on rank-1 single-orbit equidistribution. Added literature anchor to
+  TRACTABILITY_MAP. 0 false proofs.

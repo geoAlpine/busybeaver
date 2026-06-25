@@ -60,6 +60,24 @@ positive one:
   hyperbolic `S`-arithmetic solenoid.** A genuine, named, well-populated battlefield (not "solve Mahler"), with
   the rank-1 gap as the explicit obstruction.
 
+## Literature anchor for Route 3 (2026-06-26 triage, homogeneous dynamics) — the frontier coincides with our wall
+A focused homogeneous-dynamics consultation **independently confirms the Route 3 placement and the rank-1 gap**:
+- **Closest result — Koksma (1935):** for Lebesgue-a.e. `θ>1`, `{θ^n}` equidistributes mod 1. *Right shape (our
+  map, our orbit) but `a.e.`* — says nothing about the named `θ=3/2`.
+- **Single-orbit on the torus exists only at rank ≥ 2:** Bourgain–Furman–Lindenstrauss–Mozes (JAMS 2011) get
+  individual-orbit equidistribution, but require a **non-abelian / large semigroup**, not a cyclic `⟨A⟩`.
+- **Rank-1 has no rigidity (explicit):** Einsiedler–Lindenstrauss (JMD 2008) — a single diagonalizable/hyperbolic
+  element has a rich family of invariant measures and **invariant Cantor sets**; Furstenberg/Rudolph/Lindenstrauss
+  rigidity needs multiplicatively-independent `p,q` (rank 2).
+- **Effective equidistribution (Lindenstrauss–Mohammadi 2022, arXiv:2202.11815, and successors):** for
+  **unipotent / higher-rank** orbits only — none covers a single cyclic hyperbolic orbit.
+- **Verdict (the field's own frontier):** **homogeneous dynamics currently offers NO single-orbit (non-`a.e.`)
+  tool for a rank-1 hyperbolic action.** Every positive single-orbit theorem needs rank ≥ 2, a non-elementary
+  acting group, or unipotent structure. The exact gap — *remove "almost every" to reach the named cyclic orbit of
+  `×(3/2)`* — **is** the open Mahler-3/2 / Antihydra problem. So Route 3 does not breach the wall, but it places
+  it on the **most-developed equidistribution battlefield**, with the obstruction named precisely
+  (`rank-1 single-orbit`) and anchored to specific theorems and their precise deficiency.
+
 ## The deliverable: what the new tool must supply
 The new single-orbit tool for `3/2` must provide a **substitute for one of the three tractability structures**:
 1. a **rank-1 unique-ergodicity-type input** that pins one specified orbit (the dynamical face, A1/Q1); or
