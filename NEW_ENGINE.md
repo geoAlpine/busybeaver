@@ -74,6 +74,31 @@ intractable generating dynamics alone** — which no existing normality theorem 
 The arithmetic sequence's *superior* randomness is the precise measure of *how little* structure a proof has to
 work with. This is why it is the frontier.
 
+## Information-theoretic route — also fails: the sequence is "computable but statistically structureless"
+The last idea was to turn the *absence* of structure into a certificate (incompressibility / pseudorandomness).
+It fails, cleanly (`new_engine.py`):
+- The only theorem turning randomness into normality is **"Martin-Löf random ⇒ Borel normal."** But `⌊(3/2)^n⌋`
+  is **computable** — its first `N` bits come from an `O(1)`-size program plus the count `N`, so its **Kolmogorov
+  complexity is `O(log N) ≪ N`**: it is **compressible**, hence **not** Martin-Löf random. The theorem is
+  **inapplicable.**
+- Striking illustration: generic compressors *cannot* compress it (`lzma` gives the **same** size as random,
+  `37560 B`) — it is **statistically** incompressible — yet it is **algorithmically** trivially compressible
+  (`K = O(log N)`). Its "absence of structure" is **only statistical, never algorithmic.**
+- (Complexity-theoretic pseudorandomness / PRGs give **computational, conditional** indistinguishability, not
+  unconditional statistical equidistribution. N/A.)
+
+## The complete picture — three meta-routes to normality, each blocked for a precise reason
+| route to normality | what it needs | why `⌊(3/2)^n⌋` blocks it |
+|---|---|---|
+| **statistical certificate** (Champernowne/Korobov/Stoneham/Fourier/automatic) | a designed structure to count or bound | **structureless** (full complexity, U²-uniform, Weyl=Mahler) |
+| **algorithmic randomness** (incompressible ⇒ normal) | Kolmogorov-incompressibility | **computable** (`K=O(log N)`, compressible) |
+| **dynamical** (unique ergodicity ⇒ every orbit equidistributes) | a uniquely ergodic generating map | **rank-1 Anosov** map has a continuum of invariant measures |
+The sequence sits in the **triple intersection** — *computable* (kills algorithmic randomness), *statistically
+structureless* (kills certificates), *rank-1 Anosov / not uniquely ergodic* (kills dynamics). Provably-normal
+computable numbers exist **only by construction** (Sierpiński/Turing — with a built-in certificate); a *given*
+computable-but-structureless sequence like `⌊(3/2)^n⌋` is the normality frontier. **This is the complete,
+three-route explanation of why no proof exists — and the precise shape of the gap a new engine must cross.**
+
 ## What this gives the multi-year programme
 A new engine is **possible in principle only if** one can extract *fresh per-scale randomness from a deterministic
 algebraic seed* without circularity — a genuinely unprecedented capability. The clean `δ(P^k)=0` / bijection

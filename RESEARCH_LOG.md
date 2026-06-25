@@ -1115,3 +1115,22 @@ Dissected the three proof routes to normality vs our sequence (NEW_ENGINE.md tab
   dynamics.** So the new engine must **prove normality with no certificate, from intractable dynamics alone** —
   unprecedented (all normality proofs use a certificate). The sequence's *superior* randomness measures *how
   little* structure a proof has. 0 false proofs.
+
+---
+
+## 2026-06-26o — Information-theoretic route also fails: "computable but statistically structureless" + complete 3-route picture
+Probed the "absence-of-structure as certificate" idea (incompressibility / pseudorandomness) — fails cleanly
+(NEW_ENGINE.md).
+- The only randomness->normality theorem is "Martin-Löf random => Borel normal". But `⌊(3/2)^n⌋` is COMPUTABLE
+  (first N bits = O(1) program + N => K-complexity O(log N) << N) => compressible => NOT ML-random => theorem
+  INAPPLICABLE. Striking: lzma can't compress it (same size as random, 37560B) -- statistically incompressible --
+  yet algorithmically trivially compressible (K=O(log N)). Its absence-of-structure is only STATISTICAL, never
+  algorithmic. (PRG pseudorandomness = computational + conditional, N/A.)
+- **COMPLETE 3-route picture (why no proof exists):** (i) statistical certificate (Champernowne/Korobov/Stoneham/
+  Fourier/automatic) needs designed structure -- BLOCKED (structureless); (ii) algorithmic randomness
+  (incompressible=>normal) needs incompressibility -- BLOCKED (computable); (iii) dynamical (unique ergodicity)
+  needs a uniquely ergodic map -- BLOCKED (rank-1 Anosov, continuum of invariant measures). The sequence is in
+  the TRIPLE INTERSECTION: computable + statistically structureless + rank-1 Anosov. Provably-normal computable
+  numbers exist only by CONSTRUCTION (Sierpiński/Turing, built-in certificate); a given computable-but-structureless
+  sequence is the normality frontier. This is the complete explanation of why no proof exists, and the precise
+  shape of the gap a new engine must cross. 0 false proofs.
