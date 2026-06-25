@@ -847,3 +847,22 @@ connection" was an over-claim — retracted.**
   other.** This is the ~13th over-claim caught by verification — constructing the implication is exactly what
   exposed it. Discipline intact; 0 false proofs (the retracted claim never reached a "proof" label — it was
   flagged "honest/probing" and is now corrected).
+
+---
+
+## 2026-06-26 — Effective top-digit equidistribution, quantified by log₂3 [PROVEN baseline] (EFFECTIVE_TOPDIGIT.md)
+Built the rigorous, unconditional baseline the new tool must extend.
+- **Setup:** `c_n=⌊8(3/2)^n⌋`; leading mantissa `θ_n={nα+3}`, `α=log₂(3/2)=0.58496…`, CF
+  `[0;1,1,2,2,3,1,5,2,23,2,2,1,1,55,…]`, convergents `q_m=2,5,12,41,53,306,665,15601,…`; `μ(log₂3)` finite (CF
+  proxy `≤3`).
+- **Theorem (a) [PROVEN, sharp]:** along `N=q_m`, star-discrepancy of `{nα}` `≪1/N` ⇒ top
+  `k(N)=log₂N−O(log log N)` binary digits of `(c_n)_{n≤N}` equidistribute. Verified: `−log₂D*_{q_m}/log₂q_m→1.000`
+  (`q_m=12,41,306,665,15601 → 3.61,5.38,8.26,9.38,13.93`). Direct top-k-bit histogram of `c_n` uniform to
+  `k≈log₂N` (deviation `0.003,0.05,0.64,1.00 ×2^{−k}` at `k=4,8,12,14`).
+- **(b) [PROVEN, uniform]:** top `(1/(μ−1)−ε)log₂N` digits equidistribute (Erdős–Turán + `|α−p/q|≫q^{−μ}`).
+- **(c) BARRIER [PROVEN, sharp]:** the parity bit (= non-halt) is `c_n mod 2 = bit_{n+3}(3^n)` = the DIAGONAL of
+  the `~1.585n`-bit `3^n`, at position `≈n`. Top foothold (Weyl) reaches `Θ(log N)` from the top; bottom foothold
+  (`×3`-coset) `Θ(log N)` from the bottom; the diagonal is `Θ(n)` from BOTH. So the best Diophantine input on
+  `log₂3` controls `Θ(log N)` digits; the gap to the diagonal is `Θ(n)`.
+- **The progress metric:** any unconditional push beyond `Θ(log N)` controllable digits (to `(log N)^{1+δ}` or
+  `N^δ`) at a moving position is genuine new progress = the question for the next meeting. 0 false proofs.
