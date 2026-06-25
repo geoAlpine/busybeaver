@@ -76,6 +76,12 @@ complete proof is a **single-target shrinking-target / one-sided anti-concentrat
     is `E_{μ_J}[D] ≤ 2` (one-sided, margin-2) provable for the seed-8 orbit when full equidistribution is not?**
     (A *non-universal* drift, supported only on seed 8's orbit closure, would work — but proving the support
     avoids the high-`D` shadowing regions *is* exactly the genericity input. No bypass.)
+  - **[feasibility probe, 2026-06-25, `A0_feasibility_probe.py`] The margin opens NO new mechanism.** Tested
+    every candidate route to `E[D] ≤ 2`: (1) no unconditional floor (built orbits with `avg jump = 1,4,7,12` —
+    density can `→0`); (2) second-moment/variance bounds *deviation* not the mean (circular); (3) algebraic
+    routes blocked by maximal linear complexity; (4) distinct-integer counting vacuous (`(9/4)^J ≫ 2^k`);
+    (5) universal drift impossible (above). **So A0 is mechanistically exactly where A1 is — a new orbit-specific
+    tool is needed, just a strictly weaker one.** Full closed-routes table: `MEETING_BRIEF.md` §3.
 
 ### A1 · [OPEN] Single-orbit rank-1 effective equidistribution
 **Statement.** For `μ=2^a/3^b` with `v_p(μ)=−1`, does the empirical measure of the **one** forward orbit

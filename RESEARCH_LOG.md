@@ -603,3 +603,25 @@ sub-additivity / Lyapunov-drift on the renewal map). **[PROVEN, negative]** (`A0
 - Closes the drift/Lyapunov route the way growth was closed (2026-06-25b); folded into OPEN_PROBLEMS §A0 and
   EXPERT_ASK ("already ruled out for Q0"). Honest negative; 0 false proofs. This is the right kind of progress —
   ruling out a whole class of attacks and pinning the residue, rather than re-hitting the wall.
+
+---
+
+## 2026-06-25h — A0 feasibility probe: the margin opens NO new mechanism (run before building meeting materials)
+Probed whether the weak one-sided moment `E_{μ_J}[D] ≤ 2` (= complete proof) has any NON-circular route the
+factor-2 margin might open (`A0_feasibility_probe.py`). Verdict: NO.
+- **Probe 1 — no unconditional floor.** Constructed orbits with `avg jump = 1.0, 4.1, 7.2, 11.9` (any size).
+  So even-density can `→ 0`; there is **no unconditional upper bound on avg jump / lower bound on density** to
+  bootstrap from. Any bound needs orbit-specific input (re-confirms the drift lemma).
+- **Probe 2 — second-moment / variance.** `Var_{μ_J}(D) ≈ 1.97` finite, but Chebyshev bounds the *deviation*
+  `|E[D] − truth|`, not `E[D]` itself; to use it you must already know the truth (= equidistribution).
+  Circular / orbit-blind.
+- **Probe 3 — algebraic / self-referential.** The parity sequence has **maximal linear complexity** (prior
+  Berlekamp–Massey result) ⇒ no short recurrence / algebraic identity bounds the odd-density. Blocked.
+- **Probe 4 — distinct-integer counting.** `c'_j` distinct, `~(9/4)^j`; `#{j≤J: c'_j ≡ 3^{-1} mod 2^k}` has
+  range `(9/4)^J ≫ 2^k`, so pigeonhole is vacuous; a real count needs the orbit spread = equidistribution.
+- **Verdict.** Every candidate (transfer/2nd-moment = orbit-blind a.e.; growth = circular; algebraic = blocked;
+  counting = vacuous; universal drift = impossible) is closed. **The factor-2 margin weakens the TOOL required
+  (one-sided moment `E[D] ≤ 2` vs full Haar `E[D] → 1`) but opens NO new mechanism.** A0 sits mechanistically
+  exactly where A1 sits — it needs a *new orbit-specific tool*, just a strictly weaker one. This is the honest
+  input for the meeting: we have ruled out, ourselves, every standard route; the question for experts is whether
+  any mechanism (known or new) delivers a one-sided single-orbit moment bound short of equidistribution. 0 false proofs.
