@@ -665,3 +665,24 @@ User chose the C+D independent-theory track. First deliverables (self-contained,
 - Net: the cryptid-kernel result is now a clean classification *theorem* + a family-wide obstruction map — a
   recordable, conjecture-free artifact independent of resolving any cryptid. Next in the C+D track: D1
   (SLIN ⊋ REG explicit witness) and/or the slow-width 15 kernel extraction. 0 false proofs.
+
+---
+
+## 2026-06-25k — C-track: D already complete (checked); kernel-type census across all 19 (one new §3c target)
+Continued the C+D track.
+- **D-track CHECKED, already complete (no duplication):** the certificate-complexity hierarchy already has FIVE
+  proven conjecture-free strict separations forming a Chomsky-like tower — `k-window ⊊ REG` (d),
+  **`REG ⊊ SLIN` (a, `eq_machine.py`/EQ machine)**, `SLIN ⊊ 2-automatic` (e, POW2W), `2-automatic ⊊ CF`
+  (g, PALW), and the `{n²}` arithmetic level (f). My earlier "D1 = build a SLIN⊋REG witness" suggestion was
+  stale memory — it is **done**. So D has no clean low-hanging fruit; its remaining top (over-approximation
+  axis) = the complete proof (OPEN).
+- **C-track kernel-type census** (`cryptid_map.characterise` width-ratio, calibrated: recovers Antihydra→1.49≈3/2,
+  o18→2.78≈8/3): CONFIRMED core (Antihydra/o10-inner 3/2, o18/o15 8/3, o17 odometer); **one new clean §3c
+  TARGET — Lucy's Moonlight, width-ratio 1.500 = 3/2 exactly (in-family), a credible candidate to extend the 3/2
+  class pending reverse-engineering**; slow-width 10 (Space Needle, o2,o3,o4,o7,o11,o12,o13,o14,o16) ratio≈1,
+  kernel unresolved (milestone = wrong event). **Discipline:** o5(7/4)/o8(7/5) excluded — outside 2^a/3^b family
+  (7 prime; 7/4 has v_2=−2); BB6-champion is a halter. Per SOUNDNESS_INCIDENT (few-point fits spoofed o10/o17),
+  the ONLY honest output is "Lucy's Moonlight = next §3c target", no kernel membership claimed without §3c.
+- **Honest status:** this turn's rigorous output = the classification theorem (proven, 2026-06-25j) + family-wide
+  obstruction (verified). C and D are both substantially complete; the remaining pieces (slow-width §3c reduction;
+  the complete-proof top) are the hard walls, not low-hanging fruit. 0 false proofs.

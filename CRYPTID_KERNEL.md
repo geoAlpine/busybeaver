@@ -89,6 +89,26 @@ not a coincidence of the two cryptid multipliers — the wall is genuinely famil
   Collatz core splits into **two** obstruction types: *(equidistribution kernel)* Antihydra, o10-inner, o18,
   o15; vs *(odometer with a Collatz-irregular halt predicate)* o17.
 
+## Kernel-type census across all 19 cryptids (heuristic + discipline)
+A milestone-width-ratio probe over all 19 named cryptids (`cryptid_map.characterise`), **calibrated**: the
+heuristic recovers the known multipliers (Antihydra `→ 1.49 ≈ 3/2`, o18 `→ 2.78 ≈ 8/3`). Buckets:
+- **CONFIRMED kernel (reverse-engineered, prior):** Antihydra & o10-inner (`3/2`), o18 & o15 (`8/3`) — Mahler;
+  o17 — odometer. *(5)*
+- **One new clean §3c TARGET (not a claim):** **Lucy's Moonlight** has width-ratio `1.500 = 3/2` exactly
+  (`v_2=−1`, in-family) — a credible candidate to *extend* the `3/2` Mahler class, pending a §3c reverse-
+  engineering against the raw TM. *(1)*
+- **Slow-width majority — kernel unresolved:** Space Needle, o2,o3,o4,o7,o11,o12,o13,o14,o16 all have width-ratio
+  `≈ 1.0–1.15` (milestone = the wrong event; genuinely IRREGULAR per `CRYPTID_CENSUS`). Their kernel object is
+  un-extracted — the hard §3c residue. *(10)*
+- **Heuristic artifacts (excluded by discipline):** o5 (`1.756`) and o8 (`1.400`) match `7/4`, `7/5` — **outside
+  the `2^a/3^b` family** (`7` prime; `7/4` has `v_2=−2`, not clean), so these are *not* Mahler candidates, just
+  nearest-fraction noise; "BB6 champion" is a halter, not a cryptid.
+
+**Mandatory caveat (`SOUNDNESS_INCIDENT`):** a few-point width-ratio fit is exactly what spoofed the o10/o17
+"COLLATZ" tags. So the only honest output here is: **Lucy's Moonlight is the next §3c target** (clean, in-family,
+zero-error), everything else is confirmed-or-unresolved. No new kernel membership is *claimed* without the
+reverse-engineering.
+
 ## Scope and honesty
 - **This is the Mahler-`2^a/3^b` sub-family: 4 of the 5 core cryptids** (Antihydra, o10-inner, o18, o15).
   **o17 is an odometer outlier** (a carrying base-≈3 counter, not a single `×μ` orbit) and is *not* claimed
