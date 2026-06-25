@@ -751,3 +751,17 @@ Rigorously firmed up Conjecture A1's hypothesis (i) (`shadow_transient.py`, A1_T
   Q-b/Q-e). A fixed non-periodic seed's first shadow = finitely many biased steps; permanent trapping impossible.
 - Q-a upgraded to [PARTIALLY PROVEN — Lemma 1]. First rigorous brick of the new programme (rank-1 single-orbit
   equidistribution). 0 false proofs.
+
+---
+
+## 2026-06-25o — Feasibility check: "total shadow time = o(n)" is CIRCULAR (= avg jump = equidistribution)
+Before attacking the total-shadow-time question (the remainder after Lemma 1), ran the feasibility judgment.
+**Verdict: circular.** Verified: (1) `Σ_j v2(c'_j − 1/3) = avg jump·J` — the total weighted shadow time of the
+singularity 1/3 IS `avg jump` definitionally; (2) the frequency of a depth-`≥k` approach to any periodic point
+`p=a/b` equals the visit count to `p`'s `2^{−k}` cylinder (`≈ 2^{−k}`, e.g. `5/19` depth≥4: `0.0619≈0.0625`) =
+the equidistribution quantity. So proving "total shadow time = o(n)" for an integer seed = proving
+equidistribution = the wall (Q-e). **Lemma 1 (each single episode finite, by expansion) was the maximal
+non-circular extract.** Did NOT attack Q-b circularly (discipline: don't re-hit the wall). Marked Q-b circular in
+A1_TARGET_THEOREM. **Milestone:** the new programme's step-1 (correct theorem statement + counterexample
+refinement) is COMPLETE — Conjecture A1, with hypothesis (i) rigorously justified (Lemma 1), (ii) catalogued, no
+third obstruction; the proof (Q-e, one integer seed) is the named multi-year wall. 0 false proofs.

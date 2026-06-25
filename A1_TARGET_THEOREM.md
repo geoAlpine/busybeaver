@@ -91,8 +91,12 @@ first shadow contributes only **finitely many** biased steps; permanent trapping
 - **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously
   (no orbit is asymptotically periodic unless eventually periodic; each shadow episode `≤` its approach depth).
   *Remaining:* bound the *total* shadow time over re-approaches (= Q-b/Q-e, equidistribution-flavored).
-- **Q-b [settled empirically]** integer seed biased? — none (all → Haar; shadowers recover). *Prove:* an integer
-  orbit's empirical measure → Haar (the actual theorem).
+- **Q-b [settled empirically; the *total* is CIRCULAR — feasibility-checked]** integer seed biased? — none
+  (all → Haar; shadowers recover). The remaining "total shadow time = o(n)" is **not a non-circular target**:
+  it equals `Σ_j v2(c'_j − 1/3) = avg jump·J` (the singularity's total weighted shadow), and the frequency of
+  depth-`≥k` approach to any periodic point `p` is exactly the visit count to `p`'s `2^{−k}` cylinder = the
+  equidistribution quantity (verified). So *proving* Q-b for an integer seed = proving equidistribution = the
+  wall. **Lemma 1 (each single episode finite) was the maximal non-circular extract; the total is Q-e.**
 - **Q-c [open, structural]** what is the exact Diophantine condition, and is it removable?
 - **Q-d [settled in catalogue]** non-Haar factors beyond periodic shadowing? — singularity capture and
   non-Haar-Bernoulli-generic irrationals; both excluded for integer/rational-non-periodic seeds.
