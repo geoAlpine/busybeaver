@@ -4,6 +4,8 @@
 reading anything else. Fuller context: `STATE_FOR_REVIEW.md`; all assertions below are machine-verified (exact
 integer/2-adic arithmetic) or labelled measured/open.*
 
+> **If you only answer one thing, please answer Q0.**
+
 ## The setup (3 sentences)
 For the integer orbit `c_{n+1} = ⌊3 c_n / 2⌋`, `c_0 = 8`, let `E_n = #{i<n : c_i even}`. The Turing machine
 "Antihydra" (a BB(6) holdout) never halts **iff the running even-density `E_n/n ≥ 1/3` for all `n`**
@@ -44,7 +46,7 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > value is `≈ 1` (a **factor-2 margin**) and the condition is *strictly weaker* than equidistribution (we
 > exhibit non-Haar orbits with `avg jump ∈ (1,2)`). The whole difficulty localizes to **small `k` (`k=2,3`,
 > i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is a separable p-adic-Baker target
-> (Q2). The bound is **seed-universal** (observed): every natural integer seed gives `avg jump ≈ 1`, `N_2/J ≈
+> (Q2). The bound is, **observed across all tested natural integer seeds**, uniform: every such seed gives `avg jump ≈ 1`, `N_2/J ≈
 > 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`), so seed 8 is not a special pathology — the difficulty is the standard
 > a.e.→specific gap. (This is an observation, not evidence that a structural argument exists; a *universal* one
 > provably does not — see "already ruled out" below.)
@@ -93,6 +95,17 @@ The point of the reduction is that the obstruction is now **localized**: it is e
 measure → Haar at the low cylinders* of an explicit Gibbs–Markov map, with every soft/elementary route
 explicitly closed. A "no, that needs full equidistribution" is as useful to us as a "yes, see X." Either pins
 the next move.
+
+## The wall's three equivalent faces (pick the one your specialty answers)
+1. **Ergodic/dynamics:** rank-1 single-orbit effective equidistribution of `⌊μ^n⌋ mod p` (Q0/Q1 above).
+2. **Additive/Diophantine:** the one-sided shrinking-target / `v2(c'_i−c'_j)` separation (Q2).
+3. **Analytic-NT / digits [NEW]:** equidistribution of a **moving middle digit** `bit_{cn}(a^n)` of `a^n` in base
+   `b` (`0<c<log_b a`), along ONE orbit, **beyond the `Θ(log N)` top/bottom footholds**. We *proved* the
+   footholds are exactly `Θ(log N)` (Weyl on `{n log₂3}` for the top; `×3`-coset for the bottom) and *verified*
+   van der Corput is **closed** on the Mahler sum (differencing returns `t'(3/2)^n`, same family, `O(1)·√N`, no
+   gain). **Q3: does ANY method — high-order van der Corput, effective metric theory, digital exponential-sum
+   estimates — reach a moving middle digit of `a^n` beyond `Θ(log N)`?** (Predicted: no; a clean *no* is as
+   useful as a yes — it pins the wall as "moving-middle-digit-beyond-`Θ(log N)`", sharper than "solve Mahler".)
 
 ## Where to ask
 - **bbchallenge community** (the Antihydra holdout is theirs): Discord / forum threads, contributors working on
