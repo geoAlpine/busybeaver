@@ -974,3 +974,24 @@ rank-1 single-orbit:
   confirmed from THREE independent fields (analytic NT/Mahler; Erdős/ternary; homogeneous dynamics) + all
   computational probes — all coincide on rank-1 single-orbit equidistribution. Added literature anchor to
   TRACTABILITY_MAP. 0 false proofs.
+
+---
+
+## 2026-06-26h — Expert ask for homogeneous-dynamics specialists (Route 3 formulation) — EXPERT_ASK_HOMOGENEOUS.md
+Prepared a direct, expert-ready note for a homogeneous-dynamics / equidistribution specialist, formulating Route 3
+in their language and soliciting work on the rank-1 single-orbit problem.
+- **Object (dynamical, front and centre):** `X=(ℝ×ℚ₂×ℚ₃)/ℤ[1/6]` compact S-arithmetic solenoid; `A=×(3/2)` a
+  hyperbolic automorphism (expand at ∞,2; contract at 3); `x₀=` image of 1 (seed 8).
+- **Boxed Q:** does the single orbit `{Aⁿx₀}` equidistribute to Haar? Is there ANY mechanism (effective
+  equidistribution / Margulis-function non-escape / Diophantine on `log₂3`) forcing a single specified algebraic
+  orbit of a cyclic hyperbolic action to equidistribute, where rank-≥2 rigidity fails? Highlights the key hook:
+  the solenoid carries the extra **contracting 3-adic (stable) direction** absent from the bare `{(3/2)ⁿ}` —
+  does that hyperbolic structure give leverage the real projection (= Mahler 3/2) alone does not?
+- **Ruled-out section** with the literature anchors (rank-1 no rigidity E–L JMD 2008; a.e. Koksma 1935;
+  single-orbit needs non-abelian semigroup BFLM JAMS 2011; effective = unipotent only L–M 2022) + our verified
+  facts (Lemma 1 no-permanent-trapping rules out the periodic part of the exceptional set; seed-universality).
+- **Expected-answer-format** (pointer / precise reason for the "no" / does S-arithmetic framing help) + a short
+  Antihydra motivation at the end (lead with the dynamics, per prior reviewer advice).
+Pairs with EXPERT_ASK.md (the p-adic/Gibbs-Markov framing, Q0/Q2/Q3) — this is the homogeneous-dynamics sibling.
+Ready to send to an Einsiedler/Lindenstrauss/Mohammadi-circle specialist or MathOverflow (homogeneous-dynamics,
+equidistribution). 0 false proofs.
