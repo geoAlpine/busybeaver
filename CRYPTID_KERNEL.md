@@ -67,6 +67,14 @@ So no clean `p`-to-1 endomorphism; one needs a 2-step (`T²`-type) framing. ∎ 
 `p ∤ a`. The BB(6) instances `3/2` (`p=2`) and `8/3` (`p=3`) are two points of it; "the Mahler core is one
 kernel" is now a *theorem*, not an analogy. (Restricting to `μ=2^a/3^b` gives the two BB(6) primes `p∈{2,3}`.)
 
+## The obstruction map is uniform across the kernel family (verified beyond the BB(6) primes)
+The induced (renewal) map structure — **full-branch piecewise-affine expanding (slopes `μ^g`) with a `ℤ_p`
+fixed point on every branch** (the Q9(b) "spectral gap is orbit-blind" obstruction) — is verified to hold
+**uniformly across many clean `μ`** beyond the two BB(6) instances: `3/2, 5/2, 7/2` (`p=2`) and `8/3, 4/3, 16/3`
+(`p=3`) all give `6/6` sampled word-branches affine-with-`ℤ_p`-fixed-point (`kernel_classification.py` /
+`cross_cryptid.py`). So the whole Q9-trilogy obstruction map is a property of *every* `T_μ` with `v_p(μ)=−1`,
+not a coincidence of the two cryptid multipliers — the wall is genuinely family-wide.
+
 ## Placing o15 and o17 (the other two core machines) — honestly
 - **o15 ∈ the `8/3` (p=3) kernel class.** Its *value* grows doubly-exponentially (`v→v^{8/3}`), i.e. its
   **width/exponent follows the `×8/3` Mahler map** — the census widths `…,107,289,772` have ratios

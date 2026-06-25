@@ -646,3 +646,22 @@ Reviewer caught a real error in the meeting materials, partly self-contradictory
   "enemy = mod 4 / mod 8" reframe (reviewer's favourite).
 This is the discipline working as intended: a hopeful slip caught and corrected; condition-weakness is not
 progress toward the proof. 0 false proofs.
+
+---
+
+## 2026-06-25j — C-track: classification theorem PROVEN + obstruction map verified uniform across kernel family
+User chose the C+D independent-theory track. First deliverables (self-contained, verifiable):
+- **[PROVEN] Classification theorem** (`kernel_classification.py`, CRYPTID_KERNEL.md): `μ=a/b` lowest terms,
+  `b=p^β` prime power ⇒ `T_μ(x)=⌊μx⌋` is a clean measure-preserving `p`-to-1 *exact* endomorphism of `ℤ_p`
+  **iff `β=1` (`b=p`, i.e. `v_p(μ)=−1`)**. Proof: `T` descends `ℤ/p^{k+1}→ℤ/p^k` (forgets bottom digit); each
+  target has EXACTLY `p` preimages `= a^{-1}(p consecutive residues)` since `gcd(a,p)=1` (key step
+  machine-checked); uniform `p`-to-1 ⇒ Haar-preserving; digit-forgetting ⇒ Dobrushin `δ=0` ⇒ exact. Converse by
+  witness (`b=p²` ⇒ uneven fibers `{1,2,3,4}` for 9/4). Upgrades "the Mahler core is one kernel" from measured to
+  **theorem**.
+- **[verified, family-wide] Obstruction map uniform across the kernel family.** The induced renewal map is
+  full-branch piecewise-affine expanding (slopes `μ^g`) with a `ℤ_p` fixed point on every branch (the Q9(b)
+  orbit-blind obstruction) — verified `6/6` for `3/2,5/2,7/2` (`p=2`) and `8/3,4/3,16/3` (`p=3`). So the whole
+  Q9-trilogy wall is a property of *every* `T_μ` with `v_p(μ)=−1`, not a coincidence of the BB(6) multipliers.
+- Net: the cryptid-kernel result is now a clean classification *theorem* + a family-wide obstruction map — a
+  recordable, conjecture-free artifact independent of resolving any cryptid. Next in the C+D track: D1
+  (SLIN ⊋ REG explicit witness) and/or the slow-width 15 kernel extraction. 0 false proofs.
