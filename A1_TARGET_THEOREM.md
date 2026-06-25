@@ -120,6 +120,28 @@ both 2 and 3: `v2(u_j)=0` (def of `D_j`) and `v3(u_j)=v3(3c'_j−1)=0` since `3c
   3-adic surface absent before (next probe: does a tool on the 3-adic side, e.g. the Erdős/ternary machinery of
   the `8/3` family, bound `v3(2c'_{j+1}−1)` where the 2-adic side resisted?).
 
+## Proposition 4 — the dual carry identity & the Erdős connection [PROVEN, new]
+> **Proposition 4.** With `b_j = 2c'_j − 1` and `M_j = Σ_{i<j}(D_i+1)` (the step-index of the `j`-th renewal),
+> ` 2^{M_J} b_J = 3^{M_J} b_0 + T_J ,  T_J = Σ_{j<J} 2^{M_j} 3^{M_J−1−M_j} ` (verified `199/199`). This is the
+> **exact 3-adic dual** of the 2-adic identity `2^n c_n = 8·3^n − S_n`, `S_n = Σ_{j<n,e_j=1} 2^j 3^{n−1−j}`.
+> Moreover `v3(b_J) = v3(T_J) = D_{J−1}` (verified): the orbit's **3-adic depth is governed by the carry `T_J`**.
+
+**Proof.** The recurrence `2^{D_j+1} b_{j+1} = 3^{D_j+1} b_j + 3^{D_j}` (from `F`) telescopes against
+`2^{M_j}/3^{M_j}`: setting `W_j = 2^{M_j}b_j/3^{M_j}`, `W_{j+1}−W_j = 2^{M_j}/3^{M_j+1}`, so
+`W_J = b_0 + Σ_{j<J}2^{M_j}/3^{M_j+1}`; clearing denominators gives the identity. `v3(2^{M_J}b_J)=v3(b_J)` and
+`v3(3^{M_J}b_0)=M_J` huge, so `v3(b_J)=v3(T_J)`; the lowest term (`j=J−1`) has 3-exponent `M_J−1−M_{J−1}=D_{J−1}`,
+matching Prop 3. ∎
+
+**The Erdős connection (the new toolset).** `S_n` (2-adic) is `Σ 2^j 3^{n−1−j}` over *odd* steps; `T_J` (3-adic)
+is `Σ 2^{M_j} 3^{M_J−1−M_j}` over *renewal* (even) steps — a perfect `2↔3` dual. `v3(T_J) ≤ 2` on average
+(= non-halt) is a statement about **sums of `2^{M_j} 3^{·} mod 3^k`**, i.e. about **powers of 2 mod 3^k** — the
+**Erdős ternary-digit regime** (the kernel of the `8/3`/o18 family). Since `2` has order `2·3^{k−1}` mod `3^k`,
+`2^{M_j} mod 3^k` depends on `M_j mod 2·3^{k−1}` = the **renewal times mod a 3-power** — a *different* object from
+the 2-adic `⌊(3/2)^n⌋ mod 2` (where van der Corput is closed). **This is a genuinely new attack surface**: the
+3-adic depth is controlled by powers-of-2-mod-3^k / renewal-times-mod-3^k, where sum-product / digit-distribution
+tools live, rather than the 2-adic moving diagonal. *(Honest: still the same number; but a different toolset now
+applies — actively probing whether it bounds where the 2-adic side resisted.)*
+
 ## Open sub-questions (the next counterexample searches / proof targets)
 - **Q-a [PARTIALLY PROVEN — Lemma 1]** the *permanent-trapping* failure mode is now ruled out rigorously
   (no orbit is asymptotically periodic unless eventually periodic; each shadow episode `≤` its approach depth).
