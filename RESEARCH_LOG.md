@@ -995,3 +995,23 @@ in their language and soliciting work on the rank-1 single-orbit problem.
 Pairs with EXPERT_ASK.md (the p-adic/Gibbs-Markov framing, Q0/Q2/Q3) — this is the homogeneous-dynamics sibling.
 Ready to send to an Einsiedler/Lindenstrauss/Mohammadi-circle specialist or MathOverflow (homogeneous-dynamics,
 equidistribution). 0 false proofs.
+
+---
+
+## 2026-06-26i — EXPERT VERDICT: formulation validated, obstruction named; canonical problem crystallized
+A homogeneous-dynamics expert consultation returned a clear verdict, confirming all our findings + validating the
+formulation ("the way you've cut the problem is right"):
+- **Q0:** no known theorem separates the one-sided recurrence bound from full equidistribution for a specified
+  orbit of a rank-1 expanding p-adic/Gibbs-Markov map → one-sided NOT provably easier by current methods.
+- **Route 3 / homogeneous:** the S-arithmetic framing clarifies the hyperbolic structure but NO known mechanism
+  by which the contracting 3-adic direction forces genericity of the specific algebraic point.
+- **Q3:** no method beyond the Θ(log N) footholds for a specified orbit.
+- **Obstruction (expert one-liner):** "**not recurrence; it is specified-point genericity.**" The one-sided
+  margin is a real logical weakening but current methods don't exploit it (the bound is controlled by
+  low-cylinder frequencies of one specified orbit).
+- **Canonical problem (expert phrasing):** "**effective genericity of a specified algebraic point for a rank-1
+  hyperbolic / S-arithmetic automorphism.**" Crystallized in `CANONICAL_PROBLEM.md`.
+**Milestone:** the "specify the wall" phase is complete and externally validated from THREE fields + an expert.
+The formulation is correct; the obstruction is named; it is genuinely Mahler-class with the reason-it-is-unknown
+explicit. Named multi-year target: invent effective single-orbit genericity for a rank-1 hyperbolic/S-arithmetic
+automorphism at a specified algebraic point. 0 false proofs.

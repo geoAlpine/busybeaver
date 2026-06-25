@@ -1,4 +1,6 @@
 # One-sided recurrence vs equidistribution for a single rank-1 *p*-adic orbit — short expert ask
+
+> **Status (2026-06-26):** a first expert consultation judged the formulation **correct** and the problem **genuinely Mahler-class**; the obstruction is *specified-point genericity*, not recurrence. Canonical statement + verdict: `CANONICAL_PROBLEM.md`.
 *(framed via its BB(6)/Antihydra instance, but the question is the dynamical one in the title)*
 *One page. A specialist should be able to answer the boxed question yes/no/"closest known result" without
 reading anything else. Fuller context: `STATE_FOR_REVIEW.md`; all assertions below are machine-verified (exact

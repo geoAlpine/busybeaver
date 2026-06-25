@@ -1,4 +1,6 @@
 # Single-orbit equidistribution for a rank-1 hyperbolic automorphism of an S-arithmetic solenoid — expert ask
+
+> **Status (2026-06-26):** a first expert consultation judged the formulation **correct** and the problem **genuinely Mahler-class**; the obstruction is *specified-point genericity*, not recurrence. Canonical statement + verdict: `CANONICAL_PROBLEM.md`.
 *For a homogeneous-dynamics / equidistribution specialist. One page; the boxed question is the point. The object
 is purely dynamical; the motivation (a Busy-Beaver / "Antihydra" non-halting problem) is at the end. All
 "verified" facts are machine-checked.*
