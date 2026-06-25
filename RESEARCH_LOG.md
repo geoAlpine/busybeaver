@@ -913,3 +913,25 @@ structure**. Combined with full subword + maximal linear complexity, it is **pse
 level** (subword, linear, Fourier, U², quadratic). The obstruction is **irreducibly single-orbit**: a
 maximally-pseudorandom deterministic sequence — no structural shortcut at any order = the Mahler wall. The
 digit-side investigation is now thorough and settled. 0 false proofs.
+
+---
+
+## 2026-06-26e — Tractability map: cousins solvable, 3/2 lacks all three structures; adelic route = the target (TRACTABILITY_MAP.md)
+New tactic (not re-probing seed 8): map the tractable cousin models, their structures, and what 3/2 lacks
+(`tractability_map.py`).
+- **Three tractable cousins:** (1) **odometer** `x+1` — provable via **unique ergodicity** (only Haar invariant,
+  every orbit equidistributes); (2) **linear** `{nα}` — provable via **linearity** (vdC drops degree to 0, Weyl);
+  (3) **Pisot** `{β^n}` — provable via **archimedean conjugate decay** (`β^n` close to integer trace; verified
+  `{φ^n}→1`, gap `|ψ^n|→0`).
+- **3/2 lacks all three (verified):** no unique ergodicity (continuum of invariant measures, Q9b); no linearity
+  (exponential, vdC closed); no archimedean conjugate <1 (`(3/2)^n` not close to any integer: dist `0.33,0.06,0.07`).
+- **Adelic-Pisot probe:** `3/2` DOES contract at the prime 3 (`|3/2|_3=1/3`, `|(3/2)^n|_3=3^{−n}→0`) — a genuine
+  Pisot-conjugate-like structure (the 2↔3 duality in adelic dress; product formula `2·⅓·1.5=1`). But the naive
+  Pisot mechanism FAILS (3-adic smallness ≠ archimedean closeness, verified). The sophisticated form = **rank-1
+  S-arithmetic equidistribution** on `ℝ×ℚ_3` (3 contracting, 2/∞ expanding) — the natural Pisot-across-places
+  framing, BUT the acting element `(3/2)` is rank-1 (cyclic) ⇒ no Ratner rigidity ⇒ same single-orbit wall.
+- **Deliverable:** the new tool must supply a substitute for one of {unique-ergodicity | degree-reduction-beyond-vdC
+  | adelic-conjugate-decay}. Route 3 (adelic, using `|3/2|_3<1`) is the **only one with a genuine extra structural
+  asset** the classical cousins exploit — it converts the problem to **rank-1 S-arithmetic equidistribution**, a
+  named open target rather than "solve Mahler." This is the most structurally-promising multi-year direction; the
+  rank-1 obstruction is stated, not hidden. 0 false proofs.
