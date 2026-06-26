@@ -138,10 +138,19 @@ first concrete step. All are routes to **new mathematics** (the frontier), state
 
 **(E) Port / partial: secure an unconditional *partial* on the single orbit (first-of-its-kind).**
 - *Mechanism:* not the full conjecture — any unconditional statement *about the specified orbit* stronger than the
-  FLP-type range: e.g. "infinitely many distinct limit points", "positive lower density of even steps", or "avgL is
-  bounded away from 1". The range bound is the only such fact known; beating it would be genuinely new.
+  FLP-type range. **The RIGHT weak target (direction corrected 2026-06-26): `even-density ≥ ε` (positive even
+  density) ⟺ `avgD_odd ≥ 1+ε`.** *(NOTE: `avgL ≥ 1+ε` is the WRONG direction — via `δ_2=½−1/avgL`, `avgL` LARGE ⇒
+  `avgD_odd` SMALL = halt danger, and `avgL→1` is non-halt-safe; so a lower bound on `avgL` points toward the
+  danger. Verified.)* Trivial floor [PROVEN]: every non-fixed-point seed has infinitely many even steps (the only
+  all-odd orbit is the fixed point `c=1`, since all-odd ⟹ `c≡1 mod 2^k ∀k` ⟹ `c=1`). The first NONTRIVIAL partial
+  is upgrading "infinitely many" to "positive density".
+- *What it reduces to:* `even-density ≥ ε` ⟺ the orbit does not concentrate anomalously in deep cylinders
+  (`even-density→0` ⟺ `avgL→∞` ⟺ `o(n)` runs covering `~n` odd steps ⟺ `√n`-many hits of a `2^{−√n}`-measure
+  cylinder) — a **one-sided shrinking-target bound**, weaker than equidistribution but beyond FLP (positive density
+  for a *specified* orbit is open per the literature). Still the right first target: weaker than non-halt (`≥1/3`)
+  and weaker than full equidistribution.
 - *First step:* push the proven top-foothold (Theorem B) using an explicit irrationality measure of `log₂3` to gain
-  one more moving digit unconditionally — a concrete, bounded sub-goal.
+  one more moving digit unconditionally; or attack `even-density ≥ ε` via the one-sided shrinking-target form.
 
 ---
 ## 6. Proposed next step (for discussion)
