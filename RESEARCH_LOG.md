@@ -1152,3 +1152,25 @@ Attacked the one structural slack (is one-sided `avg jump ≤ 2` provably easier
   **closed**. Refined deliverable for a future tool: *one-sided constant-factor anti-concentration of a specified
   orbit's small-cylinder frequencies* — a slightly easier design target than full equidistribution. Folded into
   RETROSPECTIVE. This resolves the last internally-attackable piece of the complete proof. 0 false proofs.
+
+---
+
+## 2026-06-26q — First step of the one-sided anti-concentration tool: the content is small-k (large-k is a red herring)
+Took the first step of building the future tool (one-sided constant-factor anti-concentration of seed-8's small-
+cylinder frequencies), the refined #3 target. Mapped the structural ingredients and found the binding content
+(`tool_first_step.py`):
+- **Structural ingredient (new):** the orbit is **amortized-dyadically-sparse** — ~0.86 renewal states per octave
+  (growth rate > 2). Real but mild; consecutive ratios are sometimes < 2 (half), so not pointwise-separated.
+- **Correction:** the naive "per-k `N_k/J ≤ 2·2^{−k}` for all k" budget is too strong — at large k it is violated
+  by discreteness (`N_16=3` vs budget `1.53` at J=50000), but those terms are absolutely negligible
+  (`N_16/J ≈ 6e-5`). avg jump `= Σ_k N_k/J` is **dominated by small k** (k=1,2,3 give 0.875 of ~1.0; tail
+  k≥10 ≈ 0).
+- **The binding content is small-k equidistribution:** the trivial per-frequency bound gives `Σ_{k≤3} N_k/J ≤ 3
+  > 2`, so avg jump ≤ 2 **requires the small-k frequencies to be ≈ Haar** — i.e. equidistribution at k=2,3. There
+  is **no tractable first brick**: the tool's first brick IS the wall.
+- **Red-herring corrected:** the large-k separation / additive-energy bound (the p-adic-Baker target Q2/B1) is
+  **negligible for avg jump** even if proven — it is a separate publishable partial but does **not** advance the
+  complete proof. This prevents misdirecting the multi-year effort onto the large-k part.
+- **Net:** the future tool must be built from the small-k side (specified-orbit frequency mod 4, mod 8), which is
+  the full Mahler-class difficulty. The first step honestly confirms there is no easier sub-component to start
+  from. 0 false proofs.
