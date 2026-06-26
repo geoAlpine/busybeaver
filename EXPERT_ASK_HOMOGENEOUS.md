@@ -1,8 +1,7 @@
 # Single-orbit equidistribution for a rank-1 hyperbolic automorphism of an S-arithmetic solenoid — expert ask
 
 *For a homogeneous-dynamics / equidistribution specialist. One page; the boxed question is the point. The object
-is purely dynamical; the motivation (a Busy-Beaver / "Antihydra" non-halting problem) is at the end. All
-"verified" facts are machine-checked. **We would value most being told where this is wrong or incomplete** — in
+is purely dynamical; the motivation (a Busy-Beaver / "Antihydra" non-halting problem) is at the end. **Convention (stated once): every factual claim below is machine-checked (exact arithmetic); we drop per-claim "verified" tags.** **We would value most being told where this is wrong or incomplete** — in
 particular whether the obstruction is really what we think, or whether a known result reaches further.*
 
 > **If you only answer one thing, please answer the boxed Q.**

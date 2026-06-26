@@ -18,7 +18,7 @@ For the integer orbit `c_{n+1} = ⌊3 c_n / 2⌋`, `c_0 = 8`, let `E_n = #{i<n :
 (equivalently `3E_n − n ≥ 0 ∀n`); conjecturally the density → 1/2. Deciding this is in the class of **Mahler's
 3/2 problem (1968)** — we are *not* asking you to solve that, but to locate the precise residue below.
 
-## What reduces to what (verified)
+## What reduces to what
 Take the renewal subsequence `c'_j = c/2` at even steps. The induced map `F(c') = ⌊3c'/2⌋`-type acts on `ℤ₂`
 and is **full-branch, piecewise-affine, expanding, Haar-preserving** (a Gibbs–Markov map): on
 `P_D = {v2(3c'−1)=D}`, `F(c') = (3^{D+1}c' − 3^D + 2^D)/2^{D+1}`, slope `(3/2)^{D+1}`, zero distortion, each
