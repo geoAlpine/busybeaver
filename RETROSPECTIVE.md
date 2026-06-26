@@ -37,7 +37,7 @@ machine-checked steps, to **one object seen five equivalent ways** — every ref
 The complete proof **= the new tool**: *effective single-orbit genericity for a rank-1 Anosov / amenable-hyperbolic
 automorphism at a specified algebraic point* = *provable normality of an explicit `⌊(p/q)^n⌋`*. This does not exist
 in current mathematics; we verified (computationally and via three literature consultations + an expert) that every
-standard route reduces to it. **A session cannot produce this tool** — it is multi-year, generational mathematics.
+standard route reduces to it. **No currently known method appears capable of producing this tool** — it is multi-year, generational mathematics.
 
 ## #2 SETTLED (2026-06-26) — the margin buys a weaker target, not an easier proof
 We attacked the residual hope directly (`onesided_settlement.py`). The factor-2 margin in `avg jump ≤ 2`

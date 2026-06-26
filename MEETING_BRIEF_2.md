@@ -7,12 +7,12 @@ literature-anchored; 0 false proofs (~15 over-claims caught & retracted).*
 ## 1. One-line state
 Antihydra non-halt ⟺ the single orbit of seed 8 under `×(3/2)` equidistributes ⟺ `⌊(3/2)^n⌋ mod 2` is **normal**
 ⟺ a **rank-1 Anosov / amenable-hyperbolic** automorphism has a generic specified orbit (= Mahler 3/2). We could not
-break it, but we now know *exactly why no tool reaches it*, from five independent directions that all coincide.
+break it, but we now know *exactly why no currently known tool reaches it*, from five independent directions that all coincide.
 
 ## 2. The four genuinely new characterizations (since last meeting)
 **(A) The wall is `amenable ∩ hyperbolic` — a rank-1 Anosov single orbit.** Trichotomy:
 *amenable+isometric* (rotation/odometer) → Weyl/unique-ergodicity (solved); *non-amenable+hyperbolic* (rank-≥2
-Cat-map) → measure rigidity (solved); ***amenable+hyperbolic*** (`×3/2`) → **no tool**. Amenability kills the
+Cat-map) → measure rigidity (solved); ***amenable+hyperbolic*** (`×3/2`) → **no currently known tool**. Amenability kills the
 rigidity engines; hyperbolicity kills the rotation/Weyl engines.
 
 **(B) Complete engine survey — all seven single-orbit engines fail for one reason.** Weyl/vdC (closed),
