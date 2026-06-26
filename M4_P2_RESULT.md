@@ -51,3 +51,17 @@ r_{n-1} ≡ ((8·3^n − 3 T_{n-1}) / 2^{n-1})  mod 2
 - toy cryptid（人工 toy → o17 / 8/3）で、整数性の剛性が**強い**ミニモデルで「P2+P3 が本当に効く最小例」を探す
   （Antihydra より整数制約が tight な人工機械なら、剛性＋run-length が bias を強制しうるか）。これが M4 に残る
   唯一の建設的次手。
+
+---
+## 追記（2026-06-27）：toy-cryptid 探索 — P2+P3 が効く例は無い（族全体で構造的）`toy_P2P3_search.py`
+「P2+P3 が density を強制する最小 cryptid」を探索。**結果：存在しない、構造的理由付きで。**
+- **avgD × density ≈ machine 固有定数（恒等式）**：Antihydra 含む全 `⌊μc⌋` cryptid で検証（3/2,5/2,7/2→積=1.0；
+  4/3,5/3→積=0.5）。valuation budget `Σ_pstep v_p = n + v_p(c_n) − v_p(c_0)` は v_p(c_n)=o(n) ゆえ avgD を
+  density に**結びつける恒等式**で、**どちらも bound しない**。⇒ P2 は density（halt/non-halt）を強制できない。
+- **自己訂正**：以前の「budget range [1, 1+γ]」は**誤り**。v_p(c_n)=o(n)（γn でない）ので range でなく恒等式。
+- **P3 も tight でない**：maxrun ≪ γN（runs は O(log n)）。run-length cap は density を締めない。
+- **VERDICT**：`⌊μc⌋` 族の全 cryptid で P2+P3 は density content ゼロ。**整数性は構造的に rigidity 専用**
+  （unique orbit を pin するが偏りに blind）＝Antihydra の bias-blindness は**族全体で普遍**。決定可能 cryptid は
+  REGULAR/FAR 証明書で決まるのであって P2+P3 でない。
+- **帰結**：M4（逆問題・整数性）は**決定的に閉じた**。順問題（B_k 自律）と逆問題（P2 恒等式）の両方向が閉じ、
+  どちらも moving-middle-digit ＝ マーラー core に到達。新数学の唯一の核心は中央桁を**自身の構造から**制御すること。
