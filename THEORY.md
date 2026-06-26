@@ -118,10 +118,26 @@ infinitary Theorem-B-type input into the all-scale coupling.
   (A3); building it is the new mathematics the expert named. **Honest status: the blueprint is complete and the
   central conjecture is isolated with its proven scaffolding; the coupling theorem itself does not yet exist.**
 
+### B5′. Theorem E (the δ→margin map) [PROVEN reduction; done 2026-06-26, `coupling_k2.py`]
+The Coupling Conjecture (B3) now has an **explicit quantitative form**, and it is *milder* than feared. Write
+`avgD_odd = 2 − Σ_k δ_k`, `δ_k := 2^{−(k−1)} − P(D≥k | odd)` (verified decomposition); the **k=2 term is exact**:
+`δ_2 = ½·avgχ_{−4,odd}` (the leading and largest deviation; empirically all `δ_k > 0` for seed 8 — the low
+cylinders are *under*-visited, so only `δ_k > 0` can lower `avgD_odd`). Two rigorous per-scale bounds on the
+dangerous (`δ_k>0`) deviations: **(geometric)** `δ_k ≤ 2^{−(k−1)}` always; **(character)** `|δ_k| ≤
+max_{ψ≠1 mod 2^k}|avgψ_odd|` (exact character expansion of the cylinder indicator).
+> **Theorem E.** *If there exist `δ>0, C` with `|Σ_{i<N, c_i odd} ψ(c_i)| ≤ C·N^{1−δ}` for every nontrivial
+> Dirichlet character `ψ` of conductor `≤ N^δ`, then* `Σ_{δ_k>0} δ_k ≤ O(N^{−δ}\log N)` *(crossover at*
+> `K*≈δ\log_2 N`*), so* `avgD_odd ≥ 2 − O(N^{−δ}\log N) ≥ 3/2` *for all `N ≥ N₀` — i.e. **Antihydra never halts**.*
+
+**ANY power saving `δ>0` suffices, and only for low moduli (conductor `≤ N^δ`).** This is the precise, mild,
+quantitative deliverable the Coupling Conjecture reduces to: *single-orbit power-saving character cancellation at
+low 2-power moduli* — an analytic-number-theory target with a number (any `δ>0`) and a scale range (`≤N^δ`). The
+hypothesis itself is OPEN (= the multi-year tool, the a.e.→specified gap of Tao 2019), but Theorem E is the proven
+exponent→margin map that turns B3 from "prove normality" into "get any power saving at low moduli."
+
 ### B6. The concrete next attacks inside the blueprint (conjecture-independent, fundable)
-1. **Quantify the coupling at scale `k=2`:** prove the *conditional* statement "if `Σ_{odd}χ_{−4}(c_n) = O(N^{1−δ})`
-   then `avgD_odd ≥ 3/2`" with an explicit `δ`-to-margin map — turning B3 into a quantitative target (the
-   character-sum exponent that suffices). *(Tractable; isolates the needed Diophantine strength.)*
+1. **[DONE — Theorem E above]** the `δ→margin` map is proven: any low-moduli power saving `δ>0` ⇒ the margin ⇒
+   non-halt. The residual is to *establish* the character cancellation (open), now a sharply-posed analytic target.
 2. **Effective Theorem B → one more scale:** push the proven `Θ(log N)` foothold by one moving digit using an
    explicit irrationality measure of `log₂3` — even a single extra scale, unconditionally, is a genuine partial.
 3. **The annealed→quenched coupling in a toy model:** prove the coupling for a *simplified* self-feeding (e.g. a
