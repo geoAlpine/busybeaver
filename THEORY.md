@@ -167,6 +167,25 @@ multi-year target: the new tool must break a *renormalization fixed point* — s
 the return map only expands. (Echoes the NEW_ENGINE two-scale bootstrap: each scale needs the same input; here
 that is the self-similarity made exact.)
 
+### B5⁗. The contraction already exists — the tool is DERANDOMIZATION [PROVEN reframe, `contraction_tool.py`]
+"Supply contraction to the renormalization fixed point" turns out to be **mis-stated**: the contraction is
+**already present**. The renewal Gibbs–Markov map `F` has a **transfer-operator spectral gap** — it contracts
+mean-zero functions by `θ<1` per step, giving exponential decay of correlations (verified: the Haar
+autocorrelation `R[t]=E_Haar[χ(c_0)χ(c_t)]→0` fast, `R[0]≈½`, `R[t≥1]≈0`) and a CLT for `(F, Haar)`. **But the
+contraction is stuck at the Haar level** — it controls correlations (Haar integrals), giving an *a.e.* / variance
+statement, never the specified point.
+> **The specified orbit is "spectral-gap-pseudorandom":** its Birkhoff-sum variance matches the Haar Green–Kubo
+> `σ² = R[0]+2Σ_{t≥1}R[t] ≈ 0.43` (orbit `Var(S_N)/N ≈ 0.49`, ratio `≈1` within noise — after fixing a forced-odd
+> `R[0]` bug that had spuriously doubled `σ²`). So the explicit orbit *realizes* the spectral-gap prediction.
+**Therefore the missing tool is not "contraction" but DERANDOMIZATION:** prove that the single explicit,
+*computable* (`K=O(\log N)`) orbit `⌊8(3/2)^n⌋` realizes the transfer operator's spectral-gap prediction, with the
+effective irrationality of `log₂3` (Theorem B) as the **pseudorandom seed**. This is the sharpest statement of the
+multi-year tool yet: the renormalization fixed point's *attracting* (contracting) nature is the spectral gap,
+present and Haar-level; the wall is **de-randomizing it to one Diophantine orbit** — exactly the `a.e.→specified`
+gap (Tao 2019's density average), now phrased as "the contraction is real but lives on measures, not points."
+This connects the multi-year target to **pseudorandomness / derandomization theory**: the orbit must be shown
+pseudorandom against the Gibbs–Markov dynamics, its `log₂3`-arithmetic standing in for genuine randomness.
+
 ### B6. The concrete next attacks inside the blueprint (conjecture-independent, fundable)
 1. **[DONE — Theorem E above]** the `δ→margin` map is proven: any low-moduli power saving `δ>0` ⇒ the margin ⇒
    non-halt. **[DONE — B5″]** the conductor-4 case is reduced to the elementary run-length law `avgL → 2`
