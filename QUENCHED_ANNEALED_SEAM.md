@@ -52,9 +52,32 @@ exists, that absence **is** the precise statement of the wall.
   (`K=O(log N)`); it means determinism is undetectable by finite correlations, consistent with the three-route
   normality block (`NEW_ENGINE`): computable ∩ statistically structureless.
 
+## The annealed side is efficient at every scale (`annealed_gap.py`)
+We measured the annealed (empirical renewal Markov) operator `T_k` on `ℤ/2^k` for `k=1..7` (Antihydra, seed 8,
+250k renewals). Second eigenvalue `λ₂(k) = 0.001, 0.038, 0.095, 0.172, 0.224, 0.271, 0.330`; **mixing time
+`1/(1−λ₂)` grows only `1.0 → 1.5` steps**, fit `≈ 0.88 + 0.083k` (linear in `k`). This linear growth is **not**
+an arithmetic difficulty concentrating at large `k`; it is the trivial **bounded-expansion** fact — each renewal
+step advances only `E[D+1] ≈ 2` 2-adic bits, so resolving `2^k` needs `O(k)` steps, hence the per-step gap shrinks
+`~1/k` while the **per-bit** mixing stays efficient. So:
+> **The annealed (provable) side mixes efficiently at every cylinder depth** (`≤ 1.5` steps through `k=7`). No
+> scale is arithmetically special; the entire wall remains the **quenched-vs-annealed determinism, uniformly**.
+*Discipline:* the script first posed a false binary ("flat ⇒ uniform" vs "→1 ⇒ difficulty at large `k`"); the
+honest reading is the bounded-bits-per-step one. We do **not** extrapolate the `k→∞` asymptotic from 7 points
+(unsound). And this is the annealed/Markov operator only — the **quenched** gap (the real open problem) is untouched.
+
+## Net Q2 picture (the seam, fully characterized from inside)
+Two complementary facts now pin the seam: (i) **annealed mixes efficiently at all scales** (gap above), and (ii)
+**quenched and annealed agree on every finite-order statistic** (digit-bijection, no lag-MI/entropy signature). So
+the difference between the two — the entire wall — is carried **neither** by a slow-mixing scale **nor** by any
+finite correlation. It is the purely infinitary demand that the deterministic orbit furnish its own digits as
+`n→∞`. **A `quenched ⇐ annealed + X` bridge therefore needs `X` to be a genuinely infinitary (effective-Mahler /
+`log₂3`-Diophantine) input — provably not a mixing or finite-decorrelation argument, both of which are already
+satisfied.** This is the sharpest internal statement of why Q2 is the open question.
+
 ## Next (Phase 2 continues)
-The seam is below all finite-order tests. Next internal probe: characterize the **annealed operator** itself more
-sharply across `p` (its spectral gap as a function of `p` and branch depth) and ask whether *its* mixing rate —
-the thing that IS provable — can be coupled to the quenched orbit under an explicit `log_p a` Diophantine
-assumption (a conditional `quenched ⇐ annealed + Diophantine` statement would be a real partial, even if the
-Diophantine input is itself open).
+The seam is pinned from inside (annealed efficient + no finite signature ⇒ infinitary-only). The remaining
+internal lever is the **explicit `X`**: write the conditional `quenched-equidistribution ⇐ effective
+equidistribution of {(3/2)ⁿ A}` with a *quantified* discrepancy rate, and check whether the **one-sided margin**
+(`avg jump ≤ 2`, not full equidistribution) needs a *weaker* discrepancy rate than two-sided — the one place the
+factor-2 margin might cash out. (Prior `#2` settled it is equi-difficult vs current *tools*; here we ask the
+sharper question of whether the *required discrepancy exponent* differs, a quantitative not tool-relative question.)
