@@ -145,8 +145,11 @@ the next move.
    empirically `|S_n| ~ √O_n` with fluctuating sign. **Q4: is there square-root (or any) cancellation for a
    character sum `Σ_{n<N} χ(c_n)` taken along a *single* deterministic `⌊μ·⌋`-orbit** — via large sieve, Vinogradov
    /Vaughan-type bilinear decomposition, or sum–product — or is a single specified orbit out of reach of
-   character-sum technology too? (A clean "out of reach, because the orbit is not multiplicatively structured" is
-   as useful as a bound — it closes the analytic-NT route precisely.)
+   character-sum technology too? *(We checked: `f(n)=χ_{−4}(c_n)` is uncorrelated with Liouville `λ(n)` and flat
+   over progressions `n≡a (q)` — the orbit appears **multiplicatively structureless** in `n` (`c_n mod 4` is set by
+   the high bits of the dynamical carry `T_n`, not by any multiplicative function), so Vaughan/sum-product seem to
+   have no entry point. Is that the right reason it is out of reach, or is there a **non-multiplicative** cancellation
+   tool for a positive-entropy dynamical summand?)* A clean "out of reach" is as useful as a bound.
 
 ## Where to ask
 - **bbchallenge community** (the Antihydra holdout is theirs): Discord / forum threads, contributors working on

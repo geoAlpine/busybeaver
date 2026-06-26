@@ -47,7 +47,31 @@ mod-4 character-sum bound would *not* suffice without the deeper tail.
   the deeper bonus). This is a crisper, analytic-number-theory-flavored question than the dynamical framing — worth
   adding to the expert ask: *is there square-root cancellation for a character sum along a single `⌊μ·⌋`-orbit?*
 
+## Follow-through: the bilinear / sum-product route is also blocked — the orbit is multiplicatively structureless
+We then tried to get cancellation in `S_N = Σ_n χ_{−4}(c_n)` by **bilinear / Vaughan / sum-product** methods
+(`bilinear_probe.py`). These need the index `n` to couple to *multiplicative* structure of the summand. But
+`c_n = (3^n c_0 − T_n)/2^n` makes `c_n mod 4` a function of the **high bits of the dynamical carry `T_n`** (the
+whole parity history) — no multiplicative function of `n` controls it. Verified (`N=10⁵`):
+- **Uncorrelated with Liouville `λ(n)`:** `Σ_n f(n)λ(n)` has the *same* square-root size as `S_N` itself (no
+  enhancement) — `f(n)=χ_{−4}(c_n)` multiplies against `λ` like an independent `±1`.
+- **Flat over arithmetic progressions:** the mean of `f` over `n ≡ a (mod q)` is `≈ 0` for `q=2,3,4,5,8` (spreads
+  `0.01–0.04`, CLT noise) — `f(n)` does not depend on `n`'s residue.
+So **Vaughan's identity / Type-I–II / sum–product have no entry point**: the summand is a positive-entropy
+*dynamical* function of `n`, not a multiplicative one. The only available cancellation is **dynamical** (Birkhoff
+for the specified point) = the equidistribution wall.
+
+## Three tool-families, three distinct structural reasons (the meta-finding)
+The orbit evades each major unconditional tool family for a **tool-specific** reason — strong evidence the wall is
+real, not an artifact of one framing:
+| tool family | what it needs | why the orbit blocks it |
+|---|---|---|
+| measure / spectral (5 probes) | a uniquely-ergodic or rank-≥2 / a.e. handle | rank-1, continuum of measures; needs infinitary input |
+| p-adic Baker / S-units | bounded-height algebraic inputs | `height(T_n) ≈ n·log₂3` — **unbounded** |
+| character sum / bilinear | multiplicative structure in `n` | `c_n mod 4` = high bits of dynamical `T_n` — **structureless** |
+Each closure is a *different* precise obstruction; together they pin the wall from three independent technologies.
+
 ## Honest caveats
-- Empirical to `n=3·10⁵`; the `|S_n|=o(n)` (let alone signed) limit is the open problem.
+- Empirical to `n=3·10⁵` (energy) / `10⁵` (bilinear); the `|S_n|=o(n)` (let alone signed) limit is the open problem.
 - The character-sum reduction is exact; the "sign-blind" obstruction is a rigorous property of the quadratic form,
-  not a heuristic — it is *why* a symmetric second moment cannot prove a one-sided bound.
+  not a heuristic — it is *why* a symmetric second moment cannot prove a one-sided bound. The "structureless"
+  finding is empirical (correlation tests), consistent with the exact `c_n=(3^n c_0−T_n)/2^n` structure.
