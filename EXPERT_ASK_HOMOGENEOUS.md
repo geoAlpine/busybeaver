@@ -74,6 +74,8 @@ A pointer is plenty. Useful: (i) any theorem (or named conjecture) giving single
 cyclic hyperbolic action under a Diophantine/algebraic hypothesis; (ii) the **precise reason** the rank-1
 single-orbit case is out of reach (a sharper "no" than "rank-2 is needed" — e.g. what the contracting 3-adic
 direction can and cannot buy); (iii) whether the S-arithmetic (vs purely-real Mahler) framing is known to help.
+**We may simply be overlooking an existing theorem** — if so, a one-line pointer settles it. **And if the
+question is malformed or mis-reduced, how would you reformulate it?**
 
 ## Motivation (the instance)
 For the integer orbit `c_{n+1} = ⌊3c_n/2⌋`, `c₀ = 8`, the Busy-Beaver machine "Antihydra" (a BB(6) holdout) never

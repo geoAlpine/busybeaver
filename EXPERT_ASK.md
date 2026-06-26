@@ -6,8 +6,9 @@
 **We would value most being told where this is wrong** — a sharper "no" is as useful as a "yes".*
 *(framed via its BB(6)/Antihydra instance, but the question is the dynamical one in the title)*
 *One page. A specialist should be able to answer the boxed question yes/no/"closest known result" without
-reading anything else. Fuller context: `STATE_FOR_REVIEW.md`; all assertions below are machine-verified (exact
-integer/2-adic arithmetic) or labelled measured/open.*
+reading anything else. Fuller context: `STATE_FOR_REVIEW.md`. **Convention (stated once): every factual claim
+below is machine-checked in exact integer/2-adic arithmetic; anything not so is labelled "measured" or "open".**
+We therefore drop per-claim "verified" tags.*
 
 > **If you only answer one thing, please answer Q0.**
 
@@ -32,13 +33,13 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 ## What we have already ruled out (so you can skip these)
 - **The transfer-operator spectral gap alone does not suffice.** It is a property of `(F, Haar)` only
   (orbit-blind); `F` has fixed points on every branch (`0, 1/5, 5/19, 19/65, …`, exact 2-adic integers) and
-  periodic points of all periods, which violate the needed visit-count bound. (Verified.)
+  periodic points of all periods, which violate the needed visit-count bound.
 - **Non-shadowing / "spread out" does not suffice.** We *construct* (full-branch coding + inverse branches) an
   orbit that is dense in `ℤ₂`, fully supported, aperiodic — maximally non-shadowing — yet `avg jump = 3.10 > 2`.
   So the condition must pin the empirical measure to **Haar specifically**, not merely "non-concentrated."
 - **Growth/counting is circular.** The telescoping `2c'_{j+1}−1 = (3/2)^{D_j}(3c'_j−1)` gives
   `log b_J = log(3/2)(J + Σ D_j) + O(1)`, but independently `n = #even+#odd = J + Σ D_j` — the same identity, so
-  `Σ D_j` cancels and yields no inequality. (Verified.)
+  `Σ D_j` cancels and yields no inequality.
 - **Standard single-orbit-equidistribution mechanisms are unavailable:** unique ergodicity (F has a continuum of
   invariant measures), rank-≥2 measure rigidity (the orbit is rank 1, one map `×3/2`), Weyl/van der Corput
   (closed on the multiplicative recurrence `(3/2)^n`).
@@ -49,9 +50,10 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > to the single point `1/3 ∈ ℤ₂` — equivalently a **one-sided shrinking-target / recurrence estimate**
 > `N_k/J ≤ C·2^{−k}` (visit frequency to the shrinking ball `2^{−k}` around `1/3`) summing to `≤ 2`. The true
 > value is `≈ 1` (a **factor-2 margin**) and the condition is *strictly weaker* than equidistribution (we
-> exhibit non-Haar orbits with `avg jump ∈ (1,2)`). The whole difficulty localizes to **small `k` (`k=2,3`,
-> i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is a separable p-adic-Baker target
-> (Q2). The bound is, **observed across all tested natural integer seeds**, uniform: every such seed gives `avg jump ≈ 1`, `N_2/J ≈
+> exhibit non-Haar orbits with `avg jump ∈ (1,2)`). **Under our reduction**, the remaining obstruction *appears
+> to* localize to **small `k` (`k=2,3`, i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is
+> a separable p-adic-Baker target (Q2). *(This localization is a consequence of our reduction, not an
+> independent claim — please check it.)* The bound is, **observed across all tested natural integer seeds**, uniform: every such seed gives `avg jump ≈ 1`, `N_2/J ≈
 > 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`), so seed 8 is not a special pathology — the difficulty is the standard
 > a.e.→specific gap. (This is an observation, not evidence that a structural argument exists; a *universal* one
 > provably does not — see "already ruled out" below.)
@@ -86,7 +88,9 @@ distinction is known or *impossible* in this setting; (ii) a counterexample / ar
 one-sided shrinking-target bound is *as hard as* equidistribution here; or (iii) a technique that plausibly
 attacks the small-`k` shrinking-target estimate directly. A pointer ("see X, Y") is plenty — no write-up needed.
 **And if the answer is simply "no, it's as hard as equidistribution" — what is the precise obstruction?** (A
-reason is as valuable as a reference; experts often explain a "no" more sharply than a "yes.")
+reason is as valuable as a reference; experts often explain a "no" more sharply than a "yes.") **And if the
+question is itself malformed or mis-reduced — how would you reformulate it?** (We may be overlooking an existing
+theorem, or a gap in the reduction; either correction is exactly what we want.)
 
 **Sharpened closing form (a yes/no a specialist can answer):** *If no such separation is known for a natural
 single rank-1 orbit, is the correct obstruction that the one-sided bound is still controlled by the fixed
