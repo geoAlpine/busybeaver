@@ -39,6 +39,20 @@ automorphism at a specified algebraic point* = *provable normality of an explici
 in current mathematics; we verified (computationally and via three literature consultations + an expert) that every
 standard route reduces to it. **A session cannot produce this tool** — it is multi-year, generational mathematics.
 
+## #2 SETTLED (2026-06-26) — the margin buys a weaker target, not an easier proof
+We attacked the residual hope directly (`onesided_settlement.py`). The factor-2 margin in `avg jump ≤ 2`
+translates exactly to a **one-sided `2×`-anti-concentration** target: `N_k/J ≤ 2·2^{−k}` for all `k`
+(`Σ = 2`) — i.e. *each shrinking cylinder around `1/3` is visited at most `2×` its Haar frequency*. This is
+**strictly weaker** than equidistribution (`→ 1×`, two-sided, all cylinders) — non-Haar orbits with
+`avg jump ∈ (1,2)` satisfy it. **But** the per-cylinder upper bound on `N_k` (the count of `j` with
+`c'_j ≡ 3^{-1} mod 2^k`) **is itself the additive energy / a specified-orbit cylinder-frequency statement** — the
+*same class* as equidistribution. **The margin relaxes the constant (`2×` vs `1×`), not the *kind* of control
+(specified-orbit small-cylinder frequency).** Since every current method yields equidistribution or nothing, none
+gives the one-sided bound without equidistribution (expert Q0). **Verdict: one-sided is a strictly weaker
+*target* but *equi-difficult* relative to the current toolbox; the complete proof is Mahler-difficult now.** The
+refined deliverable for a future tool: aim at *one-sided constant-factor anti-concentration of a specified orbit's
+small-cylinder frequencies* — a (slightly) easier design target than full equidistribution.
+
 ## The one structural slack that is *not* fully closed
 The complete proof needs only the **one-sided** `avg jump ≤ 2` (factor-2 margin), **strictly weaker as a
 condition** than full equidistribution (`→1`). The expert verdict was "*not provably easier by current methods*" —
@@ -51,10 +65,9 @@ complete proof *without* solving Mahler — narrow, well-ground, but not elimina
 1. **External input (ready, highest information / lowest cost).** Both expert asks are reviewer-polished and
    send-ready. An expert may (a) know the rank-1 tool, (b) confirm it is open and pin the obstruction, or (c)
    reframe the moving-middle-digit / one-sided question productively. *This is the rational immediate move.*
-2. **Settle the one-sided-vs-equidistribution question definitively** (the residual hope). Either find the
-   margin-exploiting argument (→ complete proof without Mahler) or prove the two are equivalent in difficulty
-   (→ confirms complete proof = Mahler). We have ground this hard; settling it is itself hard, but it is the only
-   route to the complete proof that does not require inventing the full normality tool.
+2. **[SETTLED above]** one-sided is a strictly weaker target but equi-difficult vs current tools — the margin
+   does not open a Mahler-free path. The residual *internal* route is thus closed; what remains is a future tool
+   aimed at the refined target (one-sided constant-factor anti-concentration), which is #3.
 3. **Commit to the multi-year tool-build** — the real prize: invent effective single-orbit genericity for a
    rank-1 Anosov action. Resolves Antihydra **+** the whole cryptid family **+** Mahler 3/2 at once. Generational.
 

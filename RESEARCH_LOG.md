@@ -1134,3 +1134,21 @@ Probed the "absence-of-structure as certificate" idea (incompressibility / pseud
   numbers exist only by CONSTRUCTION (Sierpiński/Turing, built-in certificate); a given computable-but-structureless
   sequence is the normality frontier. This is the complete explanation of why no proof exists, and the precise
   shape of the gap a new engine must cross. 0 false proofs.
+
+---
+
+## 2026-06-26p — #2 SETTLED: the factor-2 margin buys a weaker target, not an easier proof
+Attacked the one structural slack (is one-sided `avg jump ≤ 2` provably easier than equidistribution?).
+**Settled** (`onesided_settlement.py`):
+- The margin translates exactly to a **one-sided `2×`-anti-concentration** target: `N_k/J ≤ 2·2^{−k}` ∀k
+  (`Σ=2`) — each shrinking cylinder around `1/3` visited `≤ 2×` Haar. **Strictly weaker** than equidistribution
+  (`→1×`, two-sided) — non-Haar orbits with `avg jump∈(1,2)` satisfy it.
+- **But** the per-cylinder upper bound on `N_k` IS the additive energy / a specified-orbit cylinder-frequency
+  statement — the *same class* as equidistribution. The margin relaxes the **constant** (`2×` vs `1×`), not the
+  **kind** of control (specified-orbit small-cylinder frequency). Every current method gives equidistribution or
+  nothing ⇒ none gives one-sided without equidistribution (expert Q0).
+- **Verdict:** one-sided is a strictly weaker *target* but *equi-difficult* vs the current toolbox; the complete
+  proof is Mahler-difficult now. The residual *internal* route (Mahler-free complete proof via the margin) is
+  **closed**. Refined deliverable for a future tool: *one-sided constant-factor anti-concentration of a specified
+  orbit's small-cylinder frequencies* — a slightly easier design target than full equidistribution. Folded into
+  RETROSPECTIVE. This resolves the last internally-attackable piece of the complete proof. 0 false proofs.
