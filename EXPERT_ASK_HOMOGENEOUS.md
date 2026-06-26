@@ -55,7 +55,7 @@ trichotomy you may find familiar:
   3-adic (stable) direction** absent from the bare `{(3/2)ⁿ}` — **does that hyperbolic structure give any
   leverage the real projection alone does not?**
 
-## What we have pinned (verified, so you can skip these)
+## What we have pinned (so you can skip these)
 - `x₀` is **not eventually periodic** and **not** a preimage of the (3-power-denominator) singular set — both are
   Haar-null rational sets that every integer seed avoids automatically.
 - **No permanent trapping** (a *single-orbit* lemma we proved): periodic points are 2-adically **repelling**
