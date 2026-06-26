@@ -43,6 +43,16 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 - **Standard single-orbit-equidistribution mechanisms are unavailable:** unique ergodicity (F has a continuum of
   invariant measures), rank-≥2 measure rigidity (the orbit is rank 1, one map `×3/2`), Weyl/van der Corput
   (closed on the multiplicative recurrence `(3/2)^n`).
+- **The unconditional Diophantine (Baker) route is blocked at the source.** Deep cylinders ⟺ self-collisions
+  `v2(c'_i−c'_j) ≥ k`, but the orbit terms `c_n = (3^n c_0 − T_n)/2^n` (`T_n` the parity-history carry) have
+  **height `≈ n·log₂3`, unbounded** — so they are *not* fixed-height S-units and p-adic Baker does not apply
+  (see Q2). Empirically the orbit even **self-separates at exactly the random rate** `2^{−k}`.
+- **No finite-order obstruction exists (measured, 4 independent ways).** The orbit is statistically
+  indistinguishable from i.i.d. uniform at every tested finite order: mod-`p` residues at the CLT rate, mod-`p²`
+  uniform, lag-`k` mutual information `≈ 0` (a base-`p` digit-bijection makes each `k`-step joint law *equal* the
+  `mod p^{k+1}` cylinder law), block-entropy rate `= log p`, random-rate self-separation. So **every finite-order /
+  elementary argument is provably insufficient** — only an infinitary (effective-`log₂3`) input can decide it. This
+  is *why* the question funnels to single-orbit equidistribution and nothing weaker survives.
 
 ## The question
 > **Q0 (the complete-proof frontier — ask this first).** Non-halting needs only the **one-sided** bound
