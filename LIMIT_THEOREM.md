@@ -331,6 +331,26 @@ star-free`) gave two conjecture-free results and one honest negative — all re-
   frontier itself (≥ as hard as resolving the cryptid). This is exactly the genuineness limit: the
   cryptids are non-halting in a way no finite/tame certificate can witness.
 
+### The analytic content of the [OPEN] over-approximation top (2026-06-26 — links to the analytic notes)
+The over-approximation [OPEN] question — *does a tame halt-free `L ⊇ reachable` exist for Antihydra?* — and the
+analytic **single-orbit equidistribution wall** (the `EXPERT_ASK` / `*_ATTACK` notes) are **two faces of one
+barrier**, not a reduction. The certificate side asks for an *invariant set*; the analytic side asks to *prove the
+orbit statistic*. They coincide only at the cryptid top, where both are open. What the analytic work adds is **why
+the barrier resists**, made precise from three independent technologies (this session):
+- a **measure / spectral** certificate route is blind to the specified orbit (rank-1, continuum of invariant
+  measures — needs an *infinitary* input);
+- a **Diophantine / bounded-height** route fails because the orbit terms `c_n=(3^n c_0−T_n)/2^n` have
+  `height(T_n)≈n·log₂3` — **unbounded** (so no `S`-unit / Baker certificate);
+- a **multiplicative / character-sum** route fails because `c_n mod 4` = high bits of the dynamical carry `T_n` —
+  **structureless** in `n` (the energy form is even *sign-blind*).
+So the certificate-theoretic [OPEN] top is not a vague "hard"; its hardness has **three distinct, structural
+analytic obstructions**, each closing one natural certificate-construction route. *Honest caveat:* "no analytic
+proof via tools `X`" does **not** by itself prove "no tame certificate" (a certificate need not be built through
+the orbit's statistics) — the two axes meet only at the cryptid, which is why the [OPEN] stays [OPEN]. But the
+three-obstruction picture is the sharpest available *explanation* of the over-approximation gap, and it is exactly
+the genuineness-limit phenomenon stated analytically. (Full: `EXPERT_ASK.md`, `ENERGY_ATTACK.md`,
+`SEPARATION_BAKER.md`, `VALUATION_BUDGET.md`.)
+
 Next bricks (all rigorous, achievable): (a) construct an explicit non-halting machine with a *provably*
 non-regular reachable language **and** an explicit SLIN certificate — a clean witness that SLIN ⊋ REG
 for certification, independent of any open conjecture; (b) make §3's distinguishability fully concrete
