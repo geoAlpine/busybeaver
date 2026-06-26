@@ -53,13 +53,14 @@ gives the one-sided bound without equidistribution (expert Q0). **Verdict: one-s
 refined deliverable for a future tool: aim at *one-sided constant-factor anti-concentration of a specified orbit's
 small-cylinder frequencies* — a (slightly) easier design target than full equidistribution.
 
-## The one structural slack that is *not* fully closed
-The complete proof needs only the **one-sided** `avg jump ≤ 2` (factor-2 margin), **strictly weaker as a
-condition** than full equidistribution (`→1`). The expert verdict was "*not provably easier by current methods*" —
-**not** "provably equivalent". We closed the obvious margin-exploiting routes (universal drift impossible;
-non-shadowing insufficient; second-moment/§6.5 reduces to the additive energy = equidistribution). **What remains
-open is whether a genuinely new margin-exploiting argument exists.** This is the single residual hope for a
-complete proof *without* solving Mahler — narrow, well-ground, but not eliminated.
+## Where that leaves the "Mahler-free" hope (after the #2 settlement)
+The margin is **not illusory** — it is a genuinely weaker *target* (one-sided `2×`-anti-concentration). What the
+settlement shows is that no *current* tool converts that weaker target into an easier *proof*, because the
+obstruction is the *kind* of control (specified-orbit small-cylinder frequency), not the *precision*. So the
+"Mahler-free complete proof" hope is not a separate internal route any more: it is **subsumed into #3** as a
+*sharper design spec* — a future tool need only deliver **one-sided constant-factor anti-concentration of a
+specified orbit's small-cylinder frequencies**, which is strictly less than full equidistribution. Whether such a
+tool can exist (giving one-sided without two-sided) is exactly the expert's open Q0.
 
 ## The genuine next moves (ranked, toward the complete proof)
 1. **External input (ready, highest information / lowest cost).** Both expert asks are reviewer-polished and
