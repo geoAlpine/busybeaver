@@ -39,10 +39,15 @@ scale**; the difficulty is purely self-referential determinism = explicit normal
    there *any* result — even conditional/Diophantine — for a specified orbit there? (Confirm or break the
    trichotomy.)
 2. **The "quenched → annealed" bridge.** The annealed operator mixes trivially (spectral gap); the whole
-   difficulty is the *deterministic self-feeding*. Is there a technique — from **deterministic-vs-random dynamics,
-   disordered systems, or "annealed ⇒ quenched" transfer** — that converts annealed mixing into a single
-   deterministic-orbit statement under a Diophantine hypothesis? (This is the most novel framing; does it ring a
-   bell?)
+   difficulty is the *deterministic self-feeding*. **New (sharpens this):** the quenched orbit and the annealed
+   model are **provably indistinguishable by every finite-order statistic** — a base-`p` digit-bijection makes each
+   `k`-step joint law of the mod-`p` residues *equal* the mod-`p^{k+1}` cylinder law, so lag-MI excess `≈0`,
+   block-entropy rate `= log p`, mod-`p²` uniform (verified, `higher_cylinder.py`). So a bridge **cannot** be built
+   by matching/decorrelating finite statistics — they already coincide; it must inject a genuinely
+   **infinitary/Diophantine** input. Is there a technique — from **deterministic-vs-random dynamics, disordered
+   systems, or "annealed ⇒ quenched" transfer** — that upgrades annealed mixing to a single deterministic orbit
+   using only such an infinitary hypothesis (not a finite-order decorrelation, which is unavailable)? (Most novel
+   framing; does it ring a bell?)
 3. **Is the engine list complete?** Is there an 8th class of single-orbit-equidistribution method that needs
    *neither* rank-2 *nor* a.e. — i.e. that could live in the `amenable ∩ hyperbolic` cell?
 4. **Explicit normality with no certificate.** Provably-normal sequences are *constructed* (Champernowne / Korobov
