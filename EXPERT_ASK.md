@@ -5,8 +5,9 @@
 *That is the whole question (details in Q0). Everything else is context and what we have ruled out.
 **We would value most being told where this is wrong** — a sharper "no" is as useful as a "yes".*
 *(framed via its BB(6)/Antihydra instance, but the question is the dynamical one in the title)*
-*One page. A specialist should be able to answer the boxed question yes/no/"closest known result" without
-reading anything else. Fuller context: `STATE_FOR_REVIEW.md`. **Convention (stated once): every factual claim
+*The boxed question is one line and answerable on its own; the rest is context and ruled-out routes you may skip.
+A specialist should be able to answer Q0 yes/no/"closest known result" without reading anything else. Fuller
+context: `STATE_FOR_REVIEW.md`. **Convention (stated once): every factual claim
 below is machine-checked in exact integer/2-adic arithmetic; anything not so is labelled "measured" or "open".**
 We therefore drop per-claim "verified" tags.*
 
@@ -53,6 +54,14 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
   `mod p^{k+1}` cylinder law), block-entropy rate `= log p`, random-rate self-separation. So **every finite-order /
   elementary argument is provably insufficient** — only an infinitary (effective-`log₂3`) input can decide it. This
   is *why* the question funnels to single-orbit equidistribution and nothing weaker survives.
+- **The capsule: three independent technologies, three *distinct* obstructions.** Each unconditional tool family
+  fails for a different precise structural reason — why we believe the wall is real, not a one-framing artifact:
+  (i) **measure/spectral** needs unique ergodicity or rank-≥2/a.e., but `×(3/2)` is rank-1 with a continuum of
+  measures (infinitary input required); (ii) **p-adic Baker/S-units** need bounded height, but
+  `c_n=(3^n c_0−T_n)/2^n` has `height(T_n)≈n·log₂3`, **unbounded**; (iii) **character-sum/bilinear/sum–product**
+  need multiplicative structure in `n`, but `c_n mod 4` = high bits of the dynamical carry `T_n`, **structureless**
+  (uncorrelated with `λ(n)`, flat over `n≡a(q)`). *If you recognize a fourth technology — or why one of these
+  should reach after all — that is the single most useful thing you can tell us.*
 
 ## The question
 > **Q0 (the complete-proof frontier — ask this first).** Non-halting needs only the **one-sided** bound
