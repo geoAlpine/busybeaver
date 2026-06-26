@@ -153,6 +153,17 @@ first concrete step. All are routes to **new mathematics** (the frontier), state
   one more moving digit unconditionally; or attack `even-density ≥ ε` via the one-sided shrinking-target form.
 
 ---
+## 5′. Theorem E pivot — RESOLVED (self-checked, `THEOREM_E_RESOLVED.md`)
+The core question "is Theorem E's hypothesis genuinely weaker than the wall?" is now resolved: **No — it is a
+valuable *reframing*, not an easier target.** `H(δ)` is growing-window equidistribution (`disc(mod 2^k) ≤
+2C·2^k·N^{−δ}`, `→0` only for `2^k≪N^δ`), and the margin `Σ_{δ_k>0}δ_k ≤ 1/2` genuinely needs character control at
+**conductor 4** (geometric alone gives `≤1`, not `≤1/2`) = mod-4 equidistruction of the specified orbit = the open
+wall. Theorem E's value is the **reframing** of non-halt into specified-orbit character-sum / analytic-NT language
+(+ the δ→margin map: any power saving suffices), **not** a difficulty reduction. *This corrects an earlier
+over-optimistic framing.* Consequence: the path is **Mahler-hard**; routes (A)/(B) (Weyl–Gowers cancellation /
+derandomization) are the real frontier, plus the unconditional partials (`#even ≥ c·log n`, foothold `≈0.85 log₂N`)
+and a durable write-up of the reframing.
+
 ## 6. Proposed next step (for discussion)
 **Primary:** validate **Theorem E** externally (is "any low-moduli power saving ⇒ non-halt" a genuine weakening of
 the needed input, or does it smuggle in full equidistribution?). If sound, it makes the target an analytic-NT
