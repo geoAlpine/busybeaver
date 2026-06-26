@@ -1174,3 +1174,23 @@ cylinder frequencies), the refined #3 target. Mapped the structural ingredients 
 - **Net:** the future tool must be built from the small-k side (specified-orbit frequency mod 4, mod 8), which is
   the full Mahler-class difficulty. The first step honestly confirms there is no easier sub-component to start
   from. 0 false proofs.
+
+---
+
+## 2026-06-26r — Deepest dig at k=2 (mod 4): annealed operator mixes trivially; the whole wall is quenched-vs-annealed
+Final deep look at the binding scale k=2 (`k2_deepdig.py`).
+- **Structure (verified):** the renewal map mod 4 is **uniformizing** — odd states (1,3 mod 4) spread their
+  sub-residues *deterministically* across ALL four mod-4 values (`c'%16: 1→2, 5→3, 9→0, 13→1`); even states (0,2)
+  transition binarily. The **annealed** transition operator `T` on mod-4 distributions has **uniform as its unique
+  attracting fixed point with a strong spectral gap** (`|λ_2|≈0.047`, gap `≈0.95`) — it mixes to uniform in ~1 step.
+- **The circularity, pinpointed:** the even-state `50/50` splits require the orbit to be uniform mod 8/16
+  (scale 3,4); so scale-2 uniformity is *fed from scale 3*, scale 3 from scale 4, … base case = the wall.
+- **Verdict (cleanest localization of the wall):** k=2 is **NOT arithmetically simpler** — but the deep dig gives
+  the sharpest picture yet: **the annealed system mixes trivially (spectral gap 0.95); the ENTIRE obstruction is
+  the quenched-vs-annealed gap** — the deterministic orbit feeding its own higher bits. There is **no arithmetic
+  handle** that bypasses the self-feeding; the transfer operator (annealed) is perfect but orbit-blind, the
+  quenched orbit needs its own higher bits = the wall. This is the 2-adic engine `δ(P^k)=0` seen concretely with
+  the spectral gap quantified at the finest scale.
+- **Net:** the last internal deep dig confirms the wall reaches the finest scale and is purely the self-feeding
+  determinism (= the explicit-normality / quenched-genericity problem). No arithmetic shortcut exists at k=2.
+  The internal investigation is now complete to the bottom. 0 false proofs.
