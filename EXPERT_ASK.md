@@ -137,6 +137,16 @@ the next move.
    > **Q3′ (meta):** is the **"moving middle digit"** a *recognized standalone problem* with a name/literature of
    > its own, distinct from Mahler 3/2? If there is no such concept, that absence is itself worth knowing — it may
    > be the right way to frame this whole class.
+4. **Character sum along one orbit [NEW].** A 2-adic valuation identity (`Σ_{odd i<n} v2(3c_i−1) = n + v2(c_n) −
+   v2(c_0)`) recasts non-halt as `avgD_odd ≥ 3/2`, whose **leading term is the one-sided character sum**
+   `S_n = Σ_{odd i<n} χ_{−4}(c_i) ≤ 0` (`χ_{−4}` the nontrivial character mod 4); the full margin adds the
+   deeper-modulus tail. We checked a second-moment/energy attack: the energy is `O_n²/2 + S_n²/2`, **symmetric**,
+   so it is **sign-blind** — it bounds `|S_n|` but not its sign (the method-level form of the one-sided wall), and
+   empirically `|S_n| ~ √O_n` with fluctuating sign. **Q4: is there square-root (or any) cancellation for a
+   character sum `Σ_{n<N} χ(c_n)` taken along a *single* deterministic `⌊μ·⌋`-orbit** — via large sieve, Vinogradov
+   /Vaughan-type bilinear decomposition, or sum–product — or is a single specified orbit out of reach of
+   character-sum technology too? (A clean "out of reach, because the orbit is not multiplicatively structured" is
+   as useful as a bound — it closes the analytic-NT route precisely.)
 
 ## Where to ask
 - **bbchallenge community** (the Antihydra holdout is theirs): Discord / forum threads, contributors working on
