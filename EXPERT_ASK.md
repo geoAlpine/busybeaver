@@ -50,10 +50,14 @@ the low cylinders** — concretely `(1/J)Σ_j 1[c'_j ≡ r mod 2^k] → 2^{−k}
 > to the single point `1/3 ∈ ℤ₂` — equivalently a **one-sided shrinking-target / recurrence estimate**
 > `N_k/J ≤ C·2^{−k}` (visit frequency to the shrinking ball `2^{−k}` around `1/3`) summing to `≤ 2`. The true
 > value is `≈ 1` (a **factor-2 margin**) and the condition is *strictly weaker* than equidistribution (we
-> exhibit non-Haar orbits with `avg jump ∈ (1,2)`). **Under our reduction**, the remaining obstruction *appears
-> to* localize to **small `k` (`k=2,3`, i.e. the orbit's frequency mod `4` and mod `8`)** — the large-`k` tail is
-> a separable p-adic-Baker target (Q2). *(This localization is a consequence of our reduction, not an
-> independent claim — please check it.)* The bound is, **observed across all tested natural integer seeds**, uniform: every such seed gives `avg jump ≈ 1`, `N_2/J ≈
+> exhibit non-Haar orbits with `avg jump ∈ (1,2)`). **Important nuance (we initially over-localized this).** The
+> *realized* excess of the generic orbit (`avg jump − 1 ≈ 0.004`) sits at small `k` — but that is a property of the
+> *generic* orbit, **not** of the margin *proof*: an adversarial orbit with `q = P(D≥k+1)/P(D≥k) > ½` has excess
+> `q^k − 2^{−k} > 0` at **every** `k`, decaying only like `q^k`, so the deep tail contributes materially once
+> `avg jump > 2`. Hence ruling out budget overflow needs one-sided cylinder-frequency control at **all** `k`, not
+> only small `k`; the factor-2 margin relaxes the **threshold** (`Σ ≤ 1` vs `→ 0`) but **not the scale-range** of
+> control — the same discrepancy class as equidistribution (verified by direct decomposition). *(So please read any
+> "small-`k`" hint below as describing the generic orbit's realized value, not the proof's requirement.)* The bound is, **observed across all tested natural integer seeds**, uniform: every such seed gives `avg jump ≈ 1`, `N_2/J ≈
 > 0.25`, `N_3/J ≈ 0.125` (spread `< 1%`), so seed 8 is not a special pathology — the difficulty is the standard
 > a.e.→specific gap. (This is an observation, not evidence that a structural argument exists; a *universal* one
 > provably does not — see "already ruled out" below.)
