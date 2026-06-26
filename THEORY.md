@@ -135,9 +135,25 @@ low 2-power moduli* — an analytic-number-theory target with a number (any `δ>
 hypothesis itself is OPEN (= the multi-year tool, the a.e.→specified gap of Tao 2019), but Theorem E is the proven
 exponent→margin map that turns B3 from "prove normality" into "get any power saving at low moduli."
 
+### B5″. The lowest modulus in its simplest form [PROVEN exact reduction, `H_lowmoduli.py`]
+Attacking `H` at conductor 4 (the leading χ_{−4} term), the odd-run lemma (`run length = v2(c_start−1)`, proven)
+gives an **exact combinatorial identity**: in a length-`L` odd run the members have `v2(·−1)=L,…,1`, so `L−1` are
+`≡1 (4)` and exactly one is `≡3 (4)`. Hence
+> `S_2(N) = Σ_{n<N} χ_{−4}(c_n)[odd] = N_1 − N_3 = O − 2·#(odd-runs)`  *(verified exactly: `76 = 150192−2·75058`).*
+So **H at conductor 4 ⟺ `avgL → 2`** where `avgL = O/#runs` is the **average odd-run length** (measured 2.00101;
+run-lengths match geometric mean 2), and the favorable sign `S_2 ≤ 0 ⟺ avgL ≤ 2`. This is the
+combinatorially **simplest** face of the lowest-modulus character sum — a run-length law, not an abstract sum.
+*Honest:* it still funnels (`avgL → 2` is the single-orbit equidistribution of `v2(c−1)` at run-starts = a 2-adic
+statistic of the even subsequence; the max run length is `≤ 0.585N` so no unconditional `avgL`-bound beats
+trivial), and `S_2` equals the moving diagonal digit (bits `n,n+1` of `3^n c_0 − T_n`) = the Mahler core. The
+value is the **clean elementary target**: "average odd-run length → 2," and the proven exact formula linking the
+character sum to a run count — the most tractable entry point for the H(δ,C) hypothesis at its mildest.
+
 ### B6. The concrete next attacks inside the blueprint (conjecture-independent, fundable)
 1. **[DONE — Theorem E above]** the `δ→margin` map is proven: any low-moduli power saving `δ>0` ⇒ the margin ⇒
-   non-halt. The residual is to *establish* the character cancellation (open), now a sharply-posed analytic target.
+   non-halt. **[DONE — B5″]** the conductor-4 case is reduced to the elementary run-length law `avgL → 2`
+   (`S_2 = O − 2·#runs`, exact). The residual is to *establish* the cancellation / run-length law (open), now a
+   sharply-posed, combinatorially elementary analytic target.
 2. **Effective Theorem B → one more scale:** push the proven `Θ(log N)` foothold by one moving digit using an
    explicit irrationality measure of `log₂3` — even a single extra scale, unconditionally, is a genuine partial.
 3. **The annealed→quenched coupling in a toy model:** prove the coupling for a *simplified* self-feeding (e.g. a
