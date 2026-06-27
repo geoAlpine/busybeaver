@@ -1,8 +1,9 @@
 # The minimal open kernel of Antihydra (BB(6)) — one page for an external reader
+> **We found a reduction and an obstruction map. Can your tools reach this kernel?**
 *A single proposition whose proof would decide the Busy-Beaver machine "Antihydra". Stated so that a
-specialist can judge in minutes whether their tools apply. We are NOT claiming a solution; we present a
-reduction and the precise place where known methods, as far as we have found, stop. All [PROVEN] items
-are machine-checked in exact integer/2-adic arithmetic.*
+specialist can judge in minutes whether their tools apply. We are NOT claiming a solution and NOT claiming
+new mathematics is provably required; we present a reduction and the precise place where known methods, as
+far as we have found, stop. All [PROVEN] items are machine-checked in exact integer/2-adic arithmetic.*
 
 ## Setup (3 lines)
 Integer orbit `c_{n+1} = ⌊3 c_n / 2⌋`, `c_0 = 8` (so `c_n = ⌊8·(3/2)^n⌋`-type, `c_n ∼ A·(3/2)^n`).
@@ -12,12 +13,15 @@ Let `E_n = #{ i<n : c_i even }`. **[PROVEN]** The Turing machine *Antihydra* nev
 ## The kernel (the minimal open proposition)
 > **(K)** For this single specified orbit, the empirical distribution of `c_n mod 2^k` converges to
 > uniform for each fixed `k` — equivalently, the **moving diagonal binary digit** `b_n = ⌊8·3^n/2^n⌋ mod 2`
-> (`= bit_{n−3}(3^n)`) has asymptotic density `1/2`. *(Equivalently: `⌊(3/2)^n⌋ mod 2` is normal.)*
+> (`= bit_{n−3}(3^n)`) has asymptotic density `1/2` (i.e. the induced binary sequence is *simply normal*; the
+> mod-`2^k` form for all `k` is full equidistribution).
 
-Proving (K) — in fact merely keeping the even-density `≥ 1/3` — decides Antihydra. (K) is exactly
-**Mahler's 3/2 problem (1968)** for this seed, and the base-`3/2` case of the **2025 normality conjecture**
-of Andrieu–Eliahou–Vivion (arXiv:2510.11723, Conj. 1.2), where even "`0` occurs at least once in every
-minimal word" is currently open.
+Proving (K) — in fact merely keeping the even-density `≥ 1/3` — decides Antihydra. (K) is the equidistribution
+of `{(3/2)^n}`-type data, the family of **Mahler's 3/2 problem (1968)**; the base-`3/2` instance of the normality
+conjecture of **Andrieu, Eliahou & Vivion, "A Normality Conjecture on Rational Base Number Systems"
+(arXiv:2510.11723, 2025)** — who conjecture that "every minimal and maximal word is normal over an appropriate
+subalphabet", and note implications for the existence of `Z`-numbers (Mahler 1968), `Z_{p/q}`-numbers (Flatto
+1992), and the Dubickas–Mossinghoff "4/3 problem" (2009). *(All a recognized open frontier.)*
 
 ## A strictly weaker *sufficient* form (so you can aim lower)
 **[PROVEN reduction]** Non-halting follows from: *for some `δ>0` and `C`, the character sum
@@ -36,8 +40,9 @@ map** `×(3/2)` on `ℤ_2`. The recurring obstacle is the **a.e. → specified**
 - **Measure rigidity (×2,×3 / Furstenberg–Rudolph–EKL):** needs a second multiplicatively-independent map
   (rank ≥ 2); `×(3/2)` is self-dual (rank 1).
 - **p-adic Baker / S-units:** the orbit terms `c_n=(3^n c_0−T_n)/2^n` have height `≈ n·log_2 3`, **unbounded**.
-- **Sarnak–Möbius / automatic-sequence normality:** need *zero* topological entropy; this orbit has full
-  subword complexity (positive entropy).
+- **Sarnak–Möbius / automatic-sequence normality:** need *zero* topological entropy; the orbit's binary
+  sequence is **measured** to have high/near-full subword complexity (consistent with positive entropy), so it
+  does not appear to be a zero-entropy/automatic sequence.
 - **Closest positive result:** **Tao (2019, Forum Math Pi)** controls the *same* 3-adic skew-random-walk
   statistic, but for a **log-density-1 set of seeds**; we do not currently know a method descending it to
   one specified seed.
