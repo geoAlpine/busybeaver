@@ -75,6 +75,15 @@ quenched disorder** (deterministic-spin-glass / merit-factor type).
   self-generated carry-sum, not of that form — so the tool stops **exactly at `T_n`** (the closed-loop
   term). *(Verified: orbit ≠ `⌊8·(3/2)^n⌋`; `T_n` congruence machine-checked; the orbit's longest run is
   empirically `≈ log_2 n`, far below the provable `o(n)`.)*
+- **Closest *proven unconditional* result, and why it is on the wrong axis:** **Flatto–Lagarias–Pollington
+  (Acta Arith. 1995)** / **Dubickas** prove, for *all* real `ξ>0`, `limsup_n {ξ(3/2)^n} − liminf_n {ξ(3/2)^n}
+  ≥ 1/p = 1/3` — a bound on the **support** (the spread of the orbit's fractional parts). Striking: this `1/3`
+  equals the non-halt threshold `1/3` (both from the `3` in `×3`). But it is the **wrong axis**: support
+  (where the orbit goes) vs **frequency** (how often it lands in the "even" half). A sequence can span the
+  whole circle yet visit `[0,1/2)` a vanishing fraction of the time — empirically the orbit's spread is
+  `≈1.0` (huge margin over `1/3`) while the even-density `≈0.499` (margin `+0.15` over `1/3`) is the *actual*
+  open constraint. The gap is of **kind, not size**; converting support→frequency needs exactly the
+  conjectural equidistribution. *(No proven one-sided density bound exists for a specified orbit.)*
 - **Closest positive result:** **Tao (2019, Forum Math Pi)** controls the *same* 3-adic skew-random-walk
   statistic, but for a **log-density-1 set of seeds**; we do not currently know a method descending it to
   one specified seed.
