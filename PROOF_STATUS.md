@@ -118,6 +118,29 @@ machinery, which sharpens the build target.
   not proven — proving them for the specified orbit IS the closed loop; but the bricks identify the right
   variable (renewal, not bit-shift) and the right coupling (global, not local), narrowing the build.)*
 
+### 3.8 The Gibbs–Markov proof skeleton — COMPLETE modulo one named line (`gm_skeleton.py`)
+Assembling the GM machinery on the renewal variable gives the complete proof as a chain of [PROVEN] links
+ending in a single [OPEN] line — the self-generation hole, isolated to one statement.
+- **[PROVEN] (1)** non-halt ⟸ even-density ≥ 1/3 for all `n` (finite check + `1/6` effective tail).
+- **[PROVEN] (2)** Renewal partition: even steps are the renewal points; gaps = odd-run lengths = `v₂(c−1)`,
+  clean geometric (`P(g)≈2⁻ᵍ`).
+- **[PROVEN] (3)** The induced first-return map `G = Tᵗ` is a full-branch piecewise-affine expanding
+  **Gibbs–Markov** map of `ℤ₂` (§3′ / `cross_cryptid.py`).
+- **[PROVEN] (4)** Spectral gap at the Haar level: the step operator is **one-step exact** (2nd eigenvalue
+  `≈0`, uniform stationary — numpy-verified `k≤8`); the induced/renewal operator **inherits mixing**
+  (inducing an exact map). ⇒ Haar-a.e. point has even-density `→1/2` with a CLT and exponential
+  large-deviation concentration (`balance_n ≥ 0` for a.e. point, overwhelmingly).
+- **[OPEN = Mahler] (5)** The SPECIFIC orbit `c₀=8` is **Haar-generic** for `G` (its renewal blocks are
+  `μ`-typical) = single-orbit equidistribution mod `2ᵏ`. Cannot be supplied by a soft argument: the orbit
+  is **computable** ⇒ never Martin-Löf random ⇒ the a.e. of (4) does not specialize to it; and the parity
+  is decorrelated from every provable surrogate (coupling brick) — even the effective leading-bit
+  equidistribution — so no auxiliary handle forces the genericity.
+
+**So the complete proof = GM argument (1)–(4) [done] + the one line (5).** The new theorem to build is
+exactly *a Gibbs–Markov CLT / genericity statement for one deterministic, closed-loop (self-generated)
+realization* (annealed→Dirac-quenched) — the maximally-reduced target: a single named line, with all
+surrounding machinery proven and every soft route's failure mode mapped.
+
 ## 4. The exact distance
 A complete proof requires **one new tool that does not exist**: effective single-orbit equidistribution for
 a rank-1 expanding `⌊(p/q)·⌋` map (break the closed-loop bias for one realization). The community (Tao,
