@@ -99,6 +99,23 @@ quenched disorder** (deterministic-spin-glass / merit-factor type).
   middle digit, in our measurements. (The annealed / shuffled-**surrogate** copy *is* tractable — the gap
   between surrogate and real orbit is exactly the closed-loop bias above.)
 
+## Proven scaffolding — an elementary complexity floor on the cryptid (not a solution, a foothold)
+These are unconditional, machine-checked facts that pin the parity sequence `r_n = c_n mod 2` *from below*;
+they bound how tame it can be without touching (K). Let `p(ℓ)` be its subword complexity.
+- **[PROVEN] Coding bijection.** `φ_ℓ : ℤ/2^ℓ → {0,1}^ℓ`, `φ_ℓ(c)=(c, ⌊3c/2⌋, …, ⌊3·/2⌋^{ℓ-1}c) mod 2`,
+  is a bijection ⇒ `p(ℓ) = #{c_n mod 2^ℓ : n}` (the residues mod `2^ℓ` the orbit visits).
+- **[PROVEN] Not eventually periodic.** Eventual period would force (by integrality + `gcd(3,2)=1`) an
+  integer cycle of `c↦⌊3c/2⌋`, impossible since the map is **transient** (`⌊3c/2⌋>c` for `c≥2`). Hence,
+  by Morse–Hedlund, `p(ℓ) ≥ ℓ+1`; and `p(2)=4` (all four 2-blocks occur) ⇒ **not Sturmian**.
+- **[PROVEN] Linear floor of slope `log_{3/2}2 ≈ 1.71`.** Strict growth makes the `≥(ℓ−3)/log₂(3/2)`
+  values with `c_n<2^ℓ` distinct mod `2^ℓ`, so `p(ℓ) ≥ (ℓ−3)/log₂(3/2) ≈ 1.71ℓ`. This slope equals the
+  **Dubickas (2009)** liminf `p_w(ℓ)/ℓ ≥ log q/log(p/q)` for base-`p/q` minimal words — re-derived from
+  the growth rate. The lift `p(ℓ)≤p(ℓ+1)≤2p(ℓ)` caps elementary methods in the band `[1.71ℓ, 2^ℓ]`.
+- **[= (K), the ceiling]** `p(ℓ)=2^ℓ for all ℓ ⟺ the orbit visits every residue mod 2^ℓ ⟺ equidistribution
+  mod 2^ℓ` — i.e. *maximal subword complexity / full non-automaticity is exactly (K)*. Measured `p(ℓ)=2^ℓ`
+  to `ℓ=16` with a maximal 2-kernel, but the closed proof is (K) = Mahler. **Question for you:** does this
+  `1.71ℓ`-floor / `2^ℓ`-ceiling placement connect to a normality / finite-state-dimension result you know?
+
 ## The question for you
 Does your toolbox give **effective equidistribution (or any one-sided density bound) for a single
 specified orbit** of a rank-1 expanding `p`-adic / `⌊(p/q)·⌋` map — possibly from a Diophantine input on

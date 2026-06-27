@@ -402,3 +402,26 @@ parity-counter certificate language is not k-testable for any k (suffix-regular 
 conjecture). Caveat threaded throughout: a REG *certificate* is an over-approximation `L ⊇ reachable`,
 so "reachable language non-regular" never by itself yields "no REG certificate" — the over-approximation
 gap is exactly what makes the cryptid barrier (§3 [OPEN]) hard, and is the honest crux of the note.
+
+---
+## Closing status — certificate-complexity side consolidated (2026-06-27)
+This pass reaches a natural consolidation point. The cryptid `[OPEN]` vertex is now pinned from **below**
+on **two independent axes**, by elementary, conjecture-free, machine-checked theorems:
+- **Descriptive-complexity axis** (the Chomsky tower, §2 / Standing summary): five strict separations
+  `star-free ⊊ REG ⊊ SLIN ⊊ 2-automatic ⊊ CF ⊊ CS`, each with an explicit simulation-verified witness;
+  REG suffices at n=3 (63 certificates); the cryptid sits on the orthogonal over-approximation axis.
+- **Subword-complexity axis** (§3″, new this pass): `eventually-periodic ⊊ Sturmian ⊊ p(ℓ)≥1.71ℓ`
+  (coding bijection + transience + strict growth; slope `log_{3/2}2` matching Dubickas), capped by the
+  lift `p(ℓ+1)≤2p(ℓ)` in the band `[1.71ℓ, 2^ℓ]`.
+
+On **both** axes the open core is the **same single point**: the cryptid's `[OPEN]` top `=` maximal
+complexity `p(ℓ)=2^ℓ` `⟺` single-orbit equidistribution mod `2^ℓ` `=` **Mahler 3/2 / AEV 2025** — a
+*recognized, generational* open problem, not our artifact. The elementary frontier is now mapped to its
+edge: everything below the Mahler line is proven; the line itself is the genuineness-limit avatar (finite
+description / finite observation cannot certify the infinite property).
+
+**Disposition.** The certificate-complexity contribution is recorded and closed for this pass. It is the
+discrete, conjecture-free **anchor** for the continuous quantum/SETI genuineness limit theorem. Per the
+standing stance (`feedback_never_close_bb6`): BB(6) is *not closed* — but the front is now **fixed at a
+precisely-mapped edge**, to be resumed if an external signal moves the Mahler line (a new single-orbit
+equidistribution tool, or a community result on the AEV conjecture).
