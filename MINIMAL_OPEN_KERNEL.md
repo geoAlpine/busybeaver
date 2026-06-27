@@ -12,9 +12,22 @@ Let `E_n = #{ i<n : c_i even }`. **[PROVEN]** The Turing machine *Antihydra* nev
 
 ## The kernel (the minimal open proposition)
 > **(K)** For this single specified orbit, the empirical distribution of `c_n mod 2^k` converges to
-> uniform for each fixed `k` — equivalently, the **moving diagonal binary digit** `b_n = ⌊8·3^n/2^n⌋ mod 2`
-> (`= bit_{n−3}(3^n)`) has asymptotic density `1/2` (i.e. the induced binary sequence is *simply normal*; the
-> mod-`2^k` form for all `k` is full equidistribution).
+> uniform for each fixed `k` — in particular the parity `c_n mod 2` has asymptotic density `1/2` (the
+> induced binary sequence is *simply normal*; the mod-`2^k` form for all `k` is full equidistribution).
+
+**The exact structure of the parity (machine-checked).** The orbit is *not* `⌊8·(3/2)^n⌋`: the odd-step
+`−1` corrections compound, so `c_n = (8·3^n − T_n)/2^n` where `T_n` is the **parity-history carry-sum**
+`T_{n+1} = 3 T_n + 2^n (c_n mod 2)`, `T_n ≡ 8·3^n (mod 2^n)`. Integrality makes the subtraction linearize
+at the diagonal bit, giving the exact identity
+> `c_n mod 2 = bit_n(8·3^n) ⊕ bit_n(T_n)`.
+So the parity is the mod-2 XOR of a **pure-power digit** `bit_n(8·3^n)` (an `S`-unit / power-of-3 digit,
+the object the Subspace Theorem can touch) and the **self-induced carry-sum digit** `bit_n(T_n)`. With an
+*independent* input bit-stream in place of `(c_n mod 2)`, `bit_n(T_n)` is balanced by the Mauduit–Rivat
+carry lemma; the orbit feeds its **own** parity history back in (closed loop), and certifying that
+self-referential bit balanced **is** (K). The gap is exactly the independence of the input — the
+closed-loop / self-induced-quenched-disorder term. *(Empirically `bit_n(T_n)` is balanced for every
+structured input we tested — normal, low-autocorrelation, automatic, periodic — yet each single instance,
+e.g. the all-ones input giving `bit_n(3^n − 2^n)`, is itself an unproven Mahler-class digit statement.)*
 
 Proving (K) — in fact merely keeping the even-density `≥ 1/3` — decides Antihydra. (K) is the equidistribution
 of `{(3/2)^n}`-type data, the family of **Mahler's 3/2 problem (1968)**; the base-`3/2` instance of the normality
