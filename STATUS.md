@@ -118,3 +118,23 @@ all carry KNOWN-UNSOUND banners. They compared step-traces and extrapolated "for
 Plug the trusted suite into the real bbchallenge BB(6) undecided database (the index is binary +
 needs the 88M seed DB). The harness `bbchallenge_run.py` already runs on standard-format machines and
 reproduces BB(4)=107, BB(5)=47,176,870 on real ones.
+
+## Complete-proof construction — capstone (2026-06-27)
+The full "what remains for the complete proof" record is **`PROOF_STATUS.md`** (read first) + the new
+framework **`NEW_FRAMEWORK.md`**. Summary of where the complete proof stands:
+- **Reduction chain [PROVEN, machine-checked]:** non-halt ⟺ even-density ≥ 1/3 (all n; finite check + 1/6
+  effective tail) ⟺ parity identity `c_n mod 2 = bit_n(8·3ⁿ) ⊕ bit_n(T_n)` ⟺ orbit Haar-genericity.
+- **Gibbs–Markov proof skeleton (`gm_skeleton.py`):** COMPLETE modulo ONE line — the renewal partition,
+  the GM induced map, and the Haar-level spectral gap (one-step exact) are [PROVEN]; the only [OPEN] step
+  is (5) the specified orbit's Haar-genericity = single-orbit equidistribution = Mahler 3/2 / AEV 2025.
+- **(5)'s handle search EXHAUSTED:** soft a.e.-specialization (computable ⇒ never random), provable-surrogate
+  coupling (`coupling_brick.py`), and leading-phase conditioning (`handle_brick.py`, even-density flat) all
+  closed. No auxiliary handle.
+- **New framework [DESIGN]:** the self-consistent / mean-field transfer operator `ν = L_ν ν`; the complete
+  proof reduces to ONE explicit inequality `‖F‖<1` (sub-criticality of the self-generation feedback).
+  Empirically `‖F‖ ≈ 0.04` (deeply sub-critical, robust across correlation structures: `selfconsistent_operator.py`,
+  `perturbation_F.py`). PROVING it = the closed loop = Mahler; the analytic object's exact form is open
+  (`sensitivity_profile.py` was inconclusive — the smallness is a nonlinear cancellation, over-claims retracted).
+- **Family theorems (`family_floor.py`):** the proven complexity floors generalize to the `⌊ac/p⌋` family.
+- **DISPOSITION:** the elementary surroundings are fully crushed; the remaining (5)/`‖F‖<1` is generational
+  analytic research (effective single-orbit equidistribution). Front fixed at a precisely-mapped edge.
