@@ -53,6 +53,15 @@ quenched disorder** (deterministic-spin-glass / merit-factor type).
   does not appear to be a zero-entropy/automatic sequence. In effective-ergodic-theory terms the orbit is
   **computable** (hence never Martin-Löf random), so a.e./genericity theorems exclude it by construction —
   the same wall as **open normality** of `π`, `e` (finite-state dimension).
+- **Closest *unconditional digit* result:** **Drmota–Spiegelhofer (arXiv:2501.00850, 2025)** prove, via
+  Schlickewei's *p*-adic Subspace Theorem, that the longest equal-bit block of `3^n` is `o(n)`. This is
+  the strongest unconditional statement we found about the actual digits of `3^n`. It does **not** transfer
+  to the orbit: the orbit's relevant integer is **not** `3^n` but `8·3^n − T_n`, where `T_n` is the
+  parity-history **carry-sum** (`T_n ≡ 8·3^n mod 2^n` by integrality; height `≈ n·log_2 3`); the longest
+  even-run `= v_2(8·3^n − T_n) − n`. The Subspace Theorem controls an `S`-unit / pure power; `T_n` is a
+  self-generated carry-sum, not of that form — so the tool stops **exactly at `T_n`** (the closed-loop
+  term). *(Verified: orbit ≠ `⌊8·(3/2)^n⌋`; `T_n` congruence machine-checked; the orbit's longest run is
+  empirically `≈ log_2 n`, far below the provable `o(n)`.)*
 - **Closest positive result:** **Tao (2019, Forum Math Pi)** controls the *same* 3-adic skew-random-walk
   statistic, but for a **log-density-1 set of seeds**; we do not currently know a method descending it to
   one specified seed.
