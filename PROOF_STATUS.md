@@ -131,10 +131,14 @@ ending in a single [OPEN] line — the self-generation hole, isolated to one sta
   (inducing an exact map). ⇒ Haar-a.e. point has even-density `→1/2` with a CLT and exponential
   large-deviation concentration (`balance_n ≥ 0` for a.e. point, overwhelmingly).
 - **[OPEN = Mahler] (5)** The SPECIFIC orbit `c₀=8` is **Haar-generic** for `G` (its renewal blocks are
-  `μ`-typical) = single-orbit equidistribution mod `2ᵏ`. Cannot be supplied by a soft argument: the orbit
-  is **computable** ⇒ never Martin-Löf random ⇒ the a.e. of (4) does not specialize to it; and the parity
-  is decorrelated from every provable surrogate (coupling brick) — even the effective leading-bit
-  equidistribution — so no auxiliary handle forces the genericity.
+  `μ`-typical) = single-orbit equidistribution mod `2ᵏ`. **The handle search around (5) is now exhausted —
+  three independent routes all closed:** (a) soft a.e.-specialization — blocked (orbit computable ⇒ never
+  Martin-Löf random); (b) coupling to a provable surrogate — blocked (parity decorrelated from Thue–Morse,
+  Rudin–Shapiro, Legendre, and the effective leading-bit Sturmian; `coupling_brick.py`); (c) conditioning
+  on the one provable handle, the leading-phase `{n log₂(3/2)}` equidistribution — blocked (even-density is
+  **flat across the phase**, `max|dev|=0.0079` < `3σ`=0.0106, and the renewal gaps are phase-independent
+  too; `handle_brick.py`). So (5) has **no auxiliary handle** among the available structures; supplying it
+  IS the new theorem.
 
 **So the complete proof = GM argument (1)–(4) [done] + the one line (5).** The new theorem to build is
 exactly *a Gibbs–Markov CLT / genericity statement for one deterministic, closed-loop (self-generated)
