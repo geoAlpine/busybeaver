@@ -5,8 +5,16 @@ note pins exactly that: the irreducible kernel, with the proven surroundings, so
 the gap is one named step. Every line is [PROVEN] / [CLOSED] / [OPEN=Mahler]. Zero false proofs.
 
 ## 0. The complete-proof target
-Antihydra never halts ⟺ `balance_n = 3E_n − n ≥ 0` for all `n` ⟺ even-density `E_n/n ≥ 1/3`
+Antihydra never halts ⟺ `balance_n = 3E_n − n ≥ 0` **for all `n`** ⟺ even-density `E_n/n ≥ 1/3` for all `n`
 ⟺ **[PROVEN equiv]** `depth_n := v₂(c_n − 1) < balance_n + 1` for all `n` (the 2-adic halting criterion).
+
+**The actual sufficient analytic statement (for-all-n, not just asymptotic).** Non-halt is an *all-n*
+statement, so equidistribution alone is not literally what's needed; the clean sufficient form is
+> **[finite check]** verify `balance_n ≥ 0` for `n ≤ N₀` (a finite computation; done to large `N₀` by
+> bbchallenge), **plus [effective tail]** `|E_n/n − 1/2| < 1/6` for all `n > N₀`.
+Because `balance_n = n(3·E_n/n − 1) ≥ n(1/2 − 3·|E_n/n−1/2|)`, an error `< 1/6` keeps `balance_n > 0`. So
+the tail needs only a **one-sided effective bound with a generous `1/6` slack** — far less than full
+equidistribution. (Empirically the worst dip is `E_n/n ≈ 0.48`, margin `+0.146 < 1/6`, `flp_margin.py`.)
 
 ## 1. The proven surroundings (all crushed — no hidden barrier left below the Mahler line)
 - **[PROVEN] Exact reduction chain (machine-checked):** non-halt ⟺ even-density≥1/3 ⟺ the parity identity
@@ -50,6 +58,42 @@ lemma), and the orbit feeds its **own** parity history back in (closed loop). **
 the independence of that single self-referential bit** — a closed-loop identification bias / self-induced
 quenched disorder. A one-sided density bound (`liminf ≥ 1/3`, weaker than the conjectured `1/2`) would
 already suffice; even that has no proof.
+
+### 3.5 "Solving Mahler" — what suffices and what does NOT (a soundness distinction)
+"Solving Mahler" is ambiguous; only some versions give the complete proof:
+- **(a) Mahler's literal 1968 conjecture** (no `Z`-number: no `ξ` with `{ξ(3/2)ⁿ} ∈ [0,½)` for all `n`).
+  This is a **confinement / support** statement. **NOT sufficient** by itself: ruling out total confinement
+  to one half does not bound the *frequency* of evens below `1/3` (an orbit can be unconfined yet have
+  even-density → 0). Same support-vs-frequency gap as FLP. (a) is necessary-flavored, not sufficient.
+- **(b) Effective single-orbit equidistribution of THIS orbit** (`(K)`): `c_n mod 2ᵏ` equidistributes
+  *with an effective error*. **Sufficient** (+ the §0 finite check). This is the real target.
+- **(c) AEV 2025 normality conjecture**, *if it covers this orbit's word*: normality = frequency =
+  equidistribution, so **sufficient** (same class as (b)).
+- **(weaker, also sufficient)** the one-sided effective `|E_n/n−½|<1/6` of §0.
+So: the kernel `(K)` is the **equidistribution/normality** version (b)/(c), NOT Mahler's literal
+confinement conjecture (a). Solving (a) alone would **not** close Antihydra; solving (b)/(c) would.
+
+### 3.6 The new mathematics to build — exact specification (the buildable target)
+What must be invented is a tool delivering (b). Scoped precisely so it can be built, not hand-waved:
+> **OBJECT.** An *effective equidistribution theorem for a single specified orbit of the rank-1 expanding
+> map `×(3/2)` on `ℤ₂`* — concretely, an explicit `f(n)→0` with `|E_n/n − ½| ≤ f(n)` (one-sided, `f<1/6`
+> suffices) for the orbit `c₀=8`, `c_{n+1}=⌊3c_n/2⌋`.
+> **WHERE IT MUST BITE.** The parity is `bit_n(8·3ⁿ) ⊕ bit_n(T_n)`. The leading bits of `3ⁿ`
+> (`{n·log₂3}`) ARE effectively equidistributed (Weyl + effective discrepancy; `log₂3` irrational with
+> known measure) — but the parity uses the **middle** digit `bit_n` (position `n` of `~1.585n`), which is
+> NOT the leading bits, and the orbit's `T_n` is a **self-generated carry-sum** (closed loop). So the new
+> tool must control a **middle digit of a multiplicatively-defined integer under a self-referential carry**
+> — exactly what the Mauduit–Rivat carry lemma does for *bounded* carry and *independent* input, extended
+> to *whole-history* carry and *closed-loop* input.
+> **THE CRUX TO CRACK.** Break the closed-loop identification bias for ONE realization: prove the
+> self-referential bit `bit_n(T_n)` is unbiased without assuming independence — an *endogenous-cocycle
+> unique-ergodicity* statement (annealed `→` Dirac-quenched transfer). Every existing framework stops at
+> a.e. random realizations; the one precedent ((T,T⁻¹)/RWRS) abandons UE tools for probabilistic limit
+> theorems, which is exactly the defect. **This is the single new theorem to build.**
+> **WHAT IS ALREADY IN HAND** (so the build doesn't restart from zero): the one-step-exact annealed
+> operator (the contraction exists), the explicit tame carry automaton `γ`, the exact reduction to a single
+> bit, the proven complexity floors, and the closed technique-map telling you which classical tools will
+> NOT work (so you don't waste effort there).
 
 ## 4. The exact distance
 A complete proof requires **one new tool that does not exist**: effective single-orbit equidistribution for
