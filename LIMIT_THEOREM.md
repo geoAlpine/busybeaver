@@ -109,6 +109,42 @@ Collatz core has exactly **two** non-halting obstruction types.)
   pinned to the literature's open frontier — the genuineness-limit avatar is a *named* open problem, and one
   tool (rank-1 effective single-orbit equidistribution) would lift the whole vertex.
 
+### 3″. The cryptid parity sequence — a PROVEN complexity floor under a Mahler ceiling (2026-06-27)
+The `[OPEN]` vertex can be pinned from **below** with elementary, conjecture-free theorems, locating
+exactly where the elementary floor stops and the Mahler ceiling begins. Take the parity sequence
+`r_n = c_n mod 2` of Antihydra (`c_{n+1}=⌊3c_n/2⌋`, `c_0=8`), and let `p(ℓ)` be its subword complexity.
+- **[PROVEN] Coding bijection (`complexity_floor.py`).** `φ_ℓ : ℤ/2^ℓ → {0,1}^ℓ`, `φ_ℓ(c)=(c, T(c),
+  …, T^{ℓ-1}(c)) mod 2`, `T(c)=⌊3c/2⌋`, is a **bijection** (induction: `c=r+2c' ⇒ T(c)=3c'+r`, and
+  `c'↦3c'+r` is invertible mod 2^ℓ). Hence **`p(ℓ) = #{c_n mod 2^ℓ : n≥0}`** = the number of residues
+  mod 2^ℓ the orbit visits. (Verified ℓ≤14.)
+- **[PROVEN] Not eventually periodic (`proven_nonperiodic.py`).** If `r_n` had eventual period `P`, the
+  fixed branch parities give an affine recurrence `p^P c_{n+P}=a^P c_n − S`; integrality + `gcd(a,p)=1`
+  force the period-`P` subsequence constant ⇒ an integer cycle of `T`; but `T(c)>c` for `c≥2`
+  (**transient**, only fixed points 0,1) ⇒ contradiction with `c_n→∞`. So **`r_n` is not eventually
+  periodic** ⇒ (Morse–Hedlund) **`p(ℓ) ≥ ℓ+1` for all ℓ**. Holds for the whole `⌊a c/p⌋` genuine-grower
+  family. (This is the parity-sequence avatar of §3′: the cryptid escapes the *eventually-periodic*
+  bottom class by an elementary transience argument, no Mahler.)
+- **[PROVEN] Not Sturmian.** All four 2-blocks occur (`00@n=0, 01@n=2, 10@n=3, 11@n=11`), so `p(2)=4>3`:
+  strictly above the minimal-complexity aperiodic (Sturmian) class.
+- **[PROVEN] Linear floor of slope `log_{3/2}2 ≈ 1.71` (`complexity_slope.py`).** The orbit is strictly
+  increasing, so the `≥ (ℓ−3)/log₂(3/2)` values with `c_n < 2^ℓ` are distinct integers in `[8,2^ℓ)`,
+  hence distinct mod 2^ℓ: **`p(ℓ) ≥ (ℓ−3)/log₂(3/2) ≈ 1.71ℓ`**. The slope `log 2/log(3/2)` **matches the
+  Dubickas (2009) liminf** `p_w(ℓ)/ℓ ≥ log q/log(p/q)` for base-`p/q` minimal words — re-derived here
+  elementarily from the growth rate.
+- **[PROVEN] Lift bound.** Each residue mod 2^ℓ has ≤2 preimages mod 2^{ℓ+1}, ≥1 visited, so
+  **`p(ℓ) ≤ p(ℓ+1) ≤ 2p(ℓ)`** (verified ratio ≈2.0 to ℓ=17). Elementary methods are thus capped in the
+  **linear band** `[1.71ℓ, 2^ℓ]`.
+- **[OPEN = Mahler] Maximal complexity.** `p(ℓ)=2^ℓ for all ℓ ⟺ the orbit visits EVERY residue mod 2^ℓ
+  ⟺ equidistribution of `c_n mod 2^ℓ` = the specified-orbit equidistribution.** Equivalently, the
+  doubling `p(ℓ+1)≈2p(ℓ)` *persisting* (⇒ super-linear ⇒ non-automatic) is exactly this. Measured
+  `p(ℓ)=2^ℓ` to ℓ=16 and a maximal 2-kernel (`parity_complexity.py`), but the closed proof **is** Mahler.
+
+**Boundary located.** Certificate-complexity of the cryptid parity, from below:
+`eventually-periodic ⊊ Sturmian(ℓ+1) ⊊ [PROVEN] p(ℓ)≥1.71ℓ ⊊⊊ [Mahler] p(ℓ)=2^ℓ (non-automatic)`.
+The elementary floor reaches a linear bound of slope `log_{3/2}2`; the jump to maximal complexity / full
+non-automaticity is precisely the single-orbit equidistribution of §3′ — the same Mahler vertex, now seen
+on the **subword-complexity axis** with an explicit proven lower part and a Mahler-class upper part.
+
 ## 4. The spoofer game (the genuineness avatar)
 
 Phrase certification as a two-player game, exactly the spoofer game of the quantum genuineness work:
@@ -268,6 +304,12 @@ half (the AP/pigeonhole argument is the special case "semilinear `V=S={2ⁿ}` is
   (regular ⊊ CF ⊊ CS). Bricks (e),(f),(g) share the **Squeeze Lemma**: certificate-complexity = descriptive
   complexity of the checked set `S`, so each new rung is just a check-`S` witness for an `S` of the target
   class. **arithmetic ⊋ CS** — see the ceiling analysis just below.
+- **[PROVEN, 2026-06-27] The cryptid `[OPEN]` vertex also has a proven floor on a DIFFERENT axis** —
+  the subword complexity of its parity sequence (§3″): `eventually-periodic ⊊ Sturmian ⊊ p(ℓ)≥1.71ℓ`
+  (elementary, via the coding bijection + transience + strict growth; slope `log_{3/2}2` matches Dubickas),
+  with the ceiling `p(ℓ)=2^ℓ` (maximal complexity / non-automatic) `⟺` single-orbit equidistribution `=`
+  Mahler. So the cryptid is pinned from below by elementary means on the complexity axis too; only the
+  jump to maximal is the Mahler vertex.
 
 ### Above context-sensitive — where the explicit tower ends, and why (2026-06-23)
 Pushing past CS hits a *structural* boundary of the Squeeze method, worth stating precisely.
