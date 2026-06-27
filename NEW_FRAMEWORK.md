@@ -73,3 +73,18 @@ for the fixed point, quantitative for the tracking).
   estimate, now in explicit transfer-operator form. Empirical evidence that it holds (Haar is the observed
   stable fixed point; the feedback is measured weak) is in `selfconsistent_operator.py`, but the empirical
   weakness of `F` is itself the unprovable closed-loop quantity.
+
+## 7. Perturbation bound — open-loop → closed-loop (`perturbation_F.py`)
+The open-loop gain (exogenous low-correlation scenery) was `≈0`. Linearizing the feedback **at the real
+orbit** (the closed-loop fixed point) and **sweeping a panel of scenery correlation structures** (Sturmian,
+block-correlated `L=4,16`, periodic) bounds the closed-loop gain by structure type:
+- gain **at the real orbit** ≈ `+0.007` (parity), `+0.023` (carry) — essentially zero ⇒ the orbit is a
+  **linearly stable** self-consistent fixed point.
+- `sup |gain|` over the whole correlation panel = **`0.041`** (both modes) — `≈25×` below the critical `1`.
+So the `×3` carry mixing kills the input-bias response **regardless of the scenery's correlation**; `‖F‖`
+is sub-critical with a comfortable, correlation-robust margin. This closes the open→closed gap *empirically*
+(the bound now covers correlated sceneries, of which the orbit's is one). **[OPEN = Mahler]** an
+*unconditional* `|gain|<1` is still the closed-loop core: the signed sensitivity `Σ_k ∂E[b_n]/∂e_k` is a
+bit-`n`-of-`T_n` quantity, so proving the bound for the orbit's own scenery is the single-orbit
+equidistribution. The framework has reduced the complete proof to: **bound this one explicit gain functional
+below `1`** — empirically `≈0.04`, robustly.
