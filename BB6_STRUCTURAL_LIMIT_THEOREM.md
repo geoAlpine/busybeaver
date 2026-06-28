@@ -12,7 +12,8 @@ no machine is decided; no non-halting is asserted unconditionally.
 Source documents consolidated: `PATH_TO_COMPLETE_PROOF.md`, `LIMIT_THEOREM_AUDIT.md`,
 `COMPLETE_PROOF_CAPSTONE.md`, `UNIFIED_LIMIT_THEOREM.md` (+ its correction banner), `EXISTENCE_META_THEOREM.md`,
 `LIMIT_THEOREM.md`, `O17_REG_BARRIER.md`, `O18_NO_CERTIFICATE.md`, `CRYPTID_REDUCTIONS.md`,
-`SESSION_2026-06-28_{MINPROP, UNITPART, REDUCTIONS, CERT_HUNT}.md`.
+`SESSION_2026-06-28_{MINPROP, UNITPART, REDUCTIONS, CERT_HUNT}.md`, `FLOOR_MIRROR_CONJECTURE.md`,
+`MAHLER_3_2_DOMINANCE.md`, `SESSION_2026-06-29_FLOOR_MIRROR.md`, `REDUCE_O2_O7_O8.md`, `REDUCE_O11_O16.md`.
 
 ---
 
@@ -562,10 +563,101 @@ statement, in two facets of the same AEV instance family.
 `p < q²`, which holds at `3/2`) Conj 1.2 ⇒ **Mahler's 1968 Z-number conjecture**. So AEV is the single umbrella
 above the entire 3/2 cluster (Mahler 1968, Flatto Z-numbers, Akiyama 2008, Dubickas–Mossinghoff 2009), and the
 kernel is one instance under it. Calibrations: AEV uses the *ceiling* `(3x+1)/2`, Antihydra the *floor*
-`(3x−1)/2` (the `±1` flips parity; not literally conjugate; GAP-LEMMA `v₂(3o−1)` is the bridge) — the kernel is
+`(3x−1)/2` (the `±1` flips parity; **not** positive-to-positive conjugate; the floor↔ceiling relation is
+resolved exactly in §8.1; GAP-LEMMA `v₂(3o−1)` is the bridge) — the kernel is
 the **floor-mirror**. The kernel is strictly weaker than AEV on three axes (one-sided vs two-sided; level `k=2`
 vs all `k`; single orbit vs all `n`), **yet no named conjecture sits at this weaker level** — AEV is the
 weakest named established-open conjecture that implies it.
+
+### 8.1 The floor-mirror bridge [PROVEN] — gap #1 closed (`FLOOR_MIRROR_CONJECTURE.md`, `SESSION_2026-06-29_FLOOR_MIRROR.md`)
+
+The earlier "floor-mirror" calibration carried an honest caveat: the cryptids run the **floor** map
+`Tf(x) = ⌊3x/2⌋`, while AEV Conj 1.6 is stated for the **ceiling** `Tc(x) = ⌈3x/2⌉`, and the `±1` parity flip
+left it `[OPEN]` whether the floor-mirror conjecture was a *formally distinct* open problem from literal AEV.
+This gap (**"gap #1"**) is now **closed by an exact conjugacy** — the floor-mirror conjecture is the **same**
+named conjecture as AEV 1.6(3/2), not a new one.
+
+> **Negation-conjugacy lemma [PROVEN].** Let `R(x) = −x` on `ℤ` (equivalently on `ℤ₂`). Then
+> `Tc = R ∘ Tf ∘ R`, i.e. **`Tc(x) = −Tf(−x)` for every `x ∈ ℤ`.**
+> *Proof.* `⌈y⌉ = −⌊−y⌋` for every real `y`; with `y = 3x/2`,
+> `Tc(x) = ⌈3x/2⌉ = −⌊−3x/2⌋ = −⌊3(−x)/2⌋ = −Tf(−x)`. ∎
+
+`R` is an involution, a Haar-measure-preserving homeomorphism of `ℤ₂`, and on each finite quotient `ℤ/2^k` it
+acts as the residue permutation `r ↦ (−r mod 2^k)` (a measure-preserving bijection). Iterating,
+`Tf^l(n) = −Tc^l(−n)` for all `l` `[PROVEN]`. Consequences:
+
+- **Floor and ceiling equidistribution are equivalent, orbit-by-orbit [PROVEN].** Because `R` permutes `ℤ/2^k`
+  bijectively, `(y_l)` equidistributes mod `2^k` **iff** `(−y_l)` does; combined with `Tf^l(n) = −Tc^l(−n)`,
+  *the floor orbit of `n` equidistributes mod `2^k` ⟺ the ceiling orbit of `−n` equidistributes mod `2^k`* —
+  an exact measure-preserving (topological+measurable) isomorphism of the two systems on `ℤ₂`, the strongest
+  possible bridge (not merely "same difficulty").
+- **The load-bearing statistic is literally identical [PROVEN] [VERIFIED].** At the induced-odd-map level, for
+  odd `o` with `m = −o`: `3m+1 = −(3o−1)`, so `D'(−o) = v₂(3o−1) = D(o)` and `T'(−o) = −T(o)`. Hence the
+  depth/gap sequences coincide exactly: **`D_l^{ceil}(−o₀) = D_l^{floor}(o₀)` for every `l`.** `[VERIFIED]`
+  `200,000` induced steps, `o₀ = 27` (floor) vs `m₀ = −27` (ceiling), **0 exceptions**; `mean D` identical at
+  `1.996270`, `freq(D≥2)` identical at `0.499660` (re-confirmed this session, `.venv` exact big-int). So
+  Antihydra's entire load-bearing statistic is carried verbatim across the bridge.
+- **The floor cryptids live under AEV 1.6(3/2) [PROVEN bridge / OPEN conjecture].** The floor-mirror
+  conjecture FM(3/2) ("every orbit of `Tf(x)=⌊3x/2⌋` equidistributes mod `2^k`") is, on the full sign-symmetric
+  domain `ℤ₂`, **literally equivalent** to AEV Conj 1.6(3/2) by the conjugacy above. The **bridge is `[PROVEN]`**;
+  **FM(3/2) / AEV 1.6(3/2) itself remains `[OPEN]`** (finite `N` proves nothing about the `liminf`). So gap #1
+  — "is the floor-mirror a separate open problem?" — is closed: the q=2 floor cryptids sit under the **one**
+  named conjecture AEV 1.6(3/2).
+
+> **Cosmetic seed-sign quantifier (stated honestly) [PROVEN-characterization / CONDITIONAL].** The conjugacy
+> `R` maps **floor-positive orbits to ceiling-NEGATIVE orbits** (never positive→positive: on odds `Tc = Tf + 1`
+> and the two positive orbits diverge like `(3/2)^l`, so no positive-only conjugacy exists). Thus the machines'
+> positive floor orbits (e.g. Antihydra's `o₀=27`) correspond to *negative* ceiling seeds (`−27`), which lie
+> outside AEV's *literally-stated* positive-only quantifier. Two equally sound readings: (i) adopt the natural
+> **all-`ℤ₂` (sign-symmetric)** form of Conj 1.6 — under which AEV(3/2) and FM(3/2) are literally equivalent,
+> `[PROVEN]`; or (ii) keep AEV's literal positive form — under which "AEV(3/2) ⟹ FM(3/2) at the machines' seeds"
+> is `[CONDITIONAL]` on the (believed, unproven) negative-seed / sign-symmetry extension. The residual is
+> **cosmetic** under the standard expectation that such equidistribution conjectures are sign-blind, but it is
+> not discharged by the conjugacy alone and is flagged as `[CONDITIONAL]`.
+
+### 8.2 The corrected 3/2-dominance [CONDITIONAL] — shared kernel, 2 exact + 8 through a nesting layer
+
+With the bridge closed, the dominance headline ("the BB(6) Collatz core is essentially the single Mahler 3/2
+problem") can be stated precisely — and **without over-claiming "one conjecture decides all ten"**
+(`MAHLER_3_2_DOMINANCE.md` §2/§4, `SESSION_2026-06-29_FLOOR_MIRROR.md`):
+
+> **Corrected dominance statement.** **All ten `μ=3/2` machines** — Antihydra, o2, o7, o8, o10-inner, o11, o12,
+> o13, o14, o16 — **share the floor `⌊3x/2⌋` kernel** (o10-inner runs the literal AEV ceiling `⌈3m/2⌉`); via
+> §8.1 they are all instances of the **one** named conjecture AEV 1.6(3/2). But the dependency is **not** "one
+> conjecture decides all ten." Precisely:
+> - **2 reduce exactly** (decided `[CONDITIONAL]` on AEV 1.6(3/2)): **Antihydra** (single-orbit, level-`k=2`,
+>   one-sided **density** fragment at `o₀=27`; qualitative AEV **over-implies** it; plus the finite check
+>   `balance_n ≥ 0`, `[VERIFIED]` to `n ≤ 2·10⁵`) and **o10-inner** (literal-ceiling inner sub-orbit; o10-FULL
+>   composite/OUT).
+> - **8 ALSO require an o10-FULL-grade nested-refill reduction** (`[OPEN]`): **o2, o7, o8, o11, o12, o13, o14,
+>   o16**. Their clean `⌊3x/2⌋` law holds **only on an even-`a` inner subsequence**; the odd-`a` steps fire a
+>   nested 2-adic halving-cascade **refill** (isomorphic to the o10-FULL two-level structure), and the halt
+>   event is **coupled to the outer refill alignment**, not to a clean single `3/2` orbit. So even a full proof
+>   of AEV 1.6(3/2) (floor-mirror included) does **not** by itself decide these eight — they need, in addition,
+>   (a) their exact `2^k` valuation halt predicate **derived** (`[OPEN]`) and (b) for the existence-facet members
+>   an **effective-rate** strengthening (stronger than qualitative AEV; §7.1).
+>
+> **Honest headline.** "All ten share the `⌊3x/2⌋` kernel; **2 reduce exactly** (Antihydra, o10-inner), **8
+> through a nesting layer**." The in-scope exact-reduction set is therefore **unchanged at 4 machines**
+> {Antihydra, o18, o15, o10-inner} (§3), of which **2 are the `3/2` density facet**. The attempt to extend the
+> in-scope set across the eight `μ=3/2` machines returned **0/8** this session — every one is an o10-FULL-grade
+> nested blocker (`SESSION_2026-06-29_FLOOR_MIRROR.md`, V2/V3; `REDUCE_O2_O7_O8.md`, `REDUCE_O11_O16.md`).
+
+### 8.3 The nested-Collatz second structural class [VERIFIED] — in-family, not in-scope (cross-reference)
+
+The eight blocked `μ=3/2` machines above, **together with o10-FULL**, form a **second structural class** — the
+**nested-Collatz machines** (nine in all: o2, o7, o8, o10-FULL, o11, o12, o13, o14, o16). Their shared signature
+`[VERIFIED]`: a clean inner `⌊3x/2⌋` engine running only on an inner (even-`a`) subsequence, wrapped in an
+**outer doubly-exponential "refill"** layer, with the **halt event living in the outer-layer alignment** rather
+than in the inner `3/2` orbit. This is exactly why they are **in-family by multiplier but not-in-scope by
+proof**: the avoidance target is a *nested* map, not a clean `3/2` orbit, so even the full floor-mirror AEV
+conjecture does not decide them. A newly-sharpened `[VERIFIED]` data point: **o13 is the exact structural twin
+of o10** (a D→E eat-sweep that halts on an even-length run, the mirror of o10's odd-length leftward eat-sweep;
+inner all-odd "safe" 7214/7214), with the *opposite* direction signal (o13 leans non-halting, o10 leans halting
+~1/3-per-epoch) but only ~4 outer epochs reachable, so the per-epoch direction is `[OPEN]` for all nine. The
+full per-machine treatment is in `REDUCE_O2_O7_O8.md` and `REDUCE_O11_O16.md` (consolidation designated for
+`NESTED_COLLATZ_STRUCTURE.md`, not yet written); this paragraph is a pointer only. This class is **disjoint**
+from the in-scope expanding-kernel core of §3 and from the kernel-less odometers (o3, o17, §7.2 stratum 2).
 
 **Distinct from the support axis [PROVEN/verified].** Mahler's literal conjecture and the
 Flatto–Lagarias–Pollington bound (`limsup − liminf ≥ 1/3`, 1995) are **support/spread** statements; the kernel
