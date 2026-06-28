@@ -1,5 +1,22 @@
 # A unified structural limit theorem for the BB(6) exponential-Collatz core (2026-06-28)
 
+> **⚠ SOUNDNESS CORRECTION 2026-06-28 (later same day, see `SESSION_2026-06-28_REDUCTIONS.md` + `EXISTENCE_META_THEOREM.md`).**
+> This document placed **o18/o15 under the density `β>0` barrier** via the shared renewal kernel. That is a
+> **MISLABEL — RETRACTED.** o18/o15 do **NOT** halt on a renewal-density underflow; they halt on an
+> **EXISTENCE** event (a base-3 carry alignment *ever* occurring = Borel–Cantelli / Erdős facet). The
+> `2^a/3^b` *kernel* (exact `T_μ`, `v_p(μ)=−1`, Haar-Bernoulli) IS shared family-wide, but the **FACET**
+> (density vs existence) decides which LIMIT_THEOREM **axis** governs:
+> - **density facet (3/2):** the `β>0` ergodic-optimization barrier is **[PROVEN]** (Antihydra). The only
+>   family-wide proven no-structure-only result. o10-inner [conditional]; **o10 FULL is OUT** (composite
+>   criterion, genericity makes it *halt* — likely a delayed halter, direction OPEN).
+> - **existence facet (8/3: o18, o15):** the barrier is the **[OPEN] over-approximation axis** (an invariant
+>   *set* can simply exclude the halting orbit, so there is NO `β`). NEW [PROVEN] components instead: a
+>   closed-over-approximation lemma + an **unconditional annealed Borel–Cantelli-I non-halting** result
+>   (Haar-a.e. seed; `ΣHaar(B_n)≍Σ(8/3)^{-n}=1.54e-4<∞`, needs no independence). Quenched kernel = Erdős-facet AEV q=3 fragment.
+> - **o17:** kernel-less (isometric odometer), outside both.
+> No machine's status changes (all open); the β>0 barrier's PROVEN scope is **Antihydra only**, not the
+> existence machines. Read the corrected two-facet/two-axis picture below as amended by this banner.
+
 **Goal.** Decide whether Antihydra's "no structure-only proof exists" *meta-theorem*
 (`COMPLETE_PROOF_CAPSTONE.md` §5; `SESSION_2026-06-28_{MINPROP,UNITPART}.md`) is a one-off, or whether it
 **generalizes to a single limit theorem covering the whole `2^a/3^b` Collatz core of BB(6)** — a new,
