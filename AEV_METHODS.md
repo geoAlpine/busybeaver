@@ -1,5 +1,14 @@
 # AEV_METHODS — mining arXiv:2510.11723 and its bibliography for an analytic handle
 
+> **⚠ CORRECTION 2026-06-28 (later, see `FRESH_ANGLES_SCOUT.md`).** The "most promising technique =
+> effective POWER Fourier-decay rate for ν_{2/3} → Erdős–Turán → density" verdict below is **DOUBLY DEAD**
+> and must NOT be re-pursued: (1) wrong functional — ν_{2/3} decay is the ANNEALED object
+> (`NONPISOT_FOURIER_CHAIN.md` Link C), not a bound on the quenched single-orbit sum; (2) even granting a
+> Fourier→equidistribution bridge, Datta–Jana require annealed decay rate **> 1/2**, whereas ν_{2/3}'s
+> proven decay is only **logarithmic** (Streck/Varjú–Yu, sharp) — astronomically short. The survey is
+> retained as record; its "promising technique" claim is retracted. (Datta–Jana threshold
+> `Σ_{|m|≤X}|μ̂(m)|=O(X^{1/2−θ})`, θ>7/64, is the clean calibration for any future bridge.)
+
 Target reduction (all else PROVEN): Antihydra non-halting ⇐ a ONE-SIDED single-orbit
 equidistribution statement for the 3/2-Syracuse map:
 
