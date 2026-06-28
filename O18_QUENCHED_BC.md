@@ -1,5 +1,16 @@
 # o18 / o15 — the QUENCHED Borel–Cantelli facet: per-epoch alignment margins, summability, and the minimal effective input (2026-06-28)
 
+> **⚠ CORRECTION 2026-06-28 (later, see `O18_CARRYRUN.md` / `SESSION_2026-06-28_CERT_HUNT.md`).** The "(R3)
+> sublinear carry-run, factor ~0.9 slack" framing below is **ILLUSORY** as an unconditional route. Exact
+> analysis: the carry-run threshold is **exactly `α·n`, `α=log_3(8/3)=0.892789` = the base-3 digit count
+> `k_n`**. The ONLY unconditional bound is the trivial `run_n ≤ k_n` (a run can't exceed the digit count),
+> which **coincides with the threshold — ZERO slack**; the residual `run_n < k_n` IS the halt/alignment
+> event, so it is **circular** (= the non-halt theorem itself). The "0.9 slack / 0.98n too weak by a hair"
+> used *natural* log; in base 3 the ceiling equals the threshold. So the quenched target (R3) also
+> **reduces to the open effective equidistribution (AEV q=3, Archimedean facet)** — o18/o15 are NOT
+> meaningfully "closer to provable." (R2) is the genuine—but open—input. The margin/summability data below
+> stands; only the "weaker-target-is-near-provable" reading is retracted.
+
 Companion to `EXISTENCE_META_THEOREM.md`, `O18_REDUCTION.md`, `O15_REDUCTION.md`, `CRYPTID_O18_FRAMEWORK.md`.
 Those notes settle the **annealed** facet (Borel–Cantelli I over Haar seeds, unconditional). This note attacks the
 **quenched** facet for the **specific** o18/o15 orbit: makes the bad event `B_n` precise, computes the orbit's own

@@ -1,5 +1,13 @@
 # existence facet の3手（①barrier ②quenched BC ③o10 halter）（2026-06-28）
 
+> **⚠ 訂正 2026-06-28（後続 `SESSION_2026-06-28_CERT_HUNT.md`, P2/P3 で判明）。** 本 doc の2点を訂正：
+> (a) **「o17 は proven barrier / o18,o15 は無し」の binary は REFUTED**。正しくは**量的 floor 差**：all-k/REG barrier は
+> 「halt 判別子が**非有界 reachable run** に住む（brick-(d) counter 機構）」とき**のみ**。o17 は k-window floor **m=8 まで**
+> proven だが m≥9 で binding gram `0A01^6` が reachable から detach＝**all-k/REG barrier は無い**（旧主張は over-claim・撤回）。
+> o18 は floor **m=2**。**どの cryptid も proven REG barrier を持たず**、proven な no-structure-only barrier は **Antihydra の
+> density β>0 のみ**。 (b) **②の「o18/o15 は closer to provable（weaker target）」は (R3) が illusory（上記 O18_QUENCHED_BC 訂正）
+> ゆえ撤回** — quenched target も AEV q=3 equidistribution に還元。以下は (a)(b) で amend して読むこと。
+
 前 session の次手①②③を順に並列実行。**結果: existence facet の barrier は machine-dependent（o17 は proven, o18/o15 は head-local で無し）、
 o18/o15 の quenched target は Antihydra より厳密に WEAK（closer to provable）、o10 は HALT 方向で OPEN（BC-II 適用不可）。
 全て�some健全（false claim ゼロ、harness バグを self-catch）。**
