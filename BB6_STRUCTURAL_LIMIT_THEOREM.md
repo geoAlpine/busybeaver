@@ -54,6 +54,15 @@ equivalent to** and **why it is structurally resistant**. The single honest `[OP
 The shared family-wide `[PROVEN]` fact is the **kernel structure** (`T_μ` exact, Haar-preserving, Bernoulli,
 `v_p(μ) = −1`), **NOT** the barrier (the `β>0` barrier is `[PROVEN]` for **Antihydra only**).
 
+**Completed frontier catalogue `[VERIFIED]`.** The BB(6) Collatz core is now classified end-to-end (§7.2,
+`SESSION_2026-06-28_CATALOGUE_COMPLETE.md`, `CATALOGUE_{O2_O5, O7_O12, O13_SN}.md`): the expanding-kernel class
+`{μ : v_p(μ) = −1}` is realized by **exactly four `[VERIFIED]` multipliers — `3/2`, `5/2` (`p=2`); `4/3`, `8/3`
+(`p=3`)** — so the entire core is a finite catalogue of **named Mahler/Erdős equidistribution problems**, plus
+two kernel-less odometers (o3, o17) and five too-irregular machines (o11–o14, o16). The two new multipliers,
+**`5/2` (Space Needle) and `4/3` (o4/o5)**, are `[VERIFIED]` (exact integer reset-difference ratios,
+`bb_sim`-cross-checked), **not** `[PROVEN]`; they extend the kernel *class* but do **not** add to the in-scope
+exact-reduction set (which stays {Antihydra, o18, o15, o10-inner}, §3) and do **not** carry any new barrier.
+
 ---
 
 ## 2. Setup — BB(6), cryptids, and the expanding-kernel class
@@ -86,6 +95,34 @@ The wider family (o5 `4/3`, o7/o8 `3/2`, the slow-width majority) is **in-family
 in-scope by proof** — their reductions are "reduced to family + multiplier," not exact halt criteria, so the
 hypotheses below are not established for them and the theorem covers them only conjecturally
 (`UNIFIED_LIMIT_THEOREM.md` §4, `CRYPTID_REDUCTIONS.md` Tier-1).
+
+**The full multiplier set `[VERIFIED]`.** With the frontier catalogue now complete
+(`SESSION_2026-06-28_CATALOGUE_COMPLETE.md`), the expanding-kernel class `{μ : v_p(μ) = −1}` is realized across
+the whole BB(6) Collatz core by **exactly four distinct multipliers**:
+
+| multiplier `μ` | prime `p` | `v_p(μ)` | facet (AEV) | machines (`[VERIFIED]`) |
+|---|---|---|---|---|
+| `3/2` | `p=2` | `−1` | q=2 density / existence | Antihydra (density), o10-inner, o2, o7, o8 (existence) |
+| `5/2` (**new**) | `p=2` | `−1` | q=2 existence | Space Needle |
+| `4/3 = 2²/3` (**new**) | `p=3` | `−1` | q=3 Erdős existence | o4, o5 |
+| `8/3 = 2³/3` | `p=3` | `−1` | q=3 Erdős existence | o18, o15 |
+
+The two **new** multipliers are `[VERIFIED]` this program (exact integer reset-difference ratios over ≥4 clean
+epochs, `bb_sim`-cross-checked), **not promoted to `[PROVEN]`**:
+- **`5/2` — Space Needle** (`1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD`): clean-reset widths give first
+  differences `24, 60, 150, 375`, each exactly `×5/2`, so the clean induced map is `T_μ(x) = ⌊5x/2⌋` on `ℤ₂`,
+  `v₂(5/2) = −1` (`5` odd). `5/2 ∉ {2^a/3^b}`, so it is **neither** the literal Antihydra `3/2` orbit **nor**
+  the Erdős `8·3⁻¹` cluster — its own `μ=5/2`, `p=2` member of the clean class. This **corrects** the earlier
+  loose "Mahler-3/2-type" tag (`CATALOGUE_O13_SN.md` §1, `[VERIFIED]`).
+- **`4/3 = 2²/3` — o4, o5**: reset-peak ratios converge to `1.334–1.337 ≈ 4/3`, placing both in the **Erdős
+  ternary-digits family alongside o15/o18**, so the q=3 Erdős existence cluster is `{o4, o5, o15, o18}`. This
+  **corrects** o5's stray "exponential-envelope" tag — `4/3` is the *content* multiplier; the *width* envelope is
+  `~√t` (`CATALOGUE_O2_O5.md` §o5, `[VERIFIED]`).
+
+These extend the kernel **class** but not the in-scope **proof** set of §3 (which stays {Antihydra, o18, o15,
+o10-inner}); the new machines remain in-family-by-multiplier, not-in-scope-by-proof, and carry no new barrier.
+The clean-`p`-to-1 status of both new multipliers was already independently `[VERIFIED]` in §4.1 (`5/2` for
+`p=2`; `4/3` for `p=3`).
 
 ---
 
@@ -445,6 +482,58 @@ The crucial asymmetry (`EXISTENCE_META_THEOREM.md` §2): a density all-orbits in
 **set** `L`, and **a set can simply exclude `y_*` and all of `H`** — so the mere existence of a halting orbit
 does **not** block an avoidance certificate. Hence the existence barrier is `[OPEN]`, equal to
 `LIMIT_THEOREM.md`'s over-approximation top.
+
+### 7.2 The completed 19-cryptid frontier catalogue `[VERIFIED]`
+
+End-to-end classification of the whole BB(6) Collatz frontier (the 19 cryptids; the named machines below),
+consolidating `SESSION_2026-06-28_CATALOGUE_COMPLETE.md` and the per-machine deep dives
+`CATALOGUE_{O2_O5, O7_O12, O13_SN}.md`. Every multiplier, facet, and halt discriminator below is
+`bb_sim`-cross-checked `[VERIFIED]` this program (exact big-int simulation); **no machine is decided** — all are
+**HOLDOUT** under every sound decider (`far_dfa` m≤8, `far_finder` k≤7, `far_cegar` 80–120 rounds). The
+*proven barriers* are exactly those already established above (Antihydra `β>0`, §5; the o18/o17 certificate
+floors, §6.3); no new barrier is claimed.
+
+| machine | `μ` | `p` | facet | regime (`p<q²` hard / `p>q²` easy) | proven barrier | class |
+|---|---|---|---|---|---|---|
+| **Antihydra** | `3/2` | `2` | **density** q=2 | hard (`3<4`) | **`β>0` `[PROVEN]`** (only) | Mahler `3/2` density |
+| o2 | `3/2` `[VERIFIED]` | `2` | existence q=2 | hard (`3<4`) | none proven | Mahler `3/2` (nested) |
+| o7 | `3/2` `[VERIFIED]` | `2` | existence q=2 | hard (`3<4`) | none proven | Mahler `3/2` family |
+| o8 | `3/2` `[VERIFIED]` | `2` | existence q=2 (nested) | hard (`3<4`) | none proven | Mahler `3/2` nested |
+| o10-inner | `3/2` | `2` | composite (inner clean) | hard (`3<4`) | inner `β>0` `[CONDITIONAL]` | inner clean; **o10-FULL OUT** (prob. halts) |
+| **Space Needle** | **`5/2`** `[VERIFIED]` | `2` | existence q=2 | **easy (`5>4`)** | none proven | **Mahler `5/2` (new)** |
+| o18 | `8/3` | `3` | existence q=3 | hard (`8<9`) | no 2-window `[PROVEN]`; floor `m*=2` | Erdős ternary |
+| o15 | `8/3` | `3` | existence q=3 | hard (`8<9`) | none proven (FAR HOLDOUT) | Erdős ternary |
+| **o4** | **`4/3 = 2²/3`** `[VERIFIED]` | `3` | existence q=3 | hard (`4<9`) | none proven | **Erdős ternary (new)** |
+| **o5** | **`4/3 = 2²/3`** `[VERIFIED]` | `3` | existence q=3 | hard (`4<9`) | none proven | **Erdős ternary (new)** |
+| o3 | — (kernel-less) | — | existence | n/a | none proven | bounded-alphabet odometer (o17-type, runs ≤6) |
+| o17 | — (odometer, `≈×8`) | — | existence (shaped) | n/a | no `m`-window `m≤8` `[PROVEN]`; floor `m*=8` | kernel-less odometer |
+| o11 | irregular (`3,9,26,303`) | — | — | n/a | none proven | too irregular (T2 `(10)*`-collapse) |
+| o12 | irregular (`4,10,28,370`) | — | — | n/a | none proven | too irregular (T2 `(10)*`-collapse) |
+| o13 | irregular (block-swap) | — | existence | n/a | none proven | too irregular (T1 two-counter) |
+| o14 | irregular (block-swap) | — | existence | n/a | none proven | too irregular (T1 two-counter) |
+| o16 | irregular (defect peak) | — | existence | n/a | none proven | too irregular (T2 single-defect) |
+
+**The convergence `[VERIFIED]`.** The BB(6) Collatz core resolves into **three structural strata**:
+1. **Expanding-kernel `{μ : v_p(μ) = −1}` — a complete catalogue of four named Mahler/Erdős multipliers**
+   `{3/2, 5/2 (p=2); 4/3, 8/3 (p=3)}`. Every member's halt is a single-orbit `⌊μⁿ⌋ mod p`
+   equidistribution / carry-avoidance event = the shared AEV/Mahler vertex (§8). The only `[PROVEN]`
+   no-structure-only barrier in the whole stratum is **Antihydra's density `β>0`** (§5); all other members are
+   existence-facet with no proven barrier (their barrier is the `[OPEN]` over-approximation top, §7.1).
+2. **Kernel-less odometers** (o3, o17): no expanding `T_μ`, bounded local content; hardness is a
+   Collatz-irregular carry/halt predicate, **not** equidistribution. o17 carries the highest certificate floor
+   (`m*=8`, §6.3); o3 is the tamest (runs ≤6) but still HOLDOUT.
+3. **Too-irregular machines** (o11–o14, o16): regular `~√t` width envelope hiding irregular geometric content
+   with **no clean scalar `2^a/3^b` map** over the observed epochs — `[OPEN]`, no exact reduction extracted yet.
+
+**The `p<q²` / `p>q²` regime note `[VERIFIED]/[OPEN]` (tractability flag).** Writing each multiplier in lowest
+terms as `μ = p/q` (here `p =` **numerator**, distinct from the prime-denominator `p` of `v_p(μ) = −1` — `q` is
+that prime), AEV Thm 1.5 connects the conjecture to Mahler's 1968 problem precisely in the **hard regime
+`p < q²`**. Three of the four multipliers are hard: `3/2` (`3<4`), `4/3` (`4<9`), `8/3` (`8<9`). The new
+**`5/2` is the lone easy case `p > q²` (`5 > 4`)** — and the easy regime is structurally *different*: the
+arguments that organize the `3/2`-cluster (and the AEV `p<q²` ⇒ Mahler bridge) **break in the `p>q²` regime**
+(`FRESH_ANGLES_SCOUT.md`, `SESSION_2026-06-28_CATALOGUE_COMPLETE.md`). So **`5/2`'s tractability may differ**
+from the other three — flagged here, `[OPEN]` whether this helps or hurts. (Full Space Needle derivation:
+`CATALOGUE_O13_SN.md` §1.)
 
 ---
 
