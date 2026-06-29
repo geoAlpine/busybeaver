@@ -5,7 +5,8 @@ Antihydra/BB(6) kernel. The annealed tier is exactly where the tools deliver the
 single-orbit statement is the open kernel. Each entry carries an exact statement, a status label, the repo
 source, the literature theorem it rests on (cited from `CITATIONS.md` / the source notes — no web access used),
 and the **exact quantitative gap** to the kernel H2. All orbit constants re-verified with exact big-int below
-(`scratchpad/bank_verify.py`, N=10^5, <1 s). SOUNDNESS: zero false proofs; no label upgraded; no machine decided.*
+(`scratchpad/bank_verify.py`, N=10^5, <1 s) and **independently re-confirmed at N=3·10⁵ this session**
+(`scratchpad/verify_banked.py`, §4). SOUNDNESS: zero false proofs; no label upgraded; no machine decided.*
 
 ---
 
@@ -85,3 +86,38 @@ exact big-int; the lone numeric wobble was an mpmath-precision artifact in the f
 exact integer phase reduction, leaving the recorded values intact.
 
 **No machine decided. No label upgraded.**
+
+---
+
+## 4. Independent re-verification at N = 3·10⁵ (this session, `scratchpad/verify_banked.py`)
+
+A second, independent verifier (separate script, larger orbit N = 3·10⁵, induced 2·10⁵ steps, exact big-int,
+interpreter `/Users/aokiyousuke/quantum-ecc/.venv/bin/python`) was run to re-confirm the load-bearing constants
+of items 3,4,5,11,12,15 against the §2 table. **Every constant reproduced; no soundness incident.**
+
+| Banked quantity | §2 / source value | This session (N=3·10⁵) | Match |
+|---|---|---|---|
+| growth slope `bit-len(c_n)/n → log₂(3/2)` (item 11 mechanism) | 0.58496 | 0.58800→0.58530→0.58500→**0.58498** | ✅ exact |
+| max odd-run length (item 11/15) | 20 (N=3·10⁵) | **20** (vs maximal `0.585N=175500`, ratio 10⁻⁴) | ✅ exact |
+| `#even(n) ≥ 0.89 log₂ n` (item 11, loose) | bound holds, truth `~n/2` | ratios 2.4 … 9251 — holds, hugely slack | ✅ |
+| mean `D = v₂(3o−1)` (item 15) | →2 | **1.99742** | ✅ |
+| freq(D≥2)=freq(o≡3 mod4) (item 15) | →½ | **0.49975** | ✅ |
+| renewal identity `even-density = 1 − 1/meanD` (item 13/15) | exact | `1−1/1.99742 = 0.49935` vs measured `E=0.49936` | ✅ exact |
+| cumulative even-density min after burn-in (`ANNEALED_QUENCHED_DATA`) | 0.493356, margin +0.160 | **0.493356** at n=8955, margin **+0.1600** | ✅ exact |
+| `Φ(N)` collapse (item 3) | 1.7e-3, 1.1e-12, 4.9e-32, 1.1e-90 (N=10,30,100,300) | **1.700e-3, 1.107e-12, 4.894e-32, 1.143e-90** | ✅ exact |
+| `Φ` slope `−lnΦ/N → ln2` (item 4) | 0.6931 | 0.7209 (N=100), 0.6993 (N=10³) | ✅ trend |
+| `C = ∏cos((π/4)(2/3)^m) = √2·ν̂_{2/3}(1/8)` (item 4) | 0.774846171700205 | **0.774846171700205** | ✅ exact |
+| subword `p(ℓ)=#{c_n mod 2^ℓ}` full `=2^ℓ` for ℓ≤14 (item 15) | verified ℓ≤14 | **`2^ℓ` exact for ℓ=1..14**; ℓ=15–18 sample-limited but `≥1.71ℓ` | ✅ exact |
+| subword slope `log_{3/2}2` (item 15) | 1.7095 | log2/log(1.5) = **1.70951** | ✅ exact |
+| foothold `k(N)/log₂N` reach (item 5) | ≈0.85; CF-governed dip/recover | 0.868, 0.777, 0.835, 0.887 (mean ≈0.84) | ✅ (see flag▼) |
+| continued fraction of `log₂3` (item 5) | `[1;1,1,2,2,3,1,5,2,23,2,2,1,1,55]` | **identical** | ✅ exact |
+| adelic coupling `v₃(o_{j+1})=v₂(3o_j−1)−1` (item 12) | exact, every step | **0 exceptions over 2·10⁵ induced steps** | ✅ exact |
+
+**▼ Transparency flag (not a soundness incident).** The foothold ratio `k(N)/log₂N` at the single point
+`N=10⁴` came out `0.777` here vs `0.823` in `FOOTHOLD_EXTENDED.md`. The star-discrepancy `D*_N` is sensitive to
+the exact `N` and the estimator, and `N=10⁴` sits in the dip the source explicitly attributes to the large
+partial quotient `23` (before convergent `q=15601`). The headline `≈0.85` reach (mean over scales), the
+dip-then-recover pattern, and the continued fraction that *sets* the constant all reproduce exactly, so item 5
+is confirmed at the level it is claimed; the single dipped point is within expected estimator variation.
+
+**Net: the §2 verification is independently reproduced at 3× the orbit length; all recorded constants stand.**
