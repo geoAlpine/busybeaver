@@ -32,7 +32,10 @@ feasible invariant-measure set* (kernel-hard). Finally we place the kernel in th
 the rank-2 host `⟨×2,×3⟩`**, and `(K)` is equivalent to genericity of the seed for `A`, which by the
 **proven** Rudolph–Johnson theorem follows from **two** open inputs — `(AIU)` host-invariance upgrade and
 `(ENT)` positive 2-adic measure entropy. Both are strictly weaker than `(K)`, both are `(K)`-hard, and we prove
-they are logically **independent**. The package isolates these two inputs as the precise, expert-facing targets.
+they are logically **independent**. The package isolates these two inputs as the precise, expert-facing targets. A
+cross-disciplinary sweep (~19 fields) and two direct probes (Siegel's (p,q)-adic Wiener–Tauberian theory; non-Pisot
+mathematical diffraction) found **no** tool escaping the obstruction — each reduces for its own structural reason — which
+robustly stress-tests the structural verdict and identifies the natural communities/languages for the kernel (§7.5).
 
 > **One sentence.** Antihydra non-halting reduces (machine-verified) to single-orbit equidistribution of the
 > `×(3/2)`-orbit of `8`; we prove the obstruction is structural (No-Structure theorem) and reduce the kernel,
@@ -385,6 +388,36 @@ Furstenberg conjecture).
 > (AIU — a neutral, zero-Lyapunov direction) or positive 2-adic measure entropy (ENT) tractable for this explicit
 > non-Pisot transducer-generated measure, given that both feed the *proven* Rudolph–Johnson theorem?
 
+### 7.5 Other natural languages & communities for the obstruction (cross-field; each assessed and reduces)
+
+A cross-disciplinary sweep (~19 fields) and two direct probes found **no** tool escaping the obstruction; this *strengthens*
+the "where every method breaks" claim (the wall recurs for a field-specific reason each time). Four genuinely-new
+**formalisms** nonetheless restate the kernel in a community's native language and are the right additional outreach
+targets — each is honestly assessed as reducing, but the *restatement* and the sharp single-orbit-vs-annealed question are
+the contribution:
+
+- **Aperiodic order / mathematical diffraction** (Baake–Grimm; Lenz). The kernel's natural language: the parity word's
+  **diffraction measure** (autocorrelation spectrum). [Assessed — `PROBE_DIFFRACTION.md`]: the spectrum is
+  **absolutely continuous, indistinguishable from Bernoulli(½)** (no Bragg, no non-Pisot singular-continuity for the
+  orbit); even-density `=` the DC Bragg intensity, **orthogonal** to the spectral-type the theory classifies. Right shape
+  (single-orbit 2nd moment), wrong coordinate. *Community: aperiodic-order / quasicrystal spectral theory.*
+- **(p,q)-adic analysis of `qx+1` maps** (M. C. Siegel, arXiv:2007.15936, 2208.11082). Native single-map formalism; the
+  proven coupling `v_3(o')=D−1` is its 2-adic↔3-adic linkage. [Assessed — `PROBE_SIEGEL_PQADIC.md`]: the (p,q)-adic Wiener
+  Tauberian theorem is `L¹`/measure-global (integrates out the seed at the `χ_q→χ_q(z)dz` passage) and classifies
+  boundedness (constant on the all-divergent family) — annealed, not the Cesàro frequency. *Community: (p,q)-adic Collatz.*
+- **Rational-base 3/2 numeration** (Akiyama–Frougny–Sakarovitch; Charlier–Cisternino–Stipulanti decorated-tree criterion,
+  arXiv:2103.16966; Eliahou–Verger-Gaugry arXiv:2504.13716). Native to `{(3/2)ⁿ}`; gives a **new formal-language reason for
+  the wall** — the base-3/2 integer language is provably non-regular ("defeats every iteration lemma"). *Community: rational-
+  base numeration / combinatorics on words.*
+- **Berkovich / adelic equidistribution** (Favre–Rivera-Letelier; Baker–Rumely; Chambert-Loir). The only new field that
+  *proves* orbit-equidistribution as a theorem — but for **backward/Galois** orbits of **small-height** points under
+  **degree-≥2** maps; Antihydra is the forward orbit of one growing-height point under degree-1 `×(3/2)` (all three
+  hypotheses fail). *Community: arithmetic dynamics / non-archimedean potential theory.*
+
+The shared lesson — useful to state up front to any of these communities: the kernel is a **single-orbit cell-frequency**
+(the HARD side of the dichotomy, §4); every field's standard output is a closure/first-moment/annealed/spectral-type
+quantity that is constant on (or averages over) the feasible measures, hence cannot separate Haar from the family.
+
 ---
 
 ## 8. Citations
@@ -440,6 +473,17 @@ Furstenberg conjecture).
   **34** (2001) 287–311; O. Jenkinson, DCDS **15** (2006) 197–224, ETDS **39** (2019) 2593–2618;
   Conze–Guivarc'h (unpublished, c.1993, unpinnable) — ergodic optimization / sub-action theory.
 - L. Barreira, J. Schmeling (2000) — full Hausdorff dimension of non-generic (irregular) sets.
+
+**Cross-field formalisms (§7.5; each assessed-and-reduces, see `BB6_CROSSFIELD_SCOUT.md` and the `PROBE_*`/`SCOUT_*` notes).**
+- M. Baake, U. Grimm, *Aperiodic Order, Vol. 1* (CUP 2013); D. Lenz et al. — mathematical diffraction / spectral
+  classification (pure-point / singular-continuous / absolutely-continuous).
+- M. C. Siegel, *The (p,q)-adic ...* / *Hydra maps*, arXiv:2007.15936, arXiv:2208.11082 — (p,q)-adic Fourier theory and
+  Wiener Tauberian theorem for `qx+1` maps (the numen `χ_q`).
+- E. Charlier, C. Cisternino, M. Stipulanti, arXiv:2103.16966 — p/q-regular sequences and decorated trees for rational-base
+  numeration (with Akiyama–Frougny–Sakarovitch, Israel J. Math. 168 (2008), already pinned above).
+- C. Favre, J. Rivera-Letelier, *Théorie ergodique des fractions rationnelles sur un corps ultramétrique* (2010);
+  M. Baker, R. Rumely, *Potential Theory and Dynamics on the Berkovich Projective Line* (AMS 2010); A. Chambert-Loir —
+  adelic / Berkovich equidistribution (degree-≥2, small-height; **inapplicable to degree-1 forward orbits**).
 - *Convention:* repo facts are machine-checked in exact integer / 2-adic arithmetic per the program's soundness
   policy. No proofs are claimed beyond the `[PROVEN]` labels above; `(K)` remains `[OPEN]`.
 
