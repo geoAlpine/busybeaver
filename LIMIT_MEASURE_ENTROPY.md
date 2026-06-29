@@ -153,7 +153,7 @@ Shannon entropy `H_k` (bits), per-bit increment `h_k=H_k−H_{k−1}`:
 | **Rudolph 1990 / Johnson 1992** (solenoid form, arXiv:2101.11120) | pos-entropy ergodic `⟨×2,×3⟩`-inv ⟹ Haar | **(1) `⟨×2,×3⟩`-invariance (AIU)** [OPEN]; **(2) `h_μ(M₂)>0`** [OPEN, (K)-necessary]. *Nearest — and PROVEN.* |
 | **Host 1995** (`×p`-normality from `×q`-ergodicity) | a.e. point `×q`-normal | needs `h_μ>0` **and** ergodicity under a *second* multiplicatively-independent map — same two gaps |
 | **Lindenstrauss 2006 / Einsiedler–Katok–Lindenstrauss** | low-entropy + extra invariance ⟹ rigidity | designed for **positive-entropy** + higher-rank diagonal; we have neither extra invariance nor proven positivity |
-| **Furstenberg conjecture** (open) | ergodic `×2,×3`-inv ⟹ Haar or finite | needs **AIU only** (given [PROVEN] non-atomicity); but the theorem itself is **[OPEN]** |
+| **Furstenberg conjecture** (open) | ergodic `×2,×3`-inv ⟹ Haar or finite | needs **AIU + non-atomicity** (the latter [OPEN], §3); the theorem itself is also **[OPEN]** |
 | **Hochman–Shmerkin 2012 / Shmerkin 2014 / Wu 2019 / Shmerkin–Wu** | dimension/`L^q`, `×2,×3`-measures, some without pos-entropy | all assume invariance under a **single** host map (`×2` or `×3`) and self-similar/CP structure; our `μ` is a priori only **`A`-invariant** — missing the single-host invariance (a weak form of AIU) |
 | **BFLM / BLMV** | individual-orbit equidistribution | needs **non-abelian** acting semigroup with **spectral gap**; ours is abelian, no gap — *not applicable* (already in `NEWMATH_ADELIC_RIGIDITY` §5) |
 
@@ -174,18 +174,19 @@ not "a second direction" generically but specifically **{AIU} ∪ {positive 2-ad
 | Haar has positive entropy: `h_Haar(M₂)=log2`, `h_Haar(A)=log3` | [PROVEN-in-lit] |
 | `h_μ(M₂)=0 ⟹ μ≠Haar ⟹ (K) false` (so zero entropy not provable w/o refuting (K)) | **[PROVEN]** |
 | `h_μ(M₂)>0` is NECESSARY for (K), [OPEN], (K)-hard | [PROVEN that necessary; positivity OPEN] |
-| `μ` non-atomic (charges no finite orbit) | [PROVEN] (2-adic repulsion) |
-| AIU + `h_μ(M₂)>0` + RJ ⟹ (K) | [PROVEN reduction, modulo the two OPEN inputs] |
-| AIU + Furstenberg + non-atomicity ⟹ (K) (no entropy needed) | [PROVEN reduction, modulo OPEN Furstenberg] |
+| `μ` non-atomic | **[OPEN]** — orbit avoids periodic points per-visit [PROVEN], but `μ` charging them zero mass (vanishing occupancy) is open, §3; CORRECTED from an earlier "[PROVEN]" over-claim (`ENT_NONATOMIC.md`) |
+| AIU + `h_μ(M₂)>0` + RJ ⟹ (K) | [PROVEN reduction, modulo the two OPEN inputs]; note `h_μ>0 ⟹` non-atomic, so this MAIN branch needs no separate non-atomicity |
+| AIU + non-atomicity + Furstenberg ⟹ (K) (no entropy needed) | [PROVEN reduction, modulo THREE OPEN inputs: AIU, non-atomicity, Furstenberg] |
 | Empirical `h_k≈log2` per bit; residues mod `2^k` ≡ uniform-sampling to ≤0.2% | [OBSERVED] (consistent with full entropy/Haar; not a proof) |
 | (K) itself | **[OPEN]** = Mahler 3/2 / AEV Conj 1.6 at α=8 |
 
 **Make-or-break disposition.** The entropy crux is *settled in direction and corrected*: the limit measure is **not
 zero-entropy** (that would refute (K), and the data shows full per-bit entropy). Rudolph–Johnson is therefore **not
 killed by zero entropy**; the program's hedge is reversed. The live, correctly-stated sub-targets are **(a) AIU**
-and **(b) `h_μ(M₂)>0`** (positive 2-adic entropy), the latter a necessary, (K)-hard consequence of (K); together
-with the PROVEN non-atomicity they invoke the **proven** Rudolph–Johnson. The zero-entropy/Furstenberg "corner" is a
-misframing — it is the (K)-false regime.
+and **(b) `h_μ(M₂)>0`** (positive 2-adic entropy), the latter a necessary, (K)-hard consequence of (K). Since
+`h_μ(M₂)>0 ⟹ μ` non-atomic, this main branch invokes the **proven** Rudolph–Johnson without needing a separate
+non-atomicity input (μ non-atomicity is itself [OPEN], §3). The zero-entropy/Furstenberg "corner" is a misframing — it is
+the (K)-false regime.
 
 ---
 
