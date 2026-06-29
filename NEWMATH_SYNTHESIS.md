@@ -14,10 +14,15 @@ The four frameworks unify into two: **(I) a solenoid measure-rigidity / renormal
 + `NEWMATH_DIAGONAL_RENORM`) and **(II) an odd-block cross-scale cocycle theory** (`NEWMATH_ENDOGENOUS_UE` +
 `NEWMATH_ODD_CALCULUS`). Both reduce (K) to a single clean conjecture; **(I) is the most promising because it connects (K)
 to the Rudolph–Johnson / Furstenberg ×2,×3 rigidity world** — a real, powerful, proven theory the program had wrongly
-dismissed as "rank-2, unavailable." The honest catch: the orbit's limit measure is plausibly **zero-entropy**, so (I)
-reframes (K) as a *Furstenberg-×2,×3-type* statement — a different but equally famous open problem, not a shortcut. The
-durable yield is several genuinely new [PROVEN] structural theorems (§3) and a clean placement of (K) in a major research
-program.
+dismissed as "rank-2, unavailable." **[SOUNDNESS CORRECTION 2026-06-29, `LIMIT_MEASURE_ENTROPY.md`]** An earlier draft of
+this note claimed the limit measure is "plausibly zero-entropy (linear complexity) ⟹ a Furstenberg corner." **That was a
+sign error and is retracted.** `p(ℓ)≥1.71ℓ` is a *lower* bound; entropy-0 needs a sub-exponential *upper* bound, and the
+measured complexity is full (`p(ℓ)=2^ℓ` to ℓ=16, block entropy ≈ log2) ⇒ `h_top=log2>0`, so the variational-principle
+argument is vacuous. Decisively, **Haar (the (K) target) has positive entropy** (`h_Haar(M₂)=log2`), so `h_μ=0 ⟹ μ≠Haar ⟹
+(K) false`: **zero entropy is the (K)-FALSE regime**, not a tractable corner. Correct status: framework (I) reduces (K) to
+**AIU ∧ `h_μ(M₂)>0`**, and with both the **proven** Rudolph–Johnson gives `μ=`Haar `=` (K). Both are open, (K)-hard
+sub-conjectures; the bridge is to the *proven* RJ theorem (not to open Furstenberg). The durable yield is several
+genuinely new [PROVEN] structural theorems (§3) and a clean placement of (K) in a major research program.
 
 ---
 
