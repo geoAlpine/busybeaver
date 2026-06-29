@@ -100,6 +100,15 @@ the proven 2-adic potential `V = v₂(c−1)`** (deterministic drift `−1` per 
 proof must extract a return-time decrease from the orbit's specific 2-adic arithmetic **without** assuming the D-law — an
 *a-priori* excursion estimate. No known method does this for a single non-Pisot orbit; it is the precise generational gap.
 
+> **[UPDATE 2026-06-30 — this route is now also CLOSED, `EXCURSION_SYNTHESIS.md`.]** The a-priori excursion estimate was
+> attacked directly (excursion-level supermartingale; adelic magnitude–depth budget; integrality/floor structure) and is a
+> **sharp no-go**: every candidate excursion-drift is **linear in the entry-depth `K`** (reads only the free first moment
+> `E[K]`); forcing it `~K²` (what `E[K²]<∞` needs) is exactly the degree-2 potential that telescopes to `0=0`; and a
+> **heavy-tailed adversary** (`E[K²]=∞`, white, first-moment-matched) satisfies *every* proven fact and is
+> drift-indistinguishable from the real orbit. So the second moment is the **conclusion, not a usable input**. With this,
+> **no un-pre-empted route remains** — the proven facts are consistent with both `(K)` and its negation; only the orbit's
+> specific arithmetic decides.
+
 ## 5′. Citation correction [SOUNDNESS]
 
 The repo (`DIGITS_OF_3N.md`, and `BB6_FRAMEWORK_PACKAGE.md` §8) attributes the longest-run bound `L(M·3ⁿ)=o(n)` to
