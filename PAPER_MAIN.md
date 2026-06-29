@@ -41,9 +41,13 @@ We prove three theorems and a placement result, all conjecture-free except where
   hand-proof from the transition table — three induction-proven shift lemmas, the inner ×3/2 lemma, the
   even/odd carry lemmas, the macro-step `c' = ⌊3c/2⌋`, and the halt criterion (TM-extraction note §1) — and
   the downstream arithmetic was already inline. For **o18/o15/o10-inner** the reduction is **[PROVEN] modulo a
-  [VERIFIED] macro-structure** (their halt criteria are table-trivially [PROVEN]; their base-3 / ceiling
-  macro-coordinates stay [VERIFIED]). The supporting **GAP**, **renewal**, and **valuation** lemmas are proved
-  in full. The AEV/Mahler kernel that decides the orbits remains [OPEN].
+  [VERIFIED] macro-structure** (their halt criteria are table-trivially [PROVEN]). For o18 the honest content is
+  sharper: the elementary sweep lemmas and the **conditional clean-epoch lemma** are [PROVEN], the macro-coordinate
+  `⌊8k/3⌋+2` is [VERIFIED] only on the carry-absorbed epochs (0–6), and the **unconditional** width map
+  `M(k) → M(⌊8k/3⌋+2)` is **[DISPROVEN]** (it breaks at the deep base-3 carry `k=3890≡2 mod 3`, epoch 7); the
+  carry-finiteness `(K_o18)` that would restore it is [OPEN] = the AEV `q=3` facet = the halt event itself. The
+  supporting **GAP**, **renewal**, and **valuation** lemmas are proved in full. The AEV/Mahler kernel that
+  decides the orbits remains [OPEN].
 
 - **Theorem 2 (induced-map structure, [PROVEN]).** For every `μ = 2^a/3^b` with `v_p(μ) = −1`, `T_μ` is a
   clean `p`-to-1 Haar-measure-preserving endomorphism of `ℤ_p`. Antihydra's induced odd-return map
@@ -172,8 +176,11 @@ macro-step theorem (`b' = ⌊3b/2⌋+3`, i.e. `c' = ⌊3c/2⌋` under `c = b+6`)
 odd-`c` step occurs at balance `0`) — with `bb_sim` used **only** as confirmation (full derivation in the
 companion note, §"Antihydra — FULL hand-proof"). Hence Antihydra's reduction is **[PROVEN]** with no residual
 [VERIFIED] dependence (the AEV/Mahler kernel remains [OPEN]). For **o18/o15** only the **halt criterion** is
-table-trivially [PROVEN]; their base-3 width/coordinate macro-structure stays **[VERIFIED]** (the carry
-induction is genuinely harder and is not transcribed). **o10-inner**'s ceiling map stays
+table-trivially [PROVEN]; for o18 the elementary sweep lemmas and the **conditional clean-epoch lemma** are
+additionally [PROVEN], but the **unconditional** base-3 width map `M(k) → M(⌊8k/3⌋+2)` is **[DISPROVEN]** (it is
+false beyond epoch 6 — a deep carry breaks the clean form at `k=3890≡2 mod 3`, §3.3), so the width coordinate is
+**[VERIFIED] only on the carry-absorbed epochs**, with the carry-finiteness `(K_o18)` [OPEN]; the obstruction is
+not "induction not transcribed" but that the unconditional map is not true. **o10-inner**'s ceiling map stays
 **[VERIFIED]**/[CONDITIONAL].
 
 ### 3.1 Antihydra — density facet, `q=2`
@@ -255,16 +262,35 @@ reproduces exactly; eat-length `L = 2m − 8` is even). An epoch halts when an o
 ### 3.3 o18 — existence facet, `q=3`
 
 Macro-structure ([VERIFIED], `2·10⁸` steps, 10 F-entries all read `0`, 0 collisions, planted-control test):
-the leftward D/F sweep evolves a width `f(N) = ⌊8N/3⌋ + 2`. [VERIFIED]:
-`10 → 28 → 76 → 204 → 546 → 1458 → 3890` (the law iterates `10,28,76,204,546,1458,3890,10375,…`), and the law
-**breaks at epoch 8** (observed `27660 ≠ 10375`) via a base-3 carry.
+the leftward D/F sweep is a **base-3 odometer** whose clean milestones `M(k) := 0^∞[A]1\,0\,1^k\,0^∞` evolve, on
+the **carry-absorbed (clean) epochs**, by the width law `f(k) = ⌊8k/3⌋ + 2`. The clean law is **[VERIFIED]
+exactly on epochs 0–6**: `10 → 28 → 76 → 204 → 546 → 1458 → 3890` (each an exact `⌊8k/3⌋+2` step, 0
+mismatches). **The *unconditional* map `M(k) → M(⌊8k/3⌋+2)` for all reachable `k` is [DISPROVEN]** (TM-extraction
+companion, o18-extraction note): it **breaks at epoch 7** at `k = 3890 ≡ 2 (mod 3)` — the residue with the
+deepest base-3 carry — where a carry reaches the left frontier and the clean `M`-form is destroyed; the next
+clean milestone is **`27660`, not the predicted `⌊8·3890/3⌋+2 = 10375`** (`o18milestones.py`, exact). So the
+honest content is the **conditional** clean-epoch lemma plus the table-trivial halt criterion (Lemma 3.5), not
+an unconditional width law.
 
 > **Lemma 3.5 (o18 halt criterion).** o18 halts `⟺` state F reads
 > `1`, i.e. the leftward D/F frontier lands on an existing `1` (an adjacent-`11` left-frontier carry
 > alignment of the `⌊(8/3)x⌋` orbit on `ℤ₃`). The **halt-form** "halts `⟺` F reads `1`" is **[PROVEN, trivial]**
-> (the only halting transition is `F,1`, forced by the table; TM-extraction note §3.1). The **width law**
-> `k ↦ ⌊8k/3⌋+2` and the milestone form remain **[VERIFIED]** (the base-3 carry induction is not transcribed),
-> and the identification of "F reads `1`" with the carry-alignment event is the [OPEN] `q=3` kernel.
+> (the only halting transition is `F,1`, forced by the table; TM-extraction note §3.1). The elementary sweep
+> lemmas (A/B-march, REFILL, leftward sweeps) and the **conditional clean-epoch lemma** "`M(k) ⟹ M(⌊8k/3⌋+2)`
+> *given the sweep absorbs every carry before the leading block*" are **[PROVEN, conditional]** from the table;
+> but the **unconditional** width law `k ↦ ⌊8k/3⌋+2` for all reachable `k` is **[DISPROVEN]** (it is false beyond
+> epoch 6: the clean form breaks at the deep `k=3890 ≡ 2 (mod 3)` carry, §3.3 above), so the milestone
+> coordinate is machine-checked only on the carry-absorbed epochs (**[VERIFIED] on epochs 0–6**). The carry
+> **never** reaching the left frontier — i.e. the clean form persisting for all epochs — is exactly the
+> finiteness statement `(K_o18)` **[OPEN]**, the `q=3` AEV/Erdős facet, and is the *same event* as the halt
+> criterion (a frontier carry both halts F and breaks `M`-form).
+>
+> **Remark (why o18 is conditional but Antihydra is [PROVEN]).** Antihydra's macro-configuration `C(a,b)` is
+> preserved **unconditionally at every step** — the parity branch and both carries are clean with no overflow —
+> so its macro-map `c ↦ ⌊3c/2⌋` is unconditionally true and was hand-proved (§3.1). o18's clean `M(k)`-form is
+> instead **destroyed by deep base-3 carries** (epoch 7), so only the *conditional* clean-epoch lemma survives.
+> This carry-overflow vs. carry-clean dichotomy is precisely why Antihydra is the unique **fully-reduced
+> flagship** ([PROVEN] outright) while o18/o15 remain reductions modulo a [VERIFIED]/conditional macro-coordinate.
 >
 > **Existence-type ([PROVEN]).** non-halt `⟺` the bad set `𝓑 = {k : carry aligns}` is empty. Density is
 > **provably insufficient**: `𝓑` has density 0 yet a single alignment halts, so there is no
@@ -301,7 +327,9 @@ width `W ↦ ⌊8W/3⌋ + 2` (widths `19,40,108,290,773,2060,5493,14634`, ratios
 > (raw 6-state TM → named `p`-adic predicate), independent of whether the underlying kernel is settled.
 > **Antihydra is [PROVEN] outright** (the raw-TM → counter macro-structure is hand-proved in full, §3.1);
 > **o18/o15/o10-inner are [PROVEN] modulo a [VERIFIED] macro-structure** (their halt criteria are
-> table-trivially [PROVEN], their base-3 / ceiling macro-coordinates stay [VERIFIED]).
+> table-trivially [PROVEN], their base-3 / ceiling macro-coordinates [VERIFIED] only on the checked epochs —
+> note o18's *unconditional* width map `M(k)→M(⌊8k/3⌋+2)` is [DISPROVEN] beyond epoch 6, only its conditional
+> clean-epoch lemma being [PROVEN], §3.3).
 
 ---
 
@@ -676,7 +704,9 @@ These hold **unconditionally** (no dependence on the open kernel) and are publis
 
 1. **Exact reduction theorem** (Theorem 1): each in-scope cryptid's halting `=` a named `2^a/3^b` arithmetic
    event. **[PROVEN] outright for Antihydra** (macro-structure hand-proved from the raw transition table);
-   **[PROVEN] modulo [VERIFIED] macro-structure for o18/o15/o10-inner** (halt criteria table-trivially [PROVEN]).
+   **[PROVEN] modulo [VERIFIED] macro-structure for o18/o15/o10-inner** (halt criteria table-trivially [PROVEN];
+   for o18, additionally the conditional clean-epoch lemma is [PROVEN] while the unconditional `⌊8k/3⌋+2` width
+   map is [DISPROVEN] beyond epoch 6, §3.3).
 2. **Induced-map Haar/Bernoulli theorem** (Theorem 2): `T_μ` Haar-preserving on `ℤ_p` for `v_p(μ)=−1`;
    Antihydra's `D_j` i.i.d. geometric, `mean D = 2`. **[PROVEN]** (measure side full; exactness/Bernoulli
    cited).
@@ -804,9 +834,12 @@ unpinnable item — Conze–Guivarc'h — is cited honestly as unpublished.
 *Soundness statement. Every label above is copied without upgrade from the program's source documents
 (`BB6_STRUCTURAL_LIMIT_THEOREM.md`, `COMPLETE_PROOF_CAPSTONE.md`, `CRYPTID_REDUCTIONS.md`,
 `FLOOR_MIRROR_CONJECTURE.md`, `MAHLER_3_2_DOMINANCE.md`, `NESTED_COLLATZ_STRUCTURE.md`,
-`SESSION_2026-06-29_NESTED_COLLATZ.md`). Lemmas 3.1–3.4, 4.2, 4.3, 5.1, 6.1 and Corollary 6.2 are proved in
+`O18_EXTRACTION_PROOF.md`, `SESSION_2026-06-29_NESTED_COLLATZ.md`). Lemmas 3.1–3.4, 4.2, 4.3, 5.1, 6.1 and
+Corollary 6.2 are proved in
 full inline. Antihydra's Theorem 1 macro-structure layer is now [PROVEN] (a full conjecture-free hand-proof
-from the raw transition table; companion note `TM_EXTRACTION_PROOFS.md` §1); o18/o15/o10-inner's
+from the raw transition table; companion note `TM_EXTRACTION_PROOFS.md` §1); for o18 (companion note
+`O18_EXTRACTION_PROOF.md`) the conditional clean-epoch lemma and the halt criterion are [PROVEN] while the
+unconditional `⌊8k/3⌋+2` width map is [DISPROVEN] beyond epoch 6 (§3.3); o18/o15/o10-inner's remaining
 macro-structure and Theorem 3's LP step remain [VERIFIED] (machine-checked), explicitly flagged. Theorem 2(b)'s
 exactness/Bernoullicity and Theorem 3's ergodic-optimization equivalence are external inputs, cited as such. The kernel (AEV/Mahler) is [OPEN]; per-cryptid completion is [CONDITIONAL]
 on it with no known shortcut. No machine is decided; no non-halting is asserted unconditionally. Numerics
