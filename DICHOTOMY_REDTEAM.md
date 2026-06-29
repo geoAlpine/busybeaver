@@ -68,7 +68,7 @@ halting fixed point `δ₁ ∈ M_sys`?
 | K1 | even-density `≥ 1/3` ⟺ mean `D ≥ 3/2` (= non-halt) | [OPEN] | MF | **NO — varies `[0,1]`**, Haar `1/2` | =(M_orb={Haar}) | HARD ✓ |
 | K2 | single-orbit equidist. `c_n mod 2^k` (= (K) = Mahler/AEV) | [OPEN] | MF | NO — varies | = "M_orb={Haar}" | HARD ✓ |
 | K3 | odd-character feedback `Inj_a→0`; `M₂ᵒᵈᵈ=o(2^k)` | [OPEN] | MF | NO — varies | varies | HARD ✓ |
-| K4 | measure entropy (vs topological entropy `=0`) | — | MF | NO — `δ₁` has `h=0`, Haar `>0` | varies | HARD ✓ |
+| K4 | measure entropy (vs topological entropy `=log2`, FREE/constant) | — | MF | NO — `δ₁` has `h=0`, Haar `>0` | varies | HARD ✓ |
 
 ---
 
@@ -162,14 +162,14 @@ genuine, non-trivial set strictly between `{Haar}` and M_sys. The conjecture is 
   identities** — i.e. `P` is either (a) a **measure functional constant on all of M_sys** (universal:
   F1–F3, F6), or (b) **constant on the annealed / fixed measure** (F4–F5), or (c) a **topological /
   tail invariant of `Ω`** pinned by the proven constraints **without** locating M_orb inside M_feas
-  (C1–C4, F7) — including topological entropy `=0`;
+  (C1–C4, F7) — including topological entropy `=log2` (FREE/measure-constant; the earlier "=0" was the retracted sign error);
 - **(K)-HARD ⟺** `P` is a **measure functional that varies over M_feas**, with `P(Haar)` the target —
   equivalently `P` separates `{Haar}` from the non-Haar members of M_feas, so fixing its value **is**
   the collapse `M_orb = {Haar}` = single-orbit equidistribution = Mahler/AEV.
 
 The clean boundary is therefore **topological-orbit-closure-determined (FREE)** vs
 **Haar-vs-M_feas-separating (HARD)** — exactly the *topological-entropy / measure-entropy* split the
-corpus already lists (row K4 vs the `h_top=0` fact), now promoted to the global organizing principle.
+corpus already lists (row K4: measure entropy HARD vs `h_top=log2` FREE), now promoted to the global organizing principle.
 The original phrasing "constant on M" is **correct only for the measure-functional sub-tier** and only
 with **M = M_feas, not the `δ₁`-containing M_sys**; using M_sys as the FREE-side test is the error, while
 M_sys remains the correct **HARD-side witness** (where `β=+1/2` and specification live).

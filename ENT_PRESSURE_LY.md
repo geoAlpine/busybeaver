@@ -17,7 +17,8 @@ no label upgraded. Numerics `/Users/aokiyousuke/quantum-ecc/.venv/bin/python scr
 pins ENT to a single conditional-dimension number that is `> 0`; pressure gives only the (vacuous) UPPER bound
 `h_μ ≤ h_top = log2`; large-deviation and the proven Gibbs–Markov renewal both deliver positivity **only for
 Haar/SRB-typical points** — never the specified Haar-null seed `8`. Every proven structural input
-(`p(ℓ)≥1.71ℓ`, growth `0.585n`, foothold depth `~log₂N`, even global non-atomicity) controls an **unweighted /
+(`p(ℓ)≥1.71ℓ`, growth `0.585n`, foothold depth `~log₂N`, and even global non-atomicity *were it proven* — it is in fact
+[OPEN], `ENT_NONATOMIC.md`) controls an **unweighted /
 support / annealed** quantity, all of which yield measure-entropy rate `≥0` and **nothing more**. The exact
 obstruction is unchanged and sharp: **unweighted/annealed count (proven) vs frequency-weighted/quenched count
 (unproven = equidistribution = (K)).** No machine decided. No label upgraded.
@@ -80,7 +81,7 @@ dimension `h_μ(M₂)>0` is equivalent to. The positive Lyapunov exponent `log2`
 | `p(ℓ)≥1.71ℓ` (LIMIT_THEOREM §3″) | **unweighted** residue count | **NO** | even equi-weighted: `H_ℓ≥log₂(1.71ℓ)` ⇒ rate `(log₂ℓ)/ℓ→0`. Linear count ⇒ `h_top≥0` only ⇒ `h_μ≥0` only. |
 | growth `log₂c_n≈0.585n` | the **support** (#cells touched ≤ min(N,2^k)) | **NO** | a support/topological quantity; a low-complexity deterministic sequence grows identically with `h_μ=0`. |
 | foothold / max depth `~log₂N` (renewal §7) | depth reached `~log₂N` **total** bits | **NO** | `log₂N` bits across the whole orbit ⇒ rate `→0`; it is a support-depth, not a per-scale frequency spread. |
-| **global** non-atomicity of `μ` (PROVEN, 2-adic repulsion) | no atoms in `μ` | **NO** | **decisive honest point:** global non-atomicity does NOT imply non-atomic CONDITIONALS (`γ>0`). `μ` can be globally non-atomic while its ℝ/ℚ₃-leaf conditionals are atomic (mass spread atomically per leaf, leaves varying continuously). So proven non-atomicity gives `h_μ≥0`, **not** ENT. |
+| **global** non-atomicity of `μ` (**[OPEN]** — orbit avoids periodic per-visit [PROVEN], but `μ` non-atomicity itself open, `ENT_NONATOMIC.md`; corrected from an earlier "[PROVEN] 2-adic repulsion" over-claim) | no atoms in `μ` | **NO** | **decisive honest point:** *even if* global non-atomicity held, it does NOT imply non-atomic CONDITIONALS (`γ>0`). `μ` can be globally non-atomic while its ℝ/ℚ₃-leaf conditionals are atomic. So non-atomicity gives at most `h_μ≥0`, **not** ENT. |
 | renewal `D_j` geometric(½) | **annealed** entropy `2` bits | **NO** | annealed (Haar/SRB) property; transfer to the quenched orbit = (K) (§2C). |
 
 > **Exact obstruction (sharp, unchanged).** Every proven lower bound controls an **unweighted / support /

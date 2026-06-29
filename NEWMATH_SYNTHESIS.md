@@ -73,11 +73,14 @@ program via the solenoid, reducing it to **two** open (K)-hard inputs — **(AIU
 `h_μ(M₂)>0` — which together invoke the **proven** Rudolph–Johnson. This is a real bridge to a powerful literature and the
 right thing to put to experts.
 
-**The catch [honest].** Rudolph–Johnson needs **positive entropy**. A single orbit's empirical limit measure is plausibly
-**zero-entropy** (the orbit's subword complexity is only linear, `p(ℓ)≥1.71ℓ`, topological entropy 0). In the zero-entropy
-regime, ×2,×3-invariance does **not** force Haar — that is exactly **Furstenberg's conjecture**, itself a famous open
-problem. So framework (I) reframes (K) as a Furstenberg-×2,×3-type rigidity statement **in the zero-entropy regime** — a
-different, equally-generational open problem, not a shortcut. This is the precise, honest status: a bridge, not a proof.
+**The two open inputs [honest; corrected — supersedes a retracted "zero-entropy catch", see §0 and `LIMIT_MEASURE_ENTROPY.md`].**
+Rudolph–Johnson needs **positive entropy**. An earlier draft here mis-claimed the limit measure is "plausibly zero-entropy"
+from `p(ℓ)≥1.71ℓ`; that is **wrong** — `1.71ℓ` is a *lower* bound, the measured complexity is **full** (`p(ℓ)=2^ℓ` to ℓ=13,
+`h_top=log2`), and **zero entropy would refute (K)** (Haar has `h(M₂)=log2>0`), so it is the **(K)-false** regime, not a
+tractable corner. Correct status: framework (I) reduces (K) to **two** open, (K)-hard inputs — **(AIU)** host-invariance and
+**(ENT)** `h_μ(M₂)>0` — which together invoke the **proven** Rudolph–Johnson (`μ=`Haar). The bridge is to a *proven*
+theorem; the work is to establish AIU and ENT (each strictly weaker than (K) but (K)-hard, and independent —
+`AIU_JOININGS.md`: ENT⇏AIU). This is a bridge, not a proof.
 
 **(II)** is a sharper *dressing* of the kernel (CR ⟺ (K)) plus a real no-go (the coisometry kills every operator-norm
 route), and it contributes the candidate **2-adic Lyapunov engine** `V=v₂(c−1)`. Its value is diagnostic and it supplies

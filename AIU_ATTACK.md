@@ -95,11 +95,13 @@ renewal artifact, since the raw contracted-place residues are not the solenoid m
 Haar on `X` is invariant under every automorphism, in particular `×2`. So `(K)⟹(×2)_*μ=μ⟹AIU`. Hence AIU
 is a **logical consequence of (K)**, i.e. weaker-or-equal. `[PROVEN]`
 
-**3.2 `AIU⟹(K)` only conditionally (the gap).** AIU ⟹ `μ` is `⟨×2,×3⟩`-invariant; `μ` is non-atomic
-`[PROVEN, 2-adic repulsion, REPELLER_ESCAPE]`. To conclude `μ=`Haar one then needs **either** `h_μ(M_2)>0`
-(then **Rudolph–Johnson** `[PROVEN-in-lit]`) **or** Furstenberg's conjecture (no non-atomic zero-entropy
-host-invariant measure) `[OPEN]`. Both are open; positive 2-adic entropy is itself `(K)`-necessary and
-`(K)`-hard (`LIMIT_MEASURE_ENTROPY` §2). **So AIU alone does not provably give (K).** The exact gap
+**3.2 `AIU⟹(K)` only conditionally (the gap).** AIU ⟹ `μ` is `⟨×2,×3⟩`-invariant. To conclude `μ=`Haar one then needs
+**either** `h_μ(M_2)>0` (then **Rudolph–Johnson** `[PROVEN-in-lit]`; note `h_μ>0 ⟹ μ` non-atomic automatically) **or**
+[`μ` non-atomic **[OPEN]** — orbit avoids periodic per-visit [PROVEN], but `μ` non-atomicity itself open,
+`ENT_NONATOMIC.md`, a CORRECTION of an earlier "[PROVEN] 2-adic repulsion" over-claim] **plus** Furstenberg's conjecture
+(no non-atomic zero-entropy host-invariant measure) `[OPEN]`. So the Furstenberg branch needs THREE open inputs (AIU,
+non-atomicity, Furstenberg); the live branch is AIU + `h_μ(M_2)>0` via the proven RJ. Positive 2-adic entropy is itself
+`(K)`-necessary and `(K)`-hard (`LIMIT_MEASURE_ENTROPY` §2). **So AIU alone does not provably give (K).** The exact gap
 `AIU→(K)` = `{h_μ(M_2)>0 ∨ Furstenberg}`. `[PROVEN reduction structure]`
 
 > **`[PROVEN]` AIU is strictly weaker than (K).** `(K)⟹AIU` is proven; `AIU⟹(K)` is not (it needs an OPEN

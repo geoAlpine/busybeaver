@@ -64,8 +64,10 @@ hence even-density `≥ 1/3 ⟺ mean D ≥ 3/2`.
 Since `3∈ℤ₂^*`, `D≥k ⟺ o≡3^{-1} (mod 2^k)`, so `mean D = Σ_{k≥1} freq(o≡3^{-1} mod 2^k)`, the `k=1` term `≡1`.
 Thus `mean D ≥ 3/2 ⟸ freq(o≡3 mod 4) ≥ 1/2`, and `D=1⟺o≡1 mod 4`.
 
-**The chain (all links `[PROVEN]`):** non-halt `⟺` even-density `≥1/3` `⟺` `mean D ≥ 3/2` `⟺`
-`liminf freq(D≥2) ≥ 1/2` `⟺` single-orbit equidistribution of `c_n mod 2^k`.
+**The chain `[PROVEN]`:** non-halt `⟺` even-density `≥1/3` `⟺` `mean D ≥ 3/2` (these three mutually **equivalent**, Kac)
+`⟸` `liminf freq(D≥2) ≥ 1/2` `⟸` single-orbit equidistribution of `c_n mod 2^k`. The last two links are `⟸`
+(**sufficient, strictly stronger**), not `⟺`: `mean D = 1+Σ_{k≥2} freq(D≥k)`, so `freq(D≥2)≥1/2` (and the ψ-form,
+which truncates the tail at `D≥3`) imply `mean D≥3/2` but not conversely; full equidistribution is stronger still.
 
 **Measure side `[PROVEN]`.** `T` is **Haar-preserving, exact, and Bernoulli on `ℤ₂^*`**, with gap exponents
 `D_j` i.i.d. geometric `P(D=d)=2^{−d}` (mean 2). Under Haar `mean D = 2 > 3/2` with CLT and exponential
@@ -78,9 +80,9 @@ the only integers being `{0,1}`; the integer orbit is strictly increasing, hence
 the Dual-Repulsion Lemma (the fixed point `o=1` repels at both `∞` and `2`); the `v_3` identity
 `v_3(o_{j+1})=D_j−1`.
 
-> **Kernel `(K)` `[OPEN]`.** For `o_0=27` under `T`: `liminf_N (1/N)#{n<N : D(o_n)≥2} ≥ 1/2`.
-> Equivalent forms (all `[PROVEN]`-equivalent): `mean D ≥ 3/2`; `liminf` even-density `≥1/3`;
-> `liminf freq(o≡3 mod 4) ≥ 1/2`; 3-adic `density{3|o_j}+density{9|o_j} ≥ 1/2`; single-orbit equidistribution
+> **Kernel `(K)` `[OPEN]`.** The non-halt-**equivalent** kernel is `mean D ≥ 3/2` `⟺` `liminf` even-density `≥1/3`
+> (Kac). **Sufficient** (strictly stronger, `⟹`) forms: `liminf freq(o≡3 mod 4) ≥ 1/2`; the ψ-form
+> `liminf_N (1/N)#{n<N : D(o_n)≥2} ≥ 1/2`; 3-adic `density{3|o_j}+density{9|o_j} ≥ 1/2`; single-orbit equidistribution
 > of `c_n mod 2^k`; equidistribution of `8·(3/2)^n mod 1`.
 
 A complete non-halting proof is `(K)` **together with** the finite check `balance_n ≥ 0` for `n≤N_0`, verified

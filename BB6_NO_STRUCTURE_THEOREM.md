@@ -18,8 +18,11 @@ Bernoulli, with `(D_j)` i.i.d. geometric `P(D=d)=2^{−d}` under Haar (`INDUCED_
 > `ψ(o) := ½ − 1{D≥2} − 1{D≥3}`  (a function of `o mod 8`: `ψ=+½` if `D=1`, `−½` if `D=2`, `−3/2` if `D≥3`).
 
 [PROVEN] `(1/N)Σ_{j<N} ψ(o_j) = ½ − (1/N)Σ_{j<N}[1{D_j≥2}+1{D_j≥3}]`, so
-> **the criterion (K):** `limsup_N (1/N)Σ_{j<N} ψ(o_j) ≤ 0`  ⟺  `liminf mean D ≥ 3/2`  ⟺  even-density `≥ 1/3`  ⟺
-> **Antihydra never halts**.
+> **the non-halt-equivalent kernel:** `liminf mean D ≥ 3/2`  ⟺  even-density `≥ 1/3`  ⟺  **Antihydra never halts**
+> (the three are [PROVEN]-equivalent, via Kac). The ψ-form `limsup_N (1/N)Σ ψ(o_j) ≤ 0` is the **robust SUFFICIENT**
+> criterion: `limsup Σψ ≤ 0  ⟹  mean D ≥ 3/2` (margin 1/4; `MINPROP_COBOUNDARY_LP.md`) — it truncates the tail at `D≥3`,
+> so it is strictly stronger (`⟹`, not `⟺`). The theorem below rules out structural proofs of the ψ-form **and** of the
+> equivalent `mean D ≥ 3/2` (both are violated at `δ₁`, where `mean D=1`).
 
 `(K)` is the assertion that the orbit of `o₀=27` has time-average `ψ`-value `≤ 0`. The Haar mean is `∫ψ\,dHaar = −1/4`
 (a 1/4 margin) — so `(K)` holds *on average / a.e.*; the question is the single specified orbit.
@@ -38,7 +41,9 @@ A "structure-only certificate" is any of the three registers that the dichotomy'
 - **(C3) Measure-level / annealed certificate:** any argument that concludes from the invariant measure (Haar/Bernoulli
   ergodic theorem, decay of correlations, CLT) — yielding the conclusion for **μ-a.e.** orbit.
 
-These exhaust the FREE-side machinery (R1 measure-constant/first-moment/annealed; R2 all-orbits/topological); HARD-side data
+These comprise the structural registers (R1 measure-constant/first-moment/annealed; R2 all-orbits/topological — note R2 also
+covers seed-specific growth facts like `#even≥0.89 log n`, which are FREE yet still fail to reach (K), controlling
+support/growth not frequency); HARD-side data
 (the orbit's specific magnitude/arithmetic) is by definition outside them.
 
 ---
@@ -91,7 +96,7 @@ unboundedly and avoids the basins of the low cycles — which is the content of 
 ## 4. What the theorem does and does not establish [honest scope]
 
 **Does:**
-- Rules out, unconditionally and at the theorem level, the entire FREE-side machinery (bounded residue sub-actions; universal/all-orbits bounds; measure-level/annealed arguments) as a route to `(K)`.
+- Rules out, unconditionally and at the theorem level, the three structural registers (bounded residue sub-actions; universal/all-orbits bounds; measure-level/annealed arguments) — and (§4) unbounded magnitude-aware/adelic sub-actions — as routes to `(K)`. (The seed-specific growth register R2, e.g. `#even≥0.89 log n`, is also FREE and also fails — it controls support/growth, not frequency.)
 - Localizes the irreducible content to one named arithmetic statement (single-orbit equidistribution = Mahler 3/2 / AEV).
 - Explains *why* ~20 independent attack routes stop at the same place (each is, by `BB6_OBSTRUCTION_DICHOTOMY.md`, an instance of one of (C1)–(C3) or the topological register).
 
