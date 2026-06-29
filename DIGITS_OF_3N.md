@@ -234,7 +234,7 @@ which equals the open Mahler/AEV `{(3/2)ⁿ}` object in every framing surveyed.
 - Senge, H.G., Straus, E.G., *PV-numbers and sets of multiplicity*, Period. Math. Hungar. 3 (1973) 93–100.
 - Stewart, C.L., *On the representation of an integer in two different bases*, J. Reine Angew. Math. 319 (1980) 63–72.
 - Bugeaud, Y., Kaneko, H., *On the digital representation of integers with bounded prime factors*, arXiv:1609.07926; Ann. Sc. Norm. Super. Pisa (2018). (also *…of smooth numbers*, Math. Proc. Camb. Phil. Soc. 165 (2018) 533–540.)
-- Spiegelhofer, L., Wallner, M. (et al.), *The joint distribution of binary and ternary digit sums*, arXiv:2501.00850 (Jan 2025) — Lemma 4.1 (longest-run bound via Schlickewei subspace theorem).
+- arXiv:2501.00850 (Jan 2025), *The joint distribution of binary and ternary digit sums* — **[SOUNDNESS, citation-pending, `CORE_ORBIT_ARITHMETIC.md` §5′]**: this paper's main result is **digit-SUM normality via Baker's theorem**, NOT a run lemma; the longest-run bound `L(M·3ⁿ)=o(n)` is **real** (Schlickewei p-adic subspace theorem, Bugeaud–Kaneko line) but its attribution to "2501.00850 Lemma 4.1" / "Spiegelhofer–Wallner" is **unverified** — relabel `[PROVEN-in-lit, exact reference pending]`, do not cite 2501.00850 for the run bound.
 - Rowland, E., *Regularity versus complexity in the binary representation of 3ⁿ*, arXiv:0902.3257; Complex Systems 18 (2009).
 - Andrieu, M., Eliahou, S., Vivion, L., *A Normality Conjecture on Rational Base Number Systems*, arXiv:2510.11723 (2025). (cross-ref `AEV_DIGEST.md`)
 - (cross-refs) `WALL_B_WHICH_PART.md`, `THREEADIC_LITERATURE.md`, `AEV_DIGEST.md`, `KERNEL_FINAL.md`, `BAKER_LINFORMS.md`.
