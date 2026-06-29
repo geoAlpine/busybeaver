@@ -5,3 +5,6 @@ _*_run.py
 _*_audit.py
 _reverify*.py
 _bb6_holdout_run.py
+
+# agent scratch files written into the repo dir
+scratchpad/
