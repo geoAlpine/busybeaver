@@ -129,20 +129,35 @@ that they *suffice*):
   the exceptional set is rigorously excluded (2-adic repulsion). `[PROVEN]` The residual is the
   positive-entropy Cantor part — exactly AIU's hypothesis.
 
-### 3.2 The one consequence I can prove now `[PROVEN]`
-> **Lemma (rank-2 dichotomy on the solenoid, unconditional).** Any weak-* limit `μ` of `μ_N` that *happens*
-> to be `⟨×2,×3⟩`-invariant and ergodic is **either Haar or supported on the (Haar-null, ℚ-rational)
-> `Φ`-finite set**; and the latter is excluded for our `x₀` by §3.1. Hence: *`A`-invariance is the only gap*
-> — if `μ` is upgraded to host-invariance at all, it is Haar.
+### 3.2 The one consequence I can prove now — **[SOUNDNESS CORRECTION 2026-06-29: OVER-CLAIMED, demoted; see `DICHOTOMY_LEMMA_AUDIT.md`]**
+> **[RETRACTED as stated] Lemma (rank-2 dichotomy on the solenoid, unconditional).** Any weak-* limit `μ` of
+> `μ_N` that *happens* to be `⟨×2,×3⟩`-invariant and ergodic is either Haar or supported on the Haar-null
+> `Φ`-finite set; hence `A`-invariance is the only gap.
 
-*Proof.* Berend's topological rigidity for solenoid automorphism actions (totally irreducible,
-non-virtually-cyclic, contains a hyperbolic element — all hold for `Φ` on `X`) `[PROVEN-in-lit]` makes every
-proper closed `Φ`-invariant set finite/rational; combined with the periodic-exclusion seed §3.1 the
-finite alternative cannot carry positive `μ`-mass for the specified `x₀`. ∎
+**Why this is over-claimed.** The proof uses Berend's **topological set-rigidity** to reach a **measure**
+conclusion, which it cannot. Berend (1983, solenoid form) `[PROVEN-in-lit]` classifies closed `Φ`-invariant
+**sets** (totally irreducible + **rank ≥ 2, non-virtually-cyclic** + hyperbolic element — all hold for
+`Φ=⟨×2,×3⟩`): every proper closed `Φ`-invariant set is finite/rational. Applied to a `Φ`-invariant ergodic
+`μ`, this gives only **`supp(μ) = X` (full support)** — **NOT `μ = `Haar.** A full-support `Φ`-invariant
+measure need not be Haar; forcing Haar from `Φ`-invariance *without entropy* is exactly **Furstenberg's
+conjecture (OPEN)**. The proof silently equated "supp finite-or-everything" with "Haar."
 
-This isolates the entire difficulty into the *single* implication `A`-invariant ⟹ `⟨×2,×3⟩`-invariant —
-i.e. AIU is not just sufficient, it is (given §3.2) the **exact** missing step. That sharpening is the new
-deliverable of this note.
+> **[CORRECTED, PROVEN] Lemma.** (i) A `Φ`-invariant ergodic limit `μ` for our `x₀` has **full support**
+> (Berend + §3.1 periodic-exclusion). (ii) `Φ`-invariant ergodic **+ positive entropy `h_μ(M₂)>0`** ⟹ `μ=`Haar
+> (Rudolph–Johnson, `[PROVEN-in-lit]`). The entropy hypothesis is essential; without it the conclusion is
+> Furstenberg-open.
+
+**Consequence (corrected).** There are **TWO** gaps between the A-invariant limit measure and Haar, not one:
+**(AIU)** `A`-invariant ⟹ `Φ`-invariant, **and (ENT)** `h_μ(M₂)>0`. With both, the proven Rudolph–Johnson
+finishes. The earlier "AIU is the exact/only missing step" folded (ENT) into Berend and is **withdrawn**. (Both
+gaps are independently studied: `AIU_ATTACK.md` shows AIU is strictly weaker than (K) but (K)-hard;
+`POSITIVE_ENTROPY_ATTACK.md` shows `h_μ>0` is necessary, measured ≈log2, but not provable from proven structure.)
+
+**The one genuine [PROVEN] topological partial.** Berend applies only to the **rank-2 host** orbit: the set
+`{2^a 3^b · 8 : a,b∈ℤ}` is **dense in `X`** (it is infinite, hence not finite/rational). For the **rank-1**
+`A=×(3/2)`-orbit of `8` — which is `ℤ`, **virtually cyclic** — Berend gives **nothing** (its hypotheses
+exclude virtually-cyclic actions); there is **no** proven topological-density result for the actual orbit, and
+density ≠ equidistribution in any case.
 
 ### 3.3 The tautology barrier — stated honestly, and how the framework proposes to cross it
 `INTRATERM_ADELIC_MINING.md` PROVED two facts that *threaten* AIU and must be confronted head-on:
@@ -245,9 +260,12 @@ direction."
 ---
 
 ### Honest status
-The framework is a *reorganization with one new conjecture*, not a breach. PROVEN: the host realization
-(`A` is a rank-1 line in the rank-2 `⟨×2,×3⟩` acting on the solenoid), the dichotomy lemma (§3.2 — the
-*only* gap is `A`-invariance ⟹ host-invariance), and all adelic seeds. CONJECTURE (irreducible): AIU /
+The framework is a *reorganization with TWO open conjectures*, not a breach. PROVEN: the host realization
+(`A` is a rank-1 line in the rank-2 `⟨×2,×3⟩` acting on the solenoid); the rank-2 **host** orbit `{2^a3^b·8}`
+is dense (Berend); and `Φ`-invariant + positive entropy ⟹ Haar (Rudolph–Johnson). **CORRECTED (§3.2): there
+are TWO gaps to Haar, not one** — (AIU) `A`-invariant ⟹ `Φ`-invariant, AND (ENT) `h_μ(M₂)>0`; the earlier
+"only gap is AIU" was over-claimed (Berend gives full support, not Haar; the entropy-free version is
+Furstenberg-open) and is withdrawn. CONJECTURE (irreducible, both open & (K)-hard): AIU /
 AIU-min — the asymptotic invariance group of the single orbit's limit measure exceeds its pointwise
 symmetry group by exactly `×3`. The tautology barrier (T1)–(T2) is conceded at the pointwise/first-moment
 level and the crossing is *proposed* (measure-level ≠ pointwise) but **not proven**. The reduction

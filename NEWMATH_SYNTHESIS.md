@@ -36,8 +36,12 @@ of `8(3/2)ⁿ` = (K).
   the rank-2 host `Φ=⟨×2,×3⟩`; the "arithmetic second direction" is the diagonal `×6`, tied by the product formula
   `|6|_∞|6|_2|6|_3=1`. The famous ×2,×3 rigidity (Rudolph–Johnson) **does act on this space** — the program's "rank-2
   unavailable" was wrong; it is available on the solenoid.
-- **[PROVEN] Dichotomy lemma.** Via Berend rigidity + the proven 2-adic periodic-repulsion, the **only** gap between
-  A-invariance and Haar is the upgrade **A-invariant ⟹ host-invariant**. So the single missing step is named exactly.
+- **[CORRECTED — see `DICHOTOMY_LEMMA_AUDIT.md`] Two gaps, not one.** The earlier "[PROVEN] dichotomy lemma: the only gap
+  is A-invariant ⟹ host-invariant" was **over-claimed and is withdrawn**: Berend gives only topological set-rigidity ⟹
+  `supp(μ)=X` (full support), **not** Haar; forcing Haar from `Φ`-invariance without entropy is Furstenberg (open). The
+  correct statement: **two** gaps to Haar — **(AIU)** A-invariant ⟹ `Φ`-invariant, **and (ENT)** `h_μ(M₂)>0` — with both,
+  proven Rudolph–Johnson gives Haar. [PROVEN] partial: only the **rank-2 host** orbit `{2^a3^b·8}` is dense (Berend); the
+  rank-1 A-orbit (virtually cyclic) gets nothing from Berend.
 - **[CONJECTURE] AIU (Arithmetic Invariance Upgrade).** A non-atomic, positive-2-adic-entropy weak-* limit `μ` of the
   orbit's empirical measures is `⟨×2,×3⟩`-invariant (not merely A-invariant). AIU ⟹ Rudolph–Johnson ⟹ `μ=`Haar ⟹ (K).
 - **[PROVEN] Renormalization structure** (`NEWMATH_DIAGONAL_RENORM`): the exact ×3-adder transducer recurrence
@@ -65,8 +69,9 @@ Both build the non-spectral object on the odd-character subspace (where the gap 
 ## 2. Honest assessment — which is most promising, and the catch
 
 **(I) is the most promising** and the genuine new direction: it places (K) inside the **Furstenberg ×2,×3 / Rudolph–Johnson**
-program via the solenoid, with a **proven dichotomy** isolating one conjecture (AIU). This is a real bridge to a powerful
-literature and the right thing to put to experts.
+program via the solenoid, reducing it to **two** open (K)-hard inputs — **(AIU)** host-invariance upgrade and **(ENT)**
+`h_μ(M₂)>0` — which together invoke the **proven** Rudolph–Johnson. This is a real bridge to a powerful literature and the
+right thing to put to experts.
 
 **The catch [honest].** Rudolph–Johnson needs **positive entropy**. A single orbit's empirical limit measure is plausibly
 **zero-entropy** (the orbit's subword complexity is only linear, `p(ℓ)≥1.71ℓ`, topological entropy 0). In the zero-entropy
@@ -85,8 +90,10 @@ proves (K); none claims to.** The new math produced is a coherent theory and a p
 
 ## 3. Durable new [PROVEN] theorems produced this session (kernel-independent)
 
-1. **Solenoid host + dichotomy lemma**: `×2,×3∈Aut(X)`, `A=M_3M_2⁻¹`; A-invariance ⟹ host-invariance is the *only* gap to
-   Haar (Berend + 2-adic repulsion). [PROVEN]
+1. **Solenoid host**: `×2,×3∈Aut(X)`, `A=M_3M_2⁻¹` is a rank-1 line in the rank-2 host; the rank-2 host orbit `{2^a3^b·8}`
+   is **dense** (Berend topological set-rigidity); `Φ`-invariant **+ positive entropy** ⟹ Haar (Rudolph–Johnson). [PROVEN]
+   (NB: the earlier "A-invariance ⟹ host-invariance is the *only* gap" is WITHDRAWN — there are two gaps, AIU + entropy;
+   `DICHOTOMY_LEMMA_AUDIT.md`.)
 2. **Renormalization transducer**: exact `d_{n+1}^{(k)}=d_n^{(k+1)}⊕d_n^{(k)}⊕γ_n^{(k)}`; annealed gap ½, unique uniform
    fixed point; **non-Pisot ⇒ no atomic/Pisot/sofic fixed point** (no atomic obstruction). [PROVEN]
 3. **Coisometry no-go**: the cross-scale carry-renormalization cocycle `R_k` is a coisometry ⟹ operator-norm Lyapunov ≡ 0
@@ -99,15 +106,18 @@ proves (K); none claims to.** The new math produced is a coherent theory and a p
 
 ## 4. The unified frontier statement and the next step
 
-> **(K) ⟺ the rational point 8∈ℤ[1/6] is generic for the non-Pisot solenoid automorphism ×(3/2)** ⟺ (dichotomy) its
-> empirical limit measure is `⟨×2,×3⟩`-invariant ⟺ (Rudolph–Johnson, *modulo positive entropy*) Haar. In the zero-entropy
-> regime this is a **Furstenberg-×2,×3-type rigidity** problem. The odd-block cocycle (II) supplies the candidate engine
-> (2-adic Lyapunov `V=v₂(c−1)`) and proves no operator-norm route can replace it.
+> **(K) ⟺ the rational point 8∈ℤ[1/6] is generic for the non-Pisot solenoid automorphism ×(3/2)** ⟺ its empirical limit
+> measure `μ=`Haar ⟺ **(AIU)** `μ` is `⟨×2,×3⟩`-invariant **AND (ENT)** `h_μ(M₂)>0`, the conjunction invoking the **proven**
+> Rudolph–Johnson. Both AIU and ENT are open, strictly weaker than (K) individually, and (K)-hard (no proven shortcut);
+> `h_μ=0` is the **(K)-false** regime (numerics show positive entropy, ≈log2). The odd-block cocycle (II) supplies the
+> candidate engine (2-adic Lyapunov `V=v₂(c−1)`) and proves no operator-norm route can replace it.
 
 **Next step (highest value):** take this placement to **homogeneous-dynamics / measure-rigidity experts** (Einsiedler,
-Lindenstrauss, Host–Kra circle) and the **AEV authors** — the sharp question is now *"does the Antihydra orbit's limit
-measure on the (2,3)-solenoid have positive entropy, and if zero, is this a tractable corner of Furstenberg's ×2,×3?"*
-That is a precise, expert-facing question with a proven reduction behind it — exactly the kind of contribution the program
-targeted (priority A/B). The new math is a genuine framework + a major-program placement; the resolution is generational.
+Lindenstrauss, Host–Kra circle) and the **AEV authors** — the sharp question is now *"for the A=×(3/2)-orbit of 8 on the
+(2,3)-solenoid, is the host-invariance upgrade (AIU) or the positive-entropy input (ENT) tractable for this explicit
+non-Pisot, transducer-generated measure — given that with both the proven Rudolph–Johnson finishes?"* That is a precise,
+expert-facing question with a proven reduction behind it — exactly the kind of contribution the program targeted (priority
+A/B). The new math is a genuine framework + a major-program placement; the resolution is generational.
 
-**No machine decided. No label upgraded.** (K) remains [OPEN] = Mahler 3/2 / AEV / now also a Furstenberg-×2,×3 corner.
+**No machine decided. No label upgraded.** (K) remains [OPEN] = Mahler 3/2 / AEV, now also placed in the Rudolph–Johnson /
+Furstenberg ×2,×3 program (two open inputs: AIU + positive entropy).
