@@ -32,11 +32,18 @@ governed by a Mahler multiplier `μ = 2^a/3^b` whose lowest-terms denominator is
 
 We prove three theorems and a placement result, all conjecture-free except where explicitly marked.
 
-- **Theorem 1 (exact reductions, [PROVEN] modulo a [VERIFIED] macro-structure).** For the in-scope set
+- **Theorem 1 (exact reductions).** For the in-scope set
   **{Antihydra, o10-inner, o18, o15}** the raw Turing machine's halting is reduced to an explicit `2^a/3^b`
   arithmetic event: Antihydra halts iff an even-density Cesàro average drops below `1/3` (`q=2`, density
   facet); o18/o15 halt iff a base-3 carry collision ever occurs (`q=3`, existence facet); o10-inner runs the
-  literal ceiling `⌈3m/2⌉`. The supporting **GAP**, **renewal**, and **valuation** lemmas are proved in full.
+  literal ceiling `⌈3m/2⌉`. **For Antihydra the reduction is now [PROVEN] outright:** the raw-TM → counter
+  macro-structure (`c ↦ ⌊3c/2⌋`, the balance counter, and the halt criterion) is a full conjecture-free
+  hand-proof from the transition table — three induction-proven shift lemmas, the inner ×3/2 lemma, the
+  even/odd carry lemmas, the macro-step `c' = ⌊3c/2⌋`, and the halt criterion (TM-extraction note §1) — and
+  the downstream arithmetic was already inline. For **o18/o15/o10-inner** the reduction is **[PROVEN] modulo a
+  [VERIFIED] macro-structure** (their halt criteria are table-trivially [PROVEN]; their base-3 / ceiling
+  macro-coordinates stay [VERIFIED]). The supporting **GAP**, **renewal**, and **valuation** lemmas are proved
+  in full. The AEV/Mahler kernel that decides the orbits remains [OPEN].
 
 - **Theorem 2 (induced-map structure, [PROVEN]).** For every `μ = 2^a/3^b` with `v_p(μ) = −1`, `T_μ` is a
   clean `p`-to-1 Haar-measure-preserving endomorphism of `ℤ_p`. Antihydra's induced odd-return map
@@ -147,7 +154,7 @@ Space Needle, `4/3` o4/o5) are [VERIFIED] (exact integer reset-difference ratios
 > **Theorem 1.** For each in-scope machine `M ∈ {Antihydra, o10-inner, o18, o15}`, the halting of `M` is
 > equivalent to an explicit arithmetic event of a `2^a/3^b` orbit, as stated in §3.1–§3.4.
 
-**Honesty note on the reduction (applies to all four).** Each reduction has two layers. (i) The **macro-structure
+**Honesty note on the reduction (general; Antihydra exception in the next paragraph).** Each reduction has two layers. (i) The **macro-structure
 extraction** — that the blank-tape evolution maintains the stated unary counters / blocks and evolves them by
 the stated map — is [VERIFIED]: it was obtained by reverse-engineering the raw transition table and confirmed
 step-for-step against `bb_sim` to the cited horizons (`bb_sim` is the program's exact-semantics simulator,
@@ -157,11 +164,24 @@ macro-structure — the GAP/renewal/valuation chain below — is **proved in ful
 the reductions **[PROVEN] modulo the [VERIFIED] macro-structure**, faithful to the source's "exact,
 machine-verified reduction."
 
+**Exception — Antihydra (§3.1) is now [PROVEN] outright.** For Antihydra the macro-structure-extraction layer
+(i) has been upgraded from [VERIFIED] to a full conjecture-free hand-proof: every macro-step is *derived* by a
+finite case analysis on the transition table plus an induction over each sweep — three induction-proven shift
+lemmas (A→, E→, C←), the inner ×3/2 lemma `I(a,L,R) ⟹ I(a,L−2,R+3)`, the even- and odd-carry lemmas, the
+macro-step theorem (`b' = ⌊3b/2⌋+3`, i.e. `c' = ⌊3c/2⌋` under `c = b+6`), and the halt criterion (halt iff an
+odd-`c` step occurs at balance `0`) — with `bb_sim` used **only** as confirmation (full derivation in the
+companion note, §"Antihydra — FULL hand-proof"). Hence Antihydra's reduction is **[PROVEN]** with no residual
+[VERIFIED] dependence (the AEV/Mahler kernel remains [OPEN]). For **o18/o15** only the **halt criterion** is
+table-trivially [PROVEN]; their base-3 width/coordinate macro-structure stays **[VERIFIED]** (the carry
+induction is genuinely harder and is not transcribed). **o10-inner**'s ceiling map stays
+**[VERIFIED]**/[CONDITIONAL].
+
 ### 3.1 Antihydra — density facet, `q=2`
 
 The blank-tape evolution maintains the integer orbit `c₀ = 8`, `c_{n+1} = ⌊3c_n/2⌋`, and a counter equal to
-`balance_n := 3E_n − n`, where `E_n = #{i < n : c_i even}` ([VERIFIED] macro-structure). The machine halts iff
-this counter underflows.
+`balance_n := 3E_n − n`, where `E_n = #{i < n : c_i even}` (**[PROVEN] macro-structure**, hand-derived from
+the raw transition table in the TM-extraction note §1; shift lemmas + inner ×3/2 lemma + carry lemmas +
+macro-step + start config `C(0,2)` ↔ `c = 8`). The machine halts iff this counter underflows.
 
 > **Lemma 3.1 (halting criterion, [PROVEN]).** Given the macro-structure, Antihydra halts
 > `⟺ ∃ n : balance_n < 0 ⟺ ∃ n : E_n/n < 1/3`. Equivalently, non-halting `⟺ E_n/n ≥ 1/3` for all `n`. The
@@ -213,8 +233,11 @@ an excursion, so over the first `N` induced excursions the number of even `c`-va
 **Conclusion (Antihydra reduction).** Combining Lemmas 3.1–3.4: Antihydra **non-halts** iff
 `E_n/n ≥ 1/3 ∀n`, which holds iff the finite check `balance_n ≥ 0` for `n ≤ N₀` holds **and** the asymptotic
 one-sided density bound `liminf freq(o ≡ 3 mod 4) ≥ 1/2` holds along `o₀ = 27`. The asymptotic line is the
-[OPEN] kernel (Section 6). Equivalent exact 2-adic form: `HALT ⟺ ∃n : v₂(c_n − 1) ≥ balance_n + 1`. **[PROVEN]
-modulo [VERIFIED] macro-structure.**
+[OPEN] kernel (Section 6). Equivalent exact 2-adic form: `HALT ⟺ ∃n : v₂(c_n − 1) ≥ balance_n + 1`. **[PROVEN]**
+— the macro-structure (`c₀ = 8`, `c_{n+1} = ⌊3c_n/2⌋`, the balance counter, and the halt criterion) is now
+hand-derived in full from the raw transition table (TM-extraction note §1: shift lemmas, inner ×3/2 lemma,
+even/odd carry lemmas, macro-step `c' = ⌊3c/2⌋`, halt), so no [VERIFIED] residue remains in the reduction; the
+AEV/Mahler kernel remains [OPEN].
 
 ### 3.2 o10-inner — `q=2` ceiling; o10-FULL out of scope
 
@@ -236,9 +259,12 @@ the leftward D/F sweep evolves a width `f(N) = ⌊8N/3⌋ + 2`. [VERIFIED]:
 `10 → 28 → 76 → 204 → 546 → 1458 → 3890` (the law iterates `10,28,76,204,546,1458,3890,10375,…`), and the law
 **breaks at epoch 8** (observed `27660 ≠ 10375`) via a base-3 carry.
 
-> **Lemma 3.5 (o18 halt criterion, [PROVEN] modulo [VERIFIED] macro-structure).** o18 halts `⟺` state F reads
+> **Lemma 3.5 (o18 halt criterion).** o18 halts `⟺` state F reads
 > `1`, i.e. the leftward D/F frontier lands on an existing `1` (an adjacent-`11` left-frontier carry
-> alignment of the `⌊(8/3)x⌋` orbit on `ℤ₃`).
+> alignment of the `⌊(8/3)x⌋` orbit on `ℤ₃`). The **halt-form** "halts `⟺` F reads `1`" is **[PROVEN, trivial]**
+> (the only halting transition is `F,1`, forced by the table; TM-extraction note §3.1). The **width law**
+> `k ↦ ⌊8k/3⌋+2` and the milestone form remain **[VERIFIED]** (the base-3 carry induction is not transcribed),
+> and the identification of "F reads `1`" with the carry-alignment event is the [OPEN] `q=3` kernel.
 >
 > **Existence-type ([PROVEN]).** non-halt `⟺` the bad set `𝓑 = {k : carry aligns}` is empty. Density is
 > **provably insufficient**: `𝓑` has density 0 yet a single alignment halts, so there is no
@@ -250,10 +276,13 @@ the leftward D/F sweep evolves a width `f(N) = ⌊8N/3⌋ + 2`. [VERIFIED]:
 Macro-structure ([VERIFIED], step-for-step `bb_sim` agreement, `120M` steps, planted control): `1^V 0 (10)^m`,
 width `W ↦ ⌊8W/3⌋ + 2` (widths `19,40,108,290,773,2060,5493,14634`, ratios `→ 8/3`).
 
-> **Lemma 3.6 (o15 halt criterion, [PROVEN] modulo [VERIFIED] macro-structure).** o15 halts `⟺` the rightward
-> F→A handoff reads `11` (two 1-blocks abut) — a right-frontier collision (the mirror of o18). The counter
+> **Lemma 3.6 (o15 halt criterion).** o15 halts `⟺` the rightward
+> F→A handoff reads `11` (two 1-blocks abut) — a right-frontier collision (the mirror of o18). The
+> **halt-form** "halts `⟺` state A ever reads a `1`" is **[PROVEN, trivial]** (the only halting transition is
+> `A,1`, forced by the table; TM-extraction note §4). The counter
 > `V` is **parity-irregular** (`V = 6,39,107,289,6,2059,6,3`), so there is no clean scalar orbit map; the
-> irregularity is the base-3 digit string of the `(8/3)^n` orbit (separator positions = carry boundaries).
+> irregularity is the base-3 digit string of the `(8/3)^n` orbit (separator positions = carry boundaries), and
+> the macro-coordinate (width `W ↦ ⌊8W/3⌋+2`) **stays [VERIFIED]** (no clean scalar map to hand-prove).
 > Same Erdős kernel, same AEV `q=3` existence facet as o18; harder model, identical number theory.
 
 ### 3.5 Scope exclusions
@@ -266,10 +295,13 @@ width `W ↦ ⌊8W/3⌋ + 2` (widths `19,40,108,290,773,2060,5493,14634`, ratios
   [OPEN] Collatz statement. o17 contributes the highest descriptive-certificate floor (companion note) but is
   **outside the equidistribution kernel**.
 
-> **Theorem 1 (summary, [PROVEN] modulo [VERIFIED] macro-structure).** Each in-scope cryptid's halting is an
+> **Theorem 1 (summary).** Each in-scope cryptid's halting is an
 > explicit `2^a/3^b` arithmetic event: Antihydra's density underflow / 2-adic depth (`q=2`); o18/o15's base-3
 > carry alignment / collision (`q=3` existence); o10-inner's `3/2` ceiling. This is an unconditional reduction
 > (raw 6-state TM → named `p`-adic predicate), independent of whether the underlying kernel is settled.
+> **Antihydra is [PROVEN] outright** (the raw-TM → counter macro-structure is hand-proved in full, §3.1);
+> **o18/o15/o10-inner are [PROVEN] modulo a [VERIFIED] macro-structure** (their halt criteria are
+> table-trivially [PROVEN], their base-3 / ceiling macro-coordinates stay [VERIFIED]).
 
 ---
 
@@ -593,6 +625,19 @@ seeds (`o11`: `k=201` at step `12088`, `k=582` at step `56237`).
 > **+** Borel–Cantelli-over-restarts existence test. It is a strict super-structure of the in-scope cryptids,
 > disjoint from them and from the kernel-less odometers (o3, o17). The in-scope set is therefore exactly four.
 
+> **Cross-reference (Axis-2 conditional theorem).** The halt object isolated in Theorem 5(ii) —
+> `M` halts `⟺ ∃ e : O_e ∩ H_e ≠ ∅`, a Borel–Cantelli hitting/avoidance event over the doubly-exponential
+> reseed family `{B_e}` — is developed as a standalone **conditional theorem** in the companion note
+> `NESTED_COLLATZ_THEOREM.md`, the Axis-2 counterpart of the Axis-1 single-orbit reductions of §3. Conditional
+> on an effective reseeded-equidistribution hypothesis (EFF-EQ), it splits cleanly: the **convergent** side
+> `Σ_e p_e < ∞ ⟹ non-halt` follows from **Borel–Cantelli I** (no independence; the *weaker* ask, lifting
+> o18's existence reduction to the reseed family, **[CONDITIONAL]** on a rate beating a summable target), while
+> the **divergent** side `Σ_e p_e = ∞ ⟹ halt` needs **Borel–Cantelli II** / quenched quasi-independence that a
+> single deterministic reseed family cannot supply — the **o10 wall**, **[OPEN]**. The note also records the
+> two-part barrier inheritance: the inner parity sub-factor inherits the [PROVEN] density `β = +1/2 > 0`
+> barrier, while the full outer existence event sits on the [OPEN] over-approximation axis. No machine is
+> decided and no halting direction is claimed there.
+
 ---
 
 ## 8. The frontier catalogue (context, [VERIFIED])
@@ -630,7 +675,8 @@ for the `CF ⊊ CS` step). It is not part of this note.
 These hold **unconditionally** (no dependence on the open kernel) and are publishable standalone:
 
 1. **Exact reduction theorem** (Theorem 1): each in-scope cryptid's halting `=` a named `2^a/3^b` arithmetic
-   event. **[PROVEN] modulo [VERIFIED] macro-structure.**
+   event. **[PROVEN] outright for Antihydra** (macro-structure hand-proved from the raw transition table);
+   **[PROVEN] modulo [VERIFIED] macro-structure for o18/o15/o10-inner** (halt criteria table-trivially [PROVEN]).
 2. **Induced-map Haar/Bernoulli theorem** (Theorem 2): `T_μ` Haar-preserving on `ℤ_p` for `v_p(μ)=−1`;
    Antihydra's `D_j` i.i.d. geometric, `mean D = 2`. **[PROVEN]** (measure side full; exactness/Bernoulli
    cited).
@@ -691,37 +737,67 @@ state-blocks `A_B_C_D_E_F` separated by `_`, each block two transitions (read 0,
 
 ## References
 
-Pinned (locators confirmed against the program's source digests):
+All locators pinned and verified against the program's citation digest (`CITATIONS.md`). The only genuinely
+unpinnable item — Conze–Guivarc'h — is cited honestly as unpublished.
 
-- Andrieu, Eliahou, Vivion, *A Normality Conjecture on Rational Base Number Systems*, arXiv:**2510.11723**
-  (2025) — Conjectures 1.2, 1.4, 1.6; Theorems 1.5, 1.7. (The single named [OPEN] kernel of this note.)
-- Mahler, *An unsolved problem on the powers of 3/2*, **J. Austral. Math. Soc. 8 (1968)** 313–321.
-- Flatto, Lagarias, Pollington, *On the range of fractional parts {ξ(p/q)ⁿ}*, **Acta Arith. 70 (1995)
-  125–147** (the support/spread `1/3` bound; distinct axis from the density kernel).
-- Eliahou, Verger-Gaugry, *The number system in rational base 3/2 and the 3x+1 problem*, arXiv:**2504.13716**
-  (2025).
-- Tao, *Almost all orbits of the Collatz map attain almost bounded values*, arXiv:**1909.03562** (2019/2022)
-  (log-density ensemble theorem; no per-orbit output).
-- Stérin, Woods, *Hardness of busy beaver value BB(15)*, arXiv:**2107.12475** (the BB↔Erdős reduction for the
-  `q=3` facet).
+**Equidistribution / Mahler frontier (the [OPEN] kernel and its umbrella).**
 
-Partially pinned — locators to confirm before submission (**flagged for follow-up**):
+- M. Andrieu, S. Eliahou, L. Vivion, *A Normality Conjecture on Rational Base Number Systems*,
+  arXiv:**2510.11723** (2025) — Conjectures 1.2, 1.4, 1.6; Theorems 1.5, 1.7. (The single named [OPEN] kernel
+  of this note.)
+- K. Mahler, *An unsolved problem on the powers of 3/2*, J. Austral. Math. Soc. **8** (1968), no. 2, 313–321.
+  DOI 10.1017/S1446788700005371.
+- L. Flatto, J. C. Lagarias, A. D. Pollington, *On the range of fractional parts {ξ(p/q)ⁿ}*,
+  Acta Arith. **70** (1995), no. 2, 125–147. (The support/spread `1/3` bound; distinct axis from the density
+  kernel.)
+- S. Akiyama, Ch. Frougny, J. Sakarovitch, *Powers of rationals modulo 1 and rational base number systems*,
+  Israel J. Math. **168** (2008), 53–91. DOI 10.1007/s11856-008-1056-4. (The "Akiyama 2008" triple-expansions
+  structure.)
+- A. Dubickas, M. J. Mossinghoff, *Lower bounds for Z-numbers*, Math. Comp. **78** (2009), no. 267,
+  1837–1851. DOI 10.1090/S0025-5718-09-02240-9. (The "4/3 problem" paper.)
+- S. Eliahou, J.-L. Verger-Gaugry, *The number system in rational base 3/2 and the 3x+1 problem*,
+  arXiv:**2504.13716** (2025), to appear in C. R. Math. Acad. Sci. Paris.
+- T. Tao, *Almost all orbits of the Collatz map attain almost bounded values*, arXiv:**1909.03562**
+  (2019/2022). (Log-density ensemble theorem; no per-orbit output.)
 
-- **Ergodic-optimization criterion** (Theorem 3 external input). Mañé (1996); Conze–Guivarc'h (unpublished,
-  ~1990s); Bousch, *Le poisson n'a pas d'arêtes*, Ann. Inst. H. Poincaré Probab. Statist. (≈2000); survey:
-  O. Jenkinson, *Ergodic optimization* (Discrete Contin. Dyn. Syst., 2006) and *Ergodic optimization in
-  dynamical systems* (Ergodic Theory Dynam. Systems, 2019). **Exact page/theorem numbers not pinned in the
-  source documents — confirm the precise sub-action theorem cited.**
-- **2-adic Collatz conjugacy / Bernoulli structure** (Theorem 2(b) external input). Lagarias (2-adic
-  conjugacy); Bernstein–Lagarias, *The 3x+1 conjugacy map*, Canad. J. Math. (1996); Matthews–Watts (ergodic
-  properties of `3x+1`-type maps, 1980s). **Exact volume/page numbers not pinned — confirm.**
-- Narkiewicz (1980), ternary-digit density upper bound `#{n ≤ x : (2ⁿ)₃ omits digit 2} ≤ 1.62 x^{α₀}`,
-  `α₀ = log₃ 2`. **Exact venue not pinned — confirm.**
-- Erdős (1979), conjecture on ternary digits of powers of 2. **Exact venue not pinned — confirm.**
-- Dubickas (2009), Dubickas–Mossinghoff (2009, the "4/3 problem"), Akiyama (2008, triple expansions). **Exact
-  venues not pinned — confirm.**
-- arXiv:**1901.03913** (range of a non-linear polynomial is not context-free) — used **only** by the companion
-  certification-hierarchy note, not by this paper. **Authors/title not pinned — confirm.**
+**Erdős ternary-digits facet (`q=3` existence kernel).**
+
+- P. Erdős, *Some unconventional problems in number theory*, Math. Mag. **52** (1979), no. 2, 67–70.
+- W. Narkiewicz, *A note on a paper of H. Gupta concerning powers of 2 and 3*, Univ. Beograd. Publ.
+  Elektrotehn. Fak. Ser. Mat. Fiz. No. 678–715 (1980), 173–174. (Density bound `≤ 1.62 x^{α₀}`,
+  `α₀ = log₃ 2`.)
+- T. Stérin, D. Woods, *Hardness of busy beaver value BB(15)*, arXiv:**2107.12475**. (The BB↔Erdős reduction
+  for the `q=3` facet.)
+
+**Ergodic optimization / sub-action theory (Theorem 3 external input).**
+
+- R. Mañé, *Generic properties and problems of minimizing measures of Lagrangian systems*, Nonlinearity **9**
+  (1996), no. 2, 273–310. DOI 10.1088/0951-7715/9/2/002. (Measure-rigidity half.)
+- T. Bousch, *Le poisson n'a pas d'arêtes*, Ann. Inst. H. Poincaré Probab. Statist. **36** (2000), no. 4,
+  489–508. (Sub-action / "revelation" existence half.)
+- T. Bousch, *La condition de Walters*, Ann. Sci. Éc. Norm. Supér. (4) **34** (2001), no. 2, 287–311.
+  DOI 10.1016/S0012-9593(00)01062-4. (Sub-action existence in the Walters class.)
+- O. Jenkinson, *Ergodic optimization*, Discrete Contin. Dyn. Syst. **15** (2006), no. 1, 197–224.
+  DOI 10.3934/dcds.2006.15.197. (Survey; the `β = sup_μ ∫ f dμ` variational principle + revelation theorem,
+  cited for the equivalence as stated.)
+- O. Jenkinson, *Ergodic optimization in dynamical systems*, Ergodic Theory Dynam. Systems **39** (2019),
+  no. 10, 2593–2618. DOI 10.1017/etds.2017.142 (arXiv:1712.02307). (Updated survey.)
+- A. Conze, Y. Guivarc'h, sub-action lemma, **unpublished** (c. 1993). (Genuinely never formally published;
+  cited as the original attribution alongside the published anchors Mañé / Bousch / Jenkinson.)
+
+**2-adic Collatz conjugacy / Bernoulli structure (Theorem 2(b) external input).**
+
+- J. C. Lagarias, *The 3x+1 problem and its generalizations*, Amer. Math. Monthly **92** (1985), no. 1, 3–23.
+  DOI 10.1080/00029890.1985.11971528.
+- D. J. Bernstein, J. C. Lagarias, *The 3x+1 conjugacy map*, Canad. J. Math. **48** (1996), no. 6,
+  1154–1169. DOI 10.4153/CJM-1996-060-x.
+- K. R. Matthews, A. M. Watts, *A generalization of Hasse's generalization of the Syracuse algorithm*,
+  Acta Arith. **43** (1984), no. 2, 167–175.
+
+**Used only by the companion certification-hierarchy note (not by this paper), pinned for completeness.**
+
+- D. Pálvölgyi, *The range of non-linear natural polynomials cannot be context-free*, arXiv:**1901.03913**
+  (2019). (Base-`q` range of a polynomial is context-free iff linear.)
 
 ---
 
@@ -729,8 +805,9 @@ Partially pinned — locators to confirm before submission (**flagged for follow
 (`BB6_STRUCTURAL_LIMIT_THEOREM.md`, `COMPLETE_PROOF_CAPSTONE.md`, `CRYPTID_REDUCTIONS.md`,
 `FLOOR_MIRROR_CONJECTURE.md`, `MAHLER_3_2_DOMINANCE.md`, `NESTED_COLLATZ_STRUCTURE.md`,
 `SESSION_2026-06-29_NESTED_COLLATZ.md`). Lemmas 3.1–3.4, 4.2, 4.3, 5.1, 6.1 and Corollary 6.2 are proved in
-full inline. Theorem 1's macro-structure layer and Theorem 3's LP step are [VERIFIED] (machine-checked),
-explicitly flagged. Theorem 2(b)'s exactness/Bernoullicity and Theorem 3's ergodic-optimization equivalence
-are external inputs, cited as such. The kernel (AEV/Mahler) is [OPEN]; per-cryptid completion is [CONDITIONAL]
+full inline. Antihydra's Theorem 1 macro-structure layer is now [PROVEN] (a full conjecture-free hand-proof
+from the raw transition table; companion note `TM_EXTRACTION_PROOFS.md` §1); o18/o15/o10-inner's
+macro-structure and Theorem 3's LP step remain [VERIFIED] (machine-checked), explicitly flagged. Theorem 2(b)'s
+exactness/Bernoullicity and Theorem 3's ergodic-optimization equivalence are external inputs, cited as such. The kernel (AEV/Mahler) is [OPEN]; per-cryptid completion is [CONDITIONAL]
 on it with no known shortcut. No machine is decided; no non-halting is asserted unconditionally. Numerics
 re-verified this session with the `.venv` exact big-integer interpreter against `bb_sim` semantics.*
