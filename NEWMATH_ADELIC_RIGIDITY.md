@@ -112,8 +112,11 @@ that they *suffice*):
    valuation of every term is the predecessor's 2-adic depth. This is the per-step shadow of the host
    relation `×3=A·×2`; AIU asks that its Cesàro average upgrade to measure-level `M_3`-invariance.
 3. **No permanent trapping** (`EXPERT_ASK_HOMOGENEOUS.md`; `REPELLER_ESCAPE.md`): periodic points are
-   2-adically repelling, so `μ` charges no finite orbit — the *positive-entropy* hypothesis of AIU is the
-   plausible (and the only) thing standing between the proven non-atomicity and Haar.
+   2-adically repelling, so the orbit avoids them per-visit. **[CORRECTED, `ENT_NONATOMIC.md`]** this does NOT prove `μ`
+   non-atomic (an atom needs only positive-density *re-entry*, = vanishing occupancy = (K)-hard); `μ` non-atomicity is
+   **[OPEN]**, not proven. The positive-entropy hypothesis `h_μ(M_2)>0` of AIU implies non-atomicity automatically, so the
+   main route (AIU + positive entropy ⟹ Haar via RJ) is unaffected; only a hypothetical zero-entropy/Furstenberg route
+   would need non-atomicity as a separate open input.
 
 ---
 

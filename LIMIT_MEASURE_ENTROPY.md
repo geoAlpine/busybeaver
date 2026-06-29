@@ -85,26 +85,28 @@ shift-orbit has empirical measure Bernoulli(½), entropy `log2`. (Indeed *(K) it
 
 ## 3. Consequence for framework (I): Rudolph–Johnson is NOT dead; the correct two-hypothesis reduction [PROVEN reduction structure]
 
-Let `μ` be any weak-* limit of the orbit's empirical measures. Proven inputs: `μ` is `A`-invariant
-[PROVEN, Krylov–Bogolyubov] and **non-atomic / charges no finite orbit** [PROVEN, 2-adic repulsion,
-`REPELLER_ESCAPE`, `NEWMATH_ADELIC_RIGIDITY` §3.1–3.2]. Then exactly two open inputs remain, and the **entropy is
-the fork between a PROVEN finish and an OPEN one**:
+Let `μ` be any weak-* limit of the orbit's empirical measures. Proven input: `μ` is `A`-invariant
+[PROVEN, Krylov–Bogolyubov]. **[SOUNDNESS CORRECTION 2026-06-29, `ENT_NONATOMIC.md`]** An earlier version asserted `μ`
+**non-atomic [PROVEN]** "via 2-adic repulsion" — that is an **over-claim, retracted.** What is [PROVEN] is only that the
+*orbit avoids periodic points per-visit* (growth + non-periodicity + countdown); since an `A`-invariant measure's atoms
+sit on periodic orbits, `μ` non-atomic ⟺ `μ` charges no periodic point ⟺ `sup_a μ₂(a+2^kℤ₂)→0` (vanishing occupancy),
+which is **[OPEN]** (one run of length ≈0.585N is permitted by the proven budgets; vanishing occupancy = single-orbit
+genericity = (K)-hard). So `{orbit avoids periodic}[PROVEN] ⊊ {μ non-atomic}[OPEN] ⊊ (K)`. Then the **entropy is the fork
+between a PROVEN finish and an OPEN one**:
 
 | if we also had … | the finishing theorem | status of theorem |
 |---|---|---|
 | **AIU** (host `⟨×2,×3⟩`-invariance) **+** `h_μ(M₂)>0` | **Rudolph 1990 / Johnson** ⟹ `μ`=Haar ⟹ (K) | **[PROVEN-in-lit]** |
-| **AIU** **+** Furstenberg's conjecture (no extra entropy) | non-atomic ergodic `⟨×2,×3⟩`-inv ⟹ Haar | **[OPEN]** (Furstenberg) |
+| **AIU + non-atomicity[OPEN] +** Furstenberg's conjecture | non-atomic ergodic `⟨×2,×3⟩`-inv ⟹ Haar | **[OPEN]** (Furstenberg; + non-atomicity now open) |
 
-- **Positive-entropy branch [the live, correctly-stated target].** Because non-atomicity is already [PROVEN], the
-  *only* gap to using the **proven** Rudolph–Johnson is {AIU, `h_μ(M₂)>0`}. The "modulo positive entropy" hedge is
-  removed by **proving positive entropy**, NOT by proving zero entropy. This is the honest sharpening: replace the
-  task's (impossible, self-defeating) "prove `h_μ=0`" with **"prove `h_μ(M₂)>0`"** — a necessary consequence of (K)
-  that, *combined with AIU*, would let the PROVEN RJ finish.
-- **Furstenberg branch.** If one cannot establish positive entropy, the zero-entropy case is NOT a generic
-  zero-entropy measure: our `μ` is **non-atomic [PROVEN]**. Furstenberg's conjecture says the only ergodic
-  `⟨×2,×3⟩`-invariant measures are Haar and the atomic (finite-orbit) ones. So **AIU + Furstenberg + [PROVEN
-  non-atomicity] ⟹ μ=Haar ⟹ (K)** *directly, with no entropy hypothesis at all* — because Furstenberg disallows a
-  non-atomic zero-entropy host-invariant measure. Under Furstenberg, host-invariance alone forces positive entropy.
+- **Positive-entropy branch [the live, correctly-stated target] — UNAFFECTED by the correction.** The gap to using the
+  **proven** Rudolph–Johnson is {AIU, `h_μ(M₂)>0`}. Note `h_μ(M₂)>0 ⟹ μ` non-atomic automatically, so this branch does
+  **not** rely on the retracted non-atomicity claim. The "modulo positive entropy" hedge is removed by **proving positive
+  entropy** (a necessary consequence of (K) that, combined with AIU, lets PROVEN RJ finish).
+- **Furstenberg branch.** Furstenberg's conjecture: the only ergodic `⟨×2,×3⟩`-invariant measures are Haar and the atomic
+  (finite-orbit) ones. So **AIU + non-atomicity + Furstenberg ⟹ μ=Haar ⟹ (K)** with no entropy hypothesis — but now
+  **non-atomicity is itself [OPEN]** (corrected above), so this branch needs THREE open inputs (AIU, non-atomicity,
+  Furstenberg), not two. The live route remains the positive-entropy branch via the proven RJ.
 
 > **Honest placement.** (K) follows from `AIU ∧ (h_μ(M₂)>0 ∨ Furstenberg)`. Entropy is exactly the **RJ-vs-Furstenberg
 > selector**: positive 2-adic entropy buys the *proven* Rudolph–Johnson; its absence forces the *open* Furstenberg.

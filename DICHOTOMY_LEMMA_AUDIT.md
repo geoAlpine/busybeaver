@@ -89,8 +89,9 @@ excluding it is exactly the open content. The proof **conflates support-rigidity
 measure-rigidity**. Invalid.
 
 ### (b) Is the correct statement "AIU + positive entropy ⟹ Haar (Rudolph–Johnson)", i.e. TWO gaps? — **YES.**
-From the `[PROVEN]` `A`-invariance and `[PROVEN]` non-atomicity (2-adic periodic repulsion,
-`REPELLER_ESCAPE.md`), reaching Haar requires **both**:
+From the `[PROVEN]` `A`-invariance (`μ` non-atomicity is **[OPEN]**, not proven — see `ENT_NONATOMIC.md`; the orbit
+provably avoids periodic points per-visit, but `μ` charging them zero mass = vanishing occupancy is (K)-hard), reaching
+Haar requires **both**:
 - **Gap (i) — AIU:** `A`-invariant ⟹ `Φ=⟨×2,×3⟩`-invariant. `[OPEN, CONJECTURE]`
 - **Gap (ii) — positive entropy:** `h_μ(M_2) > 0`, to invoke the **proven** Rudolph–Johnson. `[OPEN]`,
   and `(K)`-necessary (under `(K)`, `μ=`Haar has `h_{Haar}(M_2)=log2>0`; `h_μ=0 ⟹ μ≠`Haar `⟹ (K)` false —
