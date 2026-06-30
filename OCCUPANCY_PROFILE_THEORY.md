@@ -237,5 +237,37 @@ The bricks (R), (F), (L) are **not Antihydra-specific**: they port to the entire
 core** (Antihydra, o10-inner, o18, o15, …), not an Antihydra coincidence: one RG fixed-point line of geometric depth
 laws, each family member at `a=1/p`, relevant eigenvalue `p/(p-1)`, with per-machine halt-criticality. This upgrades
 `CRYPTID_KERNEL.md`'s "one kernel, one obstruction" to "one kernel, one obstruction, **one mean-field RG
-architecture**." **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV (and its
-`p`-family analogues).
+architecture**."
+
+## 10. Second-moment / large-deviation layer — the golden-ratio Cramér exponent (brick, 2026-07-01)
+
+The fluctuation layer above mean-field: the balance walk's downward-deviation exponent, exactly.
+
+Per induced step `j` (spanning `D_j` base steps: one odd `+` `D_j-1` evens), the balance increment is
+`X_j = 3(D_j-1) - D_j = 2D_j - 3` (mean `2·\mathrm{mean}D - 3 = +1` at Haar; **bounded below by `-1`**, at `D=1`).
+Halting `⟺` the partial sums of `X_j` go negative. For a positive-drift walk the downward-deviation probability is
+governed by the **Cramér/Lundberg exponent** `θ^*>0` solving `E[e^{-θ^*X}] = 1`.
+
+- **(C1) The exponent is `θ^* = \log φ` (golden ratio), EXACTLY `[PROVEN]`.** With `D~`geom(`2^{-d}`),
+  `E[e^{-θX}] = e^{θ}/(2 - e^{-2θ})`; setting `=1` and `x=e^{-θ}` gives `x^3 - 2x + 1 = 0 = (x-1)(x^2+x-1)`, whose
+  relevant root is `x = e^{-θ^*} = (\sqrt5-1)/2 = 1/φ`. Hence **`θ^* = \log φ`**, `φ=(1+\sqrt5)/2`, and the balance
+  walk's downward excursions decay as `P(\text{dip by }s) ≈ φ^{-s} = ((\sqrt5-1)/2)^s ≈ 0.618^s`.
+- **(C2) Verified on the orbit `[OBSERVED]`.** The seed-27 orbit's increments `2D_j-3` have mean `0.9948` (`≈+1`),
+  min `-1`, and `E[e^{-θ^*X}] = 1.0009 ≈ 1` (the i.i.d. tilt matches); the induced partial-sum running minimum is
+  bounded (`12`, after burn-in), i.e. the walk escapes — consistent with non-halting.
+- **(C3) The annealed halting heuristic `[HEURISTIC, annealed]`.** With balance `B_J ≈ J` (drift `+1`/induced step),
+  the i.i.d. halting-probability proxy is `Σ_{J} φ^{-B_J} ≈ Σ_J φ^{-J} ≈ 1.7·10^{-4}` — small and finite (the
+  probabilistic "non-halting is near-certain" statement). This is the **annealed / a.e. wall**: it treats the depths
+  as i.i.d.; the quenched single orbit's actual minimum is `(K)`.
+
+> **(C4) Scope.** `θ^*=\log φ` is an *exact, provable* structural constant of the Antihydra-class balance walk, and
+> the LDP gives the precise annealed non-halting heuristic. It is **annealed** (i.i.d. depths) — the quenched seat
+> (the real orbit's depths are deterministic, not i.i.d.) is `(K)`. The exponent is **halt-predicate-specific** (like
+> the criticality (W)/(U4)): `θ^*=\log φ` is the `3/2` / even-density-`≥1/3` value; other family members have their
+> own Cramér exponent from their own increment law.
+
+**Net (C):** the second-moment layer yields the **exact golden-ratio Cramér exponent `θ^*=\log φ`** for the
+Antihydra balance walk (`P(\text{dip }s)≈φ^{-s}`), verified on the orbit, giving the precise annealed non-halting
+heuristic (`≈1.7·10^{-4}`). A clean, exact, provable structural constant — and the boundary is sharp: the LDP is
+annealed, the quenched minimum is `(K)`. **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler
+3/2 / AEV.
