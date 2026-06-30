@@ -158,3 +158,41 @@ PAPER_HIERARCHY.md References (lines ~606, ~609–611):
    RIMS Kôkyûroku / preprint). The notes' "Akiyama (2008, triple expansions)" is best served by the
    Akiyama–Frougny–Sakarovitch Israel J. Math. paper (pinned); do NOT cite the solo Z-number item until
    its venue is confirmed.
+
+---
+
+## Verified additions (2026-06-30, surfaced by an external second-opinion consult)
+
+5. **Lee–Palvannan 2024 [VERIFIED, real; relevance: measure-level, NOT specified-orbit].** Jungwon Lee,
+   Bharathwaj Palvannan, *An ergodic approach towards an equidistribution result of Ferrero–Washington*,
+   J. Théor. Nombres Bordeaux **36** (2024), no. 3, 805–833 (Numdam, DOI 10.5802/jtnb.1296). VERIFIED via the
+   Numdam page. Content: re-proves the Ferrero–Washington equidistribution (vanishing of the cyclotomic
+   μ-invariant for Kubota–Leopoldt p-adic L-functions) by realizing an **ergodic skew-product on `ℤ_p × [0,1]`
+   as a factor of the 2-sided Bernoulli shift**. ASSESSMENT (soundness): structurally the **nearest recent
+   ergodic-skew-product / factor-of-Bernoulli technique** to our setup (our `T` is exact Bernoulli; the 3-adic
+   place is a factor — `THREEADIC_SLIDING_LOCK.md`), BUT the result is **measure-theoretic / generic, not a
+   single specified orbit**, and concerns Iwasawa theory, not `3x/2` or `(3/2)ⁿ`. It therefore lands on the
+   **a.e./measure side of our wall — confirms, does not breach**. Value: a legitimate new citation as the
+   closest ergodic-factor technique, and a plausible outreach circle for the *quenched* (specified-orbit)
+   version. Flagged by an external second-opinion (ChatGPT) repo read; the other refs it raised
+   (arXiv:2411.03468, Strauch on `ξ(3/2)ⁿ mod 1`, AEV arXiv:2510.11723) were already in-corpus.
+
+6. **Filip 2025 [VERIFIED, real; relevance: nearest recent frontier, DISQUALIFIED].** Simion Filip,
+   *Measure Rigidity beyond Homogeneous Dynamics*, **arXiv:2512.13865** (Dec 2025). The most "beyond-homogeneous"
+   recent measure-rigidity item; still requires **higher-rank / non-amenable smooth-manifold structure and
+   orbit-closure (not single-orbit) behavior** — so our rank-1 amenable hyperbolic single specified orbit is
+   disqualified. Value: confirms the `(d)` Coverage No-Go (`RANK1_AMENABLE_EQUIDISTRIBUTION.md`) **through the
+   current (2025) frontier** — even the newest rigidity beyond homogeneous spaces does not reach our regime.
+   (Surfaced by `RECENT_LIT_SCAN_2026.md`.)
+
+7. **Coq-BB5 2025 [VERIFIED, real; relevance: context, the frontier gate].** The bbchallenge collaboration,
+   *Determination of the fifth Busy Beaver value*, **arXiv:2509.12337** (Sep 2025, rev. Mar 2026), Coq-verified
+   `S(5)=BB(5)=47,176,870`. Context, not a weapon: it cements **BB(6) as the live frontier, gated precisely on
+   Antihydra** (a Cryptid whose non-halting = our `(K)`). Community status (2026): Antihydra still open, simulated
+   to `2^38` steps, with only Lean **recurrence-equivalence** formalizations (a reduction certificate, NOT a
+   halting proof) — independently confirming our reduction is the accepted one and that the reduction itself is
+   community folklore (so a paper's novelty must be the barrier results, not the reduction).
+
+> **SOUNDNESS NOTE (2026-06-30).** Several 2025–2026 "Collatz/3x+1 proof" preprints encountered during the recent
+> scan (e.g. arXiv:2603.25753) bear strong crank/LLM markers and were **REJECTED, not banked**. No unconditional
+> partial density bound, one-sided result, or specified-orbit result for Mahler 3/2 / AEV exists in the literature.
