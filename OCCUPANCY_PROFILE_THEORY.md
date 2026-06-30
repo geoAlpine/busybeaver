@@ -182,5 +182,31 @@ excursions are odd-runs of length up to `0.585·index`**; the RG-critical `a=2/3
 the walk escapes (running min `= 17` constant, supercritical), but the elementary drift+magnitude bounds permit a late
 near-maximal run to overcome the drift (`0.585 > 0.5`), so they cannot prove non-halting — exactly the depth-tail
 control `= (K)`. This unifies the RG criticality (§6), the even-count floor (`EVEN_COUNT_FLOOR.md`), and the halting
-criterion into one walk picture, and quantifies the gap (`1.17×`). **No machine decided. No label upgraded.** `(K)`
-remains `[OPEN]` = Mahler 3/2 / AEV.
+criterion into one walk picture, and quantifies the gap (`1.17×`).
+
+## 8. Linearized RG at the fixed points — NO discrete critical exponent (brick, negative, 2026-07-01)
+
+Tested whether the halting transition is an RG **critical phenomenon** with a universal exponent, by linearizing
+`R` at the fixed-point line. With `p^{(a)}_e=a(1-a)^{e-1}`, the linearization is
+`(DR\,\delta)_e = [\delta_{e+1} + p^{(a)}_e\,\delta_1]/(1-a)` (a weighted backward shift plus a rank-one term).
+
+- **(L1) Dominant relevant eigenvalue `= 1/(1-a)` `[OBSERVED, robust]`.** Numerically (`scratchpad/rg_linearized.py`,
+  truncation `K=80`) the top eigenvalue is exactly `1/(1-a)` (`2.0` at Haar, `3.0` at `a=2/3`, `1.5` at `a=1/3`) — the
+  tail-rate relevant direction, scaling the relevant coordinate by `1/(1-a)` per renormalization.
+- **(L2) NO discrete critical exponent at `a=2/3` `[verdict]`.** The dominant eigenvalue `1/(1-a)` varies
+  **smoothly** through `a=2/3` (no singularity, no special value); the rest of the spectrum is the **continuous
+  spectrum of a weighted shift** (the apparent band `≈1.17–1.27` and "many relevant eigenvalues" are truncation
+  artifacts, not real — flagged, not used). So the criticality at `a=2/3` is **not** a feature of the RG flow's
+  spectrum; it lives **only in the drift observable** (the balance walk's zero-drift point, §7). The
+  "critical-phenomenon-with-universal-exponent" hope does **not** materialize.
+- **(L3) Honest takeaway.** The theory's architecture is now coherent and closed at the mean-field level: a
+  renormalization line of geometric fixed points with one smooth relevant direction (tail rate, eigenvalue
+  `1/(1-a)`), and a separate **drift observable** whose sign change at `a=2/3` (`meanD=3/2`) is the halting
+  transition. There is no extra hidden critical structure to exploit; the kernel remains the quenched seat + the
+  `0.585>0.5` fluctuation gap = `(K)`.
+
+**Net (today's bricks R,F,W,L):** the occupancy-profile theory has an exact renormalization symmetry (R), an RG flow
+with a fixed-point line and tail-rate relevant direction (F), a balance-walk criticality at the zero-drift point
+`a=2/3` with the quantified `0.585>0.5` elementary deficit (W), and a smooth linearized RG with no discrete critical
+exponent (L). This is a coherent first-moment / mean-field architecture for the kernel; everything quenched +
+second-moment is `(K)`. **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV.
