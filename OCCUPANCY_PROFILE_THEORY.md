@@ -209,4 +209,33 @@ Tested whether the halting transition is an RG **critical phenomenon** with a un
 with a fixed-point line and tail-rate relevant direction (F), a balance-walk criticality at the zero-drift point
 `a=2/3` with the quantified `0.585>0.5` elementary deficit (W), and a smooth linearized RG with no discrete critical
 exponent (L). This is a coherent first-moment / mean-field architecture for the kernel; everything quenched +
-second-moment is `(K)`. **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV.
+second-moment is `(K)`.
+
+## 9. The mean-field architecture is family-wide (brick, 2026-07-01)
+
+The bricks (R), (F), (L) are **not Antihydra-specific**: they port to the entire BB(6) Mahler cryptid family
+`{μ : v_p(μ)=−1}` (the shared kernel of `CRYPTID_KERNEL.md`: `T_μ(x)=⌊μx⌋` is a `p`-to-1 exact endomorphism of
+`ℤ_p` for every such `μ`).
+
+- **(U1) Geometric depth law `q=1/p`, mean `p` `[PROVEN-in-family / OBSERVED]`.** The gap (depth) law is geometric
+  `P(D=d)=(1/p)(1-1/p)^{d-1}` (mean `p`), a direct consequence of the `p`-to-1 exact endomorphism. *Verified*
+  (`scratchpad/family_rg.py`, `N=3·10⁵`): `3/2,5/2` (`p=2`, geom `q=½`, mean `2`), `8/3,4/3` (`p=3`, geom `q=⅓`,
+  mean `3`: `0.333,0.222,0.148,…`).
+- **(U2) Renormalization shifts mean by `+1`, all members `[OBSERVED]`.** Inducing on `{D≥2}` shifts the mean depth
+  by exactly `+1` for every member (`2→3` at `p=2`; `3→4` at `p=3`) — the `A_k` renormalization tower (R) is
+  family-wide.
+- **(U3) Universal RG, member sits at `a=1/p` `[PROVEN]`.** The RG operator `R(p)_e=p_{e+1}/(1-p_1)` on depth-law
+  space is `p`-independent; its fixed-point line (all geometrics) is universal; the family member at prime `p` sits
+  at the fixed point `a=1/p` (mean `p`), with linearized relevant eigenvalue `1/(1-a)=p/(p-1)` (`2` at `p=2`, `3/2`
+  at `p=3`).
+- **(U4) Only the criticality threshold is per-machine `[scope]`.** The halt-criticality (W) — the zero-drift point
+  of the machine's balance/halt observable — is machine-specific (Antihydra: even-density, `meanD=3/2 ⟺ a=2/3`;
+  o18: frontier-bit; o15: block-collision — `CRYPTID_KERNEL.md`). The *shared* structure is the RG fixed-point line
+  + relevant direction; each machine's halt predicate selects a critical point on it.
+
+**Net (U):** the occupancy-profile / RG mean-field architecture is a **single unified theory for the BB(6) Mahler
+core** (Antihydra, o10-inner, o18, o15, …), not an Antihydra coincidence: one RG fixed-point line of geometric depth
+laws, each family member at `a=1/p`, relevant eigenvalue `p/(p-1)`, with per-machine halt-criticality. This upgrades
+`CRYPTID_KERNEL.md`'s "one kernel, one obstruction" to "one kernel, one obstruction, **one mean-field RG
+architecture**." **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV (and its
+`p`-family analogues).
