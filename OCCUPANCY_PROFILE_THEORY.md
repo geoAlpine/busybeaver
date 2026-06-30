@@ -298,5 +298,34 @@ Tests whether the *deterministic* seed-27 orbit actually realizes the annealed g
 (drawdown `1/φ`, tail `2^{1-k}`, Poisson large-depths) — it is i.i.d.-indistinguishable at second order. This makes
 non-halting *morally certain* and pins the residual gap as pure single-realization genericity `= (K)`. The
 second-moment layer is therefore **descriptively complete and matches**, but — exactly as the No-Structure theorem
-forbids — a perfect annealed match cannot select the one orbit. **No machine decided. No label upgraded.** `(K)`
-remains `[OPEN]` = Mahler 3/2 / AEV.
+forbids — a perfect annealed match cannot select the one orbit.
+
+## 12. The Cramér exponent is an n-bonacci constant — golden ratio is the Antihydra (3:1) member (brick, 2026-07-01)
+
+Generalizing §10 from the Antihydra `1/3` threshold to a general `m`-counter (halt `⟺` even-density `< 1/m`, balance
+`B = mE - n`). The per-induced-step increment is `X = m(D-1) - D = (m-1)D - m` (drift at `meanD=2` is `m-2`). The
+Cramér equation `E[e^{-θ^*X}]=1` becomes, with `x=e^{-θ^*}`,
+
+> **`x^m - 2x + 1 = 0`**, which always factors `= (x-1)(x^{m-1}+x^{m-2}+\dots+x-1)`; the relevant root solves
+> `x^{m-1}+\dots+x-1 = 0`, and **`1/x` is exactly the `(m-1)`-bonacci constant**.
+
+- **(N1) The family `[PROVEN, exact]`** (`scratchpad/threshold_cramer.py`):
+  - `m=2`: `x=1`, `θ^*=0` — **critical, no decay** (the even-density-`<½` threshold is the zero-drift point at
+    `meanD=2`; consistent with §7 criticality).
+  - `m=3` (**Antihydra**, the 3:1 even-counter): `x = (\sqrt5-1)/2 = 1/φ`, `θ^* = \logφ` — the **golden ratio**
+    (`= 2`-bonacci / Fibonacci constant `1.618…`).
+  - `m=4`: `1/x = 1.83929…` (**tribonacci**); `m=5`: `1.92756…` (tetranacci); `m=6`: `1.96595…` (pentanacci); …
+    `1/x → 2` as `m→∞`.
+- **(N2) Reading.** The halting-threshold `m` indexes the Cramér exponent through the `(m-1)`-bonacci constants;
+  Antihydra sits at the **simplest non-trivial counter (3:1)**, whose constant is the **golden ratio**, and `m=2` is
+  exactly the critical (zero-drift) boundary. So `θ^*=\logφ` is not an accident of Antihydra but the Fibonacci member
+  of a clean algebraic family parameterized by the counter ratio.
+
+> **(N3) Scope.** Still the *annealed* LDP exponent (per threshold); the quenched single-orbit minimum is `(K)`. The
+> `n`-bonacci structure is an exact, attractive descriptive constant of the balance-walk, not a step toward selecting
+> the orbit.
+
+**Net (N):** the balance-walk Cramér exponent of the `m`-counter is `\log` of the `(m-1)`-bonacci constant; Antihydra
+`(m=3)` is the golden-ratio/Fibonacci member, `m=2` the critical boundary, `1/x→2` as `m→∞`. A clean exact family
+placing `φ`; annealed, with the quenched seat `= (K)`. **No machine decided. No label upgraded.** `(K)` remains
+`[OPEN]` = Mahler 3/2 / AEV.
