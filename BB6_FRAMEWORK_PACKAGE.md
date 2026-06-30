@@ -32,7 +32,11 @@ feasible invariant-measure set* (kernel-hard). Finally we place the kernel in th
 the rank-2 host `⟨×2,×3⟩`**, and `(K)` is equivalent to genericity of the seed for `A`, which by the
 **proven** Rudolph–Johnson theorem follows from **two** open inputs — `(AIU)` host-invariance upgrade and
 `(ENT)` positive 2-adic measure entropy. Both are strictly weaker than `(K)`, both are `(K)`-hard, and we prove
-they are logically **independent**. The package isolates these two inputs as the precise, expert-facing targets. A
+they are logically **independent**. The package isolates these two inputs as the precise, expert-facing targets, and adds
+**three formalized, red-teamed limits-of-method theorems** (§5.5) pinning *why* the first tools an expert reaches for fail:
+a neutral-direction obstruction (the high-entropy invariance-upgrade is blind to the zero-Lyapunov `ℚ₃`-direction over a
+dissipative base), a Ledrappier–Young collapse (`ENT ⟺ γ>0`, one conditional dimension), and a coisometry no-go (no uniform
+operator-norm contraction across scales). A
 cross-disciplinary sweep (~19 fields) and two direct probes (Siegel's (p,q)-adic Wiener–Tauberian theory; non-Pisot
 mathematical diffraction) found **no** tool escaping the obstruction — each reduces for its own structural reason — which
 robustly stress-tests the structural verdict and identifies the natural communities/languages for the kernel (§7.5).
@@ -281,6 +285,62 @@ exists), but **not the bridge** between a rank-1 orbit and the rank-2 invariance
 
 ---
 
+## 5.5 Three formalized partial theorems (self-contained, publishable independent of `(K)`)
+
+The reduction of `(K)` to `AIU ∧ ENT` (§5) is not the end of the proven content: each of the two inputs, and the
+endogenous-cocycle route to them, admits a **self-contained theorem about the limits of the standard machinery**. Each was
+formalized, adversarially red-teamed, and corrected to its defensible form (the over-claims caught are recorded). These are
+genuine results about *what measure-rigidity / spectral methods cannot do here*, publishable without deciding `(K)`. Full
+statements in the standalone notes; scope is delimited exactly.
+
+**(P-AIU) Neutral-direction obstruction theorem `[PROVEN, conjunction]`** (`AIU_NEUTRAL_OBSTRUCTION_THEOREM.md`). AIU is
+`D=×2|_{ℚ₃}`-invariance of the `A`-stable `ℚ₃`-leaf conditionals, and `×2` has Lyapunov weight `log|2|_3 = 0`. The theorem
+is the **conjunction** `(A)∧(B)`, *not* "neutral ⟹ unreachable" (that naive form is false — the Invariance Principle uses
+zero exponents; this was the red-team's catch):
+> **(A)** the Einsiedler–Katok–Lindenstrauss high-entropy / product-structure method is **neutral-blind** — by
+> Ledrappier–Young `h=Σλ_iγ_i`, `D`'s leafwise-entropy contribution is `0·γ=0`, so its invariance-engine returns nothing;
+> and EKL is a rank-≥2 *consumer* of `Φ`-invariance (Rudolph–Johnson), downstream of the very `A⟹Φ` upgrade AIU is.
+> **(B)** the central-direction engine that *does* use zero exponents (Invariance Principle / Anzai–Furstenberg–Veech
+> isometric extension) is **defeated by non-recurrence** — the skew base `v↦v+1` is `A`-contracting/dissipative, with no
+> invariant probability.
+> **Mandatory caveat:** neutrality *alone* is not the obstruction; the conjunction (neutral direction **over a dissipative
+> base**, beyond *both* standard engines) is. **Scope:** does not prove AIU false, not `(K)`; method-and-action-specific. A
+> clean limits-of-measure-rigidity example (surplus invariance in a central direction over a dissipative base).
+
+**(P-ENT) Ledrappier–Young collapse `[PROVEN, equivalence]`** (`ENT_LY_COLLAPSE_THEOREM.md`). On the affine `(2,3)`-solenoid
+L–Y holds with **frozen (constant) prefactors**, so it is an *equality*, giving a genuine two-sided equivalence (it uses the
+L–Y dimension **equality** `h=Σλ_iγ_i`, **not** the Margulis–Ruelle inequality — the red-team confirmed this is not an
+over-claim):
+> `h_μ(M_2) = log2 · γ`, with `γ` the conditional dimension on the `M_2`-**unstable** (archimedean `F_∞`) leaf, `γ∈[0,1]`,
+> `=1` at Haar. Hence **`ENT ⟺ γ>0`**. Ladder: `{avoid periodic} ⊊ {non-atomic} ⊊ ENT(=γ>0) ⊊ (K)` (`γ>0⟹`non-atomic, not
+> conversely — a dim-0 Cantor conditional separates them). Orthogonality to AIU: ENT = radial unstable dimension vs AIU =
+> neutral `ℚ₃`-angular rotation-invariance (logically independent; the high-entropy method cannot transport radial→angular).
+> **Caveats (binding, non-fatal):** `γ` is the *unstable-leaf* dimension (not total — why "positive-dimension zero-entropy"
+> does not bite); `γ_∞=γ_2` via `h(M_2)=h(M_2^{-1})`; the `ℚ₃`-conditional-positive-dimension claim needs product structure +
+> time-symmetry; numerics are the 2-adic *marginal*, not the conditional. **Scope:** an equivalence/reformulation, **not** a
+> proof of `γ>0` (stays `(K)`-hard; the annealed `dim ν_{2/3}=1` does not transfer to the Haar-null seed); not `(K)`.
+
+**(P-EUE) Coisometry no-go `[PROVEN, scoped]`** (`EUE_COISOMETRY_NOGO_THEOREM.md`). The cross-scale carry-renormalization
+cocycle `Φ` is a chain of **coisometries** `R_k=(M_{r_k}T_k)*` (`R_kR_k^*=I`, `R_k^*R_k≠I`, `dim ker = 2^{k-1}`), verified
+`k=2..7` **and** in closed form `(R_kR_k^*)_{a,a'} = 2^{-k}Σ_t e(2πi(a−a')V(t)/2^k) = δ_{a,a'}` for odd `a,a'` (since
+`r²≡1`, `V` double-covers `ℤ/2^k`, and `3` is a unit) — structural, not a basis artifact:
+> the operator-norm cross-scale Lyapunov **top exponent** is `≡0`, so **no uniform (top-exponent) operator-norm contraction
+> across scales — in any fixed or telescoping scale-graded norm — can establish Endogenous Unique Ergodicity (EUE)**.
+> **Mandatory caveat (red-team):** "op-norm Lyapunov `=0`" rules out only the *uniform / top-exponent* contraction (Lyapunov
+> is conjugation-invariant; interior weights cancel). It does **not** by itself kill scale-dependent *anisotropic
+> weighted-norm* contraction or *subspace / Oseledets-filtration* decay — a coisometry cocycle's Lyapunov spectrum is
+> `{0,−∞}`, contracting *totally* on its kernel, so "top exponent `0`" ≠ "no contraction." **But those escapes collapse into
+> the data-direction route:** any contracting weight or surviving subspace must encode where the specific orbit vector sits,
+> reducing to `(CR)=(K)`. **Scope:** a no-go for the operator-norm / uniform-spectral family only — not a proof EUE is false,
+> not `(K)`; the data-direction (quenched / Oseledets) route stays `[OPEN]` and is itself only heuristically `⟹(K)`.
+
+Together with the No-Structure theorem (§3) and the obstruction dichotomy (§4), these three pin the failure of, respectively,
+the **high-entropy invariance-upgrade**, the **entropy lower-bound**, and the **uniform-spectral-contraction** approaches —
+the three families an expert would reach for first. They sharpen the §7 expert question from "is this tractable?" to "here is
+exactly which standard mechanism fails, and why."
+
+---
+
 ## 6. Banked unconditional partials (the honest positive results)
 
 All `[PROVEN]` for the specified seed unless marked `[PROVEN-in-lit]`; numerics re-verified at `N=3·10^5`,
@@ -382,7 +442,9 @@ Furstenberg conjecture).
   ⟹ rank-2 host invariance + positive entropy" a named/studied object, a known obstruction we have overlooked, or
   a genuinely empty spot between the rigidity and the Weyl toolboxes (amenable ∩ hyperbolic ∩ rank-1 ∩
   specified-point)? A sharp "no, here is why" is as useful as a "yes, see X"; if the reduction is malformed, the
-  most valuable reply is how you would reformulate it.
+  most valuable reply is how you would reformulate it. *(We have already proven, §5.5, that the high-entropy
+  invariance-upgrade is neutral-blind over a dissipative base, that `ENT⟺γ>0` is one L–Y conditional dimension, and that no
+  uniform operator-norm contraction across scales exists — so the question is which mechanism beyond these you would try.)*
 
 > **One sentence.** For the `A=×(3/2)`-orbit of `8` on the `(2,3)`-solenoid, is either the host-invariance upgrade
 > (AIU — a neutral, zero-Lyapunov direction) or positive 2-adic measure entropy (ENT) tractable for this explicit
