@@ -121,22 +121,28 @@ Beaver に挑む"). This section is the durable backbone a future session or ext
 - The tool must be: **non-spectral** (L_ann odd-blind), **non-structural** (No-Structure), **quenched/seed-specific**
   (not a.e./annealed), **digit-frequency** (not equidistribution-depth), and **a-priori** (not assuming the D-law).
 
-### 8.3 The milestone ladder (honest intermediate targets between known and `(K)`)
-Each rung is a genuine unconditional result strictly stronger than the last; `(K)` is the top.
-1. `[PROVEN]` `#even(n) ≥ 0.89 log n` (current best, `LIMIT_THEOREM.md`).
-2. `[OPEN, near-frontier]` `#even(n) ≥ (log n)^{1+ε}` or `≥ exp(c√log n)` — **first genuine new rung**; any
-   super-logarithmic unconditional bound on the moving-diagonal digit of `3ⁿ` would be publishable and new.
-3. `[OPEN]` `#even(n) ≥ n^{c}` for some `c∈(0,1)` — a polynomial (still sub-linear) density; would be a major result.
-4. `[OPEN]` `#even(n) ≥ εn` for some `ε>0` (positive density, one cell) — at this point essentially `(K)`-grade.
-5. `[OPEN = (K)]` `liminf #even(n)/n ≥ 1/3`.
-> Rungs 2–4 are the **measurable progress** a multi-year program should target; none is known, and even rung 2 is at
-> the current research frontier (no unconditional positive-rate digit bound for `3ⁿ` exists).
+### 8.3 The milestone ladder — COLLAPSED to two levels (revised 2026-06-30, `EVEN_COUNT_FLOOR.md`)
+*The earlier five-rung ladder was over-optimistic. Track A's first attack proved rung 2 is already `(K)`-grade:*
+- `[PROVEN]` `#even(n) = Σ_{j<J}(D_j−1) = Σ_{k≥2} #\{j: o_j ≡ 3^{-1} \bmod 2^k\}` — cumulative occupancy of the
+  `2^{-k}`-cylinders. The proven floor `#even(n) ≥ 0.89 log₂ n` uses **only the magnitude ceiling** on a *single*
+  deep visit.
+- `[ARGUED]` Any `ω(log n)` improvement needs the cylinder-visit **frequency** = quenched 2-adic occupancy = `(K)`;
+  dually, a longer even-count needs an upper bound on the depth tail `v₂(3o_j−1)`, but a large value there is a
+  *near-halt* (`HALT ⟺ ∃n: v₂(c_n−1) ≥ balance_n+1`), so bounding it **is** proving non-halting.
+> **Revised ladder (two levels, adjacent — NO rung between):**
+> `[PROVEN] #even ≥ 0.89 log₂ n`  ——(no unconditional rung)——  `[OPEN=(K)] liminf #even/n ≥ 1/3`.
+> The elementary floor is exactly `Θ(log n)` and is **sharp**; the first super-logarithmic step IS the kernel. This
+> matches the subword-complexity axis (`p(ℓ)≥1.71ℓ` → `2^ℓ` Mahler, `LIMIT_THEOREM.md` §3″) and the depth axis
+> (`DEPTH_REACH_CLARIFICATION.md`): elementary methods stop at a sharp edge, the next step is generational, nothing
+> in between.
 
 ### 8.4 Two-track plan
-- **Track A (internal, partial rungs):** attack rung 2 — a super-logarithmic unconditional `#even` bound — via the
-  proven 2-adic potential `V=v₂(c−1)` + the exact growth `bitlen(c_n)=0.585n+O(1)` + integrality, searching for an
-  argument that the carry cannot suppress the even-count below super-log. This is the one place a new *positive*
-  theorem might live without solving `(K)`.
+- **Track A (internal, partial rungs): CLOSED on the even-count axis (2026-06-30, `EVEN_COUNT_FLOOR.md`).** The
+  attack on rung 2 proved there is **no sub-`(K)` target** there: `#even(n)` is cumulative `2^{-k}`-cylinder
+  occupancy, the proven `log` floor is sharp (magnitude ceiling only), and any improvement is quenched occupancy =
+  `(K)`. So Track A yields no new *positive* theorem short of the kernel on this axis (nor on the subword-complexity
+  or depth axes, which collapse the same way). Internal partial-rung progress is therefore **not available**; the
+  honest internal output is the *barrier/positioning* corpus already banked.
 - **Track B (external, the tool):** take the corrected central target (§8.1) + the proven-closed backdrop (§8.2) +
   the sharp question (log-vs-linear is a digit-frequency gap) to the Einsiedler–Lindenstrauss–Host circle, the AEV
   authors, and the Lee–Palvannan ergodic-skew-product circle. The framework package (`BB6_FRAMEWORK_PACKAGE.md`) +
