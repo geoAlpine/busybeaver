@@ -148,7 +148,39 @@ renormalization-group flow. The induce-on-`A_2`+shift operation acts on laws as
 
 **Net (F):** depth-law RG ⇒ a fixed-point line of geometrics (`mean=1/a`), a single relevant coordinate (tail rate),
 and `(K)` as the criticality `a≤2/3`. This is the sharpest *architectural* statement of the kernel yet — it is a
-first-moment / mean-level structure; the quenched seat and the second-moment fluctuation control remain `(K)`. A
-natural long-haul next brick: the **linearized RG at the critical fixed point `a=2/3`** (is the halting transition a
-critical phenomenon with a characteristic exponent? does the second-moment / fluctuation operator have a computable
-spectrum there?). **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV.
+first-moment / mean-level structure; the quenched seat and the second-moment fluctuation control remain `(K)`.
+
+## 7. The balance walk: criticality = zero drift, and why the elementary bounds are consistent with halting (brick, 2026-07-01)
+
+The fluctuation/second-moment side (the gap (F4)) is the **balance walk** `B_n = 3E_n − n` (`E_n=#even<n`); the
+machine **halts ⟺ `B_n < 0` for some `n`**. This connects the RG criticality to a random-walk transition and pins
+exactly why elementary bounds cannot close `(K)`.
+
+- **(W1) Drift = `2 − 3/mean D`, critical at the RG point `a=2/3` `[PROVEN]`.** `E_n/n → 1 − 1/\mathrm{mean}D`, so
+  `B_n/n → 3(1−1/\mathrm{mean}D) − 1 = 2 − 3/\mathrm{mean}D`. *Verified* (`scratchpad/balance_walk.py`, `N=6·10⁵`):
+  `B_n/n → 0.49632` vs predicted `0.49631`. The drift is `0` exactly at `mean D = 3/2` `⟺ a=2/3` — **the RG-critical
+  fixed point is the zero-drift point of the balance walk.** Haar (`meanD=2`, `a=½`) gives drift `+½` (supercritical);
+  `meanD<3/2` gives negative drift (halts). So the halting transition is a *drift-sign change*, a textbook
+  random-walk criticality, sitting exactly at the RG-critical `a=2/3`.
+- **(W2) The orbit is decisively supercritical `[OBSERVED]`.** Increments are bounded `{+2 (even), −1 (odd)}`,
+  variance `2.25`. The running minimum of `B_n` (after the `n≤30` transient) is the **constant `17`, attained at
+  `n=45` and never approached again** across `N = 10³,10⁴,10⁵,6·10⁵` — drift dominates fluctuations completely; the
+  walk's infimum is achieved early and it escapes to `+∞`. Worst running even-density `0.4566` (margin `0.123` above
+  the `1/3` halting threshold).
+- **(W3) Why elementary bounds DO NOT close it — the `0.585 > 0.5` gap `[PROVEN consistency]`.** A downward excursion
+  of size `s` in `B` requires an **odd-run of length `s`** (`s` consecutive `−1` increments). The odd-run lemma +
+  magnitude give run length `≤ v₂(c−1) ≤ log₂ c_n ≈ n·log₂(3/2) = 0.585n`. But the accumulated balance at index `n`
+  is only `≈ (\text{drift})·n = 0.5n`. Since **`0.585n > 0.5n`**, a single near-maximal odd-run placed late could
+  drop `B` by `0.585n` against an accumulated `0.5n` — driving it **negative**. Hence the elementary facts (drift
+  `+½` from the a.e. mean, run ceiling `0.585·index` from magnitude) are **consistent with BOTH halting and
+  non-halting**: they fail to close the question by the factor `0.585/0.5 = 1.17`. Non-halting needs the odd-runs to
+  be genuinely *short* (`< 0.5n` at every scale; empirically `max = 20`), i.e. depth-tail control `= (K)` — the same
+  wall as `EVEN_COUNT_FLOOR.md` (run length `= v₂ =` near-halt) in dynamical-walk language.
+
+**Net (W):** the halting question is a **supercritical (drift `+½`) walk with bounded increments whose downward
+excursions are odd-runs of length up to `0.585·index`**; the RG-critical `a=2/3` is its zero-drift point. Empirically
+the walk escapes (running min `= 17` constant, supercritical), but the elementary drift+magnitude bounds permit a late
+near-maximal run to overcome the drift (`0.585 > 0.5`), so they cannot prove non-halting — exactly the depth-tail
+control `= (K)`. This unifies the RG criticality (§6), the even-count floor (`EVEN_COUNT_FLOOR.md`), and the halting
+criterion into one walk picture, and quantifies the gap (`1.17×`). **No machine decided. No label upgraded.** `(K)`
+remains `[OPEN]` = Mahler 3/2 / AEV.
