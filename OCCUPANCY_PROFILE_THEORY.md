@@ -269,5 +269,34 @@ governed by the **Cramér/Lundberg exponent** `θ^*>0` solving `E[e^{-θ^*X}] = 
 **Net (C):** the second-moment layer yields the **exact golden-ratio Cramér exponent `θ^*=\log φ`** for the
 Antihydra balance walk (`P(\text{dip }s)≈φ^{-s}`), verified on the orbit, giving the precise annealed non-halting
 heuristic (`≈1.7·10^{-4}`). A clean, exact, provable structural constant — and the boundary is sharp: the LDP is
-annealed, the quenched minimum is `(K)`. **No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler
-3/2 / AEV.
+annealed, the quenched minimum is `(K)`.
+
+## 11. The quenched orbit obeys the golden-ratio LDP — i.i.d.-indistinguishable at second order (brick, 2026-07-01)
+
+Tests whether the *deterministic* seed-27 orbit actually realizes the annealed golden-ratio LDP of §10
+(`scratchpad/quenched_ldp2.py`, exact big-int, `N=3·10⁵`).
+
+- **(Q1) Drawdown decays at `1/φ` `[OBSERVED]`.** The balance walk's drawdown `runmax−B_n` has
+  `P(\text{draw}=s)/P(\text{draw}=s-1) ≈ 0.62` for all `s=1..11` (`0.6215, 0.6161, 0.6211, 0.6145, 0.6258, 0.6075,
+  0.6159, 0.6016, 0.6283, 0.6268, 0.6170`) — matching `1/φ = 0.6180` (the §10 exponent) to within sampling noise;
+  the tail `s≥12` wobbles on small counts. So the **quenched orbit obeys the golden-ratio LDP**.
+- **(Q2) Depth tail is exactly geometric `[OBSERVED]`.** `P(D≥k) = 0.49980, 0.24937, 0.12425, 0.06191, …` vs
+  `2^{1-k} = 0.5,0.25,0.125,…` — geometric (Haar) to 4 digits; `max D = 17`.
+- **(Q3) Large depths are Poisson-spread (no clustering) `[OBSERVED]`.** `D≥8` events (`n=1167`) have mean gap
+  `128.6` (vs `2^7=128`) and **coefficient of variation `1.022 ≈ 1.0`** — the i.i.d./Poisson value. The rare
+  large-depth events that drive halting risk are *not* clustered.
+
+> **(Q4) Reading.** At the **second-moment / large-deviation level**, the deterministic orbit is
+> **i.i.d.-indistinguishable**: its drawdown law (`1/φ`), depth tail (`2^{1-k}`), and large-depth spacing
+> (Poisson, `CV≈1`) all match the annealed model with no detectable deviation. This *sharpens the heavy-tail /
+> i.i.d.-adversary point* (`EXCURSION_SYNTHESIS.md`): no second-moment statistic separates the orbit from i.i.d., so
+> the gap to `(K)` is **purely the single-realization (quenched-genericity) issue** — proving that the deterministic
+> sequence *attains* the i.i.d. statistics it empirically exhibits. That attainment is exactly `(K)`; nothing in the
+> second-moment structure closes it (it confirms, with no deviation, that the orbit *behaves* annealed).
+
+**Net (Q):** the quenched orbit obeys the §10 golden-ratio LDP with no detectable second-moment deviation
+(drawdown `1/φ`, tail `2^{1-k}`, Poisson large-depths) — it is i.i.d.-indistinguishable at second order. This makes
+non-halting *morally certain* and pins the residual gap as pure single-realization genericity `= (K)`. The
+second-moment layer is therefore **descriptively complete and matches**, but — exactly as the No-Structure theorem
+forbids — a perfect annealed match cannot select the one orbit. **No machine decided. No label upgraded.** `(K)`
+remains `[OPEN]` = Mahler 3/2 / AEV.
