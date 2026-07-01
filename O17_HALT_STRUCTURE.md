@@ -71,3 +71,57 @@ type**: there is no 1-D Mahler-style reduction to exhibit. Placing o17's kernel 
 string/carry dynamics (higher-dimensional), which this pass does not achieve. The finding is the honest negative that
 **the 1-D reduction does not exist for o17**, sharpening its classification (odometer-string, not scalar-Collatz).
 **No machine decided. No label upgraded.** o17 non-halting stays `[OPEN]`.
+
+## 5. Addendum 2 — the carry cascade + extended hard-core data (2026-07-01)
+
+**(5a) The `k≡0` cascade is an explicit multi-digit base-3 carry `[OBSERVED]`** (`scratchpad/o17_value.py`). Off-lattice
+seeds `k≡0 (mod3)` trigger a leftward carry: the left block length decreases by `3` per step while spawning a
+length-`2` (digit-`0`) block rightward, e.g. `k=12`: `(11)→(11,2)→(8,2,2)→(5,2,2,2)→(2,2,2,2,2)`; `k=9`:
+`(8)→(8,2)→(5,2,2)→(2,2,2,2)`. This is a genuine base-3 carry cascade — but the decoded value sequence does **not**
+form a clean scalar odometer (it jumps `0,3,-3,3,-1,1,…` under any tried decoding), confirming §4: the state is an
+irreducibly multi-digit base-3 string.
+
+**(5b) Extended hard-core map `[OBSERVED, cap 6·10⁶]`** (`scratchpad/o17_core.py`). For `j=k/3`, `j≤22`:
+- **HALT** `j = 2,4,5,7,8,10,12,15,17,19,21` (times `206,394,794964,4240985,3690,7262,13810,45688,52932,117160,232604`
+  — wildly non-monotone: `j=5→795\text{k}`, `j=7→4.24\text{M}`, `j=8→3690`).
+- **no-halt `<6·10⁶`** `j = 1,3,6,9,11,13,14,16,18,20,22`.
+- Weak tendency for `j≥15` (odd `j=15,17,19,21` halt; even `j=14,16,18,20,22` don't; `j=13` an exception), but for
+  small `j` the split is fully mixed, and base-3 / mod patterns give **no clean rule** — the Collatz-irregularity is
+  confirmed with more data, not resolved.
+
+**(5c) Other cryptids `[status]`.** The kernel-unresolved "slow-width" cryptids (o2,o3,o4,o7,o11–o14,o16, Space
+Needle, Lucy's Moonlight) have catalogue notes (`CATALOGUE_IRREGULAR.md`, `CATALOGUE_O2_O5.md`, `CATALOGUE_O7_O12.md`,
+`CATALOGUE_O13_SN.md`, `CRYPTID_CENSUS.md`; TMs in `cryptid_map.py`) but their kernels remain **un-extracted**
+(`CRYPTID_KERNEL.md` census) — extraction is a substantial per-machine reverse-engineering, not done here.
+
+**Net.** o17's `k≡0` core is a genuine multi-digit base-3 carry cascade, Collatz-irregular with no clean rule
+(confirmed to `j=22`), and irreducible to a scalar map. It stays `[OPEN]`, structurally the hardest-to-place BB(6)
+Collatz-core cryptid. **No machine decided. No label upgraded.**
+
+## 6. Addendum 3 — o17 is NOT even a clean base-3 odometer: interior "digits" are unbounded (2026-07-01)
+
+Tracing the canonical (state-`A`-at-left-frontier) config sequence to derive an exact transition rule
+(`scratchpad/o17_cascade.py`), a sharper obstruction surfaces:
+```
+k=6 : (3,2,2) → (5,2,8) → (8,14) → HALT@206
+k=9 : (3,2,2,2) → (3,8,14) → (3,14,8,20) → (5,2,2,2,2,14,8,2,2,26) → ...
+k=12: (3,2,2,2,2) → (5,8,14) → (8,2,2,20) → HALT@394
+```
+The interior **settled** blocks (`ℓ≡2 \bmod 3`, so "digit" `d=(ℓ-2)/3`) include `ℓ=14` (`d=4`) and `ℓ=20` (`d=6`)
+— i.e. `d>2`. So:
+
+> **o17 is NOT a clean base-3 odometer `[OBSERVED]`.** The `o17_attack.md` reading "settled block `↔` base-3 digit
+> `d=(ℓ-2)/3`" is an *approximation*: the interior digits are **unbounded** (`d=4,6,\dots` observed as genuine
+> interior settled blocks), so the state is not a base-3 (or any fixed-base) number. o17 is a general **carrying
+> counter with unbounded digits**; halting is a left-frontier overflow (`F` reads a double-blank), but the path to it
+> runs through unbounded-digit carries with **no clean base, no scalar, and not even a fixed-radix reduction**.
+
+**Task A note (Lucy's Moonlight, blocked).** Attempting to extract a kernel for the width-ratio-`3/2` candidate
+"Lucy's Moonlight" is blocked: its TM is **not in the repo** (`cryptid_map.py` holds only Antihydra and a distinct
+halting "Lucy"; the 19-cryptid slow-width roster's TMs are not stored locally — `CRYPTID_CENSUS.md`), and obtaining it
+requires an external (bbchallenge) lookup, out of scope here.
+
+**Net (deepened).** o17's obstruction is now pinned as sharply as this pass allows: not merely "multi-digit," but a
+**carrying counter with unbounded digits**, off any fixed radix — the structural reason no odometer/base/scalar kernel
+extraction succeeds. This is the honest end of the o17 line for now: `[OPEN]`, the hardest-to-place BB(6) cryptid.
+**No machine decided. No label upgraded.**
