@@ -196,3 +196,28 @@ PAPER_HIERARCHY.md References (lines ~606, ~609–611):
 > **SOUNDNESS NOTE (2026-06-30).** Several 2025–2026 "Collatz/3x+1 proof" preprints encountered during the recent
 > scan (e.g. arXiv:2603.25753) bear strong crank/LLM markers and were **REJECTED, not banked**. No unconditional
 > partial density bound, one-sided result, or specified-orbit result for Mahler 3/2 / AEV exists in the literature.
+
+## Verified additions (2026-07-01, thorough targeted lit check — `LIT_CHECK_2026-07.md`)
+
+8. **Fan–Fan–Ye 2025 [VERIFIED; closest problem-point hit — but a.e. wall].** *Non-Archimedean Koksma Theorems*,
+   **arXiv:2512.05690** (5 Dec 2025). The newest metric distribution theory for the family `(αxⁿ)` — exactly our
+   family. Proves uniform distribution for **almost every** `x`, and shows the exceptional set has **full Hausdorff
+   dimension**. So it **structurally cannot certify the single named orbit** `(K)` needs — the same a.e./quenched wall
+   as Tao 2019 / Algom–Baker–Shmerkin / Varjú–Yu, now confirmed for the sharpest, most current formulation. Value:
+   the precise literature marker of *where the a.e. wall stands* for `(αxⁿ)`; a natural outreach target.
+
+9. **Calegari–Dimitrov–Tang 2025 [VERIFIED; the one building block worth SHELVING].** *Arithmetic holonomy bounds
+   and effective Diophantine approximation*, **arXiv:2510.04156** (5 Oct 2025). A genuinely new hypergeometric /
+   arithmetic-holonomy route to **effective irrationality measures**. Targets algebraic roots and specific L-values
+   (`L(2,χ₋₃)`, 2-adic `ζ(5)`); gives **no improved effective measure for `log3/log2`** and no lacunary-orbit
+   equidistribution — so **not a present weapon against `(K)`**, but the freshest effective-Diophantine machinery and
+   worth **shelving for a future depth-gap (P1′) attack** (the log→linear reach gap is an effective-Diophantine
+   question at heart).
+
+> **SOUNDNESS UPDATE (2026-07-01).** arXiv:2411.03468 (Kumar, "Mahler's 3/2 problem in ℤ⁺"), previously flagged
+> "likely flawed, not relied on," is now confirmed **WITHDRAWN** (author admits a trivial error) — do not cite as a
+> resolution. Additional 2025–2026 Collatz preprints (arXiv:2603.11066 LLM-assisted, 2601.06208, 2511.17650) carry
+> no load-bearing rigorous content — REJECTED. The literature frontier for effective single-specified-orbit
+> equidistribution of a rank-1 amenable hyperbolic action remains **empty**; the 2024–26 effective-equidistribution
+> advances (Yang SL₃ effective Ratner Annals 2025; Lindenstrauss–Mohammadi–Wang–Yang arXiv:2503.21064; ELMW
+> arXiv:2503.21068) are all semisimple/higher-rank/unipotent — off-target for our rank-1/amenable/hyperbolic setting.
