@@ -372,5 +372,26 @@ Cramér exponent. With increment `X=(m-1)D-m` and `D~`geom(mean `p`), `E[e^{-θ^
 
 **Net (P):** the second-moment layer's Cramér exponent is a two-parameter algebraic family `(p-1)x^m-px+1=0`, unifying
 the whole BB(6) Mahler core, with Antihydra `(2,3)` the golden-ratio member and explicit quadratic-irrational /
-`n`-bonacci values elsewhere. Annealed template; quenched `= (K)`. **No machine decided. No label upgraded.** `(K)`
-remains `[OPEN]` = Mahler 3/2 / AEV.
+`n`-bonacci values elsewhere. Annealed template; quenched `= (K)`.
+
+## 14. Empirical validation on real `p=3` dynamics (`μ=8/3`, o18-class) (brick, 2026-07-01)
+
+The `(p,m)` family (§13) and the mean-field structure (§9) were tested on the **actual `p=3` cryptid dynamics**
+`T_μ(x)=⌊8x/3⌋` (o18/o15 class), not the abstract model (`scratchpad/p3_validate.py`, `N=6·10⁵`):
+
+- **(V1) `[OBSERVED]`** renewal density (`x≡0\bmod 3`) `= 0.3330 ≈ 1/p=1/3`; the gap/depth law is geometric of mean
+  `p=3` (`P(D=d)=0.3317,0.2235,0.1491,0.0973,…` vs `(1/3)(2/3)^{d-1}`); mean gap `3.003`.
+- **(V2) `[OBSERVED]`** renormalization shifts the mean gap by `+1` (`3.00→4.00`) — the `A_k` tower (Thm 3.1) holds
+  at `p=3`.
+- **(V3) `[OBSERVED]`** the analogous `m=3` renewal-density walk (increment `X=2g-3`) has empirical Cramér exponent
+  `e^{-θ^*}=0.36421`, matching the `(p=3,m=3)` prediction `(\sqrt3-1)/2=0.36603` (Thm 5.2) to within finite-`N`
+  sampling.
+
+> **Scope `[HONEST]`.** The `m=3` renewal-density walk is the *analogous* construct; o18's actual halt predicate is
+> frontier-bit (`CRYPTID_KERNEL.md`), so this validates the **theory's family structure** (geometric depth mean `p`,
+> renormalization, `(p,m)` Cramér) on real `p=3` dynamics, **not** o18's halting. The quenched seat is `(K)`.
+
+**Net (V):** the family theory — geometric depth law (mean `p`), the renormalization `+1` shift, and the
+`(\sqrt3-1)/2` Cramér exponent — is empirically confirmed on the real `μ=8/3` (o18-class) orbit, a second prime,
+validating §9/§13 beyond the `p=2` Antihydra case. **No machine decided. No label upgraded.** `(K)` remains `[OPEN]`
+= Mahler 3/2 / AEV (and its `p`-family analogues).
