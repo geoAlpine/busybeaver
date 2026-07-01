@@ -345,5 +345,32 @@ Cramér equation `E[e^{-θ^*X}]=1` becomes, with `x=e^{-θ^*}`,
 
 **Net (N):** the balance-walk Cramér exponent of the `m`-counter is `\log` of the `(m-1)`-bonacci constant; Antihydra
 `(m=3)` is the golden-ratio/Fibonacci member, `m=2` the critical boundary, `1/x→2` as `m→∞`. A clean exact family
-placing `φ`; annealed, with the quenched seat `= (K)`. **No machine decided. No label upgraded.** `(K)` remains
-`[OPEN]` = Mahler 3/2 / AEV.
+placing `φ`; annealed, with the quenched seat `= (K)`.
+
+## 13. The full two-parameter `(p,m)` Cramér family — golden ratio at Antihydra `(2,3)` (brick, 2026-07-01)
+
+Combining the prime-`p` family (§9: depth `~` geom mean `p`) with the counter ratio `m` (§12) gives the general
+Cramér exponent. With increment `X=(m-1)D-m` and `D~`geom(mean `p`), `E[e^{-θ^*X}]=1` becomes, with `x=e^{-θ^*}`,
+
+> **`(p-1)x^m - p x + 1 = 0`**, always divisible by `(x-1)`; the relevant root `x∈(0,1)` gives `θ^*=-\log x`.
+> (`p=2` recovers `x^m-2x+1` of §12.)
+
+- **(P1) Exact values `[PROVEN, sympy-verified]`** (`scratchpad/pm_cramer.py`):
+  - `m=2`: `(x-1)((p-1)x-1)`, root `x=1/(p-1)`, `θ^*=\log(p-1)` (`=0` at `p=2` — critical).
+  - `m=3`: `(x-1)((p-1)x^2+(p-1)x-1)`, a **quadratic irrational**: `p=2 → x=(\sqrt5-1)/2=1/φ` (golden);
+    `p=3 → x=(\sqrt3-1)/2`, `1/x=\sqrt3+1=2.732…`.
+  - general `m`: `(x-1)((p-1)(x^{m-1}+\dots+x)-1)`.
+- **(P2) Placement.** The BB(6) Mahler cryptids' balance-walk Cramér exponents form a clean **two-parameter algebraic
+  family** indexed by `(prime p, counter ratio m)`; **Antihydra `(2,3)` is the golden-ratio point**, the `p=2` slice
+  is the `n`-bonacci family, the `p=3` slice starts `(\sqrt3-1)/2`, and `m=2` is `\log(p-1)` (critical at `p=2`).
+
+> **(P3) Scope `[HONEST]`.** These are **annealed** Cramér exponents. For `p≠2` the "`m`-counter" is the *analogous*
+> `p`-adic-renewal threshold, a clean **template**; the *actual* o18/o15 exponents depend on their real
+> (machine-specific) halt predicates (frontier-bit / block-collision, `CRYPTID_KERNEL.md`), which are not literal
+> `m`-counters — so `(p=3,m)` here is the template value, not a claim about o18's exact exponent. The quenched seat
+> is `(K)` throughout.
+
+**Net (P):** the second-moment layer's Cramér exponent is a two-parameter algebraic family `(p-1)x^m-px+1=0`, unifying
+the whole BB(6) Mahler core, with Antihydra `(2,3)` the golden-ratio member and explicit quadratic-irrational /
+`n`-bonacci values elsewhere. Annealed template; quenched `= (K)`. **No machine decided. No label upgraded.** `(K)`
+remains `[OPEN]` = Mahler 3/2 / AEV.
