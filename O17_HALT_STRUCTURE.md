@@ -53,3 +53,21 @@ non-halting result; the `k≡0` core is Collatz-hard and undecidable-by-cap). It
 obstruction lives entirely on `3ℤ`, and the complement is exactly linear. o17 remains a genuinely *different* obstruction
 type from the Mahler/occupancy family — a halt-predicate (odometer-overflow) hardness, not an equidistribution kernel.
 **No machine decided. No label upgraded.** o17 non-halting stays `[OPEN]` (a Collatz-type statement).
+
+## 4. Addendum — o17 does NOT reduce to a 1-D Collatz map; its kernel is a base-3 string dynamics (2026-07-01)
+
+Attempting the analogue of the Antihydra `→(K)` reduction (extract an explicit scalar map `j→j'` on `j=k/3`), we
+instrumented the raw TM to record the tape at each recurring canonical config (state `A` at the left frontier) for
+`k≡0 (mod 3)` seeds (`scratchpad/o17_map.py`). Result: the milestone states are **growing multi-digit base-3 strings**,
+not a scalar iterate. E.g. for `k=15` (a halter) the left-frontier-`A` block-length patterns are
+`(3,2,2,2,2,2) → (3,8,2,2,20) → (3,14,2,2,14,44) → (5,2,2,\dots,14,236)`; the settled blocks (`ℓ≡2\bmod3`) decode to
+base-3 digits `d=(ℓ-2)/3` (`2,8,14,20,50,170,236 → 0,2,4,6,16,56,78`), i.e. the tape encodes a **growing multi-digit
+base-3 number** with nontrivial carry dynamics between milestones.
+
+**Honest verdict `[OBSERVED]`.** Unlike Antihydra (whose kernel is the *scalar* 1-D map `c\mapsto⌊3c/2⌋`), o17's kernel
+is a genuine **multi-digit odometer / base-3 string dynamics** — it does **not** collapse to a single-integer Collatz
+iterate at these milestones. This is precisely *why* o17 is a **different, structurally harder-to-place obstruction
+type**: there is no 1-D Mahler-style reduction to exhibit. Placing o17's kernel would require analyzing the full
+string/carry dynamics (higher-dimensional), which this pass does not achieve. The finding is the honest negative that
+**the 1-D reduction does not exist for o17**, sharpening its classification (odometer-string, not scalar-Collatz).
+**No machine decided. No label upgraded.** o17 non-halting stays `[OPEN]`.
