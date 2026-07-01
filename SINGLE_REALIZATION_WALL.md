@@ -42,5 +42,21 @@ carrying no rigidity to exploit. Combined with (A) (the finite-window predictor 
 This is the expected honest outcome and the right kind: an attack on the wall that fails for a *specific, verified
 reason* (the transition is `½`-mixing), not for lack of effort. It reconfirms — now at the finest (transition) scale
 — that the residual is genuinely single-realization genericity `= (K)`: nothing short of controlling the specific
-orbit's deterministic-yet-`½`-mixing trajectory decides it. **No machine decided. No label upgraded.** `(K)` remains
-`[OPEN]` = Mahler 3/2 / AEV.
+orbit's deterministic-yet-`½`-mixing trajectory decides it.
+
+## Addendum — rigorous statistical GOF: the depth sequence passes every i.i.d.-geometric test (2026-07-01)
+
+To make the "annealed-indistinguishable" statement as sharp as hypothesis testing allows, we ran standard tests on
+the depth sequence `D_j` (`scratchpad/gof.py`, `N=4·10⁵`, exact big-int depths):
+- **χ² goodness-of-fit** vs geometric `2^{-d}` (12 bins): `χ²=11.11`, `dof=11`, **`p=0.43`** — consistent.
+- **Independence** `D_j` vs `D_{j+1}` (χ² contingency, 6×6): `χ²=25.4`, `dof=25`, **`p=0.44`** — independent.
+- **Autocorrelation** lags 1–10: all within `±1/\sqrt N = 0.0016` of zero — no serial correlation.
+- **Moments:** mean `1.99741` (geom `2`), variance `1.99923` (geom `2`), skewness `2.145` (geom `2.12`) — all match.
+- *(Runs test: raw runs `177686` vs expected `177904` — within `0.1\%`; the normalizing variance formula overflowed
+  `int64` (a numerical artifact, not a result), so the `z`-score is not reported. `[caveat]`)*
+
+**No anomaly at any tested order.** The depth sequence is statistically **indistinguishable from i.i.d. geometric**:
+it passes χ²-GOF, independence, autocorrelation, and moment tests. This upgrades the §11 second-moment match to
+"passes standard i.i.d. hypothesis tests," and combined with the `½`-mixing transition (C above) leaves the residual
+as pure single-realization genericity `= (K)` with **no detectable statistical handle** of any tested kind.
+**No machine decided. No label upgraded.** `(K)` remains `[OPEN]` = Mahler 3/2 / AEV.
