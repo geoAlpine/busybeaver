@@ -36,7 +36,11 @@ they are logically **independent**. The package isolates these two inputs as the
 **three formalized, red-teamed limits-of-method theorems** (§5.5) pinning *why* the first tools an expert reaches for fail:
 a neutral-direction obstruction (the high-entropy invariance-upgrade is blind to the zero-Lyapunov `ℚ₃`-direction over a
 dissipative base), a Ledrappier–Young collapse (`ENT ⟺ γ>0`, one conditional dimension), and a coisometry no-go (no uniform
-operator-norm contraction across scales). A
+operator-norm contraction across scales). Complementing these negatives, a **positive, red-teamed mean-field theory** (§5.6)
+builds the architecture the eventual tool must inhabit — an occupancy-profile renormalization group (fixed-point line,
+family-wide across the BB(6) Mahler core) with the halting transition as a balance-walk drift criticality and an exact
+**golden-ratio Cramér exponent** (`n`-bonacci across counter ratios) — reducing non-halting, at the descriptive level, to
+single-realization genericity `= (K)`. A
 cross-disciplinary sweep (~19 fields) and two direct probes (Siegel's (p,q)-adic Wiener–Tauberian theory; non-Pisot
 mathematical diffraction) found **no** tool escaping the obstruction — each reduces for its own structural reason — which
 robustly stress-tests the structural verdict and identifies the natural communities/languages for the kernel (§7.5).
@@ -338,6 +342,36 @@ Together with the No-Structure theorem (§3) and the obstruction dichotomy (§4)
 the **high-entropy invariance-upgrade**, the **entropy lower-bound**, and the **uniform-spectral-contraction** approaches —
 the three families an expert would reach for first. They sharpen the §7 expert question from "is this tractable?" to "here is
 exactly which standard mechanism fails, and why."
+
+---
+
+## 5.6 The positive architectural layer: the occupancy-profile mean-field theory (`OCCUPANCY_THEORY_ABSTRACT.md`)
+
+Complementing the *negative* results (§3 No-Structure, §4 dichotomy, §5.5 the three no-gos, and the Coverage No-Go /
+decider-preemption of `RANK1_AMENABLE_EQUIDISTRIBUTION.md` / `DECIDER_PREEMPTION.md`), a **positive, self-contained,
+red-teamed mean-field theory** builds the clean structure the eventual `(K)`-tool must inhabit. Central object: the
+**occupancy profile** `N_k(J)=#\{j<J : D_j≥k\}` of the induced-map depths. Results (`[PROVEN]` exact algebra / Haar–Kac
+model theorem; `[OBSERVED]` exact numerics; `[HEURISTIC]` annealed):
+
+- **`[PROVEN]` occupancy identity:** `#even(n)=Σ_{k≥2}N_k` — the even-count is cumulative occupancy of the nested
+  `2^{-k}`-cylinders.
+- **`[PROVEN]` renormalization group:** on depth-law space, a **fixed-point line** of geometric laws, one **relevant**
+  direction (the tail rate), linearized relevant eigenvalue `1/(1-a)` (no discrete critical exponent). **Family-wide**
+  across `{v_p(μ)=-1}`: the member at prime `p` sits at `a=1/p`, eigenvalue `p/(p-1)` — unifying the BB(6) Mahler core
+  (Antihydra, o10, o18, o15) under one architecture.
+- **`[PROVEN]` balance-walk criticality:** halting `⟺` the walk `B_n=3E_n-n<0`; its drift `2-3/\mathrm{mean}D` is zero
+  exactly at the RG-critical `\mathrm{mean}D=3/2` (`a=2/3`). *(Caveat: `\mathrm{drift}>0` for the seed orbit is itself
+  `(K)`-grade; elementary bounds leave a `1.17×` deficit — `0.585` run-ceiling vs `0.5` a.e. drift.)*
+- **`[PROVEN exact]` golden-ratio Cramér exponent:** the downward-deviation exponent is `θ^*=\logφ` (`x^3-2x+1=0`,
+  `x=1/φ`); for a general `m`-counter it is the `(m-1)`-bonacci constant, with Antihydra (`m=3`) the Fibonacci member.
+- **`[OBSERVED]` quenched match:** the seed-27 orbit matches the annealed golden-ratio LDP in every tested second-moment
+  statistic at `N=3·10⁵`.
+
+**Honest scope:** the theory is **descriptive and annealed**; by the No-Structure theorem a perfect annealed match cannot
+select the one orbit, so the residual — the deterministic orbit *attaining* the annealed statistics it exhibits — is
+single-realization genericity `= (K)`. This layer does not prove `(K)`; its value is a verified architecture (RG
+fixed-point line, criticality-as-drift-transition, exact `n`-bonacci constants) that any eventual quenched tool must
+respect, and it exhibits *why* non-halting is annealed-certain while the quenched proof remains the kernel.
 
 ---
 
