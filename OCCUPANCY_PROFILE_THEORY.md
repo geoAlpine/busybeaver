@@ -6,6 +6,15 @@ isolates the single open axiom the theory must eventually supply. HONEST SCOPE: 
 the today-proven identity or the known Haar/Bernoulli structure; the open core is quenched = `(K)`. This is durable
 framework-foundation work, NOT new progress on the kernel. SOUNDNESS labels throughout. NOT committed by default.*
 
+> **[RED-TEAM VERDICT, `OCCUPANCY_REDTEAM.md`: CONFIRMS facts, phrasing caveated.]** All eight bricks (R,F,W,L,U,C,Q,N)
+> independently re-verified with exact arithmetic (golden ratio / n-bonacci via `sympy`; `θ*=logφ` gives MGF `=1.0000`;
+> all numerics reproduced). No false theorem, no mislabelled `[PROVEN]`, no annealed→quenched leak, no claim of progress
+> toward `(K)`. Four phrasing fixes applied: **(1)** §10 (C3) the "`Σ_J φ^{-J} ≈ 1.7·10⁻⁴`" was literally false (the
+> full sum is `φ`); corrected to an offset-dependent post-transient tail. **(2)** §11 "i.i.d.-indistinguishable" softened
+> to "matches i.i.d. in all *tested* second-moment statistics to within sampling noise at `N=3·10⁵`". **(3)** §1 (S4)
+> `⟺` → `⟸` (`freq(D≥2)≥½` is sufficient/strictly-stronger, not equivalent). **(4)** §7 the drift `+½` is the
+> **a.e./Haar value, unproven for the orbit** (drift`>0` is itself `(K)`-grade); "morally certain" tagged `[HEURISTIC]`.
+
 ---
 
 ## 0. The central object
@@ -27,9 +36,10 @@ the kernel is a single statement about its top-level asymptotics.
   `#even = n − J = Σ_{k≥2}N_k` and `mean D = n/J = (Σ_k N_k)/N_1`.
 - **(S3) Nesting & cylinder form.** `N_{k+1} ≤ N_k` (nested cylinders); `D_j≥k ⟺ o_j≡3^{-1}\bmod 2^k` (`3∈ℤ₂^×`,
   framework Link 3) — so the profile is *literally* cumulative cylinder occupancy.
-- **(S4) The kernel in profile terms.** `(K) ⟺ liminf_J N_2(J)/J ≥ 1/2` (the ψ-form / `freq(D≥2)≥½` sufficient
-  case) and more sharply `mean D ≥ 3/2 ⟺ liminf_J (Σ_{k≥2}N_k)/J ≥ 1/2`. So the **entire kernel is the top-rung
-  asymptotic density of the profile.**
+- **(S4) The kernel in profile terms.** `(K) ⟸ liminf_J N_2(J)/J ≥ 1/2` (the ψ-form / `freq(D≥2)≥½` **sufficient,
+  strictly stronger** case — `⟸`, not `⟺`), and the genuine equivalence is with the full sum:
+  `(K) ⟺ mean D ≥ 3/2 ⟺ liminf_J (Σ_{k≥2}N_k)/J ≥ 1/2`. So the **entire kernel is the top-rung asymptotic density of
+  the profile.**
 
 ## 2. The Haar/a.e. structure the profile inherits `[PROVEN-in-lit / a.e.]`
 
@@ -177,12 +187,16 @@ exactly why elementary bounds cannot close `(K)`.
   be genuinely *short* (`< 0.5n` at every scale; empirically `max = 20`), i.e. depth-tail control `= (K)` — the same
   wall as `EVEN_COUNT_FLOOR.md` (run length `= v₂ =` near-halt) in dynamical-walk language.
 
-**Net (W):** the halting question is a **supercritical (drift `+½`) walk with bounded increments whose downward
-excursions are odd-runs of length up to `0.585·index`**; the RG-critical `a=2/3` is its zero-drift point. Empirically
-the walk escapes (running min `= 17` constant, supercritical), but the elementary drift+magnitude bounds permit a late
-near-maximal run to overcome the drift (`0.585 > 0.5`), so they cannot prove non-halting — exactly the depth-tail
-control `= (K)`. This unifies the RG criticality (§6), the even-count floor (`EVEN_COUNT_FLOOR.md`), and the halting
-criterion into one walk picture, and quantifies the gap (`1.17×`).
+**Net (W):** the halting question is a walk with bounded increments whose downward excursions are odd-runs of length
+up to `0.585·index`; the RG-critical `a=2/3` is its zero-drift point. **Crucial caveat on the drift.** The drift
+`+½` (and hence "supercritical") uses `mean D = 2`, which is the **a.e./Haar value — NOT proven for the seed-27
+orbit**; indeed `drift > 0` for the orbit is *itself* `(K)`-grade (it is even-density `≥ 1/3+`). So the balance walk
+is only **empirically/a.e. supercritical** (running min `= 17` constant is `[OBSERVED]`). Even granting the a.e. drift
+`0.5`, the elementary run ceiling `0.585·index` exceeds it (`0.585 > 0.5`), so a late near-maximal run could overcome
+it — the elementary bounds are consistent with both halting and non-halting, failing to close by `1.17×`. Both
+missing pieces — the drift lower bound AND the run upper bound — are `(K)`-grade (depth-tail control). This unifies
+the RG criticality (§6), the even-count floor (`EVEN_COUNT_FLOOR.md`), and the halting criterion into one walk
+picture, and quantifies the elementary deficit (`1.17×`).
 
 ## 8. Linearized RG at the fixed points — NO discrete critical exponent (brick, negative, 2026-07-01)
 
@@ -256,9 +270,11 @@ governed by the **Cramér/Lundberg exponent** `θ^*>0` solving `E[e^{-θ^*X}] = 
   min `-1`, and `E[e^{-θ^*X}] = 1.0009 ≈ 1` (the i.i.d. tilt matches); the induced partial-sum running minimum is
   bounded (`12`, after burn-in), i.e. the walk escapes — consistent with non-halting.
 - **(C3) The annealed halting heuristic `[HEURISTIC, annealed]`.** With balance `B_J ≈ J` (drift `+1`/induced step),
-  the i.i.d. halting-probability proxy is `Σ_{J} φ^{-B_J} ≈ Σ_J φ^{-J} ≈ 1.7·10^{-4}` — small and finite (the
-  probabilistic "non-halting is near-certain" statement). This is the **annealed / a.e. wall**: it treats the depths
-  as i.i.d.; the quenched single orbit's actual minimum is `(K)`.
+  the i.i.d. halting-probability proxy is a **tail sum from a post-transient offset** `J_0`,
+  `Σ_{J≥J_0} φ^{-B_J} ≈ Σ_{J≥J_0} φ^{-J}` — small and finite (`≈1.7·10^{-4}` at `J_0=20`, `≈7.3·10^{-4}` at `J_0=17`;
+  the value is offset-dependent, NOT a clean constant — the naive full sum from `J=1` is just `φ`). The point is only
+  that it is small: the probabilistic "non-halting is near-certain" statement. This is the **annealed / a.e. wall** —
+  it treats the depths as i.i.d.; the quenched single orbit's actual minimum is `(K)`.
 
 > **(C4) Scope.** `θ^*=\log φ` is an *exact, provable* structural constant of the Antihydra-class balance walk, and
 > the LDP gives the precise annealed non-halting heuristic. It is **annealed** (i.i.d. depths) — the quenched seat
@@ -286,18 +302,20 @@ Tests whether the *deterministic* seed-27 orbit actually realizes the annealed g
   `128.6` (vs `2^7=128`) and **coefficient of variation `1.022 ≈ 1.0`** — the i.i.d./Poisson value. The rare
   large-depth events that drive halting risk are *not* clustered.
 
-> **(Q4) Reading.** At the **second-moment / large-deviation level**, the deterministic orbit is
-> **i.i.d.-indistinguishable**: its drawdown law (`1/φ`), depth tail (`2^{1-k}`), and large-depth spacing
-> (Poisson, `CV≈1`) all match the annealed model with no detectable deviation. This *sharpens the heavy-tail /
-> i.i.d.-adversary point* (`EXCURSION_SYNTHESIS.md`): no second-moment statistic separates the orbit from i.i.d., so
-> the gap to `(K)` is **purely the single-realization (quenched-genericity) issue** — proving that the deterministic
-> sequence *attains* the i.i.d. statistics it empirically exhibits. That attainment is exactly `(K)`; nothing in the
-> second-moment structure closes it (it confirms, with no deviation, that the orbit *behaves* annealed).
+> **(Q4) Reading.** At the **second-moment / large-deviation level**, the deterministic orbit **matches the annealed
+> i.i.d. model in every tested second-moment statistic to within sampling noise at `N=3·10⁵`**: its drawdown law
+> (`1/φ`), depth tail (`2^{1-k}`), and large-depth spacing (Poisson, `CV≈1`) show no detectable deviation. (This is a
+> finite-`N` empirical match, not a proof of full indistinguishability — untested higher statistics or larger `N`
+> could in principle deviate.) It *sharpens the heavy-tail / i.i.d.-adversary point* (`EXCURSION_SYNTHESIS.md`): no
+> *tested* second-moment statistic separates the orbit from i.i.d., so the gap to `(K)` is **the single-realization
+> (quenched-genericity) issue** — proving that the deterministic sequence *attains* the i.i.d. statistics it
+> empirically exhibits. That attainment is exactly `(K)`; nothing in the second-moment structure closes it (it
+> confirms, with no tested deviation, that the orbit *behaves* annealed).
 
-**Net (Q):** the quenched orbit obeys the §10 golden-ratio LDP with no detectable second-moment deviation
-(drawdown `1/φ`, tail `2^{1-k}`, Poisson large-depths) — it is i.i.d.-indistinguishable at second order. This makes
-non-halting *morally certain* and pins the residual gap as pure single-realization genericity `= (K)`. The
-second-moment layer is therefore **descriptively complete and matches**, but — exactly as the No-Structure theorem
+**Net (Q):** the quenched orbit matches the §10 golden-ratio LDP in every tested second-moment statistic at
+`N=3·10⁵` (drawdown `1/φ`, tail `2^{1-k}`, Poisson large-depths), with no detected deviation. This makes non-halting
+*morally certain* **`[HEURISTIC]`** and pins the residual gap as single-realization genericity `= (K)`. The
+second-moment layer is **descriptively complete and matches (empirically)**, but — exactly as the No-Structure theorem
 forbids — a perfect annealed match cannot select the one orbit.
 
 ## 12. The Cramér exponent is an n-bonacci constant — golden ratio is the Antihydra (3:1) member (brick, 2026-07-01)
