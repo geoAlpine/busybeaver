@@ -47,6 +47,9 @@ GATES = [
     ("o13", "1RB0LC_0LC0RF_1RD1LC_0RA1LE_---0LD_1LF1LA", 3, 1, -1),  # D reads 1, left nbr 0
     ("o14", "1RB0LC_1LC0RD_1LF1LA_1LB1RE_1RB1LE_---0LE", 2, 0, -1),  # C reads 0, left nbr 0
     ("o16", "1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE", 4, 0, +1),  # E reads 0, right nbr 0
+    # Type I two-counter (Antihydra-class, 1^a 0 1^b); gate NOT vacuous (halts for some seeds):
+    ("o2",  "1RB1RC_1LC1LE_1RA1RD_0RF0RE_1LA0LB_---1RA", 3, 0, +1),  # D reads 0, right nbr 0
+    ("o7",  "1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC", 2, 0, -1),  # C reads 0, left nbr 0
     ("SN",  "1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD", 2, 0, -1),  # C reads 0, left nbr 0
 ]
 
@@ -116,7 +119,12 @@ if __name__ == "__main__":
     print(f"HALT-GATES VERIFIED (each gate PROVEN from table; 0 firings from blank, every trigger safe): {allok}")
     print("Type I (o11,o12,o13,o14,o16): halts <=> gate fires = a 00/parity event over a x3/2 Mahler orbit.")
     print()
-    print("Space Needle -- the gate is NOT vacuous (halts for some 1^m seeds); blank orbit avoids the halt set.")
+    print("o2 / o7 / Space Needle -- the gate is NOT vacuous (they DO halt for some constructed seeds);")
+    print("the blank orbit just avoids the halting seeds.  o7 (config 0 1^a 0 1^b, state D): a=1 -> HALT (6 steps),")
+    print("a=5 -> HALT (a reaches 1) -- HALT <=> left counter a reaches 1.  o2: HALT <=> balance b returns to 0 at")
+    print("a marker with a = 1 mod 4 (Antihydra-style).  Both over the x3/2 Mahler orbit = the (K) wall.")
+    print()
+    print("Space Needle -- likewise NOT vacuous; blank orbit avoids the halt set.")
     halts = [m for m in range(1, 65) if sn_epoch_halts(m)]
     nonAO = [m for m in halts if not allones(m)]
     print(f"  PROVEN gate 'C reads a 00' fires (epoch halts) exactly for m in {halts}  (m<=64)")
