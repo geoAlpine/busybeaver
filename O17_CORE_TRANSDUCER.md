@@ -146,10 +146,43 @@ free-running (never resets); halting is governed by whether/when a left-propagat
 frontier in the `D`-parity, which depends on the entire carry history — the Collatz-hard part, untouched.
 **No machine decided. No label upgraded.**
 
+## 7. The halt predicate reduces to a single PARITY BIT (the odometer MSB) (deep-dive, 2026-07-03)
+
+Attacking the carry-to-frontier rule (the Collatz-hard heart): halting is a **left-frontier gate** event,
+and the gate fires state `A` (turn / continue) or `D` (→`F` halt) by a **parity** of the leftward sweep.
+Verified (`o17_core_halt_parity.py`, 121 gate arrivals, seeds `j=1..59`, **0 exceptions**):
+
+> **(I) Gate-state = leading-block parity.** The gate fires `A` iff the **leading block** (the odometer's
+> most-significant position, "marker") is **odd**, and `D` (halt) iff it is **even**. Hence
+> ```
+>            o17 core seed L=3j  HALTS  ⟺  its leading block ever becomes EVEN.
+> ```
+> **(II) Invariants.** At every `A`-milestone the leading block is in `{3,5}` (both odd) and the digit
+> sum `S` is **even**; the only even leading block ever seen is `8`, occurring exactly at the halting
+> `D`-arrival. So the marker performs a **walk on `{3,5}`** and halt = a step to even (`8`).
+
+This is a **1-bit reduction** of the halt predicate: from the odometer of §1/§6, the free-running LSB
+counter (§6) drives carries upward, and **halting is decided entirely by the parity of the MSB** (leading
+block) — whether a carry ever pushes it from odd (`3`/`5`) to even (`8`).
+
+> **(III) The reduced `{3,5}`-walk is Collatz-hard `[OBSERVED]`.** The walk's step is **not** determined
+> by any bounded parity predictor: from marker `5` the next marker is `3` (continue) **or** `even` (halt),
+> **ambiguously** under `(marker, m mod2, S mod2)`. So the halt decision depends on the full **unbounded
+> carry history**. The large-`j` "odd `j`→halt / even `j`→slow" tendency (`O17_HALT_STRUCTURE.md` §5b) is
+> **not** a rule — `j=13` (odd) is an exception and the even-`j` "runs" are cap-limited slow halters.
+
+**Net.** The Collatz-hardness of the o17 core is now **localized to a single parity bit** — the leading
+block (odometer MSB) becoming even — whose evolution on `{3,5}` is history-dependent. This is the sharpest
+placement of the wall: not a scalar, not a bounded predictor, but one bit driven by the unbounded carry
+stream. **Halting stays `[OPEN]`; the reduction decides no machine. No machine decided. No label upgraded.**
+
 ## Reproduce
 - `o17_core_transducer.py` — self-contained verifier of §1–§3: (I) language closure, (II) fixed
   10/7/5-symbol finite-control alphabets, (III) width identity `W=μ+3(m+S)+1`. Prints
   `CORE TRANSDUCER CHARACTERIZATION VERIFIED: True` (0 exceptions, seeds L=3j to j=200).
+- `o17_core_halt_parity.py` — §7: gate-state = leading-block parity (0 mismatches ⇒ `HALT ⟺ MSB ever
+  even`), invariants (leading∈{3,5}, `S` even), and the Collatz-hard ambiguity of the `{3,5}`-walk.
+  Prints `HALT-PARITY REDUCTION VERIFIED: True`.
 - `o17_core_counter.py` — §6: `max_digit = n − c(L)` exact; `width∼3n` (linear space), `step∼n²`
   (quadratic time); the unified free-running-counter mechanism. Prints `... constant on all long seeds: True`.
 - `o17_core_growth.py` — the `[OBSERVED]` `W∼step^{1/2}` growth and irregular unbounded excursions.
