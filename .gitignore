@@ -8,3 +8,7 @@ _bb6_holdout_run.py
 
 # agent scratch files written into the repo dir
 scratchpad/
+
+# python bytecode
+__pycache__/
+*.pyc
