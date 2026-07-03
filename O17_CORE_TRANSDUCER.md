@@ -186,6 +186,34 @@ read decoupled from the digit string; halting is a **finite-automaton reachabili
 Collatz-hard carry stream**. Sharpest placement of the wall — not a scalar, not a bounded predictor, one bit.
 **Halting stays `[OPEN]`; the reduction decides no machine. No machine decided. No label upgraded.**
 
+## 7.1. Cascade-induction toward §7(II): what reduces, and the residual lemma (2026-07-03)
+
+Undertaking the cascade induction to upgrade §7(II) from `[OBSERVED]` toward `[PROVEN]`. Genuine partial
+progress + an honest obstruction; **no false proof, nothing new decided.**
+
+> **Reduction `[PROVEN corollary]`.** `marker ∈ {3,5,8}` follows from §7(I) `[PROVEN halt⟺even]` **plus** one
+> clean lemma — the **no-jump lemma**: at every milestone the leading block changes by
+> `Δ ∈ {−2, 0, +2, +3}` only (`3→3, 3→5, 5→3, 5→8`), i.e. the top digit moves **at most one base-3 step**
+> per milestone, never jumping by ≥2 (verified `j≤70`, 0 exc). *Proof of the corollary:* start at `3` (odd
+> ⇒ continue by (I)); a `3`-milestone goes to `3` or `5` (both odd ⇒ continue); a `5`-milestone goes to `3`
+> (odd ⇒ continue) or `8` (even ⇒ **halt** by (I)). By induction every continuing milestone has leading in
+> `{3,5}`; the halting one has `8`. So the marker can never reach `11` (`d=3`): it would have to pass through
+> `8` (even) first, which halts. **`{3,5,8}` is thus a consequence of (I) + the no-jump lemma** — not an
+> independent mystery.
+
+> **Residual `[OPEN]`: the no-jump lemma itself.** Proving the marker never jumps `≥2` base-3 steps is the
+> content that still needs a full cascade invariant. It is **not** a bounded-context local gadget: tracing a
+> milestone cycle shows the leading (top-digit) region is **re-crossed by the head during the excursion**
+> (e.g. `L=6`: the leading run momentarily reads `8` mid-cycle before settling), so the net marker
+> transition depends on the carry threaded through the whole digit string, not a fixed left window. A sound
+> proof must carry an invariant along the cascade bounding the carry deposited at the top digit per cycle —
+> the same unbounded carry-history whose parity is the Collatz-hard `5→8`-vs-`5→3` choice of §7(III).
+
+**Status.** §7(II)'s value bound `{3,5,8}` is now `[PROVEN modulo the no-jump lemma]` via (I); the no-jump
+lemma stays `[OBSERVED, j≤70]`, reduced but **not** closed (needs a cascade invariant, genuinely harder — it
+borders the Collatz-hard core). Honest verdict: the induction is **begun and reduced to one lemma**, not
+completed. **Halting stays `[OPEN]`. No machine decided. No false proof.**
+
 ## Reproduce
 - `o17_core_transducer.py` — self-contained verifier of §1–§3: (I) language closure, (II) fixed
   10/7/5-symbol finite-control alphabets, (III) width identity `W=μ+3(m+S)+1`. Prints
