@@ -3,12 +3,14 @@
 o11 / o12 / o13 / o14 / o16 halt predicates — the [PROVEN-from-table] halt gates (2026-07-04).
 [PROVEN halt gate + OBSERVED never-fires; halting NOT decided.]
 
-Each of these five Type-I (Mahler-3/2) cryptids has a halt whose unique predecessor is a
-single transition, so the halt condition reads straight off the table (like o17/o3). We
-verify each gate PROVEN-from-table and machine-check that it never fires from the blank
-tape (0 exceptions) -- so non-halting is exactly "the gate is never triggered", an
-existence/parity event over the machine's ×3/2 Mahler orbit (the (K) wall).
+Each of these cryptids has a halt whose unique predecessor is a single transition, so the
+halt condition reads straight off the table. We verify each gate PROVEN-from-table and
+machine-check that it never fires from the blank tape (0 exceptions) -- so non-halting is
+exactly "the gate is never triggered", an existence/parity event over the machine's orbit.
 
+  o3  = 1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC   (halt F,0; F <- only E,0->1RF; TYPE II outlier)
+        => HALT <=> state E reads a 0 whose RIGHT neighbour is also 0  (a 00; over its own
+           bounded-digit carry cascade, not a Mahler orbit -- see o3_transducer.py / O3_TRANSDUCER.md).
   o11 = 1RB1RE_1LC1LD_---1LA_1LB1LE_0RF0RA_1LD1RF   (halt C,0; C <- only B,0->1LC)
         => HALT <=> state B reads a 0 whose LEFT neighbour is also 0  (a 00).
   o12 = 1RB0RE_1LC1LD_0RA0LD_1LB0LA_1RF1RA_---1LB   (halt F,0; F <- only E,0->1RF)
@@ -37,6 +39,9 @@ SN = "ABCDEF"
 # (name, spec, halt_state, trigger_state, trigger_read, neighbour_dir)
 # gate: HALT <=> state `trigger_state` reads `trigger_read` and tape[pos+neighbour_dir]==0.
 GATES = [
+    # Type II outlier (verified in full in o3_transducer.py; listed here for a one-file view).
+    ("o3",  "1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC", 4, 0, +1),  # E reads 0, right nbr 0
+    # Type I Mahler-3/2 machines:
     ("o11", "1RB1RE_1LC1LD_---1LA_1LB1LE_0RF0RA_1LD1RF", 1, 0, -1),  # B reads 0, left nbr 0
     ("o12", "1RB0RE_1LC1LD_0RA0LD_1LB0LA_1RF1RA_---1LB", 4, 0, +1),  # E reads 0, right nbr 0
     ("o13", "1RB0LC_0LC0RF_1RD1LC_0RA1LE_---0LD_1LF1LA", 3, 1, -1),  # D reads 1, left nbr 0
