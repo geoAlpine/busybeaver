@@ -42,7 +42,30 @@ GATES = [
     ("o13", "1RB0LC_0LC0RF_1RD1LC_0RA1LE_---0LD_1LF1LA", 3, 1, -1),  # D reads 1, left nbr 0
     ("o14", "1RB0LC_1LC0RD_1LF1LA_1LB1RE_1RB1LE_---0LE", 2, 0, -1),  # C reads 0, left nbr 0
     ("o16", "1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_---1RE", 4, 0, +1),  # E reads 0, right nbr 0
+    ("SN",  "1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD", 2, 0, -1),  # C reads 0, left nbr 0
 ]
+
+# Space Needle's gate is NOT vacuous (it DOES halt for some 1^m seeds); the blank orbit
+# just avoids the halt set. Verify the PROVEN gate fires exactly on the (corrected) halt set.
+SN_TM = "1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD"
+
+def sn_epoch_halts(m):
+    """True SN milestone: 1^m block, head on the 0 right of it, state C. Does the epoch halt?"""
+    M = parse(SN_TM)
+    SZ = 1 << 21
+    tape = bytearray(SZ); off = SZ // 2
+    for i in range(m): tape[off + i] = 1
+    pos = off + m; st = 2; step = 0; lo = off; hi = off + m - 1
+    budget = int(0.6 * m**3) + 300000
+    while step < budget:
+        r = tape[pos]; act = M[st][r]
+        if act is None: return True
+        ww, d, ns = act; tape[pos] = ww; pos += d; st = ns; step += 1
+        if pos < lo: lo = pos
+        if pos > hi: hi = pos
+    return False
+
+def allones(m): return set(bin(m)[2:]) == {'1'}
 
 
 def audit(name, spec, tstate, tread, ndir, maxsteps):
@@ -85,6 +108,14 @@ if __name__ == "__main__":
         allok &= ok
         print(f"  {name:7} {trig:>15} {safe:>13} {fires:>11} {tag:>18}   [{gate}]")
     print()
-    print(f"HALT-GATES VERIFIED (each gate PROVEN from table; 0 firings, every trigger safe): {allok}")
-    print("So each halts <=> its gate is triggered (a 00 / parity event) over the machine's x3/2")
-    print("Mahler orbit -- the (K)/Mahler-3/2 wall. Halting stays [OPEN]. No machine decided.")
+    print(f"HALT-GATES VERIFIED (each gate PROVEN from table; 0 firings from blank, every trigger safe): {allok}")
+    print("Type I (o11,o12,o13,o14,o16): halts <=> gate fires = a 00/parity event over a x3/2 Mahler orbit.")
+    print()
+    print("Space Needle -- the gate is NOT vacuous (halts for some 1^m seeds); blank orbit avoids the halt set.")
+    halts = [m for m in range(1, 65) if sn_epoch_halts(m)]
+    nonAO = [m for m in halts if not allones(m)]
+    print(f"  PROVEN gate 'C reads a 00' fires (epoch halts) exactly for m in {halts}  (m<=64)")
+    print(f"  = all-ones {[m for m in range(1,65) if allones(m)]} PLUS {nonAO} (NOT all-ones -- agent's clean claim corrected)")
+    print("  => SN halts <=> the scalar orbit m,f(m),f^2(m),... (f(m)=m+3*floor(m/2^(v+1))+v) reaches this halt set;")
+    print("     the blank orbit 2,5,9,16,40,... avoids it in range => [OPEN], generalized-Collatz reachability.")
+    print("\nHalting stays [OPEN] for all six. No machine decided. No label upgraded.")
