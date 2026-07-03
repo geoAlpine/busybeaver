@@ -73,12 +73,20 @@ B=934`** (digit-string — sea/markers + a growing block).
 > past 6 in-cap). Separating genuine kernel-less outliers (o3) from bounded-digit odometers inside the 522 needs
 > per-machine analysis; the count is an **upper bound** on the o3-class, a **lower bound** on non-unary machines.
 
-**Digit-sum-growth proxy split of the ~522** (`holdout_census_axis2.py`; `[OBSERVED, rough proxy]`): binning by
-the growth exponent of the #length-`≥2` blocks (the "nonzero digits") gives **~183 log-digit-sum** (o3-like, no
-value orbit), **~176 growing** (a value present ⇒ bounded-radix odometer / Type-I-like), **~132 slow**, 33 flat.
-So the genuine o3-class is roughly **~183–315**; the bounded-digit band mixes kernel-less outliers with
-bounded-radix Mahler odometers. A clean split still needs per-machine reverse-engineering, but the o3-form is a
-**major band**, not a rarity.
+**Refined multi-signal proxy split of the ~524** (A6, `band522_split.py`; `[OBSERVED, proxy]`) — signals:
+max-block-ever, digit-sum growth, #blocks growth:
+
+| sub-band | count | reading |
+|---|---|---|
+| **o3-EXACT** — blocks strictly `{1,2}` (binary digits) | **79** | highest-confidence Type-II (o3 itself lives here) |
+| **o3-like** — `log` digit-sum, no value orbit | 155 | Type-II-like (kernel-less) |
+| **value-present** — digit-sum grows | 190 | bounded-radix odometer ⇒ Type-I-like |
+| ambiguous | 100 | needs per-machine RE |
+
+So within the bounded-digit band the split is roughly **~234 Type-II-like (kernel-less o3-class, incl. 79
+binary-exact)** vs **~190 Type-I bounded-radix odometers** vs ~100 ambiguous. The **o3-class is a major band**
+(~234 of 1104 ≈ 21%), not a rarity — but a clean per-machine Type-I/II split still needs reverse-engineering
+(the proxy estimates, it does not prove).
 
 ## Sound-decider confirmation `[OBSERVED, sampled]`
 
