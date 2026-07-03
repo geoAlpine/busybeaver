@@ -214,6 +214,36 @@ lemma stays `[OBSERVED, j≤70]`, reduced but **not** closed (needs a cascade in
 borders the Collatz-hard core). Honest verdict: the induction is **begun and reduced to one lemma**, not
 completed. **Halting stays `[OPEN]`. No machine decided. No false proof.**
 
+## 7.2. Serious attempt on the no-jump lemma: it is core-hard, not a cheap bound (2026-07-03)
+
+Undertook a cascade-invariant proof of the no-jump lemma. **Three structural angles, none closes it**; the
+lemma is entangled with the Collatz-hard cascade. `[OBSERVED difficulty map; no false proof.]`
+
+- **Angle 1 — local left-gadget.** The marker's *milestone* value is set **during** the excursion, and the
+  leading region is **re-crossed by the head mid-cycle** (`L=6`: the leading run momentarily reads `8`),
+  so the marker transition is not a bounded-context local gadget. A window extraction is contaminated by
+  the initial departure and small-config overlaps — no finite `L`-independent table.
+- **Angle 2 — LSB base-3 odometer.** The settled digits above the free-running LSB counter (§6) do **not**
+  form a clean base-3 odometer: the milestone digit vectors are irregular — verified that both **length and
+  digit order reshuffle non-monotonically** per milestone (e.g. `L=9`: `d₁ = 0,2,4,0,0`, `d₂ = 0,4,2,0,2`,
+  length `m = 3,2,3,9,8`), matching the "no scalar decoding / irreducibly multi-digit" results.
+- **Angle 3 — top sub-odometer.** The top few digits `(marker, d₁, d₂)` do **not** form a bounded odometer
+  either; the milestone map changes the vector length and reorders digits, so the top is not insulated.
+
+> **Sharper obstruction `[OBSERVED]`.** The marker change `Δ ∈ {−2,0,+2,+3}` (the no-jump bound — never a
+> skip like `3→8 (Δ=+5)` or `5→11 (Δ=+6)`) is **not determined by any bounded local feature**:
+> `(marker, m mod2, S mod2, d₁, d₂)` all leave `Δ` ambiguous (`0/+2` from `3`; `−2/+3` from `5`) — the
+> **same history-dependence as the Collatz-hard `5→8` choice** of §7(III). So even the *magnitude* bound,
+> not just the direction, is core-hard: a proof of no-jump needs the full unbounded carry-history control,
+> not a cheaper magnitude argument.
+
+**Verdict.** The no-jump lemma is **not strictly easier than the core** — it is entangled with the same
+cascade. §7(II)'s `{3,5,8}` stays `[PROVEN modulo no-jump]` (§7.1); no-jump stays `[OBSERVED]`, now
+understood to be **core-hard**, not a low-hanging bound. The cascade induction is begun, reduced to one
+lemma, and that lemma is located precisely against the Collatz wall — but **not** closed. This is the honest
+end of the `[PROVEN]`-push for now: (I) is proven; (II)/(III) sit at the wall. **Halting stays `[OPEN]`. No
+machine decided. No label upgraded. No false proof.**
+
 ## Reproduce
 - `o17_core_transducer.py` — self-contained verifier of §1–§3: (I) language closure, (II) fixed
   10/7/5-symbol finite-control alphabets, (III) width identity `W=μ+3(m+S)+1`. Prints
