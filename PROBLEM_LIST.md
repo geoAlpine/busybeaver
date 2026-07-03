@@ -49,11 +49,19 @@ The `p=3` slice of the same family (occupancy/RG theory validated here empirical
 **P5. o15.** Mahler-`8/3` class but **parity-irregular** (no clean 1-D map); shares the `p=3` equidistribution
 kernel, with a messier (block-collision) halt predicate. `[OPEN, = P4-kernel + extra halt-predicate work]`
 
-**P6. o17.** NOT in the Mahler family: a **carrying counter with unbounded digits** (off any fixed radix — sharper
-than "base-3 odometer"; `O17_HALT_STRUCTURE.md`). Halt = left-frontier overflow; the embedded family `0A01^k` is
-exact-linear off `3ℤ` and Collatz-irregular on `3ℤ` (no clean rule to `j=22`). **Problem:** determine whether the
-carry is forever re-absorbed (non-halt) — a Collatz-type statement with no scalar/base reduction. `[OPEN, distinct
-obstruction type; structurally the hardest to even place]`
+**P6. o17.** NOT in the Mahler family: a **carrying counter with unbounded digits** (off any fixed radix;
+`O17_HALT_STRUCTURE.md`). Halt = left-frontier overflow; the embedded family `0A01^k` is exact-linear off `3ℤ`
+(`[PROVEN]`, `O17_LINEAR_PROVEN.md`) and Collatz-hard on `3ℤ`. **Now fully characterized** (2026-07-03,
+`O17_CORE_TRANSDUCER.md`): the `k≡0` core is a **fixed finite-control head bouncing over a single-`0`-separated
+base-3 digit string** (§1, `[OBSERVED]` normal form, replacing the old negatives), whose unbounded digits **and**
+polynomial (quadratic-time/linear-space) growth are **one mechanism** — a **free-running least-significant counter**
+`max_digit = n − c(L)` (§6). The **halt predicate is `[PROVEN]`-reduced to a single parity bit**: `HALTS ⟺ the
+leading (odometer top-digit "marker") block ever becomes EVEN` (§7(I), gadget proof). The marker is a 3-state
+automaton `3→{3,5}, 5→{3,8=HALT}`; `marker∈{3,5,8}` is `[PROVEN modulo]` a **no-jump lemma** which is itself
+**core-hard** (§7.2 — the `5→8` step and even the change magnitude are history-dependent, same register as the
+kernel). **Residual `[OPEN]`:** whether a carry ever flips the marker even = whether the top-digit automaton reaches
+`8` — a Collatz-type statement now pinned to one bit driven by the unbounded carry stream. `[OPEN, distinct
+obstruction type; halt predicate PROVEN-reduced to one parity bit; the bit's evolution is core-hard]`
 
 **P7. The slow-width cryptids** (Space Needle, o2,o3,o4,o7,o11,o12,o13,o14,o16, Lucy's Moonlight). **Kernels
 UN-EXTRACTED** (`CRYPTID_CENSUS.md`): the crude milestone extractor finds only near-linear growth; the real
@@ -77,8 +85,12 @@ elementary bounds are consistent with both halt and non-halt. Not independent.
 `θ*=logφ` is exact, but its deterministic (supermartingale/coboundary) realization is the `(C1)` sub-action proven
 infeasible (`δ_1` maximizer). Not independent.
 
-**P11. o17's `k≡0 mod 3` halting map.** Determine which `j=k/3` halt (Collatz-irregular; no rule found to `j=22`).
-Sub-problem of P6; also a self-contained Collatz-type curiosity. `[OPEN]`
+**P11. o17's `k≡0 mod 3` halting map.** Determine which `j=k/3` halt. **Sharpened (2026-07-03,
+`O17_CORE_TRANSDUCER.md` §7):** `[PROVEN]` `j` halts ⟺ the core orbit's leading (marker) block ever becomes even
+⟺ the top-digit automaton `3→{3,5}, 5→{3,8}` ever steps `5→8`. So the halting map is a finite-automaton
+reachability driven by the odometer's carry stream; the `5→8`-vs-`5→3` choice is `[OBSERVED]` core-hard (not fixed
+by any bounded local feature). Sub-problem of P6; a self-contained Collatz-type curiosity, now reduced to one
+parity bit. `[OPEN; halt criterion PROVEN-reduced, the deciding bit core-hard]`
 
 ---
 
