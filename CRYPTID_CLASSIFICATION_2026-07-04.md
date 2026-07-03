@@ -18,6 +18,12 @@ Every core BB(6) cryptid analyzed splits by **where its hardness lives** — a r
 | **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, **o2, o7, o11, o12, o13, o14, o16, o4** (12) | tape encodes a scalar/counter **value orbit growing `×3/2` (p=2), `×8/3` (p=3), or `×4/3` (p=3, o4)**; halt = a **parity/alignment/existence event on that single orbit** | **(K) / Mahler-3/2 / Erdős** single-orbit equidistribution (Mahler 1968; AEV 1.6) |
 | **II — kernel-less carry-cascade outlier** | **o17, o3** (2) | a **tame odometer/bouncer with NO equidistribution kernel** (genericity is automatic); ALL hardness is a **Collatz-irregular halt predicate** (`00`-gap / marker-parity existence) | **generalized-Collatz carry-existence** (Michel; Kurtz–Simon Π⁰₂) |
 | **III — scalar generalized-Collatz** | **Space Needle** (1) | a **single scalar block** `1^m` with an explicit 2-adic map `f(m)`, **cubic-time**; halt = orbit **hits a sparse set** | **generalized-Collatz** reachability |
+| **IV — fixed-arity counter bouncer** `[NEW]` | H5 + band (`BB6_TRICHOTOMY_EXTENSION`) | a **bounded number of unary counters** (not a growing digit string, not one scalar), cubic-time; inner base-3/2 *descent* `A↦⌈2A/3⌉`; halt = a `11`-adjacency existence | **generalized-Collatz** adjacency (substrate distinct; wall-class `[OPEN]`) |
+
+> **Update (2026-07-04, `BB6_TRICHOTOMY_EXTENSION_2026-07-04.md`):** a five-holdout extension test makes this a
+> **TETRACHOTOMY** — a fourth type (IV, fixed-arity counter bouncers) appears — and shows **growth-rate is fully
+> orthogonal to type** (every growth band holds ≥2 types). The bounded-digit band's Type-I proxy estimate was
+> optimistic (H4, proxy-flagged Type-I, is Type II).
 
 ## 1. The discriminator is CONTENT, not growth-rate `[the session's key methodological finding]`
 

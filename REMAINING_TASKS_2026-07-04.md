@@ -43,6 +43,19 @@ nothing here is claimed solved.*
   Type-II-like (o3-class, incl. 79 binary-exact) / ~190 bounded-radix odometers / ~100 ambiguous — the o3-class
   is ~21% of the frontier. A clean per-machine split still needs reverse-engineering (open).
 
+## Frontier structure — the classification is a TETRACHOTOMY `[2026-07-04, done]`
+
+Trichotomy-extension test (5 un-analyzed holdouts, `BB6_TRICHOTOMY_EXTENSION_2026-07-04.md`): confirmed Type I
+(H1), Type II (H2, H3, H4), and found a **NEW Type IV** (H5, fixed-arity nested-counter bouncer). Growth-rate is
+**fully orthogonal to type**; the census A6 Type-I proxy was optimistic (H4 refutes it). B1-side attack
+(`BB6_TWO_WALLS`): B1/B2 are provably-distinct objects (entropy/spectral separation), o4 the bridge — no crack.
+
+### Follow-ups (open)
+- **A7. Characterize Type IV** — is the fixed-arity base-3/2 counter substrate a distinct wall or a
+  generalized-Collatz sub-case? Reverse-engineer a few more Type-IV candidates; determine decidability status.
+- **A8. Larger extension sample** — the 5-machine test found a 4th type; more samples may reveal a 5th (or bound
+  the type-count). Sample by (growth × block-structure) cells.
+
 ## GENERATIONAL — no internal route (documented, not action items)
 
 - **B1. (K) / P1 — the Mahler-3/2 kernel.** Unlocks **all 11 Type-I cryptids at once** (Antihydra, o2, o7, o10,
