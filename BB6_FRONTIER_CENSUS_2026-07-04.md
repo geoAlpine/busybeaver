@@ -73,6 +73,13 @@ B=934`** (digit-string — sea/markers + a growing block).
 > past 6 in-cap). Separating genuine kernel-less outliers (o3) from bounded-digit odometers inside the 522 needs
 > per-machine analysis; the count is an **upper bound** on the o3-class, a **lower bound** on non-unary machines.
 
+**Digit-sum-growth proxy split of the ~522** (`holdout_census_axis2.py`; `[OBSERVED, rough proxy]`): binning by
+the growth exponent of the #length-`≥2` blocks (the "nonzero digits") gives **~183 log-digit-sum** (o3-like, no
+value orbit), **~176 growing** (a value present ⇒ bounded-radix odometer / Type-I-like), **~132 slow**, 33 flat.
+So the genuine o3-class is roughly **~183–315**; the bounded-digit band mixes kernel-less outliers with
+bounded-radix Mahler odometers. A clean split still needs per-machine reverse-engineering, but the o3-form is a
+**major band**, not a rarity.
+
 ## Sound-decider confirmation `[OBSERVED, sampled]`
 
 The repo's sound decider suite (`tier3_suite.py`: `verdict` with `sim_cap=2·10⁵`, bouncer/translated-cycler

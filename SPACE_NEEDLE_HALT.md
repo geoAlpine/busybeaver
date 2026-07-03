@@ -35,10 +35,14 @@ a 2-adic-digit-driven generalized-Collatz iteration (multiplier `1+3/2^{v+1}`; c
 The blank orbit `m: 2,5,9,16,40,100,250,625,1094,…` is reproduced exactly.
 
 > **The gate fires (an epoch halts) exactly for `m` in a halt set `S`.** From the true milestone config, the raw
-> TM halts for `m≤160` at `S∩[1,160] = {1, 3, 6, 7, 15, 31, 63, 102, 127}`. **CORRECTION** (the reverse-
-> engineering subagent claimed the clean `HALT ⟺ all-ones 2^k−1`): that is **FALSE** — `m=6` (`110`) and `m=102`
-> (`1100110`) halt but are **not** all-ones, and `f(6)=15` predicts continuation where the TM in fact halts. So
-> `S ⊋ {2^k−1}`.
+> TM halts for `m≤255` at `S∩[1,255] = {1,3,6,7,15,31,63,102,127,255}` — i.e.
+> ```
+>        S = { 2^k − 1 : k ≥ 1 }  ∪  {sporadic non-all-ones},   sporadic ∩ [1,255] = {6, 102}
+> ```
+> **CORRECTION** (the reverse-engineering subagent claimed the clean `HALT ⟺ all-ones 2^k−1`): **FALSE** — the
+> two sporadics `6=110` (`=2·3`) and `102=1100110` (`=2·3·17`) halt but are not all-ones, and `f(6)=15` predicts
+> continuation where the TM in fact halts. So `S ⊋ {2^k−1}`; the sporadic set is very sparse (`2` in `255`) and
+> its exact rule is a small `[OPEN]` sub-curiosity. The blank orbit `2,5,9,16,40,…` avoids all of `S`.
 
 ## 4. Net
 

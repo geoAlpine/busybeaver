@@ -21,20 +21,24 @@ nothing here is claimed solved.*
 - **Soundness audit** — VERDICT **SOUND**; 2 in-session errors (Space Needle all-ones; o7 coordinate) caught &
   corrected. (`CRYPTID_AUDIT_2026-07-04.md`.)
 
-## ACTIONABLE — self-contained, real progress possible
+## ACTIONABLE — status
 
-- **A1. Space Needle halt-set `S` characterization** `[small]`. Halting reduces to "the scalar orbit
-  `2,f(2),…` reaches `S`", and `S ⊋ {2^k−1}` (`m=6,102` also halt). `S` itself is **not yet described**
-  (`6=110`, `102=1100110`). Characterize `S` from the map `f(m)=m+3⌊m/2^{v+1}⌋+v` — a clean, bounded curiosity.
-- **A2. The 1104-holdout frontier census** `[substantial, genuinely new]`. Only ~14 named cryptids are
-  analyzed; `_bbdata/bb6_holdouts_1104.txt` has **1104** BB(6) holdouts. Partition them: (i) decidable by the
-  standard deciders (translated-cycler / bouncer / CTL) — likely most; (ii) already-characterized cryptids;
-  (iii) **un-analyzed** — the true residual for P0. This maps what deciding BB(6) actually requires.
-- **A3. External packaging** `[priority per program memory]`. Consolidate the cryptid **trichotomy** +
-  PROVEN-gate table into a shareable artifact alongside `BB6_FRAMEWORK_PACKAGE.md` (the (K) side). Outreach is
-  the memory's stated priority action; the cryptid classification is now a durable, self-contained contribution.
-- **A4. o4 TM recovery** `[small]`. `o4` is named in the census but its TM is not in the repo; fetch/identify
-  it (bbchallenge) to complete the named-cryptid roster.
+- **A1. Space Needle halt-set `S`** ✅ DONE. `S = {2^k−1} ∪ {sporadic}`; `sporadic∩[1,255]={6,102}` (`6=2·3`,
+  `102=2·3·17`), very sparse. Blank orbit avoids all of `S`. Exact sporadic rule = small `[OPEN]` sub-curiosity.
+  (`SPACE_NEEDLE_HALT.md` §3.)
+- **A2. 1104-holdout frontier census** ✅ DONE. Structurally homogeneous: 1104 slow polynomial counters (√t 665,
+  sub-√t 399; 0 halt, 0 exp-width); bounded-digit (o3-class) ~522 (~half; proxy split ~183 kernel-less / ~176
+  odometer); sound suite 0/15. (`BB6_FRONTIER_CENSUS_2026-07-04.md`, `holdout_census*.py`.)
+- **A3. External packaging** ✅ DONE. `BB6_CRYPTID_PACKAGE.md` — trichotomy + 9 PROVEN halt gates + Type-II
+  dissections + census + the two walls, shareable alongside `BB6_FRAMEWORK_PACKAGE.md`.
+- **A4. o4 TM** ✅ DONE (found in repo, not missing): `o4 = 1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---`
+  (`cryptid_map.py`). Not yet reverse-engineered (a follow-up if wanted).
+
+### Remaining actionable follow-ups
+- **A5. Reverse-engineer o4** (`[small]`, TM now in hand) + fold into the trichotomy.
+- **A6. Per-machine Type-I/II split of the ~522 bounded-digit band** (`[substantial]`) — the proxy gives
+  ~183 o3-like / ~176 odometer; a clean split needs per-machine reverse-engineering (extend the halt-gate +
+  kernel detection over the band).
 
 ## GENERATIONAL — no internal route (documented, not action items)
 
