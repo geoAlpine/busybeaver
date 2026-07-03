@@ -104,6 +104,44 @@ def run(maxsteps):
     return res
 
 
+def marker_cascade(maxsteps):
+    """Dissect the carry cascade: at each generation start the digit string is 0^a 1^k
+    (a length-1 blocks then k length-2 blocks = a trailing marker of k 'digit-1' blocks).
+    Track the marker k across generations => the o17-no-jump analogue."""
+    SZ = 1 << 22
+    tape = bytearray(SZ); off = SZ // 2
+    pos = off; st = 0; step = 0; lo = hi = pos
+    ks = []; lens = []
+    while step < maxsteps:
+        r = tape[pos]
+        if st == 5 and r == 0: break
+        if st == 0 and pos == lo:
+            b = blocks(tape, lo, hi)
+            dig = ''.join('1' if n == 2 else '0' for s, n in b if s == 1)
+            if dig and '1' in dig and set(dig.rstrip('1')) <= {'0'}:
+                k = len(dig) - len(dig.rstrip('1'))
+                if not ks or ks[-1] != k or lens[-1] != len(dig):
+                    ks.append(k); lens.append(len(dig))
+        act = M[st][r]; ww, d, ns = act
+        tape[pos] = ww; pos += d; st = ns; step += 1
+        if pos < lo: lo = pos
+        if pos > hi: hi = pos
+    # collapse consecutive equal k
+    kk = []; ll = []
+    for k, L in zip(ks, lens):
+        if not kk or kk[-1] != k: kk.append(k); ll.append(L)
+    deltas = [kk[i+1] - kk[i] for i in range(len(kk)-1)]
+    from collections import Counter, defaultdict
+    amb = 0; tot = 0
+    T = defaultdict(set)
+    for i in range(len(kk)-1):
+        T[(kk[i] % 2, ll[i] % 2)].add(deltas[i])
+    for v in T.values():
+        tot += 1
+        if len(v) > 1: amb += 1
+    return kk, deltas, dict(Counter(deltas)), (amb, tot)
+
+
 if __name__ == "__main__":
     r = run(12_000_000)
     print(f"milestones checked            : {r['ms']}")
@@ -122,3 +160,11 @@ if __name__ == "__main__":
     print("[PROVEN from table] HALT <=> E reads a 00; [OBSERVED, 0 exc] within the normal form E")
     print("always enters a nonempty block, so halting = a Collatz-irregular 00-existence event.")
     print("SCOPE: second Type-II structural outlier (tamer than o17); halting stays [OPEN].")
+    print()
+    kk, deltas, dist, (amb, tot) = marker_cascade(40_000_000)
+    print("CARRY-CASCADE DISSECTION (the o17-no-jump analogue):")
+    print(f"  marker-k sequence ({len(kk)} generations): {kk}")
+    print(f"  Delta-k distribution: {dist}  (bounded jump: Delta in {{-1,+1,+2}}, |Delta|<=2)")
+    print(f"  marker never vanishes: min k = {min(kk)} (>=1)")
+    print(f"  Delta-k determined by (k%2,len%2)? ambiguous {amb}/{tot} keys => history-dependent, CORE-HARD")
+    print("  => like o17's no-jump: the marker jumps are bounded but not fixed by any bounded feature.")

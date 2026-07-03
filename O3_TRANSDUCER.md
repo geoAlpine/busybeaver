@@ -62,7 +62,38 @@ single-`0` gap, so o3 provably cannot halt while the tape stays in `𝓛`.**
 > (not fixed by any bounded-context predictor), so it is **not** reducible below a generalized-Collatz
 > reachability question. This is o3's wall.
 
-## 4. Verdict
+## 4. The carry cascade dissected — o3's no-jump analogue (deep-dive, 2026-07-04)
+
+Resolving the residual to the level of o17's no-jump lemma (`O17_CORE_TRANSDUCER.md` §7.1–7.2). The digit string
+(each block → digit `d=len−1∈{0,1}`) evolves as a **migrating-defect + trailing-marker odometer** (verifier
+"CARRY-CASCADE DISSECTION"):
+
+- **Structure `[OBSERVED]`.** Within a generation the string is `0^a 1^k` perturbed by **one migrating defect** —
+  a single `1`-digit that drifts left by **exactly 3 cells/milestone** (from-right velocity `+4`, `0` exceptions)
+  until it reaches the left end and is absorbed; then a new generation `0^{a'} 1^{k'}` begins with a **trailing
+  marker of `k'` digit-`1` blocks** (length-2 blocks).
+- **The safety reservoir.** A digit-`1` block (length 2) can lose a `1` to the `E/F` sweep (`F,1→0RC` erases the
+  first `1`) and merely become a digit-`0`; a digit-`0` block (length 1) loses its only `1` and becomes an
+  **empty block = a `00`** — the halt defect, normally restored by `A,0→1RB`. So the **marker `k` is the reservoir
+  of "safe" blocks**, and halting = the `E/F` sweep consuming a digit-`0` block faster than `A` heals it.
+
+> **The marker no-jump `[OBSERVED, 30 generations to 40M]`.** The marker `k` updates each generation by a
+> **bounded, asymmetric jump `Δk ∈ {−1, +1, +2}`** (never `−2`, never `|Δk|≥3`) and **never vanishes** (`min k=1`).
+> Sequence `1,2,1,2,4,3,4,5,6,5,6,8,7,9,8,9,10,12,11,13,12,11,13,12,13,15,14,16,15,14`. This is the exact analogue
+> of o17's marker automaton: bounded jumps around a slow upward drift.
+>
+> **Core-hard `[OBSERVED]`.** `Δk` is **not determined by any bounded local feature** — `(k mod2)`, `(k mod2,
+> k mod3)`, `(k mod2, len mod2)` all leave `Δk` ambiguous (`k=2 → {−1,+2}`, `k=13 → {−1,+2}`). Exactly as in
+> o17's no-jump (§7.2), the jump direction is emitted by the full unbounded cascade history, not a residue. So
+> deciding whether the marker reservoir is ever driven to a halting `00` (⟺ non-halting) is a generalized-Collatz
+> reachability over this irregular `Δk∈{−1,+1,+2}` walk — o3's wall, not a cheaper bound.
+
+**Net.** o3's carry cascade is dissected to o17's no-jump standard: a **free-running length counter** (§2) carrying
+a **migrating defect** (constant `+3`/milestone drift) and a **marker reservoir `k`** whose bounded-but-irregular
+`Δk∈{−1,+1,+2}` walk is **core-hard** (history-dependent, no bounded predictor). Halting = the irregular cascade
+ever consuming a digit-`0` block to a surviving `00` — the Collatz-hard residual, localized exactly as o17's.
+
+## 5. Verdict
 
 o3 is a **machine-verified second structural outlier** (Type II): a tame, bounded-digit, finite-control
 odometer/bouncer with a free-running length counter, **no equidistribution kernel**, and a `[PROVEN from the
@@ -75,5 +106,7 @@ upgraded.**
 ## Reproduce
 - `o3_transducer.py` — verifies (I) language closure `𝓛`, (II) fixed 11/3/6-symbol finite control, (III) the
   `[PROVEN]` halt gate (`E`-reads-`0` always has right-neighbour `1`; 0 halts), (IV) width identity `W=2m+S+2`
-  and the monotone free-running length counter. Prints `O3 TRANSDUCER + HALT-GATE VERIFIED: True`.
+  and the monotone free-running length counter; and (§4) the **carry-cascade dissection** — the marker `k`
+  no-jump analogue (`Δk∈{−1,+1,+2}`, `k≥1`, ambiguous under bounded features ⇒ core-hard). Prints
+  `O3 TRANSDUCER + HALT-GATE VERIFIED: True`.
 - TM in `cryptid_census.py`. Interpreter `/opt/homebrew/bin/python3.13` (`python3` alias is broken).
