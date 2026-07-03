@@ -127,7 +127,31 @@ interior digits** (e.g. `L=15`: settled digits reach `4`, active block grows `2�
 scalar/fixed-radix map, exactly as `O17_HALT_STRUCTURE.md` §6 established. **The core stays `[OPEN]`; nothing decided
 there.** What is new is the *mechanistic* (not merely observational) reason the core is the `L≡0 (mod 3)` sublattice.
 
+## 6. Addendum — the core is a *polynomial-growth* Collatz obstruction (2026-07-03) `[OBSERVED]`
+
+Two verified characterizations of the `L≡0 (mod 3)` core the departure lemma launches. **Nothing is decided; the core
+stays `[OPEN]`.** Both sharpen *why* o17 is a separate obstruction.
+
+- **(A) Polynomial growth, not exponential.** For long non-halting core seeds the tape width grows like
+  `width ~ step^{1/2}` — measured exponent `0.485–0.512` across `L=3,9,18,42` to `15–40M` steps (`o17_core_growth.py`).
+  So the core is a **quadratic-time / linear-space bouncer**, a **different complexity class** from the exponential
+  `(3/2)^n` growth of the Antihydra / Mahler cryptids. o17's separateness is therefore not only in its halt predicate
+  but in its **growth class**: it is not a fast-growing arithmetic orbit, it is a slow base-3 carry counter whose
+  *irregularity*, not its speed, is the obstruction.
+- **(B) The apex sequence is binary but unfaithful — sharpening "no 1-D reduction".** At the coarse level of
+  left-frontier apexes the state stream is a simple 2-letter sequence over `{AED, AE}`. But the **excursions between
+  apexes are wildly irregular** — for `L=3` the inter-apex step-gaps range over `[1, 1.07·10⁶]` (largest gaps
+  `20, 50, 206, 408, 1274, 1070554`), growing without bound. So the coarse apex sequence is **not a faithful 1-D
+  reduction**: the unbounded base-3 interior digits (`O17_HALT_STRUCTURE.md` §6) live in the *excursions*, not the
+  apex letters. This is a precise form of the docs' "no clean 1-D reduction": the apex level *is* simple/binary, but
+  **faithfulness fails at the excursion level**, which is exactly where the Collatz-hardness sits.
+
+**Net.** The core is now placed as a *slow (polynomial-growth) base-3 carry counter with unbounded, irregular
+excursions* — Collatz-hard in its halt predicate, not in its growth. It stays `[OPEN]`; no machine decided.
+
 ## Reproduce
-- `o17_linear_proof.py` — self-contained verifier: (I) closed forms `k≤200` 0 mismatches; (II) rightward `(5,3)`
-  translation cycle; (IV) boundary invariance all four classes; (VI) departure lemma (`L≡0 mod3` → state `B`,
-  `⌊L/3⌋` length-2 blocks). Prints `ALL INGREDIENTS VERIFIED: True`.
+- `o17_linear_proof.py` — self-contained verifier of the PROVEN linear régime: (I) closed forms `k≤200` 0 mismatches;
+  (II) rightward `(5,3)` translation cycle; (IV) boundary invariance all four classes; (VI) departure lemma
+  (`L≡0 mod3` → state `B`, `⌊L/3⌋` length-2 blocks). Prints `ALL INGREDIENTS VERIFIED: True`.
+- `o17_core_growth.py` — descriptive `[OBSERVED]` measurements of the OPEN core: (A) growth exponent `~1/2`;
+  (B) irregular unbounded inter-apex excursions.
