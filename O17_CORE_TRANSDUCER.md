@@ -116,9 +116,41 @@ and localize the hardness to a named coordinate.
 core's halting is decidable is `[OPEN]`; whether it reduces to a *named* open conjecture (a formal
 Collatz reduction) is `[OPEN]`. **No machine decided. No label upgraded.**
 
+## 6. The atomic step is an odometer with a FREE-RUNNING least-significant counter (deep-dive, 2026-07-03)
+
+Resolving the finite control of §1 into its gadgets (verifier data, `o17_localrule.py`/`o17_odometer.py`):
+clean sweeps are the proven period-`5/3` (rightward) / `1`-per-cell (leftward) translation cycles and
+**preserve digit values** (Lemma R/L); digits change only at three gadgets — the **right-end increment**
+`(E,0)` reversal, the **left-propagating carry** `(C,0)`+`(E,1)`, and the **left-frontier gate** `(A,0)`
+turn / `(D,·)` halt. So the core is an **odometer**: the right-end gadget ticks a counter, base-3 carries
+ripple left, and a carry reaching the frontier grows the marker (or, in the D-parity, halts).
+
+Counting the right-end ticks `n=1,2,3,…`, the **least-significant digit is a free-running counter**:
+```
+        max_digit(n)  =  n − c(L)        [OBSERVED, EXACT, c(L) a seed-constant]
+```
+verified with `c` exactly constant on every long seed (`o17_core_counter.py`: `c=68,81,34,48` for
+`L=9,18,27,33`). With **zero** fitting freedom this forces, and the verifier confirms:
+- `width(n) = 3n + O(1)` — measured `width/n → 3.01`, `width ∼ n^{0.99}` → **linear space**;
+- `step(n) ∼ c₂n²` — measured `step/n² ≈ 3.6–3.9`, `step ∼ n^{2.1}` → **quadratic time**;
+- hence `width ∼ step^{1/2}` (the proven growth of `o17_core_growth.py`), and the digits are **unbounded**
+  precisely because the bottom counter `n` grows without bound.
+
+> **Unification `[OBSERVED]`.** The two separate obstructions of `O17_HALT_STRUCTURE.md` §6 — "unbounded
+> interior digits" and "polynomial growth" — are **ONE mechanism**: a free-running least-significant
+> counter equal to the bounce index `n`. The digit string is essentially "the running count `n` in the
+> low position, base-3 carry-history above it."
+
+**Scope (unchanged `[OPEN]`).** This explains growth and unboundedness, not halting. The counter is
+free-running (never resets); halting is governed by whether/when a left-propagating carry reaches the
+frontier in the `D`-parity, which depends on the entire carry history — the Collatz-hard part, untouched.
+**No machine decided. No label upgraded.**
+
 ## Reproduce
 - `o17_core_transducer.py` — self-contained verifier of §1–§3: (I) language closure, (II) fixed
   10/7/5-symbol finite-control alphabets, (III) width identity `W=μ+3(m+S)+1`. Prints
   `CORE TRANSDUCER CHARACTERIZATION VERIFIED: True` (0 exceptions, seeds L=3j to j=200).
+- `o17_core_counter.py` — §6: `max_digit = n − c(L)` exact; `width∼3n` (linear space), `step∼n²`
+  (quadratic time); the unified free-running-counter mechanism. Prints `... constant on all long seeds: True`.
 - `o17_core_growth.py` — the `[OBSERVED]` `W∼step^{1/2}` growth and irregular unbounded excursions.
 - Interpreter: `/opt/homebrew/bin/python3.13` (the `python3` alias is a broken symlink).
