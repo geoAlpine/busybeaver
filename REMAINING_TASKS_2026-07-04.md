@@ -34,11 +34,14 @@ nothing here is claimed solved.*
 - **A4. o4 TM** ✅ DONE (found in repo, not missing): `o4 = 1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---`
   (`cryptid_map.py`). Not yet reverse-engineered (a follow-up if wanted).
 
-### Remaining actionable follow-ups
-- **A5. Reverse-engineer o4** (`[small]`, TM now in hand) + fold into the trichotomy.
-- **A6. Per-machine Type-I/II split of the ~522 bounded-digit band** (`[substantial]`) — the proxy gives
-  ~183 o3-like / ~176 odometer; a clean split needs per-machine reverse-engineering (extend the halt-gate +
-  kernel detection over the band).
+### Follow-ups
+- **A5. Reverse-engineer o4** ✅ DONE (`O4_HALT.md`, `o4_transducer.py`). **Type I with a NEW ratio `μ=4/3`
+  (`v₃=−1`, kernel prime 3)** — exact closed base-4/3 odometer `G'=⌊4G/3⌋+c(G mod3)` (residual 0, ratio→1.33338),
+  `[PROVEN]` **11-existence** halt gate (dual to o3's 00; 0 firings/15M). Adds a third census ratio (3/2, 8/3,
+  4/3) and flips o3's "4/3=envelope" to "genuine value". Now **15 named cryptids** classified.
+- **A6. Type-I/II proxy split of the ~522 bounded-digit band** ✅ DONE (`holdout_band_split.py`): ~234
+  Type-II-like (o3-class, incl. 79 binary-exact) / ~190 bounded-radix odometers / ~100 ambiguous — the o3-class
+  is ~21% of the frontier. A clean per-machine split still needs reverse-engineering (open).
 
 ## GENERATIONAL — no internal route (documented, not action items)
 

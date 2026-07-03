@@ -1,11 +1,11 @@
 # BB(6) cryptid classification — a machine-verified trichotomy (2026-07-04)
 
 *Strengthens the two-type split of `CRYPTID_KERNEL.md` ("Placing o15 and o17") into a **machine-verified
-trichotomy** over 14 core cryptids, using exact reverse-engineered normal forms from this session (o2, o3, o7,
+trichotomy** over 15 core cryptids, using exact reverse-engineered normal forms from this session (o2, o3, o7,
 o11, o12, o13, o14, o16, Space Needle) plus the prior Mahler family (Antihydra, o10, o15, o18) and o17. Parallel
 multi-agent assault; every headline cross-checked against the raw TM by the orchestrator. SOUNDNESS: labels
 throughout; zero false proofs; the discipline caught a concrete agent error (Space Needle §4) and revised the
-"o17 is unique" claim (o3 §3). **No machine decided; halting `[OPEN]` for all fourteen.** Verifier:
+"o17 is unique" claim (o3 §3). **No machine decided; halting `[OPEN]` for all fifteen.** Verifier:
 `cryptid_slowwidth_verify.py`. TMs in `suite.py`/`tier3_suite.py`/`cryptid_census.py`.*
 
 ## 0. The trichotomy
@@ -15,7 +15,7 @@ Every core BB(6) cryptid analyzed splits by **where its hardness lives** — a r
 
 | type | machines | mechanism | the wall |
 |---|---|---|---|
-| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, **o2, o7, o11, o12, o13, o14, o16** (11) | tape encodes a scalar/counter **value orbit growing `×3/2` (p=2) or `×8/3` (p=3)**; halt = a **parity/alignment/existence event on that single orbit** | **(K) / Mahler-3/2 / Erdős** single-orbit equidistribution (Mahler 1968; AEV 1.6) |
+| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, **o2, o7, o11, o12, o13, o14, o16, o4** (12) | tape encodes a scalar/counter **value orbit growing `×3/2` (p=2), `×8/3` (p=3), or `×4/3` (p=3, o4)**; halt = a **parity/alignment/existence event on that single orbit** | **(K) / Mahler-3/2 / Erdős** single-orbit equidistribution (Mahler 1968; AEV 1.6) |
 | **II — kernel-less carry-cascade outlier** | **o17, o3** (2) | a **tame odometer/bouncer with NO equidistribution kernel** (genericity is automatic); ALL hardness is a **Collatz-irregular halt predicate** (`00`-gap / marker-parity existence) | **generalized-Collatz carry-existence** (Michel; Kurtz–Simon Π⁰₂) |
 | **III — scalar generalized-Collatz** | **Space Needle** (1) | a **single scalar block** `1^m` with an explicit 2-adic map `f(m)`, **cubic-time**; halt = orbit **hits a sparse set** | **generalized-Collatz** reachability |
 
@@ -39,7 +39,7 @@ these as "near-o17"; that is a **red herring**. `√t` arises three unrelated wa
 > scalar Collatz orbit** (Type III)? Verified per machine: Type I has an exact `⌊(p/q)x⌋+c` orbit; Type II has
 > `0` scalar decodings and only log/linear-growing content; Type III has one explicit scalar map.
 
-## 2. Type I — eleven equidistribution-kernel machines `[OBSERVED/verified vs raw TM]`
+## 2. Type I — twelve equidistribution-kernel machines `[OBSERVED/verified vs raw TM]`
 
 All reduce to a clean `⌊(p/q)x⌋` orbit; halting is a parity/existence event on it (the (K)/Erdős wall).
 Machine-verified normal forms + maps (0 mismatches on the tested ranges):
@@ -58,6 +58,10 @@ Machine-verified normal forms + maps (0 mismatches on the tested ranges):
   top-digit → 0.
 - **Antihydra, o10, o15, o18** — the prior Mahler family (`CRYPTID_KERNEL.md`, `CRYPTID_O18_FRAMEWORK.md`, …):
   `μ=3/2` (Antihydra, o10-inner) and `μ=8/3` (o15, o18); `v_p(μ)=−1` kernel theorem.
+- **o4** `[verified, O4_HALT.md]` — a **NEW ratio `μ=4/3` (`v₃=−1`, kernel prime 3)**: an exact closed base-4/3
+  value odometer `G'=⌊4G/3⌋+c(G mod3)` (residual 0, ratio→1.33338), with a `[PROVEN]` **11-existence** halt gate
+  (dual to o3's 00-gate; 0 firings / 15M). Settles that a `4/3` can be a *genuine value* (o4), the opposite of
+  o3's `4/3`-as-envelope. Adds a third census ratio (`3/2, 8/3, 4/3`).
 
 Every Type I halt is a parity/existence condition on an **unbounded `⌊(p/q)x⌋` orbit** — the (K) wall,
 generationally stuck (No-Structure, Coverage No-Go, decider-preemption; `PROBLEM_LIST.md` P1).
@@ -106,13 +110,13 @@ claim is retracted.
 
 ## 6. Honest verdict
 
-**Outcome (c) across the board, with (b) structural sharpenings.** All fourteen cryptids rederive a known wall:
+**Outcome (c) across the board, with (b) structural sharpenings.** All fifteen cryptids rederive a known wall:
 eleven the **(K)/Mahler-3/2 (Erdős)** equidistribution wall, two (o17, o3) the **generalized-Collatz
 carry-existence** wall, one (Space Needle) the **generalized-Collatz reachability** wall. The genuine gains are
 **structural and classificatory**: machine-verified exact normal forms for all nine session machines (several
 *superseding* prior "no clean map" catalogue verdicts — o12, o13, o14), the **√t-is-not-diagnostic** finding, the
 **second structural outlier o3**, and the **soundness corrections** (Space Needle all-ones; o7 recovery). No new
-handle on (K). **No machine decided. No non-halting proven. No label upgraded. Halting `[OPEN]` for all fourteen.**
+handle on (K). **No machine decided. No non-halting proven. No label upgraded. Halting `[OPEN]` for all fifteen.**
 
 ## Reproduce
 - `cryptid_slowwidth_verify.py` — o7 Mahler-3/2 (`×3/2` reset ratios) + the Space Needle halt-set correction

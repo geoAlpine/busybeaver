@@ -2,7 +2,7 @@
 
 *External-shareable consolidation of the cryptid side of the BB(6) program (the counterpart of
 `BB6_FRAMEWORK_PACKAGE.md`, which packages the (K)/Mahler kernel side). It collects: the machine-verified
-**trichotomy** of the named cryptids, the **`[PROVEN from table]` halt gates** for all nine reverse-engineered
+**trichotomy** of the named cryptids, the **`[PROVEN from table]` halt gates** for all ten reverse-engineered
 slow-width machines, the **Type-II structural-outlier** dissections (o17, o3), and the **1104-holdout frontier
 census**. SOUNDNESS: every claim is `[PROVEN]`/`[OBSERVED]`/`[OPEN]`, machine-verified vs the raw TM;
 **no machine is decided**; halting is `[OPEN]` for all. Interpreter `/opt/homebrew/bin/python3.13`.*
@@ -11,16 +11,16 @@ census**. SOUNDNESS: every claim is `[PROVEN]`/`[OBSERVED]`/`[OPEN]`, machine-ve
 
 The BB(6) open frontier is **1104 undecided holdouts**, and they are **structurally homogeneous**: every one is
 a **slow polynomial-growth counter/bouncer** (tape width `∼ step^a`, `a ≤ ~0.8`; none halts or grows
-exponentially in width within cap). The `~14` named cryptids are **representatives** of this mass, and split by
+exponentially in width within cap). The ~15 named cryptids are **representatives** of this mass, and split by
 *where their hardness lives* into a machine-verified **trichotomy** — each type's halting reduces, via a
 `[PROVEN from the table]` halt gate, to one of **two walls**: single-orbit **(K)/Mahler-3/2 (Erdős)
 equidistribution**, or **generalized-Collatz** reachability. No new tool crosses either wall.
 
-## 2. The trichotomy (14 machines, `[OBSERVED]`, machine-verified)
+## 2. The trichotomy (15 machines, `[OBSERVED]`, machine-verified)
 
 | type | machines | mechanism | wall |
 |---|---|---|---|
-| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, o2, o7, o11, o12, o13, o14, o16 (11) | a scalar/counter **value orbit `×3/2` (or `×8/3`)**, unary/odometer-encoded; halt = a parity/existence event on it | **(K) / Mahler-3/2 (Erdős)** |
+| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, o2, o7, o11, o12, o13, o14, o16, **o4** (12) | a scalar/counter **value orbit `×3/2` (p=2), `×8/3` (p=3), or `×4/3` (p=3, o4)**, unary/odometer-encoded; halt = a parity/existence event on it | **(K) / Mahler-3/2 (Erdős)** |
 | **II — kernel-less carry-cascade outlier** | **o17, o3** (2) | a **tame bounded/small-digit odometer, no value orbit**; all hardness is a Collatz-irregular halt predicate | **generalized-Collatz** carry-existence |
 | **III — scalar generalized-Collatz** | Space Needle (1) | a single **scalar block** with an explicit 2-adic map; halt = orbit hits a sparse set | **generalized-Collatz** reachability |
 
@@ -29,7 +29,7 @@ Type-III all wear polynomial-growth geometry; even Antihydra (exponential Mahler
 discriminator is the **content** (an exponential value orbit vs a bounded-digit carry cascade vs a scalar
 Collatz orbit), not the growth rate.
 
-## 3. The `[PROVEN from table]` halt gates (all 9 reverse-engineered machines)
+## 3. The `[PROVEN from table]` halt gates (all 10 reverse-engineered machines)
 
 Each halt state has a **unique predecessor transition**, so halting reads straight off the table as a single
 bounded-context event; machine-verified never to fire from the blank tape (`cryptid_halt_gates_verify.py`,
@@ -46,6 +46,7 @@ bounded-context event; machine-verified never to fire from the blank tape (`cryp
 | o16 | I | state `E` reads a `00` (right) | `S'=⌊3S/2⌋+c` |
 | o2 | I | state `D` reads a `00` (right) | balance `b→0` at `a≡1 (mod4)` |
 | o7 | I | state `C` reads a `00` (left) | left counter `a→1` |
+| o4 | I (μ=4/3) | state `B` reads a `11` (right) — dual to `00` | `G'=⌊4G/3⌋+c(G mod3)` base-4/3 odometer |
 | Space Needle | III | state `C` reads a `00` (left) | scalar `f(m)=m+3⌊m/2^{v+1}⌋+v` reaches `S` |
 
 Type-I gates are **provably unreachable within the normal form** (the sweep always finds a nonempty/even block);
@@ -76,10 +77,10 @@ Over **all 1104** holdouts (`holdout_census.py`, `holdout_census_axis2.py`):
 
 ## 6. Honest verdict + the two walls
 
-**All fourteen named cryptids `[OPEN]`; the frontier is `0`-decidable by available sound deciders; no machine
+**All fifteen named cryptids `[OPEN]`; the frontier is `0`-decidable by available sound deciders; no machine
 decided.** Each reduces (via its `[PROVEN]` gate) to one of two walls:
 
-- **(K) / Mahler-3/2 (Erdős)** — single-orbit equidistribution of `⌊(p/q)^n⌋`; unlocks all 11 Type-I at once;
+- **(K) / Mahler-3/2 (Erdős)** — single-orbit equidistribution of `⌊(p/q)^n⌋`; unlocks all 12 Type-I at once;
   proven internal barriers (No-Structure, Coverage No-Go, decider-preemption, even-count floor); **generational**
   (`BB6_FRAMEWORK_PACKAGE.md`, `PROBLEM_LIST.md` P1/P1′).
 - **generalized-Collatz** — reachability/parity over a carry cascade (Type II) or a scalar orbit (Type III); no
@@ -91,7 +92,7 @@ independent problems. That reframing — a homogeneous frontier behind two named
 durable contribution. **No machine decided. No label upgraded. Halting `[OPEN]`.**
 
 ## Reproduce / index
-- Halt gates: `cryptid_halt_gates_verify.py`, `o17_core_transducer.py`, `o3_transducer.py`.
+- Halt gates: `cryptid_halt_gates_verify.py`, `o17_core_transducer.py`, `o3_transducer.py`, `o4_transducer.py`.
 - Notes: `CRYPTID_CLASSIFICATION_2026-07-04.md` (trichotomy), `O17_CORE_TRANSDUCER.md` / `O3_TRANSDUCER.md`
   (Type II), `MAHLER_HALT_GATES_2026-07-04.md` / `O2_O7_HALT.md` / `SPACE_NEEDLE_HALT.md` (gates),
   `BB6_FRONTIER_CENSUS_2026-07-04.md` (census), `CRYPTID_AUDIT_2026-07-04.md` (soundness audit).
