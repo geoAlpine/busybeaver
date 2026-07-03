@@ -152,13 +152,16 @@ Attacking the carry-to-frontier rule (the Collatz-hard heart). Halting is a **le
 Verified `o17_core_halt_parity.py` (121 gate arrivals, seeds `j=1..59`, **0 exceptions**; edges re-checked
 `j=1..70`).
 
-> **(I) Gate-state = leading-block parity `[PROVEN from transitions + OBSERVED entry invariant]`.**
+> **(I) Gate-state = leading-block parity `[PROVEN from the table, given a machine-verified entry gadget]`.**
 > A head moving **left over a run of 1s alternates `A↔D` one step/cell** (from `A,1→1LD`, `D,1→1LA`), and
-> the gate is `A,0→1RB` (**turn / continue**) vs `D,0→0LF→` `F,0` **HALT** — both read straight off the
-> table `[PROVEN]`. The **final** leftward run reaching the frontier always starts in state `A` with length
-> `leading−1` `[OBSERVED, 0 exc]`, so the head arrives in `A` iff the leading block is **odd**, `D` (halt)
-> iff **even**. The gate reads exactly **one bit — the parity of the leading ("marker") block — and nothing
-> about the digit string** (`S`, `m`, digit values all irrelevant). Hence
+> the gate is `A,0→1RB` (**turn / continue**) vs `D,0→0LF→` `F,0` **HALT** — all four read straight off the
+> table `[PROVEN]`. The **final** leftward sweep reaching the frontier **starts in state `A` and crosses
+> exactly `leading−1` ones** (the block's rightmost cell consumed by the preceding reflection gadget),
+> states alternating `A,D,A,D,…` — verified 0 exceptions over all 121 genuine frontier gates
+> (`o17_core_halt_proof.py`, the gadget-proof standard of `O17_LINEAR_PROVEN.md`). So the head arrives in
+> `A` iff the leading block is **odd**, `D` (halt) iff **even**. The gate reads exactly **one bit — the
+> parity of the leading ("marker") block — and nothing about the digit string** (`S`, `m`, digit values all
+> irrelevant). Hence
 > ```
 >            o17 core seed L=3j  HALTS  ⟺  its leading (marker) block ever becomes EVEN.
 > ```
@@ -190,6 +193,9 @@ Collatz-hard carry stream**. Sharpest placement of the wall — not a scalar, no
 - `o17_core_halt_parity.py` — §7: gate-state = leading-block parity (0 mismatches ⇒ `HALT ⟺ marker ever
   even`), the marker automaton `{3→{3,5}, 5→{3,8}}`, invariants (leading∈{3,5}, `S` even), and the
   Collatz-hard ambiguity of the `5→8` step. Prints `HALT-PARITY REDUCTION VERIFIED: True`.
+- `o17_core_halt_proof.py` — §7(I) gadget proof: the final leftward sweep starts in `A` and crosses
+  `leading−1` ones (clean `A/D` alternation), 0 exceptions / 121 gates ⇒ `[PROVEN from the table]`
+  `HALT ⟺ leading block ever even`. Prints `ENTRY INVARIANT VERIFIED: True`.
 - `o17_core_counter.py` — §6: `max_digit = n − c(L)` exact; `width∼3n` (linear space), `step∼n²`
   (quadratic time); the unified free-running-counter mechanism. Prints `... constant on all long seeds: True`.
 - `o17_core_growth.py` — the `[OBSERVED]` `W∼step^{1/2}` growth and irregular unbounded excursions.
