@@ -20,7 +20,18 @@ Verified claims (0 exceptions => holds on tested range):
      reproduces the raw-TM generation orbit EXACTLY.  Ratio -> 4/3; v_3(4/3) = -1
      => the base-3 equidistribution kernel (Type I, new ratio mu=4/3, p=3).
 """
-from o4_recon import M, SN
+def _parse(spec):
+    M = []
+    for st in spec.split('_'):
+        row = []
+        for t in (st[0:3], st[3:6]):
+            row.append(None if (t[0] == '-' or t[2] == 'Z')
+                        else (int(t[0]), 1 if t[1] == 'R' else -1, ord(t[2]) - ord('A')))
+        M.append(row)
+    return M
+
+M = _parse("1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---")
+SN = "ABCDEF"
 from collections import Counter, defaultdict
 
 CROSS_OK={('A',0,'R'),('A',1,'L'),('B',0,'R'),('B',1,'R'),('C',0,'L'),('C',1,'R'),
