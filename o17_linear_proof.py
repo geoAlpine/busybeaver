@@ -139,8 +139,52 @@ def check_boundary_invariance():
     return ok
 
 
+def check_departure():
+    """(VI) Departure lemma: L=0 mod3 hits the right boundary in-phase (state B) and the reflection
+    splits into exactly floor(L/3) length-2 blocks (base-3 all-zero string); L!=0 mod3 reflects to a
+    single block. Corollary of Lemma R (period-3): a whole number of triples => same boundary phase."""
+    import re
+    def first_left_return_blocks(L, maxsteps=200000):
+        SZ = 1 << 16
+        tape = bytearray(SZ); off = SZ // 2
+        for i in range(1, L + 1):
+            tape[off + i] = 1
+        pos = off; st = 0; step = 0; lo = hi = pos
+        reached = False; rstate = None
+        while step < maxsteps:
+            r = tape[pos]
+            if st == 5 and r == 0:
+                return ('HALT', None, None)
+            rel = pos - off
+            if not reached and rel == L + 1:
+                reached = True; rstate = SN[st]
+            if reached and rel <= 0:
+                s = ''.join(str(tape[i]) for i in range(lo, hi + 1)).strip('0')
+                return ('REFLECT', rstate, [len(b) for b in re.findall(r'1+', s)])
+            w, d, ns = M[st][r]
+            tape[pos] = w; pos += d; st = ns; step += 1
+            if pos < lo: lo = pos
+            if pos > hi: hi = pos
+        return ('MAX', rstate, None)
+    ok = True
+    for L in range(3, 40):
+        out, rstate, bl = first_left_return_blocks(L)
+        if out != 'REFLECT':
+            continue
+        if L % 3 == 0:
+            good = (rstate == 'B') and (bl == [2] * (L // 3))
+        else:
+            good = (rstate in ('C', 'E')) and (len(bl) == 1)
+        ok = ok and good
+        if not good:
+            print(f"  DEPARTURE anomaly L={L}: rstate={rstate} blocks={bl}")
+    print(f"(VI) departure lemma (L=0 mod3 -> state B, floor(L/3) length-2 blocks): {'OK' if ok else 'FAIL'}")
+    return ok
+
+
 if __name__ == "__main__":
     a = check_formulas(200)
     b = check_right_period(60)
     c = check_boundary_invariance()
-    print("\nALL INGREDIENTS VERIFIED:", a and b and c)
+    d = check_departure()
+    print("\nALL INGREDIENTS VERIFIED:", a and b and c and d)

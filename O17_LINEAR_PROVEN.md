@@ -107,6 +107,27 @@ decides no machine there.
 `[PROVEN]` finite-time bouncer; the hard `1/3` (`k≡0 mod 3`) is the `[OPEN]` off-manifold carry core. **No machine
 decided beyond the halting subfamily. No label upgraded beyond what is proved.**
 
+## 5. Addendum — the departure lemma: one mechanism explains BOTH sides (2026-07-03)
+
+The **same period-3 rightward cycle** (Lemma R) that proves the linear régime also explains, mechanistically, why the
+open core is *exactly* `L≡0 (mod 3)`:
+
+> **Departure lemma `[PROVEN corollary of Lemma R + OBSERVED split-count]` (verifier §VI).** When `L≡0 (mod 3)` the
+> block is a **whole number of triples**, so by the period-3 cycle the head reaches the right boundary **in the same
+> phase every time — arrival state `B`** (constant for all `L≡0 mod 3`; the `[PROVEN]` corollary). In that phase the
+> reflection is **not** the clean single-block bounce of §3: it **splits the block into exactly `⌊L/3⌋` length-2
+> blocks** — the base-3 all-zero digit string (`[OBSERVED, L≤39, 0 anomalies]`) — from which the unbounded-digit carry
+> cascade (`O17_HALT_STRUCTURE.md` §4–6) is launched. When `L≢0 (mod 3)` the `1`- or `2`-cell triple remainder makes
+> the boundary arrival state `C`/`E`, giving the clean single-block reflection of the proven régime.
+
+So the triple-phase of the right boundary is the **switch**: off-phase (`L≢0`) → provable linear bouncer; in-phase
+(`L≡0`) → block-split → Collatz core. This unifies the two sides under one period-3 mechanism and pins the open core's
+onset precisely. Direct trace confirms the launched core is the genuine multi-digit base-3 carry with **unbounded
+interior digits** (e.g. `L=15`: settled digits reach `4`, active block grows `2→8→20→44→170→236→…`) — irreducible to a
+scalar/fixed-radix map, exactly as `O17_HALT_STRUCTURE.md` §6 established. **The core stays `[OPEN]`; nothing decided
+there.** What is new is the *mechanistic* (not merely observational) reason the core is the `L≡0 (mod 3)` sublattice.
+
 ## Reproduce
 - `o17_linear_proof.py` — self-contained verifier: (I) closed forms `k≤200` 0 mismatches; (II) rightward `(5,3)`
-  translation cycle; (IV) boundary invariance all four classes. Prints `ALL INGREDIENTS VERIFIED: True`.
+  translation cycle; (IV) boundary invariance all four classes; (VI) departure lemma (`L≡0 mod3` → state `B`,
+  `⌊L/3⌋` length-2 blocks). Prints `ALL INGREDIENTS VERIFIED: True`.
