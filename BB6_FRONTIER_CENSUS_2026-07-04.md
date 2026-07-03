@@ -49,14 +49,51 @@ cascade (Type II/III). If the trichotomy extends across the bands — plausible 
 **`[OPEN]`, not verified for the un-analyzed ~1090** — then BB(6) is gated by the **same two walls** ((K) and
 generalized-Collatz) uniformly, rather than by 1104 independent problems.
 
-## Honest scope + next cut
+## Second axis: block structure `[OBSERVED, holdout_census_axis2.py]`
 
-`[OBSERVED]` recon only; the growth fit is crude and mislabels near boundaries; **no machine decided, none
-shown decidable**. The natural **next cut** is a *second axis* — max-1-block growth (unary value present ⇒
-Type-I-Mahler-like, e.g. o2/o7; bounded digits ⇒ Type-II-outlier-like, e.g. o3's max block ≡ 2) — to estimate
-the Type-I/II split across the 665 `√t` machines. That, plus running the repo's sound decider suite
-(`tier3_suite.py`) to confirm `0/1104` decided, would complete the frontier map.
+Per-machine final block structure (max 1-block `B`, #blocks `N`, and whether `B` grew):
+
+| structure | count | reading |
+|---|---|---|
+| **bounded-digit** (`B≤6`, non-growing) | **522** | o3-class: small blocks, growth only by block **count** — no unary value orbit |
+| **digit-string** (`N≥8`, `B` grows) | 540 | many blocks + a growing block (o17 / the o11–o16 Mahler "sea + value") |
+| unary-counter / scalar (`N≤4`, one big block) | 22 | the value **is** a single block (o2/o7/Antihydra/Space Needle) |
+| mixed / small | 20 | — |
+
+Named placements (all as expected): **Antihydra `N=3,B=601`; o7 `N=3,B=434`; Space Needle `N=3,B=160`**
+(unary-counter — the value is one block); **o3 `N=242,B=5`** (bounded-digit); **o11 `N=455,B=293`, o2 `N=133,
+B=934`** (digit-string — sea/markers + a growing block).
+
+> **Finding: the bounded-digit (o3-class) structure is ~half the frontier, not a rare outlier.** **522** holdouts
+> keep every 1-block `≤6` and grow only by adding blocks — the o3 signature (bounded digits + free-running length
+> counter, no unary value orbit). o3 is therefore *representative of a large band*, sharpening
+> `CRYPTID_CLASSIFICATION_2026-07-04.md` §3 ("o17 not unique") to "the bounded-digit outlier form is a **major
+> structural class**." **Caveat:** `B≤6` alone does not settle the kernel question — a bounded-digit tape can still
+> hide a Mahler orbit in a bounded-radix numeration (e.g. an o11-style odometer whose marker happened not to grow
+> past 6 in-cap). Separating genuine kernel-less outliers (o3) from bounded-digit odometers inside the 522 needs
+> per-machine analysis; the count is an **upper bound** on the o3-class, a **lower bound** on non-unary machines.
+
+## Sound-decider confirmation `[OBSERVED, sampled]`
+
+The repo's sound decider suite (`tier3_suite.py`: `verdict` with `sim_cap=2·10⁵`, bouncer/translated-cycler
+macro checks) decides **0/15** on a sample — all `HOLDOUT` — consistent with the prior "0/300 decided"
+(`cryptid_census.py`) and with these being **community holdouts by construction** (they already survived stronger
+deciders). The full 1104 run is prohibitively slow (`≈25 s/machine`, `~7.5 h`) and adds nothing: the frontier is
+`0`-decidable-by-available-sound-deciders. So the census's classes are **structural**, not decidability claims.
+
+## Honest scope + verdict
+
+`[OBSERVED]` recon; growth/structure fits are crude and mislabel near boundaries; **no machine decided, none
+shown decidable** (sound suite `0/15`). **Verdict:** the BB(6) frontier is a **structurally homogeneous mass of
+1104 slow polynomial-growth counters** — two growth peaks (`√t` 665, sub-`√t` 399), no exponential-width or
+halting machine — split by block structure into a **large bounded-digit (o3-class) band (~522)** and a
+growing-block (unary-value / digit-string, Mahler/counter) remainder. Width-growth is not a hardness
+discriminant (Antihydra sits in the `√t` bulk). The 9 reverse-engineered cryptids are representatives of these
+bands; **if** the trichotomy extends (plausible, `[OPEN]` for the ~1090 un-analyzed) BB(6) is gated by the same
+two walls — (K)/Mahler and generalized-Collatz — uniformly.
 
 ## Reproduce
-- `holdout_census.py [cap]` — runs all 1104, prints the class partition, saves per-machine rows to
-  `census_rows.json`. Interpreter `/opt/homebrew/bin/python3.13`. Data: `_bbdata/bb6_holdouts_1104.txt`.
+- `holdout_census.py [cap]` — axis 1 (width-growth exponent) over all 1104; class partition + `census_rows.json`.
+- `holdout_census_axis2.py [cap]` — axis 2 (block structure: max-block `B`, #blocks `N`); the 522 bounded-digit split.
+- Sound suite: `tier3_suite.py` (slow, `~25 s/machine`; sampled `0/15` decided). Interpreter
+  `/opt/homebrew/bin/python3.13`. Data: `_bbdata/bb6_holdouts_1104.txt`.
