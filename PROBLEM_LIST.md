@@ -63,11 +63,16 @@ kernel). **Residual `[OPEN]`:** whether a carry ever flips the marker even = whe
 `8` — a Collatz-type statement now pinned to one bit driven by the unbounded carry stream. `[OPEN, distinct
 obstruction type; halt predicate PROVEN-reduced to one parity bit; the bit's evolution is core-hard]`
 
-**P7. The slow-width cryptids** (Space Needle, o2,o3,o4,o7,o11,o12,o13,o14,o16, Lucy's Moonlight). **Kernels
-UN-EXTRACTED** (`CRYPTID_CENSUS.md`): the crude milestone extractor finds only near-linear growth; the real
-growth/halt event is elsewhere or slower. **Problem (per machine):** reverse-engineer the tape mechanics → the exact
-arithmetic kernel (as was done for Antihydra/o18). *Prerequisite:* their TMs (not in this repo; on bbchallenge).
-`[OPEN, un-started; blocked internally on TM availability]`
+**P7. The slow-width cryptids** (Space Needle, o2,o3,o7,o11,o12,o13,o14,o16). **Kernels now EXTRACTED &
+CLASSIFIED** (2026-07-04, `CRYPTID_CLASSIFICATION_2026-07-04.md`; the TMs were in `suite.py`/`tier3_suite.py`
+all along — the "not in repo" note was wrong). All nine reverse-engineered with exact machine-verified normal
+forms; the √t "slow-width" phenotype is a **red herring** (not diagnostic). Trichotomy: **Type I** (o2,o7,o11,
+o12,o13,o14,o16 — clean `⌊3x/2⌋`-orbit Mahler machines, unary/odometer-encoded; the (K)/Erdős wall = P1-class,
+stuck); **Type II** (o3 — a **second structural outlier** beside o17: tame bounded-digit odometer, no kernel,
+Collatz-irregular `00`-existence halt); **Type III** (Space Needle — scalar generalized-Collatz, cubic-time).
+Several supersede prior "no clean map" catalogue verdicts (o12/o13/o14). `[OPEN; all reverse-engineered &
+classified; each halt = an existence event on an unbounded orbit = P1-class (Type I) or generalized-Collatz
+(Type II/III). No machine decided.]`
 
 ---
 

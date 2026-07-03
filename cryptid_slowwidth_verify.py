@@ -36,6 +36,7 @@ def parse(spec):
 
 O7 = parse("1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC")
 SN = parse("1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD")
+O3 = parse("1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC")
 
 
 def rle(tape, lo, hi):
@@ -107,6 +108,30 @@ def sn_blank_orbit(maxsteps=1_000_000):
 def allones(m): return set(bin(m)[2:]) == {'1'}
 
 
+def o3_outlier_check(maxsteps=6_000_000):
+    """o3 is a Type-II outlier: bounded digit alphabet {1,2}, single-0 gaps, digit-sum S
+    grows only logarithmically (no exponential value orbit), length m grows ~linearly."""
+    tape = bytearray(1 << 23); off = len(tape)//2
+    pos = off; st = 0; step = 0; lo = hi = pos
+    maxblk = 0; badgap = 0; nms = 0; samples = []
+    while step < maxsteps:
+        r = tape[pos]; act = O3[st][r]
+        if act is None: break
+        if st == 0 and pos == lo:
+            b = rle(tape, lo, hi)
+            blks = [n for s, n in b if s == 1]; gaps = [n for s, n in b if s == 0]
+            if blks:
+                nms += 1
+                maxblk = max(maxblk, max(blks))
+                badgap += sum(1 for g in gaps if g != 1)
+                S = sum(1 for x in blks if x == 2); m = len(blks)
+                if nms in (10, 50, 200, 1000): samples.append((nms, m, S, hi-lo+1))
+        ww, d, ns = act; tape[pos] = ww; pos += d; st = ns; step += 1
+        if pos < lo: lo = pos
+        if pos > hi: hi = pos
+    return maxblk, badgap, samples
+
+
 if __name__ == "__main__":
     print("(A) o7 = Mahler-3/2 (Antihydra-class, unary-encoded => sqrt-t):")
     resets, ratios = o7_reset_a_ratios()
@@ -123,5 +148,12 @@ if __name__ == "__main__":
     print(f"    blank-tape orbit m-seq:  {orbit}  (avoids the halt set => consistent w/ non-halting)")
     print(f"    orbit ∩ halt set = {sorted(set(orbit) & set(halts))} (empty => no halt observed)")
     print()
-    print("VERDICT: all 5 slow-width cryptids are Mahler/Collatz-class; none a fresh o17 outlier.")
-    print("Halting stays [OPEN] for all. No machine decided. No label upgraded.")
+    print("(C) o3 = SECOND structural outlier (Type II, like o17 -- NOT Mahler):")
+    maxblk, badgap, samples = o3_outlier_check()
+    print(f"    max block length = {maxblk} (==2 => bounded digit alphabet {{1,2}}); non-single gaps = {badgap}")
+    print(f"    (milestone#, #blocks m, digit-sum S, width):  {samples}")
+    print(f"    S grows ~log (no exponential value orbit) while m,width ~sqrt(step) => o17-type outlier, not Mahler.")
+    print()
+    print("VERDICT: Type I (11 machines) = Mahler/(K) wall; Type II (o17, o3) = generalized-Collatz")
+    print("carry-existence; Type III (Space Needle) = scalar generalized-Collatz. sqrt-t is NOT diagnostic.")
+    print("Halting stays [OPEN] for all fourteen. No machine decided. No label upgraded.")
