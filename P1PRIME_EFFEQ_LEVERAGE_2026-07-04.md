@@ -166,6 +166,62 @@ broader than "the ~12 Type-I machines," and now with a *readable* membership cri
 requires is the **same** one — crossing the log→linear single-orbit digit-frequency gap (§7.4) — so there is still
 **no reachable sub-`(K)` rung**; the gain is the unified, criterion-based leverage map.
 
+## 9. Bricks 5–7 — the two out-of-scope classes + the wall itself `[OBSERVED + ARGUED + lit-verified]`
+
+Completing the map at both ends: the two classes EFF-EQ does **not** reach (o10, Type-IV), and a fresh look at the
+shared wall.
+
+### 9.1 Brick 5 — o10 is the frontier APEX (sole generic-event / divergent machine) `[OBSERVED]`
+o10's extracted outer model (`O10_HALTER.md`: `HALT ⟺ ∃ epoch e whose countdown from (6,B_e) lands on b=0 at odd
+m`) gives an **ensemble halt-probability `p_e = 0.33245 ≈ 1/3`** (`brick5_o10.py`, B=1..20000) — **constant,
+non-decaying**, the defining generic-event signature and the sole such target on the frontier. Its deterministic
+reseed orbit `B_1=5 → 57 → 210273201 → …` is **doubly-exponential**: epochs 1–2 are feasible (both **refill /
+non-halt**), epoch 3 has a terminal `m` of ≈24.7 million digits — **unreachable**. So the BC-II quasi-independence
+o10 would need (a **second-moment / pair-correlation** bound across the reseeds, Kochen–Stone) is not merely
+unproven but **empirically uncheckable past epoch 2**. **o10's wall is STRICTLY HARDER than `(K)`:** `(K)` is a
+first-order single-orbit *equidistribution* (density) statement; BC-II needs a *pair-correlation / 2nd-moment*
+statement across a doubly-exp deterministic family — one order up. **o10 is the apex of the frontier hardness
+order.**
+
+### 9.2 Brick 6 — Type-IV is a counter-machine, not a scalar reseed `[OBSERVED, structural]`
+The nested reseed-BC framework needs a **single scalar** outer value `B_e` per epoch (o10's `B`, o18's seed). H5's
+outer-epoch state is instead a **multi-coordinate counter VECTOR** (`brick6_typeIV.py`: block-vectors like
+`(17,1,8)`, `(15,1,7,6)`, `(11,6,16,2)`; among epochs with 3 blocks, **3/3 coordinates vary**) — a bounded set of
+**interacting** unbounded counters, with the leading one doing the `⌈2A/3⌉` descent + refill. There is **no scalar
+hitting-set orbit** to run Borel–Cantelli over; the halt (an `11`-adjacency) is a **fixed-arity counter-machine
+reachability** event (Minsky-general). So Type-IV sits **outside the BC dichotomy entirely** — the second
+EFF-EQ-unreachable class, orthogonal to o10's (o10 is a scalar-but-divergent; Type-IV is vector-valued).
+
+### 9.3 Brick 7 — the log→linear wall: Space Needle is annealed-easier but the SAME provable depth `[lit-verified, (c)+(b)]`
+A fresh literature + structural probe (WebSearch/WebFetch-verified) on whether the Space Needle all-ones-avoidance
+framing cracks the log→linear gap — all four angles `(c)`, with one `(b)` refinement:
+- **CDT holonomy** (arXiv:2510.04156, verified) — `(c)`: the all-ones event *looks* like a Pillai/S-unit equation
+  (`m_n+1 = 2^k`) but is **not** — the orbit is a non-algebraic 2-adic floor iteration, no true power / G-function /
+  linear form in logs. CDT stays a fixed-constant tool.
+- **Mersenne/digit-avoidance literature** (Stewart, Bugeaud, verified) — `(c)`: digit-sum bounds are the **wrong
+  direction** (lower-bound *nonzero* digits; avoidance needs to guarantee a *zero* digit) and need
+  multiplicative/automatic structure the floor-orbit lacks. No single-specified-orbit result exists.
+- **2024–26 effective equidistribution** (LMW/ELMW unipotent/semisimple, verified) — `(c)`: all spectral-gap
+  homogeneous, a.e./averaged; the floor-orbit has no group, no gap, is single-orbit.
+- **Angle 3 `(b)` refinement — the payoff:** Space Needle (`avoid {2^k−1}` = **one zero bit** suffices to disprove
+  halting at step n, a sparse *existential* target, `Σp_n=1.73` super-summable) is the **existential-single-zero-bit
+  face**; Antihydra (`liminf even-density ≥ 1/3`, a **universal density** constraint) is the **universal-density
+  face** — **of the SAME kernel.** Space Needle is decisively **annealed-EASIER** (cleaner heuristic target), **but
+  NOT provably easier**: certifying "not all-ones for all n" still needs **linear-depth** control of the same
+  uncontrolled 2-adic low-bit sub-orbit (the log-controlled block is the *top* `O(log n)` bits; the all-ones failure
+  lives across the *entire* bit-string). **Both carry the identical `Θ(n/log n)` gap.** ⇒ record all-ones-avoidance
+  as a **weaker sufficient condition of EQUAL provable depth**, not a shortcut.
+
+### 9.4 The completed hardness order `[the synthesis]`
+> **spontaneous-defect convergent frontier** (Type-I two-counters, Type-III Space Needle, o3-class Type-II) —
+> `(K)`-depth, EFF-EQ-reachable, **one tool for all** — `<` — **o10** (generic-event divergent, BC-II /
+> pair-correlation, strictly harder than `(K)`) ; and **orthogonal to both**: **Type-IV** (counter-machine
+> reachability, no scalar reseed, outside BC).
+
+Space Needle is the **cleanest annealed face** of the `(K)`-depth wall; o10 is the apex; Type-IV is off-axis. EFF-EQ
+/ P1′ is the single tool for the entire `(K)`-depth (spontaneous-defect convergent) band — everything except the
+apex o10 and the off-axis Type-IV.
+
 ## 8. Honest verdict
 
 **(b) — a consolidating/positioning theory-brick set; no machine decided, no new provable rung.** The genuine gains:
@@ -180,8 +236,13 @@ orthogonal to the (K)-hard phenotype classifier); **(viii) brick 4 — the annea
 SAME log-vs-linear depth gap** (`16×→199×→∞` for Space Needle), so the weaker hypothesis buys nothing on the depth
 axis. Net: EFF-EQ is one tool for the non-halt of the **entire spontaneous-defect frontier** (all but o10-type and
 Type-IV), with a readable membership criterion — but no sub-`(K)` *rung* opens (the wall is the identical log→linear
-single-orbit digit-frequency gap). **`(K)` / P1′ remain `[OPEN]` = generational. No machine decided. No label
-upgraded.**
+single-orbit digit-frequency gap). Bricks 5–7 complete the map: **(ix) o10 is the frontier APEX** — sole
+generic-event/divergent machine (`p_e=0.332≈1/3`, reseed orbit doubly-exp, only 2 epochs feasible), BC-II
+pair-correlation wall **strictly harder than `(K)`**; **(x) Type-IV is a counter-machine** (multi-coordinate vector,
+not a scalar reseed — outside BC); **(xi) the log→linear wall is empty of new tools** (CDT / digit-avoidance /
+effective-equidist all `(c)`), refined: **Space Needle's all-ones-avoidance is annealed-easier than `(K)` but of
+EQUAL provable depth**. Hardness order: {spontaneous-defect convergent = `(K)`-depth, EFF-EQ-reachable} `<` {o10,
+BC-II}; Type-IV off-axis. **`(K)` / P1′ remain `[OPEN]` = generational. No machine decided. No label upgraded.**
 
 ## Reproduce / basis
 - Grounding `[PROVEN structural / CONDITIONAL / PROVEN negative]`: `NESTED_COLLATZ_THEOREM.md` (BC dichotomy +
