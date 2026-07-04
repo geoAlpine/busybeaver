@@ -48,3 +48,20 @@ formulation of the missing tool this program has. **`(K)` `[OPEN]`. No machine d
 - freq(`c≡3 mod4` | odd) `≈0.50` (`/opt/homebrew/bin/python3.13`, `N=2·10⁵`). Leads: arXiv:2606.23661 (Erdős 400,
   log+a.e.), arXiv:2606.24972 (positive dyadic density, rational/periodic-carry only). Basis: `K_RESEARCH_COUNT_VS_FREQ`,
   `EK2_SECOND_BUDGET`, `CROSSING_STRATEGY_2026-07-05`, CITATIONS #10/#11.
+
+## Addendum — attempting the aperiodic extension: the break is NON-PERIODICITY (with a self-correction) `[OBSERVED]`
+Trying to carry the `2606.24972` method to our orbit, and locating the exact break:
+- **Self-correction.** A first probe asked whether the 2-adic map is "non-sofic / one-bit-lookahead." It is **not**:
+  `c mod 2^k` **does determine** `⌊3c/2⌋ mod 2^{k−1}` (0 ambiguous, `k=3..8`) — the downward 2-adic factor map is
+  **deterministic (sofic)**. So the aperiodicity does **not** live in the factor map; my initial framing was mis-aimed.
+- **The real break point.** `2606.24972`'s positive density comes from a rational's binary expansion being **eventually
+  periodic** — a **finite carry recurrence** ("complete-lap mass balance," "fixed-pin confinement") that counts a fixed
+  number of `1`s per period over infinitely many periods ⇒ linear density. Our observable — the parity/digit sequence
+  `a_n = ` bit `0` of `c_n = ` the moving-diagonal digit of `8·3^n` — is provably **non-eventually-periodic** (it is a
+  **full 2-shift**, `PARITY_FULLSHIFT_2026-07-05`; non-Pisot `3/2`). So there is **no period**, hence **no complete-lap
+  count** — the density is empirically `½` but the *proof mechanism* (periodic counting) is gone.
+> **Exact break: periodicity.** The positive-dyadic-density method proves the bound **by** the eventual periodicity of
+> a rational expansion; `(K)`'s expansion is aperiodic (non-Pisot `3/2`), which removes the counting mechanism — not the
+> density. The missing input is therefore precisely an **aperiodic analogue of the complete-lap / carry-recurrence
+> count**, which does not exist in current mathematics (= the non-Pisot / rank-1-amenable wall, once more, now located
+> inside the newest positive-density method).
