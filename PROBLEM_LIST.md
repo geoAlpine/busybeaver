@@ -16,6 +16,18 @@ needed, not a claim any is close.*
 > literature **building blocks** identified (Stewart = shape, Fan–Fan–Ye = object). Priorities below unchanged;
 > P1′ remains THE target, now with a precise outreach-ready spec.
 
+> **Update 2026-07-05 (`SESSION_2026-07-05_INDEX.md`, `MEETING_BRIEF_4`, `OUTREACH_ABSTRACT.md`).** P1′/`(K)` now
+> **externally anchored**: `(K)` = the **one-sided form of the Normality Conjecture on rational base 3/2**
+> (Andrieu–Eliahou–Vivion, arXiv:2510.11723, 2025) — dictionary **verified** (`(K)` even-density `=` base-3/2
+> digit-`0` frequency, alphabet `{0,2}`, `DICT_AND_EXCDIM`); their Thm 1.7 is our reformulation verbatim. The
+> crossing is **sharpened** (`CROSSING_STRATEGY`): the duality (2-adic determinism ⟷ archimedean randomness) is a
+> **renormalization**, the multi-scale joining is **benign** (blind-tested), so a crossing reduces to **one**
+> archimedean effective-equidist input whose needed **exponential moving-diagonal rate** sits **below the counting
+> ceiling** `R(N)≤log₂N` = the one-line rank-1-amenable/Furstenberg-×2×3 obstruction. Structureless face confirmed
+> on **6 independent axes**; effective SOTA is **rank-≥2 only** (off-target). **Retracted:** the `p<q²`
+> exceptional-set-softening foothold (equidist-exceptional set is full-dimension). Proof path now scoped:
+> **collaboration on the open conjecture** (Eliahou group); proved fragments (Thm 1.5/1.7) are non-transferable.
+
 ---
 
 ## Tier 0 — the master goal
