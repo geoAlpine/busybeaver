@@ -50,5 +50,16 @@ This would decide Antihydra, and is a direct strengthening of the Normality Conj
 dictionary, the reductions, and (numerically) that every internal/annealed/structural route provably stops short; the
 missing input is genuinely new mathematics of exactly the rank-1-amenable / Furstenberg-`×2×3` kind.
 
+**Sharpest concrete form of the ask (the most actionable bridge).** The recent theorem of *"Positive dyadic density for
+rational weighted binary expansions"* (arXiv:2606.24972) proves **exactly the shape we need** — a linear, single-orbit,
+positive lower density on the digit-`1` positions — via a **complete-lap / carry-recurrence count** that is *forced by
+rationality* (an eventually-**periodic** binary expansion). Antihydra's digit sequence is the base-`3/2` orbit-word,
+which is provably **non-eventually-periodic** (a full 2-shift; non-Pisot `3/2`), so the complete-lap count has no
+period to run over. **The single missing ingredient is an aperiodic analogue of that complete-lap / carry-recurrence
+count.** If the positive-dyadic-density method (or the Normality-Conjecture machinery of arXiv:2510.11723) can be
+extended from periodic to aperiodic carry, it would resolve `(K)` — and with it the whole Type-I BB(6) frontier
+(bases `3/2, 8/3, 4/3`, all in the `p<q²` regime). *This is the specific question we would love to pose to the authors
+of arXiv:2606.24972 and arXiv:2510.11723.*
+
 *Contact / full materials: the BB(6) frontier program (notes: `MEETING_BRIEF_4`, `CROSSING_STRATEGY`,
 `DICT_AND_EXCDIM`, `FRONTIER_LIT`, `CITATIONS`). External: arXiv:2510.11723, 2504.13716, 2410.22701.*
