@@ -60,3 +60,12 @@ external technique to import, because it operates on precisely our 2–3 digit s
   `3^n` freq `→0.49`; Stewart-vs-linear `582×` gap at `m=5000`. Basis: CITATIONS #10 (Stewart 1980), #11 (Normality
   Conjecture), `EVEN_COUNT_FLOOR`, `FRONTIER_LIT_2026-07-05`; leads arXiv:2606.23661, 2606.24972, 2511.03861,
   2501.00850, 2506.12929.
+
+## Addendum — the induced-map "mean up-jump ≥ ½" reformulation `[OBSERVED, N=3·10⁵]`
+Between consecutive **odd** steps there are exactly `v₂((3c−1)/2)` **even** steps, so `E_n = Σ_{odd steps} u`,
+`u=v₂((3c−1)/2)`. Hence **non-halt `⟺ E_n/O_n ≥ ½ ⟺` mean up-jump `≥ ½`.** Verified: mean up-jump `= 0.997` (`≈1`),
+distribution **geometric** `P(u=k)=2^{−(k+1)}` (exact to 3 decimals), **margin `1.99×`** over the required `½`. Since
+`u≥1 ⟺ c≡3 (mod4)`, `u≥2 ⟺ c≡7 (mod8)`, …, the mean up-jump **is** the 2-adic cylinder-occupancy sum `= (K)`. So `(K)`
+= "the induced odd map's mean 2-adic up-jump is `≥½`" — a clean statement with a `2×` empirical margin, still a
+single-orbit mean (unprovable unconditionally) = the same count→frequency barrier. This ties the Erdős-400 / mixed
+binary–ternary lead directly to the induced-map drift the program already studies (`INDUCED_ONESIDED_DRIFT`).
