@@ -162,10 +162,17 @@ uniformly:
 | **H5** `1RB---_0RC0LD_1LB1RC_0LE0LF_1RD1LE_1RF1RA` | A:1 halt; unique pred F:1→write1,R ⇒ `HALT ⟺ 11` adjacency | A entered 210 641×, entry-read **always 0** → never fires |
 | L997 `1RB1RB_1LC0RE_---1LD_0RA1LB_1RA1LF_0LE1LE` | C:0 halt; pred B:0→write1,L ⇒ `HALT ⟺ 00` at C | 5 565×, entry-read **always 1** |
 | `1RB0LE_1LB1RC_0RF0RD_1RE0LA_1LA1RE_---0RB` | F:0; pred C:0→write0,R ⇒ `HALT ⟺ 00` (rightward) | 5 370×, always 1 |
-| `1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD` | F:0; pred C:0→write1,L ⇒ `HALT ⟺ 00` | 1 231×, always 1 |
+| `1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD` **(= Space Needle, Type III!)** | F:0; pred C:0→write1,L ⇒ `HALT ⟺ 00` | 1 231×, always 1 |
 | `1RB1LC_1LC0RD_0LE1LA_0RF1RA_1LA0LA_---0RB` | F:0; pred D:0→write0,R ⇒ `HALT ⟺ 00` | 7 452×, always 1 |
 | `1RB1RC_1LC1LC_1RE0LD_1LB1RF_---1RA_0RD1RD` | E:0; pred C:0→write1,R ⇒ `HALT ⟺ 00` | 5 798×, always 1 |
 | `1RB0LD_0RC1RB_0RD0RA_1LE0RD_1LF---_0LA1LA` | E:1; pred D:0→write1,L ⇒ `HALT ⟺ 11` adjacency | E entered **3 750 077×**, entry-read **always 0** |
+
+**SOUNDNESS NOTE:** one of the 7 candidates, `1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_---0LD`, is actually **Space
+Needle = Type III** (scalar), not Type IV — it was swept into the bounded-arity fingerprint band and mis-pulled
+into the clean-IV list. Its gate analysis (F:0 `00`-gate) is **type-agnostic and correct** (matches
+`SPACE_NEEDLE_HALT.md`), so it belongs in the table as a valid `00`-gate; only its *type* label was wrong. This
+mis-inclusion is itself further evidence of the (K)-hard classifier (§5c): a Type-III scalar presents as
+bounded-arity and is not separable by fingerprint.
 
 **Result:** 5 of 7 are `00`-existence gates, 2 (incl. H5) are `11`-adjacency gates — the **identical
 unique-predecessor existence-gate family** as Types I/II/III (o3/o11/o12/…/SN `00`; o4/H1/H2/H4 `11`). So the
