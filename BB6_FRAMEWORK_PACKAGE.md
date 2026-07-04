@@ -541,6 +541,32 @@ The shared lesson — useful to state up front to any of these communities: the 
 (the HARD side of the dichotomy, §4); every field's standard output is a closure/first-moment/annealed/spectral-type
 quantity that is constant on (or averages over) the feasible measures, hence cannot separate Haar from the family.
 
+### 7.6 The coordinate-construction framing: a "Gauss-map analogue" for `×(3/2)` (`ALT_COORDINATE_PROBE_2026-07-04.md`)
+
+For the dynamicist who knows continued fractions, here is the kernel in one intuitive image. The `(K)`-violating
+(halting) parameter set is **`(dim 1, measure 0)`** — topologically exactly the **badly-approximable numbers**
+`BA={x:\liminf n\|nx\|>0}`. Membership in `BA` is **pointwise decidable** because the Gauss map supplies a
+coordinate (continued fractions) in which the condition becomes *bounded partial quotients* — a finite-state test.
+So a `(dim 1, measure 0)` condition **can** have a clean arithmetic membership test **when the dynamics provide the
+coordinate.**
+
+`(K)` is the assertion that the analogous coordinate exists for `×(3/2)` — and the obstruction is sharp: the two
+ingredients that make continued fractions work are **both absent.** Continued fractions decide `BA` because the
+natural extension is the `SL₂(ℤ)` geodesic flow — **hyperbolic and non-amenable** — with a **Markov/sofic** coding.
+The natural extension of `×(3/2)` is the solenoid automorphism on `(ℝ×ℚ₂×ℚ₃)/ℤ[1/6]`, whose acting group
+`ℤ[1/6]⋊⟨3/2⟩` is **amenable (solvable)** and whose expansion is **non-Pisot ⇒ not even sofic** (Frougny). Every
+candidate coordinate degenerates accordingly: the 2-adic residue `c\bmod 2^K` **does not descend** (`⌊3c/2⌋\bmod
+2^K` has branching *exactly 2* at every residue — the map reads one bit deeper each step, a 2-adic shift, so no
+finite window closes); base-`3/2` numeration (Akiyama–Frougny–Sakarovitch) has a **non-regular** digit language;
+the Ostrowski/`log₂3` coordinate reaches only **log-depth**; the renormalization coordinate is a **coisometry**
+(infinite regress).
+
+> **P1′, stated for this audience.** Build a **non-sofic symbolic coordinate on the amenable `(2,3)`-solenoid** in
+> which non-halting (`B_n=3E_n−n≥0 ∀n`) becomes a decidable boundedness/first-passage condition — a **Gauss-map
+> analogue for a non-sofic amenable hyperbolic action.** We have the right topology (`dim 1, measure 0`) but no
+> continued-fraction analogue, and non-Pisot + amenability is exactly why. This is the same object as AIU + ENT
+> (§7) and as effective single-orbit equidistribution — three languages for one generational tool.
+
 ---
 
 ## 8. Citations

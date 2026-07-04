@@ -166,4 +166,27 @@ hierarchy: the convergent BC-I ask is a **strictly weaker hypothesis than `(K)`*
 positive liminf) **but blocked by the identical annealed→quenched wall** — a sub-`(K)` *hypothesis* exists, but not
 a reachable *rung*. Verdict (b), positioning; no rung opened, no machine decided.
 
+### 8.7 The central object as a "Gauss-map analogue" (2026-07-04, `ALT_COORDINATE_PROBE_2026-07-04.md` + `EXCEPTIONAL_FINE_STRUCTURE_2026-07-04.md`)
+The clearest intuitive statement of the missing tool, for a dynamicist. The `(K)`-violating (halting) set is
+**`(dim 1, measure 0)`** — the exact topological type of the **badly-approximable numbers** `BA`. `BA` is
+**pointwise decidable** because the Gauss map supplies a coordinate (continued fractions) in which "`x∈BA`" becomes
+*bounded partial quotients* — a finite-state condition. So a `(dim 1, measure 0)` set **can** be arithmetically
+decidable **when the dynamics provide the coordinate.**
+
+`(K)` asserts the analogous coordinate exists for `×(3/2)`, and the obstruction is sharp — the **two ingredients
+that make continued fractions work are both absent**: CF decides `BA` via the `SL₂(ℤ)` geodesic flow
+(**hyperbolic, non-amenable**) with a **Markov/sofic** coding; the natural extension of `×(3/2)` is the solenoid
+automorphism whose acting group `ℤ[1/6]⋊⟨3/2⟩` is **amenable** and whose expansion is **non-Pisot ⇒ not sofic**.
+Every candidate coordinate degenerates: the 2-adic residue **does not descend** (`⌊3c/2⌋\bmod 2^K` has branching
+*exactly 2* at every residue — a one-bit-lookahead shift, no finite window closes `[OBSERVED]`); base-`3/2`
+numeration is **non-regular**; the `log₂3`-Ostrowski coordinate reaches only **log-depth**; the renormalization
+coordinate is a **coisometry** (infinite regress).
+
+> **P1′ = a Gauss-map analogue for `×(3/2)`:** construct a **non-sofic symbolic coordinate on the amenable
+> `(2,3)`-solenoid** in which non-halting (`B_n=3E_n−n≥0 ∀n`) becomes a decidable boundedness/first-passage
+> condition. We have the right topology (`dim 1, measure 0`) but no continued-fraction analogue, and
+> **non-Pisot + amenability is exactly why.** This is one more language for the *same* generational object as (I)
+> AIU + ENT on the solenoid (§4) and (II) effective single-orbit equidistribution (§1) — the coordinate view
+> makes the `BA`/CF intuition, and the sharp two-ingredient obstruction, explicit.
+
 **No machine decided. No label upgraded.** `(K)` remains [OPEN] = Mahler 3/2 / AEV.
