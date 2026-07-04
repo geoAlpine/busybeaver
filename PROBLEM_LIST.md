@@ -6,6 +6,16 @@ here is claimed solved; "hardness" tags reflect this program's proven barriers (
 decider-preemption, EVEN_COUNT_FLOOR). This supersedes/consolidates the ad-hoc open lists; it is a map of WHAT is
 needed, not a claim any is close.*
 
+> **Update 2026-07-04 (`SESSION_2026-07-04_INDEX.md`).** P7 sharpened: the cryptid frontier is a **tetrachotomy**
+> (Type IV added, `BB6_TYPE_IV_CENSUS`), stable, projecting onto the same 2 walls; classification is `(K)`-hard;
+> o10 is the frontier **apex** (`O10_APEX`, harder than `(K)`, mirror of Antihydra); Type IV is off-axis but
+> not decidable (`TYPEIV_DECIDABILITY`). **P1′ now fully characterized** (`P1PRIME_EFFEQ_LEVERAGE`,
+> `EFFEQ_PARTIALS_LEDGER`, `ALT_COORDINATE_PROBE`): the missing tool is stated in **3 equivalent languages**
+> (AIU+ENT / effective single-orbit equidist / **Gauss-map analogue for `×3/2`**), its topology is `(dim 1,
+> measure 0)` (badly-approximable), and its sharp obstruction is **amenable + non-sofic** (no CF-coordinate). Two
+> literature **building blocks** identified (Stewart = shape, Fan–Fan–Ye = object). Priorities below unchanged;
+> P1′ remains THE target, now with a precise outreach-ready spec.
+
 ---
 
 ## Tier 0 — the master goal
