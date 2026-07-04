@@ -189,4 +189,19 @@ coordinate is a **coisometry** (infinite regress).
 > AIU + ENT on the solenoid (§4) and (II) effective single-orbit equidistribution (§1) — the coordinate view
 > makes the `BA`/CF intuition, and the sharp two-ingredient obstruction, explicit.
 
-**No machine decided. No label upgraded.** `(K)` remains [OPEN] = Mahler 3/2 / AEV.
+## §9. External anchor — `(K)` = one-sided Normality Conjecture on rational base 3/2 (2026-07-05)
+`(K)` is not isolated: it is the **one-sided (`≥1/3`) form of the Normality Conjecture on rational base number
+systems** (Andrieu–Eliahou–Vivion, **arXiv:2510.11723**, 2025; Akiyama–Frougny–Sakarovitch 2008). Verified dictionary
+(`DICT_AND_EXCDIM_2026-07-05`): the base-3/2 digit `2c mod 3` along the orbit lives on alphabet `{0,2}` (digit `1`
+arithmetically forbidden), and **digit-`0` frequency `=` the `(K)` even-density exactly** — so `(K)` is *literally* a
+base-3/2 digit-frequency statement, a sibling of Conjecture 1.3. Their **Thm 1.7 `[PROVEN-in-lit]`** (normality `⟺`
+equidist mod `q^ℓ`) is **verbatim our reformulation**; **Thm 1.5** (normality `⟹` no `Z_{p/q}`, `p<q²`; 3/2 qualifies)
++ the 4/3 problem form the family umbrella. **Proved fragments do NOT transfer** to a one-sided effective `(K)`
+(`REMAINING_SWEEP §B`: Thm 1.5 assumes normality / is weaker than our banked `#even≥0.89 log n`; Thm 1.7 restates).
+Effective-equidistribution SOTA (Lindenstrauss school 2024–25) is **rank-≥2** only; the `×2×3` frontier
+(Burton–Panangaden, Baumslag–Solitar C\*-algebras) is itself **reformulating** — matching our joining/renormalization
+route (`CROSSING_STRATEGY`). **The proof path is collaboration on the open conjecture** (same missing input = P1′),
+not internal mapping or fragment-reuse. Retracted 2026-07-05: the `p<q²` "exceptional-set softening" foothold
+(equidist-exceptional set is full-dimension regardless).
+
+**No machine decided. No label upgraded.** `(K)` remains [OPEN] = Mahler 3/2 / AEV = one-sided Normality Conjecture (base 3/2).
