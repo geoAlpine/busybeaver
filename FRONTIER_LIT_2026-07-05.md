@@ -50,7 +50,12 @@ effective result). Our `CROSSING_STRATEGY` joining/Kronecker reformulation sits 
 — independent evidence that the wall is structural, not a gap in our effort. (Also: Eliahou–Verger-Gaugry
 **arXiv:2504.13716**, 2025, expose base-3/2 ↔ 3x+1 links directly.)
 
-## 5. A 3/2-specific softening worth probing `[nuance, OPEN]`
+## 5. A 3/2-specific softening worth probing `[RETRACTED 2026-07-05 — see DICT_AND_EXCDIM_2026-07-05.md]`
+> **RETRACTED.** Numerical box-dimension test (`exc_dim.py`) shows `p<q²` thins only the *confinement* set (already
+> thin: Flatto `dim≤0.585`), while the *equidistribution-exceptional* set that certifying seed 8 needs is weaker →
+> **full-dimension** (`dim(E_α)→1` as `α→1`), unaffected by `p<q²`. The Fan–Fan–Ye a.e. wall is NOT softened for 3/2.
+> Original (over-optimistic) reasoning kept below for the record.
+
 Akiyama's exceptional construction (`{ξ(p/q)^n}` confined to a Cantor set) **requires `p>q²`**; Dubickas gives
 short-interval confinement for any `p/q`. **3/2 has `p<q²`**, so the *Cantor-set* exceptional confinement does **not**
 exist for it — 3/2 lies in the regime where exceptional sets are thinner and normality is more strongly expected. This

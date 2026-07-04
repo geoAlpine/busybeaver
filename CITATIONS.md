@@ -242,9 +242,12 @@ PAPER_HIERARCHY.md References (lines ~606, ~609–611):
     would give `(K)`. Their numerics (deviation-from-uniformity at random rates, richness `≈2^ℓ log2^ℓ`) **reproduce
     our blind runs** (`BLIND_HARMONIC`/`BLIND_EFFECTIVENESS`). Conj itself **unproven (numerics only)**. THE natural
     outreach anchor: `(K)` = a named, actively-studied conjecture with a research group. Companion: Eliahou–Verger-Gaugry
-    **arXiv:2504.13716** (base-3/2 ↔ 3x+1). **New foothold:** 3/2's `p<q²` **excludes** Akiyama Cantor-set exceptionals
-    (`p>q²`-only) — the non-equidistribution exceptional set for `{ξ(3/2)ⁿ}` may be **sub-full-dimension**, softening
-    the a.e. wall (#8 Fan–Fan–Ye) *for 3/2 specifically*; measuring its dimension is a concrete next step.
+    **arXiv:2504.13716** (base-3/2 ↔ 3x+1). ~~**New foothold:** 3/2's `p<q²` excludes Akiyama Cantor-set exceptionals~~
+    **[foothold RETRACTED 2026-07-05, `DICT_AND_EXCDIM_2026-07-05.md`]:** box-dim test shows `p<q²` thins only the
+    already-thin *confinement* set (Flatto `dim≤0.585`); the *equidistribution-exceptional* set (what seed 8 needs) is
+    weaker → **full-dimension**, so the Fan–Fan–Ye a.e. wall (#8) is **not** softened for 3/2. Also **verified**: `(K)`
+    even-density `=` the base-3/2 digit-`0` frequency of the Antihydra orbit (alphabet `{0,2}`, digit `1` forbidden
+    since the orbit stays `{0,1} mod 3`) — a concrete Normality-Conjecture **sibling** (not literally the min/max word).
 
 > **REFORMULATION-FRONTIER NOTE (2026-07-05).** Burton–Panangaden arXiv:2410.22701 (2024) reformulate Furstenberg
 > ×2×3 via tracial states on **Baumslag–Solitar C\*-algebras** + Carathéodory functions — purely reformulatory, no
