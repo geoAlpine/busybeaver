@@ -221,3 +221,13 @@ PAPER_HIERARCHY.md References (lines ~606, ~609–611):
 > equidistribution of a rank-1 amenable hyperbolic action remains **empty**; the 2024–26 effective-equidistribution
 > advances (Yang SL₃ effective Ratner Annals 2025; Lindenstrauss–Mohammadi–Wang–Yang arXiv:2503.21064; ELMW
 > arXiv:2503.21068) are all semisimple/higher-rank/unipotent — off-target for our rank-1/amenable/hyperbolic setting.
+
+10. **Stewart 1980 [VERIFIED; the RIGHT-SHAPE building block, `EFFEQ_PARTIALS_LEDGER_2026-07-04.md`].** *On the
+    representation of an integer in two different bases*, *J. Reine Angew. Math.* 319 (1980) 63–72. The number of
+    nonzero base-3 digits of `2ⁿ` is `≫ log n / (log log n + c)` with `c` **effectively computable**. This is the
+    **only** result in the whole floor-orbit inventory that is simultaneously **single-specified-orbit, effective,
+    and unconditional** — the correct *shape* of an eventual `(K)`/EFF-EQ theorem. It falls short on two axes (a
+    **count** of nonzero digits, not a **frequency**; strength `log n/log log n`, exponentially below the linear
+    depth needed), so it is a **building block, not a weapon** — but it proves the honest verdict is "empty of
+    frequency/linear-depth weapons," NOT literally empty. Pair with Fan–Fan–Ye (#8, the right *object*, a.e.-only)
+    as the two attach-points for a future tool. Full tiered ledger: `EFFEQ_PARTIALS_LEDGER_2026-07-04.md`.
