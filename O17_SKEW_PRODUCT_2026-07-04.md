@@ -76,11 +76,47 @@ This **refines** the prior results without contradicting them:
   **Collatz-irregular** (`j=2,4,5,7,8,10,12,15,17,…` halt; `1,3,6,9,11,13,14,16,…` not — no clean residue rule,
   cap-sensitive). A skew product with an undecidable fiber is undecidable.
 
+## 4b. The gate condition, in skew-product language `[OBSERVED]`
+Refining §2's "reaching an even state is necessary-not-sufficient": all three halting seeds tested (`j=2,4,5`) halt
+with the **identical configuration** `(state F, read 0, leading value 8)`, and the trigger is the head **entering
+the leading block in state `A` while it is even** (value 8): `leadval=8` is touched on its leftmost `1` in state
+`A`, which runs `A→…→F` reading `0` = HALT. Non-halting seeds (`j=3,9`) **never present an even leading block to
+state `A`** in-window (they touch the leading block only in states `D,E,B`).
+
+> **Gate = a base–fiber COINCIDENCE.** `halt ⟺` **(base) the leading value is even** `{2,8,14}` (obs. `8`) **AND
+> (fiber) the interior delivers the head to it in the gate-state `A`.** The base-parity is the finite-state part;
+> **which approach-state the head is in is fiber-determined** (the interior carry cascade routes the head), so the
+> gate is a *cocycle condition on the fiber over the even base states*. The **no-jump lemma** (`O17_CORE_TRANSDUCER
+> §7.2`) is exactly the statement that this approach is **local** (the marker shifts ≤1 base-3 step), which is what
+> makes "approach-state" well-defined and the gate a finite check — the core-hard residual is *whether the
+> fiber ever routes an even base state into state `A`*, a quenched property of the unbounded carry.
+
+## 4c. Skew product is o17-SPECIFIC — o3 and Space Needle differ `[OBSERVED, cross-check]`
+Testing the skew signature (bounded leading block over an unbounded fiber) on the other reverse-engineered
+digit-string / scalar cryptids (`skew_test.py`, block-length trajectories):
+
+| machine | type | max block length | #blocks | structure |
+|---|---|---|---|---|
+| **o17** | II | **unbounded** (interior/right → 4466) but **leading bounded (≤5)** | 8–500 | **SKEW PRODUCT** (bounded base × unbounded-value fiber) |
+| **o3** | II | **bounded (≤6)** — *every* block | grows 13→1516 | **uniform bounded-alphabet odometer** (NOT skew: fiber also bounded; a subshift over `{1,11}` of growing length) |
+| **Space Needle** | III | **unbounded** (single block → 310+) | **3** (scalar) | **NOT skew** (one growing scalar block; no base/fiber split) |
+
+So the three non-Type-I structures are genuinely distinct: **o17 = skew product** (bounded leading, unbounded
+interior values), **o3 = bounded-alphabet odometer** (all blocks bounded, unbounded *length*), **Space Needle =
+scalar** (one unbounded block). This **splits the census's "Type II" band structurally**: the o3-type
+(uniform-bounded odometer) and the o17-type (skew product with unbounded interior) are different objects — only
+o17 has the finite-base / unbounded-fiber decomposition. The skew-product characterization is therefore a **feature
+of o17's specific "unbounded interior digit values," not of Type II in general.**
+
 ## 5. Honest verdict
 **(b) — a new structural characterization: the o17 core is a skew product of a finite 5-state leading-block
 automaton `{2,3,5,8,14}` (halt-eligible even subset `{2,8,14}`) over an unbounded interior carry fiber.** It
 localizes the halt predicate to a bounded finite-state base and confines all Collatz-hardness to the fiber,
-sharpening `§7(I)` and complementing the "unbounded interior" obstruction. No decidability gain; the halt set stays
+sharpening `§7(I)` and complementing the "unbounded interior" obstruction. **The gate** (§4b) is a base–fiber
+coincidence — halt ⟺ an even base state met by the head in the gate-state `A`, the approach-state being
+fiber-determined, and the no-jump lemma = the approach is local. **Cross-check** (§4c): the skew product is
+**o17-specific** — o3 is a uniform bounded-alphabet odometer (all blocks ≤6), Space Needle is a scalar (one growing
+block); this splits the "Type II" band structurally. No decidability gain (fiber undecidable); the halt set stays
 Collatz-irregular. **Halting `[OPEN]`. No machine decided. No label upgraded.**
 
 ## Reproduce
