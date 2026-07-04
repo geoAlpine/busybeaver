@@ -138,6 +138,14 @@ pole `—` `{o10}` alone at the thick/generic-HALT pole `—` `{Type-IV}` off-ax
 P1′, crossing the log→linear gap) is the same one the (K) kernel needs; a fresh cross-field probe (CDT holonomy,
 Mersenne-avoidance, 2024–26 effective equidistribution) confirms **no existing tool reaches it**.
 
+**Capstone (`GRAND_SYNTHESIS_2026-07-04.md`, `CRYPTID_NONAFFINE_UNIFICATION_2026-07-04.md`).** The frontier
+compresses to **one object, one halt-form, one tool**: every cryptid runs a **non-affine floor-multiplier
+`⌊(p/q)·⌋` update** (value for Type I, scalar/vector counter for III/IV, carry cascade for II) — which is *why* no
+bouncer/VASS decider catches them; every halt is **reachability of a target config**; and the target's **thinness**
+grades the difficulty, so a **single** single-orbit-equidistribution tool resolves the non-halt of the entire
+thin-target frontier (all B1 + convergent B2), with **o10 alone** (thick, density-⅓ target) outside. B1 vs B2 is
+just **which reading** — equidistribution vs reachability — of the *same* non-affine engine.
+
 ## Reproduce / index
 - Halt gates: `cryptid_halt_gates_verify.py`, `o17_core_transducer.py`, `o3_transducer.py`, `o4_transducer.py`.
 - Notes: `CRYPTID_CLASSIFICATION_2026-07-04.md` (trichotomy) + `BB6_TYPE_IV_CENSUS_2026-07-04.md` (tetrachotomy,
