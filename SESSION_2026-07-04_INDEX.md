@@ -1,4 +1,4 @@
-# Session index — 2026-07-04: cryptid tetrachotomy + the P1′ core, mapped
+# Session index — 2026-07-04: cryptid frontier as ONE floor-multiplier object + the P1′ core (FINAL)
 
 *Navigation + state snapshot for the 2026-07-04 arc (337 md / 286 py in the corpus). Groups the session's ~14 new
 notes by theme, states the current frontier crisply, and lists the candidate next moves. SOUNDNESS: everything this
@@ -41,15 +41,52 @@ session is `(b)`/`(c)` — no machine decided, no label upgraded; `(K)` `[OPEN]`
   `CITATIONS` #10 Stewart. **P1′ now stated in 3 equivalent languages: (I) AIU+ENT solenoid, (II) effective
   single-orbit equidist, (III) Gauss-map analogue.**
 
-## 2. The frontier now (crisp)
-- **BB(6) = P0** gated on all cryptids. The frontier is **homogeneous behind 2 walls**: `(K)`/Mahler (Type I, ~12
-  machines + o10-inner) and generalized-Collatz (Type II/III/IV, ~80%+).
-- **P1 = (K)** = Mahler 3/2 / AEV, one tool (P1′) decides the whole Type-I class. **P1′ is characterized to the
-  bone** — its topology (dim1/measure0), its 3 languages, its 2 building blocks, and its sharp obstruction
-  (amenable + non-sofic = no CF-coordinate) are all now pinned. Still generational; no internal route.
-- **P6 (o17), P7 (slow-width)** = generalized-Collatz, Collatz-class, separate.
-- Every angle this session terminated `(b)`/`(c)`; the durable output is the **complete map of the wall**, not a
-  weapon.
+**E. Cryptid-structure deep-dive (post-index) — the frontier as ONE object**
+- `O17_SKEW_PRODUCT` — o17 core = a **skew product**: finite 5-state leading-block automaton `{2,3,5,8,14}` (halt
+  = even subset `{2,8,14}` in the gate) over an unbounded interior carry fiber; gate = a base–fiber coincidence.
+- `O17_O3_STRUCTURE` — o17's fiber is a regular cycle + rare Collatz-escapes; **o3 has linear subword complexity
+  `≈3ℓ`** and is a **bounded-arity (6–7 segment) counter bouncer** (NOT unbounded digit string) — but its
+  segment-recurrence is **irregular (non-affine)** ⟹ o3 leans Collatz-hard (soundness-corrected optimism).
+- `CRYPTID_NONAFFINE_UNIFICATION` — **B2 wall = the affine (VASS/Presburger-decidable) → floor-multiplier
+  (Collatz-hard) boundary**; every cryptid runs a non-affine `⌊(p/q)·⌋` engine; **B1 vs B2 = which reading
+  (equidistribution vs reachability) of the same engine.**
+- `GRAND_SYNTHESIS` — **one floor-multiplier object, one thin-target reachability halt, one master tool**: scalar
+  single-orbit equidistribution resolves the thin-target scalar majority (B1 + o3/o17/SN); **residual = o10 (thick)
+  + Type-IV/H5 (thin vector)** `[red-team-corrected from "o10 alone"]`.
+- `TYPEIV_NO_SCALAR` — H5 has **no scalar reduction** (scalar `⌈2A/3⌉` descent + vector refill); Type-IV stays a
+  genuine vector residual.
+- `O10_APEX §3b` — o10's thick target is **Mahler-3/2-defined** (density `⅓` = the `⌈3m/2⌉`-from-6 odd-density/1.5);
+  **o10 = (K) + BC-II ⊋ (K)** — the sole divergent Type-I machine, connected to the kernel `[scope-corrected: only
+  Type-I, not the whole frontier]`.
+
+**F. Frontier-wide empirical validation (all 1104)**
+- `CRYPTID_GATE_CENSUS` — 87% unique-predecessor gates, 13% disjunctive; **every halt = a bounded-context existence
+  event** (validates the grand synthesis frontier-wide, refines A11's "uniform" → "predominantly").
+- thinness census — every machine approaches its gate, `danger=0` uniformly (thin at blank level; can't detect
+  annealed-thickness).
+- `RATIO_CENSUS` — no new Mahler `p/q`; the crude method is unreliable (o7 artifact); the one flagged `~2.4`
+  candidate was **REFUTED by proper RE** (a `√t`-bouncer, no geometric value orbit). `{3/2, 8/3, 4/3}` stand.
+
+**G. Soundness discipline — 5 self-caught over-claims corrected this session**
+L373="new"→**=o7**; o3 "closest-to-decidable"→**Collatz-hard dynamics**; grand-synthesis "o10 alone outside"→**o10
++ Type-IV**; o10 "whole frontier Mahler"→**only Type-I**; ratio-census "~2.4 new"→**artifact, refuted**. (Zero
+false proofs maintained.)
+
+## 2. The frontier now (crisp, end-of-session)
+- **BB(6) = P0** gated on all cryptids. **The frontier compresses to ONE object**: every cryptid is a **non-affine
+  `⌊(p/q)·⌋` (floor-multiplier) machine** whose halt is a **bounded-context reachability event** (validated across
+  all 1104: 87% unique-predecessor gates, all thin at blank level).
+- **The target's thinness grades the difficulty.** A **single scalar single-orbit-equidistribution tool** (= `(K)`
+  / EFF-EQ / P1′, in 3 languages) resolves the non-halt of the **thin-target scalar majority** (all B1 + o3/o17/
+  Space Needle). **Two residuals sit outside:** **o10** (thick, density-⅓ target that is *itself* Mahler-defined;
+  `o10 = (K) + BC-II`) and **Type-IV/H5** (thin but a counter *vector*, no scalar reduction).
+- **B1 vs B2 = which reading of the same non-affine engine** — equidistribution (B1 → `(K)`/Mahler) vs reachability
+  (B2 → generalized-Collatz). Only the **Type-I subset** is literally Mahler-`3/2`.
+- **P1′** (the missing tool) is **characterized to the bone** — topology (`dim 1, measure 0`, badly-approximable),
+  3 languages, 2 building blocks (Stewart/Fan–Fan–Ye), sharp obstruction (amenable + non-sofic = no CF-coordinate).
+  Generational; no internal route.
+- Every angle terminated `(b)`/`(c)`; **0 machines decided, 0 labels upgraded, 5 over-claims self-caught**. The
+  durable output is the **complete, red-teamed map of the wall**, not a weapon.
 
 ## 3. Candidate next moves (the fork)
 1. **External outreach** — the packages are outreach-ready in 3 languages; take the Gauss-map framing + AEV/EL-Host
