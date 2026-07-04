@@ -142,9 +142,10 @@ Mersenne-avoidance, 2024–26 effective equidistribution) confirms **no existing
 compresses to **one object, one halt-form, one tool**: every cryptid runs a **non-affine floor-multiplier
 `⌊(p/q)·⌋` update** (value for Type I, scalar/vector counter for III/IV, carry cascade for II) — which is *why* no
 bouncer/VASS decider catches them; every halt is **reachability of a target config**; and the target's **thinness**
-grades the difficulty, so a **single** single-orbit-equidistribution tool resolves the non-halt of the entire
-thin-target frontier (all B1 + convergent B2), with **o10 alone** (thick, density-⅓ target) outside. B1 vs B2 is
-just **which reading** — equidistribution vs reachability — of the *same* non-affine engine.
+grades the difficulty, so a **single scalar single-orbit-equidistribution tool** resolves the non-halt of the
+thin-target *scalar* frontier (all B1 + o3/o17/Space Needle), with **two** classes outside: **o10** (thick, density-⅓
+target, BC-II) and **Type-IV/H5** (thin but a counter *vector*, off the scalar axis). B1 vs B2 is just **which
+reading** — equidistribution vs reachability — of the *same* non-affine engine.
 
 ## Reproduce / index
 - Halt gates: `cryptid_halt_gates_verify.py`, `o17_core_transducer.py`, `o3_transducer.py`, `o4_transducer.py`.

@@ -23,15 +23,18 @@ floor-multiplier) resolves all but the lone thick-target outlier `o10`. SOUNDNES
 >
 > **3. One master tool, thinness-graded.** The difficulty is set by **how thin the halt target is**:
 
-| target thinness | cryptids | resolved by | direction |
-|---|---|---|---|
-| **thin / spontaneous-defect** (density → 0) | Antihydra, o2/o7/o11/o12/…, Space Needle, o3, o17, H5 | **single-orbit equidistribution of the floor-multiplier** (BC-I: thin ⇒ avoided ⇒ non-halt) | non-halt generic |
-| **thick / generic-event** (density ⅓, constant) | **o10 alone** | **BC-II / pair-correlation** (harder than `(K)`; the apex) | halt generic |
+| target | orbit | cryptids | resolved by | outside? |
+|---|---|---|---|---|
+| **thin, SCALAR** (density → 0, scalar orbit) | scalar value/counter | Antihydra, o2/o7/o11/o12/…, Space Needle, o3, o17 | **scalar single-orbit equidistribution of the floor-multiplier** (BC-I: thin ⇒ avoided ⇒ non-halt) | in reach |
+| **thin, VECTOR** (thin target but multi-coord orbit) | counter **vector** | **Type-IV (H5)** | **counter-machine reachability** — no scalar orbit; needs a multi-dim tool `≠` scalar EFF-EQ | **OUTSIDE (off-axis)** |
+| **thick / generic-event** (density ⅓) | scalar reseed | **o10** | **BC-II / pair-correlation** (harder than `(K)`) | **OUTSIDE (apex)** |
 
-**So a single tool — single-orbit equidistribution of the floor-multiplier — resolves the non-halt of the ENTIRE
-thin-target frontier at once** (all of B1 + all convergent B2), scalar for the value/scalar cryptids and a
-**multi-dimensional** variant for H5's counter vector. Only **o10** (thick target, generic-HALT, the mirror of
-Antihydra) sits outside, needing BC-II.
+**So the scalar single-orbit equidistribution tool resolves the non-halt of the entire thin-target *scalar*
+frontier** (all of B1 + the convergent *scalar* B2 — o3, o17-base, Space Needle). **TWO classes sit outside it**
+`[SOUNDNESS CORRECTION, red-team 2026-07-04]`: **o10** (thick target, generic-HALT, needs BC-II) *and* **Type-IV /
+H5** (thin target but a counter *vector*, off the scalar axis — `P1PRIME_EFFEQ_LEVERAGE §9.2`, brick 6). The earlier
+draft's "only o10 outside, H5 resolved by a multi-dim variant" **over-unified**: H5's thinness makes non-halt
+*annealed*-generic, but its quenched resolution is counter-machine reachability, not scalar equidistribution.
 
 ## Why this is the same object as (K), EFF-EQ, and the Gauss-map analogue
 The master tool is exactly the missing tool `P1′`, now seen to have **frontier-wide** reach:
@@ -44,21 +47,30 @@ All three are the same single-orbit-equidistribution object; the synthesis shows
 **the whole thin-target frontier**, and its obstruction is uniformly the `(dim 1, measure 0)` / non-Pisot /
 log→linear wall (`EXCEPTIONAL_FINE_STRUCTURE`).
 
-## The residual, precisely
-Two things sit outside the master tool:
-1. **o10** — the sole thick-target (generic-HALT) machine; needs quenched **pair-correlation** (BC-II), strictly
+## The residual, precisely `[corrected]`
+**Two classes** sit outside the scalar master tool:
+1. **o10** — the sole **thick-target** (generic-HALT) machine; needs quenched **pair-correlation** (BC-II), strictly
    beyond single-orbit equidistribution (`O10_APEX`).
-2. **Exact (non-thin) reachability** — for any B2 machine where the halt target is not thin, single-orbit
-   equidistribution gives non-halt only for the thin ones; a genuinely thick or exact target needs more.
-Everything else — the equidistribution/thin-target majority — is one tool away.
+2. **Type-IV / H5** — thin target but a **counter vector** (off the scalar axis); its non-halt is a
+   fixed-arity counter-machine reachability, needing a **multi-dimensional** tool distinct from the scalar
+   equidistribution (`P1PRIME_EFFEQ_LEVERAGE §9.2`).
+Everything else — the thin-target **scalar** majority (all B1 + o3/o17/Space Needle) — is one (scalar) tool away.
+
+**Caveat `[honest]`.** "One tool" means one **kind** of tool — single-orbit equidistribution / thin-target
+avoidance — not one identical theorem: the specific equidistribution object varies by structure (a scalar **value**
+for B1 and Space Needle, a **bounded-segment** counter for o3, a **skew-product fiber** for o17). o17's is the
+subtlest (its object is the fiber's equidistribution, not a pure scalar). They are unified at the level of *kind*
+and *obstruction* (the `(dim 1, measure 0)` / non-Pisot / log→linear wall), which is the defensible claim.
 
 ## Honest verdict
-**(b) — the capstone synthesis.** The BB(6) cryptid frontier is **not 1104 independent problems, nor even two
-walls, but one floor-multiplier object with a thin-target reachability halt**, resolved (non-halt direction) by a
-**single** single-orbit-equidistribution tool for all but the lone thick outlier `o10`. This unifies the session's
-tetrachotomy, EFF-EQ leverage, non-affine, and P1′-core results, and states the sharpest possible form of "one tool
-decides the frontier." No decision follows — the master tool is the generational `(K)`/P1′ object — but the target
-picture is now maximally compressed. **Halting `[OPEN]`. No machine decided. No label upgraded.**
+**(b) — the capstone synthesis, red-team-corrected.** The BB(6) cryptid frontier is **not 1104 independent problems,
+nor even two walls, but one floor-multiplier object with a thin-target reachability halt**, whose non-halt direction
+is resolved by a **single scalar single-orbit-equidistribution tool** for the thin-target *scalar* majority
+(all B1 + o3/o17/Space Needle) — with **two** classes outside: **o10** (thick, BC-II) and **Type-IV/H5** (thin but
+vector, counter-reachability). This unifies the session's tetrachotomy, EFF-EQ leverage, non-affine, and P1′-core
+results into the sharpest form of "one tool decides *most* of the frontier." No decision follows — the master tool
+is the generational `(K)`/P1′ object. **Halting `[OPEN]`. No machine decided. No label upgraded.**
+*(Red-team catch: the first draft's "only o10 outside" over-unified — Type-IV/H5 is a second, off-axis residual.)*
 
 ## Reproduce / basis
 Components (all this session unless noted): `CRYPTID_NONAFFINE_UNIFICATION_2026-07-04.md` (floor-multiplier),
