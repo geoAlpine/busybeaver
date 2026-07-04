@@ -25,6 +25,18 @@ halting `[OPEN]`; no machine decided.*
 - **No anomaly** — nothing outside the {o3-type, o17-type} × {`00`/`11` gate} predicted by the framework. The
   detailed per-machine picture matches the aggregate censuses (gate, structural) on unseen data.
 
+## Addendum — even the simplest machine (L1000, pure `{1,2}`) is not trivially decidable `[OBSERVED]`
+L1000 has the **simplest** structure in the sample (`maxblk = 2` throughout — a pure `{1,11}`-alphabet odometer,
+the extreme o3-type). Tested for decidability: **not trivially so.** Its digit string (`block-length−1`) is
+**dominated by `0`s with rare `1`s** (an almost-all-single-block tape with occasional doublings), **linear-ish
+subword complexity** (`p(ℓ)=2,4,8,12,15,18,21,24` — low, like o3), but **non-periodic** (complexity keeps growing)
+with a **growing carry-defect** (`maxgap 3→4` — the cascade produces widening `0`-runs). So L1000 carries the exact
+o3 signature — **statically simple (low complexity) but dynamically irregular (non-periodic, growing carry
+defects)** — and is *not* eventually periodic (as no holdout is) nor obviously affine/automatic. The "simplest
+structure ⇒ maybe decidable" hope does **not** pan out; even the extreme o3-type machine has Collatz-hard-looking
+carry dynamics. (A rigorous decidability call needs the cycle-phase recurrence analysis that showed o3 irregular,
+`O17_O3_STRUCTURE §3c`.) No decidable cryptid found.
+
 ## Honest verdict
 **(b) — a clean detailed validation.** 6 randomly-picked, previously-unanalyzed holdouts each fully fit the grand
 synthesis (bounded-context existence gate + non-affine o3/o17 structure), with no anomaly — complementing the
