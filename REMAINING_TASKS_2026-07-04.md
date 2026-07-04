@@ -50,11 +50,39 @@ Trichotomy-extension test (5 un-analyzed holdouts, `BB6_TRICHOTOMY_EXTENSION_202
 **fully orthogonal to type**; the census A6 Type-I proxy was optimistic (H4 refutes it). B1-side attack
 (`BB6_TWO_WALLS`): B1/B2 are provably-distinct objects (entropy/spectral separation), o4 the bridge — no crack.
 
-### Follow-ups (open)
-- **A7. Characterize Type IV** — is the fixed-arity base-3/2 counter substrate a distinct wall or a
-  generalized-Collatz sub-case? Reverse-engineer a few more Type-IV candidates; determine decidability status.
-- **A8. Larger extension sample** — the 5-machine test found a 4th type; more samples may reveal a 5th (or bound
-  the type-count). Sample by (growth × block-structure) cells.
+### Follow-ups
+- **A7. Characterize Type IV** ✅ DONE (`BB6_TYPE_IV_CENSUS_2026-07-04.md`). Type IV is a distinct PHENOTYPE
+  (bounded-arity counter bouncer), now POPULATED beyond H5 (L997 = −2 countdown; inner map varies), but **NOT a
+  distinct wall** — halt = generalized-Collatz counter-machine reachability = the **B2 wall** shared with II/III;
+  decidability `[OPEN]`, Collatz-class. Durable: the 4-way phenotype tetrachotomy **projects onto a 2-way WALL
+  dichotomy** {I→B1=(K)/Mahler, II/III/IV→B2=gen-Collatz}.
+- **A8. Larger extension sample** ✅ DONE (`BB6_TYPE_IV_CENSUS_2026-07-04.md`). **Global fingerprint of all 1104
+  holdouts**: **NO 5th type** (tetrachotomy stable at 4; within-type inner-map is a continuous parameter, not a new
+  type). Census: **80 % Type II** growing-digit cascades, **0 halters** in 300 K, bounded-arity band a MIX
+  (over-counts I/IV). **Bonus: 2 new ratio-verified Type-I Mahler ×3/2 cryptids** (L373, L921).
+
+### Follow-ups
+- **A9. Halt gates for the 2 new Type-I (L373, L921)** ✅ DONE (`BB6_TYPE_IV_CENSUS_2026-07-04.md` §5b). Both
+  carry the identical `00`-existence gate as the named `00`-family: halt = F/D read 0, unique predecessor C read 0
+  (write 1, move L) ⇒ `HALT ⟺ C reads 0 with left-neighbour 0`; `[PROVEN from table]`. Blank-orbit invariant
+  `[OBSERVED, 100 M]`: C:0 events all have left-neighbour 1 (7645 / 7333 firings, never 00). Reduction: `HALT ⟺`
+  the `×3/2` orbit ever aligns the leading counter to the outer 0 = `(K)`-class, like the family. Non-halt `[OPEN]`.
+- **A10. Clean per-machine Type-II/IV split** ✅ DONE — **negative/(b)** (`BB6_TYPE_IV_CENSUS_2026-07-04.md` §5c). A
+  clean per-machine split is **`(K)`-hard**, proven by discriminator-dependence (max-block-value → IV 29; snapshot
+  `#blocks`-trend → IV 27/II 8/I 5); phenotypes form a continuum (active leading counter + settled digits). Clean
+  cases split (II ≈ 8, I ≈ 5, IV ≈ several); the I↔IV boundary = detecting positive entropy of the driver =
+  `(K)`-adjacent. Empirically confirms the B1/B2-probe theoretical result.
+
+- **A11. Halt gates for the clean-IV (H5-class) machines** ✅ DONE (`BB6_TYPE_IV_CENSUS_2026-07-04.md` §5d). RE'd 7
+  clean-IV gates to `[PROVEN from table]`: all unique-predecessor adjacency-existence gates (5 `00`, 2 `11` incl.
+  H5), blank never fires (30 M, read-on-entry histogram uniform-safe; H5 210 641 entries all safe, one machine
+  3.75 M all safe). **The halt-gate mechanism is UNIFORM across the whole tetrachotomy** — same `00`/`11`
+  existence family as I/II/III; only the *substrate* the existence runs over selects the wall (Mahler orbit → B1;
+  cascade/counter → B2). Non-halt `[OPEN]` for all.
+
+### Follow-ups (still open)
+- *(none pressing internally — the frontier map, phenotype/wall classification, halt gates, and both walls are
+  characterized; remaining progress is generational (B1/B2) or external.)*
 
 ## GENERATIONAL — no internal route (documented, not action items)
 
