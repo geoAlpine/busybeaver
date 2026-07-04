@@ -25,18 +25,23 @@ ratio ≠ the value-orbit ratio** when a balance counter is present — the cens
 A proper census needs per-machine RE separating the value orbit from the balance counter (as `verify_ratio.py`
 does for individual machines).
 
-## One flagged candidate `[OPEN, for future RE]`
-`1RB1LF_0RC1RD_1LA1LD_1LE0RA_---1LC_0LA1LA` — upper-envelope records `17,75,181,437,871,2009`, ratios
-`4.41, 2.41, 2.41, 1.99, 2.31` (`~2.4`, moderately geometric but with variation). **Possibly** a Mahler-family
-member with a ratio near `12/5=2.4` / `7/3≈2.33`, **or** a contaminated extraction. **Not confirmed** — flagged for
-proper value-orbit RE before any claim.
+## The flagged candidate — REFUTED by proper RE `[OBSERVED]`
+`1RB1LF_0RC1RD_1LA1LD_1LE0RA_---1LC_0LA1LA` was flagged (`~2.4`) and then **properly reverse-engineered**
+(`o3_recur`-style, total-content at left-turns). **It is NOT a new Mahler ratio — the `~2.4` was an artifact.**
+The machine has **no clean geometric value orbit**: its total content at left-turning-points is the sequence
+`1,3,4,7,12,14,17,22,26,…,4351` growing by **near-constant `+2` increments**, and the upper-envelope record ratios
+**decay to `1.0005`** (tail ratios all `1.0005`, stdev `0`). So the content grows **~linearly/arithmetically per
+bounce** (a `√t`-bouncer / Type-II-like odometer), *not* geometrically. Its block structure is multi-block and
+irregular (3–6 blocks, states A/B/F), with no recurring 2-counter normal form. The census's `~2.4` was contamination
+from the crude leading-block method — **confirmed artifact, not a Mahler-family member.** No new `p/q`.
 
 ## Honest verdict
-**(c) / inconclusive — no new `p/q` confirmed.** The crude ratio census is method-limited (the o7 artifact proves
-leading-block ratio ≠ value ratio); it reliably re-confirms 5 `×3/2` machines and flags one `~2.4` candidate for RE,
-but claims **no** new Mahler ratio. A reliable ratio census requires per-machine value-orbit RE. **No machine
-decided. No label upgraded.** *(Conservatism deliberate — after four self-caught over-claims this session, a crude
-"new ratio" is exactly the kind of claim to withhold pending proper RE.)*
+**(c) — no new `p/q`; the one candidate is REFUTED.** The crude ratio census is method-limited (the o7 artifact
+proves leading-block ratio ≠ value ratio); it reliably re-confirms 5 `×3/2` machines. The single flagged `~2.4`
+candidate, on **proper RE**, is an **artifact** — the machine has no geometric value orbit (content grows `+2`/bounce,
+record ratios → `1.0005`), it is a `√t`-bouncer/Type-II odometer, not a Mahler machine. So **no new Mahler ratio
+exists in the sampled band**; the named `{3/2, 8/3, 4/3}` stand. **No machine decided. No label upgraded.**
+*(The conservatism paid off: withholding the "new ratio" claim pending proper RE was correct — it was an artifact.)*
 
 ## Reproduce
 - `scratchpad/ratio_census.py` (leading-block record-ratio, unreliable), dip-aware re-check inline (o7 artifact;
