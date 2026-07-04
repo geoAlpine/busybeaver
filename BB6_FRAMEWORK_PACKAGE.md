@@ -373,6 +373,33 @@ single-realization genericity `= (K)`. This layer does not prove `(K)`; its valu
 fixed-point line, criticality-as-drift-transition, exact `n`-bonacci constants) that any eventual quenched tool must
 respect, and it exhibits *why* non-halting is annealed-certain while the quenched proof remains the kernel.
 
+## 5.7 The frontier-wide leverage of the missing tool (`P1PRIME_EFFEQ_LEVERAGE_2026-07-04.md`, 2026-07-04)
+
+The tool `(K)` needs is not local to Antihydra: it is **the** effective single-orbit equidistribution rate (EFF-EQ)
+that crosses the **log→linear digit-frequency gap**, and it resolves the **non-halt direction of most of the BB(6)
+frontier at once**. Placing EFF-EQ against the cryptid tetrachotomy (`BB6_CRYPTID_PACKAGE.md` §7) and the
+Borel–Cantelli dichotomy (`NESTED_COLLATZ_THEOREM.md`):
+
+- **A readable convergent/divergent criterion.** A cryptid halts on a **spontaneous-defect** target (a `00`/`11`
+  the normal form suppresses) ⇒ **thin ⇒ BC-I convergent ⇒ non-halt generic ⇒ EFF-EQ-reachable**; or on a
+  **generic-event** target (constant per-epoch density — **only o10**) ⇒ **thick ⇒ divergent**. This is *orthogonal*
+  to, and easier than, the phenotype classification (which is itself `(K)`-hard — deciding Type-I = detecting
+  positive entropy of the driver).
+- **One tool, most of the frontier.** EFF-EQ resolves the non-halt of the **entire spontaneous-defect band** — all
+  Type-I two-counters (incl. two newly-found machines), the sparse-target Type-III (Space Needle: halt ⟺ its scalar
+  orbit ever becomes all-ones `2^k-1`; `Σp_n=1.73<∞`), and the o3-class Type-II. Broader than the ~12 Type-I.
+- **The apex and the off-axis.** **o10** is the mirror of Antihydra — the sole **generic-HALT** machine, `[PROVEN
+  structural]` a single-orbit hitting of a **density-⅓** set by a doubly-exp reseed orbit (`O10_APEX_2026-07-04.md`);
+  its non-halt needs *anti-genericity*. **Type-IV** (fixed-arity counter machines) is off the single-orbit axis
+  entirely. Everything else is at the Antihydra (thin, generic-non-halt) pole.
+- **Same wall, quantified.** Even Space Needle's annealed-super-convergent all-ones-avoidance quenches to the
+  **identical `Θ(n/log n)` log→linear gap** (`16×→199×` need/reach); the weaker sufficient condition buys nothing on
+  the depth axis. A fresh cross-field probe (CDT holonomy arXiv:2510.04156, Mersenne-avoidance, 2024–26 effective
+  equidistribution) confirms **no existing tool reaches it**.
+
+**Honest scope:** this is a positioning/leverage map, not a proof — it sizes the one missing tool (EFF-EQ / P1′) and
+shows its reach is frontier-wide, with a *readable* membership criterion; the tool itself stays generational.
+
 ---
 
 ## 6. Banked unconditional partials (the honest positive results)

@@ -176,12 +176,19 @@ o10's extracted outer model (`O10_HALTER.md`: `HALT ⟺ ∃ epoch e whose countd
 m`) gives an **ensemble halt-probability `p_e = 0.33245 ≈ 1/3`** (`brick5_o10.py`, B=1..20000) — **constant,
 non-decaying**, the defining generic-event signature and the sole such target on the frontier. Its deterministic
 reseed orbit `B_1=5 → 57 → 210273201 → …` is **doubly-exponential**: epochs 1–2 are feasible (both **refill /
-non-halt**), epoch 3 has a terminal `m` of ≈24.7 million digits — **unreachable**. So the BC-II quasi-independence
-o10 would need (a **second-moment / pair-correlation** bound across the reseeds, Kochen–Stone) is not merely
-unproven but **empirically uncheckable past epoch 2**. **o10's wall is STRICTLY HARDER than `(K)`:** `(K)` is a
-first-order single-orbit *equidistribution* (density) statement; BC-II needs a *pair-correlation / 2nd-moment*
-statement across a doubly-exp deterministic family — one order up. **o10 is the apex of the frontier hardness
-order.**
+non-halt**), epoch 3 has a terminal `m` of ≈24.7 million digits — **unreachable**.
+
+**[CORRECTED by the o10 apex deep-dive, `O10_APEX_2026-07-04.md`]** An earlier framing here said "o10's wall is
+BC-II = a 2nd-moment / pair-correlation statement, strictly harder than `(K)`." The deep-dive **corrects the
+order**: o10 halting reduces `[PROVEN structural, 0-mismatch verified]` to a **first-order single-orbit hitting**
+— `o10 halts ⟺ the deterministic doubly-exp reseed orbit B_e ever lands in a FIXED density-⅓ set
+S_halt={C_t : m_t odd}` (the `⌈3m/2⌉`-from-6 odd-`m` cumulative positions; the `1/3 = (½)/(1.5)`). So o10 is **not**
+a higher-moment object — it is the **mirror of Antihydra** on the *same* single-orbit axis: its target is **thick**
+(density 1/3), which flips the generic verdict to **HALT** (the sole annealed-HALT machine). BC-II "needs
+independence" describes the *failed annealed-halt heuristic*, not the intrinsic hardness. **o10 is the apex because
+it is the only machine whose generic verdict is HALT**: deciding it needs either a hitting epoch (finite but
+doubly-exp **infeasible** — so if o10 halts it is decidable *in principle*) or, for non-halt, a proof the orbit
+**avoids a positive-density set forever** = anti-genericity, stronger than the genericity `(K)` asks.
 
 ### 9.2 Brick 6 — Type-IV is a counter-machine, not a scalar reseed `[OBSERVED, structural]`
 The nested reseed-BC framework needs a **single scalar** outer value `B_e` per epoch (o10's `B`, o18's seed). H5's
@@ -214,13 +221,15 @@ framing cracks the log→linear gap — all four angles `(c)`, with one `(b)` re
 
 ### 9.4 The completed hardness order `[the synthesis]`
 > **spontaneous-defect convergent frontier** (Type-I two-counters, Type-III Space Needle, o3-class Type-II) —
-> `(K)`-depth, EFF-EQ-reachable, **one tool for all** — `<` — **o10** (generic-event divergent, BC-II /
-> pair-correlation, strictly harder than `(K)`) ; and **orthogonal to both**: **Type-IV** (counter-machine
-> reachability, no scalar reseed, outside BC).
+> the **thin-target / generic-non-halt pole** of the single-orbit axis, `(K)`-depth, EFF-EQ-reachable, **one tool
+> for all** — vs. — **o10**, the **thick-target / generic-HALT pole** (mirror of Antihydra; non-halt needs
+> anti-genericity) ; and **off-axis**: **Type-IV** (counter-machine reachability, no scalar reseed, outside BC).
 
-Space Needle is the **cleanest annealed face** of the `(K)`-depth wall; o10 is the apex; Type-IV is off-axis. EFF-EQ
-/ P1′ is the single tool for the entire `(K)`-depth (spontaneous-defect convergent) band — everything except the
-apex o10 and the off-axis Type-IV.
+Antihydra and o10 are the **two poles of the single-orbit-equidistribution axis** (`O10_APEX_2026-07-04.md`); the
+whole spontaneous-defect frontier clusters at the Antihydra (thin, generic-non-halt) pole, o10 alone at the thick
+(generic-HALT) pole. Space Needle is the **cleanest annealed face** of that thin pole; Type-IV is off-axis. EFF-EQ
+/ P1′ is the single tool for the entire thin-pole (spontaneous-defect convergent) band — everything except the
+opposite-pole o10 and the off-axis Type-IV.
 
 ## 8. Honest verdict
 
@@ -236,9 +245,11 @@ orthogonal to the (K)-hard phenotype classifier); **(viii) brick 4 — the annea
 SAME log-vs-linear depth gap** (`16×→199×→∞` for Space Needle), so the weaker hypothesis buys nothing on the depth
 axis. Net: EFF-EQ is one tool for the non-halt of the **entire spontaneous-defect frontier** (all but o10-type and
 Type-IV), with a readable membership criterion — but no sub-`(K)` *rung* opens (the wall is the identical log→linear
-single-orbit digit-frequency gap). Bricks 5–7 complete the map: **(ix) o10 is the frontier APEX** — sole
-generic-event/divergent machine (`p_e=0.332≈1/3`, reseed orbit doubly-exp, only 2 epochs feasible), BC-II
-pair-correlation wall **strictly harder than `(K)`**; **(x) Type-IV is a counter-machine** (multi-coordinate vector,
+single-orbit digit-frequency gap). Bricks 5–7 complete the map: **(ix) o10 is the frontier APEX** — the sole
+**annealed-HALT** machine, `[PROVEN structural]`-reduced (deep-dive `O10_APEX_2026-07-04.md`) to a **first-order
+single-orbit hitting** of a fixed density-⅓ set `S_halt` by the doubly-exp reseed orbit (`1/3=(½)/1.5`); the mirror
+of Antihydra (thick target ⇒ generic verdict HALT), decidable-in-principle *if* it halts (hitting epoch, doubly-exp
+infeasible) but needing **anti-genericity** for non-halt; **(x) Type-IV is a counter-machine** (multi-coordinate vector,
 not a scalar reseed — outside BC); **(xi) the log→linear wall is empty of new tools** (CDT / digit-avoidance /
 effective-equidist all `(c)`), refined: **Space Needle's all-ones-avoidance is annealed-easier than `(K)` but of
 EQUAL provable depth**. Hardness order: {spontaneous-defect convergent = `(K)`-depth, EFF-EQ-reachable} `<` {o10,
