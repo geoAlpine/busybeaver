@@ -155,4 +155,15 @@ Antihydra among them. So this program's completion is one necessary step toward 
 any audience: **we have reduced one BB(6) Cryptid to a sharp, classical, generational number-theory frontier (Mahler
 3/2 / AEV) and mapped exactly why every existing tool fails; building the missing tool is the multi-year goal.**
 
+### 8.6 EFF-EQ leverage brick (2026-07-04, `P1PRIME_EFFEQ_LEVERAGE_2026-07-04.md`)
+First theory-building brick folding in the 2026-07-04 tetrachotomy + census + walls-entanglement: positions the
+**EFF-EQ** object as the **BC-I / convergent-target non-halt engine** for the *whole* frontier (not just the ~12
+Type-I). New map (§2 there): tetrachotomy → BC-direction — {thin-target Type-I two-counter (incl. new L373/L921)} ∪
+{sparse-target Type-III (Space Needle)} are **convergent ⇒ within EFF-EQ's reach**; **divergent** Type-I (o10 →
+BC-II wall `[PROVEN negative]`), **Type IV** counter machines, and un-RE'd **Type-II** cascades are **outside** it.
+This **sharpens/corrects** the walls-probe "P1′ covers much of B2" to "EFF-EQ = BC-I engine, BC-I ⊊ B2." Rate
+hierarchy: the convergent BC-I ask is a **strictly weaker hypothesis than `(K)`** (beat a *summable* target, not a
+positive liminf) **but blocked by the identical annealed→quenched wall** — a sub-`(K)` *hypothesis* exists, but not
+a reachable *rung*. Verdict (b), positioning; no rung opened, no machine decided.
+
 **No machine decided. No label upgraded.** `(K)` remains [OPEN] = Mahler 3/2 / AEV.
