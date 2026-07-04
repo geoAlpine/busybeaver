@@ -54,25 +54,26 @@ content, since `NESTED_COLLATZ` predates the tetrachotomy:
 | phenotype | halt target | BC side | EFF-EQ reaches non-halt? | label |
 |---|---|---|---|---|
 | **I — Mahler value orbit** (nested: o10, o13…) | `b=0` at odd `m`, **fixed-measure** (o10) | **divergent** | **NO** — BC-II / o10 wall | `[PROVEN negative]` for o10 |
-| **I — Mahler value orbit** (two-counter: o2/o7/o11/o12/o14/o16, **L373, L921**) | `00`/phase defect, **thin** | **convergent**-lean | **YES** (conditional on EFF-EQ, BC-I) | `[OBSERVED thin]` + `[CONDITIONAL]` |
+| **I — Mahler value orbit** (two-counter: o2/o7/o11/o12/o14/o16, **+L921 new**) | `00`/phase defect, **thin** | **convergent**-lean | **YES** (conditional on EFF-EQ, BC-I) | `[OBSERVED thin]` + `[CONDITIONAL]` |
 | **III — scalar generalized-Collatz** (Space Needle) | orbit hits **sparse** `S={2^k−1}∪sporadic` | **convergent** (shrinking target) | **YES** (conditional; sparse ⇒ Σ<∞) | `[ARGUED]` (S proven sparse) |
 | **II — bounded-digit cascade** (o3, o17-class) | `00`/marker-parity **existence** | **unknown** — `00`-appearance density decay not established | **UNCLEAR** | `[OPEN]` (needs RE of the cascade density) |
 | **IV — fixed-arity counter bouncer** (H5-class) | `11`/`00` adjacency over a **counter machine** | **not a reseed-BC substrate** (Minsky-general) | **NO** (as posed) | `[OPEN]` / more general |
 
 **Reading.** EFF-EQ's non-halt reach = the **convergent** rows = {thin-target Type-I two-counter} ∪ {sparse-target
-Type-III}. This is broader than the 12 named Type-I machines (it adds Space Needle and the two new L373/L921) but
+Type-III}. This is broader than the 12 named Type-I machines (it adds Space Needle and the new L921; L373=o7 is a rediscovery) but
 is **not** all of B2: the divergent Type-I (o10), Type IV, and un-RE'd Type-II sit outside it. The A11 gate result
 (the `00`/`11` existence-gate mechanism is *uniform* across all four types) is consistent: a uniform gate whose
 **target thinness** — the p_e decay — is what places a machine convergent vs divergent, and that thinness is *not*
 readable from the gate (matching the `(K)`-hard classifier, `BB6_WALLS_ENTANGLEMENT` Angle 3(i)).
 
-## 3. This session's new Type-I machines are convergent-lean `[OBSERVED, ties A9 in]`
+## 3. The convergent-lean evidence (L921 new + o7=L373) `[OBSERVED, ties A9 in]`
 
 The A9 halt-gate invariant (`BB6_TYPE_IV_CENSUS` §5b, `gate_invariant.py`) is exactly the **thinness / convergence**
-evidence for L373 and L921: the `00`-gate's dangerous neighbour never appears — state `C` reads `0` 7645 (L373) /
-7333 (L921) times in 100 M steps with the left neighbour `1` in **every** case (0 firings). So the per-epoch
-halt-target density is empirically `0` on the tested horizon ⇒ **convergent-lean ⇒ BC-I ⇒ within EFF-EQ's non-halt
-reach**. L373, L921 therefore join the convergent Type-I family (o2/o7/o11/o12/o14/o16) — non-halt-leaning,
+evidence for L921 (new) and L373 (= the named **o7**): the `00`-gate's dangerous neighbour never appears — state
+`C` reads `0` 7645 (L373=o7) / 7333 (L921) times in 100 M steps with the left neighbour `1` in **every** case
+(0 firings). So the per-epoch halt-target density is empirically `0` on the tested horizon ⇒ **convergent-lean ⇒
+BC-I ⇒ within EFF-EQ's non-halt reach**. L921 joins the convergent Type-I family (o2/o7/o11/o12/o14/o16) — the
+L373=o7 numbers independently confirm o7 is in that family too — non-halt-leaning,
 `[CONDITIONAL on EFF-EQ]`, decision `[OPEN]`.
 
 ## 4. The rate hierarchy — "weaker hypothesis, same wall" `[the precise sub-(K) status]`
@@ -99,7 +100,7 @@ whose **wall is identical** to (2). This refines the milestone-ladder collapse: 
 From the global census (`BB6_TYPE_IV_CENSUS` §1): the frontier is ~80% Type II, ~5% bounded-arity (mix of I/IV),
 rest intermediate; **0 halters** in the sampled budget. A single EFF-EQ theorem (BC-I strength) would resolve the
 **non-halt direction** of the convergent subset:
-- **All thin-target Type-I** (the ~12 named + L373/L921 + any convergent two-counter in the 5% band) — the (K)
+- **All thin-target Type-I** (the ~12 named + L921 + any convergent two-counter in the 5% band) — the (K)
   family, one theorem, all at once.
 - **The sparse-target Type-III** (Space Needle-class).
 - **NOT** the divergent Type-I (o10-class), Type IV (counter machines), or the ~80% Type-II cascades unless each is
@@ -160,7 +161,7 @@ cushion buys nothing on the depth axis.
 
 ### 7.5 Refined leverage `[the sharpened statement]`
 Combining: **EFF-EQ / P1′ is one tool for the non-halt direction of the entire *spontaneous-defect* frontier** —
-all Type-I two-counters (incl. L373/L921), Type-III (Space Needle), and the o3-class Type-II — i.e. **everything
+all Type-I two-counters (incl. new L921), Type-III (Space Needle), and the o3-class Type-II — i.e. **everything
 except the single generic-event divergent machine o10 and the Type-IV counter machines**. That is materially
 broader than "the ~12 Type-I machines," and now with a *readable* membership criterion (§7.3). But the tool it
 requires is the **same** one — crossing the log→linear single-orbit digit-frequency gap (§7.4) — so there is still
@@ -231,13 +232,57 @@ whole spontaneous-defect frontier clusters at the Antihydra (thin, generic-non-h
 / P1′ is the single tool for the entire thin-pole (spontaneous-defect convergent) band — everything except the
 opposite-pole o10 and the off-axis Type-IV.
 
+## 10. Attack A — the unified EFF-EQ hypothesis, concretized `[OBSERVED batch + CONDITIONAL]`
+
+The "one tool for the whole spontaneous-defect band" claim is made concrete by (a) a **uniform thinness
+measurement** and (b) a **single hypothesis** covering every band member.
+
+**Uniform thinness `[OBSERVED, 20 M steps, haltgate2.py]`.** Nine spontaneous-defect machines, one table — every
+one has a unique-predecessor `00`/`11` gate, **0 firings**, and the halt-state-entry read is the **safe symbol in
+100 % of entries**:
+
+| machine | gate | halt-state entries | firings | entry-read |
+|---|---|---:|---:|---|
+| o2 | F:0 (`00`) | 4 295 | 0 | always 1 |
+| o11 | C:0 (`00`) | 4 205 | 0 | always 1 |
+| o12 | F:0 (`00`) | 7 016 | 0 | always 1 |
+| o13 | E:0 | 4 701 | 0 | always 1 |
+| o14 | F:0 (`00`) | 3 881 | 0 | always 1 |
+| o16 | F:0 (`00`) | 15 | 0 | always 1 |
+| o3 (Type II) | F:0 (`00`) | 666 299 | 0 | always 1 |
+| L921 (new) | D:0 (`00`) | 3 688 | 0 | always 1 |
+| Space Needle (III) | F:0 (`00`) | 1 231 | 0 | always 1 |
+
+The dangerous neighbour never appears at the reflection state — the halt-target's empirical density is `0` across
+the entire band (Type I two-counters, the o3 Type-II cascade, and the Type-III scalar), confirming **uniform BC-I
+convergence**.
+
+**The single hypothesis `[CONDITIONAL]`.** Every band member shares one structural skeleton: a **2-adic-driven
+floor-orbit driver** (`⌊(p/q)x⌋` for Type-I, the odometer for Type-II, the 2-adic map `f(m)` for Space Needle) and
+a **thin defect target** — a specific residue/alignment cylinder the driver must land in for the `00`/`11` to
+appear. So the band's non-halt follows from **one** statement:
+
+> **(UNIFIED EFF-EQ).** *There is an effective single-orbit equidistribution rate `ρ(N)→0` for 2-adic-driven
+> floor-orbits `x_{n+1}=⌊(p/q)x_n⌋+c(x_n mod 2^k)` such that, for each band member, the orbit's empirical measure
+> on its defect cylinder has discrepancy `< (defect density) − o(1)` at the orbit's actual (linear) depth.*
+
+`(UNIFIED EFF-EQ)` ⟹ every defect density stays below the summable threshold ⟹ (BC-I) each orbit hits its defect
+finitely often ⟹ **non-halt for the entire spontaneous-defect frontier simultaneously**. This is the precise sense
+in which **one tool resolves the band**: the members differ only in `(p/q, c, k, cylinder)`, all instances of the
+*same* floor-orbit equidistribution object. `[CONDITIONAL on UNIFIED EFF-EQ]`; the hypothesis is the empty-toolbox
+generational object (§4, §7.4) — the `1/3`-strictly-weaker BC-I rate at the same log→linear depth.
+
+**Honest scope.** `[OBSERVED]` the uniform thinness (0 firings, entry-read always safe, 9 machines); `[CONDITIONAL]`
+the reduction of the whole band to one hypothesis; the hypothesis itself stays `[OPEN]` = generational. This
+concretizes the leverage map's central claim without opening a rung.
+
 ## 8. Honest verdict
 
 **(b) — a consolidating/positioning theory-brick set; no machine decided, no new provable rung.** The genuine gains:
 (i) the **tetrachotomy → BC-direction map** (§2), placing all four phenotypes on the convergent/divergent axis and
 showing EFF-EQ = the BC-I engine; (ii) the **sharpened, partly-corrected** leverage claim (EFF-EQ reaches the
 convergent-target frontier, not all of B2); (iii) the **rate hierarchy** ("strictly-weaker hypothesis (BC-I),
-identical annealed→quenched wall"); (iv) the A9 tie-in (L373/L921 convergent-lean); **(v) brick 3 — Space Needle
+identical annealed→quenched wall"); (iv) the A9 tie-in (L921 new + o7=L373 convergent-lean); **(v) brick 3 — Space Needle
 computed super-convergent BC-I** (`Σp_n=1.73`, avoids `S` to `10^558`); **(vi) brick 2 — o3-class Type-II are
 spontaneous-defect, empirically thin ⇒ convergent-lean** (map cell upgraded); **(vii) the emergent CRITERION**
 (spontaneous-defect ⇒ convergent/EFF-EQ-reachable vs generic-event ⇒ divergent/o10-wall — *structurally readable*,
@@ -253,7 +298,11 @@ infeasible) but needing **anti-genericity** for non-halt; **(x) Type-IV is a cou
 not a scalar reseed — outside BC); **(xi) the log→linear wall is empty of new tools** (CDT / digit-avoidance /
 effective-equidist all `(c)`), refined: **Space Needle's all-ones-avoidance is annealed-easier than `(K)` but of
 EQUAL provable depth**. Hardness order: {spontaneous-defect convergent = `(K)`-depth, EFF-EQ-reachable} `<` {o10,
-BC-II}; Type-IV off-axis. **`(K)` / P1′ remain `[OPEN]` = generational. No machine decided. No label upgraded.**
+BC-II}; Type-IV off-axis. **(xii) Attack A** concretizes the band: 9 spontaneous-defect machines are **uniformly
+thin** (0 firings, entry-read always safe) and reduce to **one (UNIFIED EFF-EQ) hypothesis** (§10). **(xiii) Attack
+B** (`TYPEIV_DECIDABILITY_2026-07-04.md`): Type-IV, though off the `(K)` axis, is **not independently decidable** —
+its `⌈2A/3⌉` floor-multiplier keeps it on the generalized-Collatz wall (empirically Collatz-irregular). **`(K)` /
+P1′ remain `[OPEN]` = generational. No machine decided. No label upgraded.**
 
 ## Reproduce / basis
 - Grounding `[PROVEN structural / CONDITIONAL / PROVEN negative]`: `NESTED_COLLATZ_THEOREM.md` (BC dichotomy +

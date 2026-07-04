@@ -8,8 +8,9 @@ fingerprint), and the **EFF-EQ leverage map** (which cryptids' non-halt one tool
 claim is `[PROVEN]`/`[OBSERVED]`/`[OPEN]`, machine-verified vs the raw TM; **no machine is decided**; halting is
 `[OPEN]` for all. Interpreter `/opt/homebrew/bin/python3.13`.
 Update 2026-07-04: trichotomy → **tetrachotomy** (a fourth type, fixed-arity counter bouncers); the phenotype
-classification is proven **`(K)`-hard to compute** but **projects onto a 2-wall dichotomy**; two new Type-I
-Mahler machines found; the halt-gate mechanism is **uniform across all four types**. See §2, §5, §7.*
+classification is proven **`(K)`-hard to compute** but **projects onto a 2-wall dichotomy**; one new Type-I
+Mahler machine (L921) found (plus an independent re-derivation of the named o7); the halt-gate mechanism is
+**uniform across all four types**. See §2, §5, §7.*
 
 ## 1. The one-paragraph statement
 
@@ -24,7 +25,7 @@ equidistribution**, or **generalized-Collatz** reachability. No new tool crosses
 
 | type | machines | mechanism | wall |
 |---|---|---|---|
-| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, o2, o7, o11, o12, o13, o14, o16, o4, **+L373, L921 (new)** | a scalar/counter **value orbit `×3/2` (p=2), `×8/3`/`×4/3` (p=3)**, unary/odometer-encoded; halt = a parity/existence event on it | **(K) / Mahler-3/2 (Erdős)** |
+| **I — equidistribution-kernel Mahler** | Antihydra, o10, o15, o18, o2, o7, o11, o12, o13, o14, o16, o4, **+L921 (new)** | a scalar/counter **value orbit `×3/2` (p=2), `×8/3`/`×4/3` (p=3)**, unary/odometer-encoded; halt = a parity/existence event on it | **(K) / Mahler-3/2 (Erdős)** |
 | **II — kernel-less carry-cascade outlier** | **o17, o3** (+ ~80% of the frontier) | a **tame bounded/small-digit odometer, no value orbit**; Collatz-irregular halt predicate | **generalized-Collatz** carry-existence |
 | **III — scalar generalized-Collatz** | Space Needle | a single **scalar block** with an explicit 2-adic map; halt = orbit hits a sparse set | **generalized-Collatz** reachability |
 | **IV — fixed-arity counter bouncer** `[NEW]` | H5-class (multiple) | a **bounded number of unbounded unary counters** (not a growing digit-string, not a scalar); inner descent + refill; halt = `11`-adjacency | **generalized-Collatz** counter-machine reachability (Minsky-general) |
@@ -90,8 +91,9 @@ Over **all 1104** holdouts (`holdout_census.py`, `holdout_census_axis2.py`):
 - **Global fingerprint (`BB6_TYPE_IV_CENSUS_2026-07-04.md`, all 1104 traced):** by the `#blocks`-vs-width
   signature, **~80% are Type-II** (growing-length bounded-digit cascades), **5% bounded-arity** (a *mix* of Type
   I / IV — the fingerprint over-counts, since a clean split is `(K)`-hard, §2), rest intermediate; **0 halters** in
-  the sampled budget. Two new Type-I Mahler `×3/2` machines (L373, L921) were found in the bounded band and
-  ratio-verified (`×1.5` tails) with their `00`-gates proven.
+  the sampled budget. One new Type-I Mahler `×3/2` machine (L921) was found in the bounded band and ratio-verified
+  (`×1.5` tails) with its `00`-gate proven; a second bounded-band machine (L373) turned out to be the already-named
+  **o7** (an independent RE cross-check — the holdout file contains the named cryptids).
 
 ## 6. Honest verdict + the two walls
 

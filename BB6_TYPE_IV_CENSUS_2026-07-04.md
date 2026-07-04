@@ -22,8 +22,8 @@ pattern). SOUNDNESS: every claim `[OBSERVED]` from raw-TM simulation or `[PROVEN
 - **The durable statement: the 4-way PHENOTYPE tetrachotomy projects onto a 2-way WALL dichotomy** —
   `{I} → (K)/Mahler-3/2 (B1)` vs `{II, III, IV} → generalized-Collatz reachability/existence (B2)`. Matches
   `PROBLEM_LIST.md` B1/B2 exactly.
-- **Bonus: 2 new Type-I (Mahler ×3/2) cryptids found & ratio-verified** (below), extending the Mahler family
-  beyond the 12 named machines.
+- **Bonus: 1 new Type-I (Mahler ×3/2) machine (L921) found & ratio-verified**, plus an independent RE that
+  **re-derived the named o7** (L373 = o7 — a cross-check; see the §3 soundness correction).
 
 ## 1. Global fingerprint of the 1104 frontier `[OBSERVED, fp_all.py]`
 
@@ -50,7 +50,7 @@ The `#blocks ≤ 8` fingerprint band is **not** all Type I/IV — it is a mixtur
 | inner-map signature | leading-value trajectory | type | examples (holdout TM) |
 |---|---|---|---|
 | **arithmetic ascent** (const diff +2/+3/+6, resets, spawns fixed digits) | `12,15,18,…` / `1069,1075,1081,…` | **II** (growing digit-string, bounded radix) | `1RB0RE_1RC0RF_1LD1RA_1LB1LD_1RA1LB_---0LD`, `1RB1RF_1LC1RD_1LA1LC_1RA0RE_1RD1LA_---0LE` |
-| **geometric ×3/2 ascent** (clean, with ÷2 dips) | `317,477,717,1077,1617,2427` | **I** (Mahler value orbit) | L373, L921 — see §3 |
+| **geometric ×3/2 ascent** (clean, with ÷2 dips) | `317,477,717,1077,1617,2427` | **I** (Mahler value orbit) | L373 (=o7), L921 (new) — see §3 |
 | **base-3/2 / linear / ÷2 descent + refill**, bounded `#counters` | `⌈2A/3⌉` (H5) or `99,97,…,77` (−2) | **IV** (fixed-arity counter bouncer) | H5, `1RB1RB_1LC0RE_---1LD_0RA1LB_1RA1LF_0LE1LE` (L997) |
 | **block explosion** (`maxnb` → 100s) | — | **II** | `1RB1RF_0LC0RF_1RD1LC_---0LE_0RC1LF_1RA0LE` (maxnb 295) |
 
@@ -58,19 +58,26 @@ So the `#blocks ≤ 8` band decomposes into ~6 verified Type-I (dense value-orbi
 bouncers, and many slow Type-II odometers. **A clean per-machine I/II/IV split genuinely needs full RE** — the
 fingerprint alone over-counts "bounded-arity" (re-confirming the A6 proxy and the H4 lesson).
 
-## 3. Two NEW Type-I (Mahler ×3/2) cryptids, ratio-verified `[OBSERVED, verify_ratio.py, vs raw TM]`
+## 3. One new Type-I (L921) + an independent re-derivation of o7 (L373), ratio-verified `[OBSERVED, verify_ratio.py, vs raw TM]`
+
+> **SOUNDNESS CORRECTION (2026-07-04):** the two holdouts below were first reported as "two new" Type-I machines.
+> **`L373` is in fact the already-named `o7`** (`1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`, per `O2_O7_HALT.md` /
+> `CATALOGUE_O7_O12.md`) — the holdout file contains the named cryptids, and I failed to cross-check L373 against
+> the named list. So this is **one genuinely new/unnamed machine (L921)** plus an **independent RE that
+> re-derived o7's known `×3/2` structure** (a cross-check, not a discovery). Corrected throughout.
 
 Two holdouts in the bounded band are genuine **Antihydra-class two-counter Mahler machines** (`#blocks = 2`
 throughout to 8 M steps; leading value `×3/2` in the settled tail with `÷2` dips = the balance/refill counter):
 
-- **`1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`** (L373): tail peaks `317 → 477 → 717 → 1077 → 1617 → 2427`,
-  ratios `1.505, 1.503, 1.502, 1.501, 1.501` → **`×3/2` verified**; `÷2` dips `132→65, 252→125` (ratio 0.49).
-- **`1RB0RF_1RC1RF_1LD0LE_---1LC_1RA1LE_1LC1RB`** (L921): tail `443 → 667 → 1003 → 1507 → 2263`, ratios
-  `1.505, 1.503, 1.503, 1.502` → **`×3/2` verified**; `÷2` dips likewise.
+- **`1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_---1LC`** (L373 **= the named o7**): tail peaks
+  `317 → 477 → 717 → 1077 → 1617 → 2427`, ratios `1.505, 1.503, 1.502, 1.501, 1.501` → **`×3/2` verified**; `÷2`
+  dips `132→65, 252→125` (ratio 0.49). Independent cross-check of o7's Mahler-`×3/2` content.
+- **`1RB0RF_1RC1RF_1LD0LE_---1LC_1RA1LE_1LC1RB`** (L921 **— genuinely new/unnamed**): tail
+  `443 → 667 → 1003 → 1507 → 2263`, ratios `1.505, 1.503, 1.503, 1.502` → **`×3/2` verified**; `÷2` dips likewise.
+  (Verified not to match any named cryptid TM; appears in no other note.)
 
-Both therefore reduce to **(K)/Mahler-3/2** exactly like Antihydra/o2/o7 — new members of the 11–12-strong Type-I
-family, found in the holdout set (previously un-named). Halt gate not fully reverse-engineered (an `[OPEN]`
-follow-up), but the value-orbit content is settled.
+Both reduce to **(K)/Mahler-3/2** exactly like Antihydra/o2/o7. L921 is a new member of the Type-I family; L373=o7
+is a rediscovery. Halt gates §5b; value-orbit content settled.
 
 ## 4. Type IV: populated, and its wall `[OBSERVED + structural]`
 
@@ -101,9 +108,9 @@ together with Types II and III. It does not open a new wall-class and it is not 
   slow Type-II odometer and a Type-IV bouncer can be indistinguishable by the block-count alone (§2). This is why
   the fingerprint over-counts Type IV/I and full RE is required.
 
-## 5b. A9 — halt gates for the two new Type-I cryptids `[PROVEN from table + OBSERVED]`
+## 5b. A9 — halt gates for L921 (new) and o7 (=L373) `[PROVEN from table + OBSERVED]`
 
-Both L373 and L921 carry the **identical `00`-existence gate** as the named Type-I/II `00`-family
+Both L373 (=o7) and L921 carry the **identical `00`-existence gate** as the named Type-I/II `00`-family
 (o3/o11/o12/o14/o16/SN), reverse-engineered to the corpus `[PROVEN from table]` standard
 (`haltgate.py`, `gate_invariant.py`):
 
@@ -138,7 +145,7 @@ arithmetic-sawtooth odometers (`…_1RA1LB_---0LD`, `…_1RA0RE_1RD1LA_---0LE`) 
 so the label depends on which feature the classifier weights.
 
 - **Clean cases (robust):** `clean-II ≈ 8` (unbounded `#blocks`, bounded digits — arithmetic odometers);
-  `clean-I ≈ 5` (`#blocks ≤ 3`, clean geometric ratio ≈ `3/2`/`8/3`/`4/3` — incl. L373 geo 1.525, L921 geo 1.532);
+  `clean-I ≈ 5` (`#blocks ≤ 3`, clean geometric ratio ≈ `3/2`/`8/3`/`4/3` — incl. L373=o7 geo 1.525, L921 geo 1.532);
   `clean-IV ≈ several` (bounded flat `#blocks`, growing counter values, NO clean geometric ratio — H5-like).
 - **The I↔IV boundary is specifically (K)-hard:** a Type-I value orbit and a Type-IV counter BOTH present as
   "flat `#blocks`, growing block value"; telling them apart = deciding whether the growth is a genuine
@@ -191,8 +198,9 @@ non-halting stays `[OPEN]` for all (= the generalized-Collatz existence question
 phenotypes** over the whole 1104-frontier (A8: no 5th type), and **Type IV is a populated but wall-equivalent
 sub-case of generalized-Collatz** (A7: distinct structure, B2 wall, decidability `[OPEN]`/Collatz-class). The
 crisp durable statement is the **phenotype-tetrachotomy → wall-dichotomy projection** (`{I}→B1=(K)/Mahler`,
-`{II,III,IV}→B2=generalized-Collatz`). Concrete gains: exact global census (80 % Type II, 0 halters), 2 new
-ratio-verified Type-I (Mahler) cryptids, Type IV populated + soundness-corrected. **No machine decided. No
+`{II,III,IV}→B2=generalized-Collatz`). Concrete gains: exact global census (80 % Type II, 0 halters), 1 new
+ratio-verified Type-I (Mahler) machine (L921) + an independent re-derivation of o7 (L373=o7, cross-check), Type IV
+populated + soundness-corrected (L373=o7 mis-labelled "new", fixed §3). **No machine decided. No
 non-halting proven. No wall crossed. Halting `[OPEN]` for all. No label upgraded.**
 
 ## Reproduce
