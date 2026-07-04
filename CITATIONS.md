@@ -231,3 +231,23 @@ PAPER_HIERARCHY.md References (lines ~606, ~609–611):
     depth needed), so it is a **building block, not a weapon** — but it proves the honest verdict is "empty of
     frequency/linear-depth weapons," NOT literally empty. Pair with Fan–Fan–Ye (#8, the right *object*, a.e.-only)
     as the two attach-points for a future tool. Full tiered ledger: `EFFEQ_PARTIALS_LEDGER_2026-07-04.md`.
+
+11. **Andrieu–Eliahou–Vivion 2025 [VERIFIED; `(K)`'s NAMED EXTERNAL HOME, `FRONTIER_LIT_2026-07-05.md`].** *A
+    Normality Conjecture on Rational Base Number Systems*, **arXiv:2510.11723** (Oct 2025). In base `p/q`
+    (Akiyama–Frougny–Sakarovitch 2008), the **minimal/maximal words** are conjectured **normal** over `{0..q−1}` /
+    `{p−q..p−1}` (Conj 1.3). **Thm 1.7 [PROVEN]:** normality `⟺` equidistribution mod `q^ℓ` = **exactly our `(K)`
+    `mod 2^ℓ` reformulation** (`CROSSING_STRATEGY §3`). **Thm 1.5 [PROVEN]:** normality `⟹` no `Z_{p/q}`-numbers when
+    `p<q²` — and **3/2 has `p=3<4=q²`**, working regime; also implies Collatz **4/3** termination (Prop 3.16). So
+    `(K)` (even-density `≥1/3` for base-3/2) is the **one-sided sibling** of Conj 1.3; the full conjecture (`freq ½`)
+    would give `(K)`. Their numerics (deviation-from-uniformity at random rates, richness `≈2^ℓ log2^ℓ`) **reproduce
+    our blind runs** (`BLIND_HARMONIC`/`BLIND_EFFECTIVENESS`). Conj itself **unproven (numerics only)**. THE natural
+    outreach anchor: `(K)` = a named, actively-studied conjecture with a research group. Companion: Eliahou–Verger-Gaugry
+    **arXiv:2504.13716** (base-3/2 ↔ 3x+1). **New foothold:** 3/2's `p<q²` **excludes** Akiyama Cantor-set exceptionals
+    (`p>q²`-only) — the non-equidistribution exceptional set for `{ξ(3/2)ⁿ}` may be **sub-full-dimension**, softening
+    the a.e. wall (#8 Fan–Fan–Ye) *for 3/2 specifically*; measuring its dimension is a concrete next step.
+
+> **REFORMULATION-FRONTIER NOTE (2026-07-05).** Burton–Panangaden arXiv:2410.22701 (2024) reformulate Furstenberg
+> ×2×3 via tracial states on **Baumslag–Solitar C\*-algebras** + Carathéodory functions — purely reformulatory, no
+> effective result. Our `CROSSING_STRATEGY` joining/Kronecker route sits in this stream (the ×3/2-solenoid is a
+> `BS(2,3)`-type object). The field's own frontier is reformulating, not proving — corroborating that the wall is
+> structural. Effective-equidist SOTA (Lindenstrauss school, rank ≥ 2) still off-target for our rank-1 amenable orbit.
