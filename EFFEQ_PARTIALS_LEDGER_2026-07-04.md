@@ -134,6 +134,14 @@ conjecture is the crisp published statement of exactly this gap (conjecture + 10
 (Stewart's shape, Fan–Fan–Ye's object) are where a future tool would attach. **No result reaches the target. No
 machine decided. No label upgraded.**
 
+**Bridge attempt (`BLOCK_BRIDGE_2026-07-04.md`).** Trying to *connect* the two blocks — feed Stewart's single-orbit
+arithmetic into Fan–Fan–Ye's a.e.-removal — **fails and reduces to `(K)`:** excluding `3/2` from Fan–Fan–Ye's
+exceptional set needs "equidistributed," Stewart certifies only "not-too-sparse" (a count at log-size), and the
+implication between them *is* the count→frequency / log→linear barrier. Stewart and Fan–Fan–Ye are the **count-side
+and object-side of one missing theorem**; each has exactly what the other lacks, and their meeting region
+(single-orbit ∧ distributional ∧ linear-depth ∧ effective) is the empty target. A bridging theorem = the `(K)`-grade
+upgrade. (`p`-adic Baker/Yu variant closes identically — still count/magnitude, still log.)
+
 ## Reproduce / basis
 - Fresh numeric: `#even/n→0.50` vs floor `0.89 log₂ n` (`6383×` loose at `2·10⁵`), Antihydra `c→⌊3c/2⌋` seed 8.
 - Internal: `EVEN_COUNT_FLOOR.md`, `EFFECTIVE_TOPDIGIT.md`, `CITATIONS.md`, `WEAPONS_AUDIT_2026-06-29.md`,
