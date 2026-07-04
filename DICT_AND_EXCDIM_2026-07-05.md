@@ -10,11 +10,17 @@ withdrawn; `(K)` `[OPEN]`; no machine decided.*
 ## Task 2 — `(K)` IS a base-3/2 digit frequency `[OBSERVED, exact, N=4·10⁴]`
 AFS base-`3/2` digit of an integer `c` is `a₀(c) = 2c mod 3` (successor `c↦⌊2c/3⌋`). Reading `a₀` **along the Antihydra
 orbit** `c_{n+1}=⌊3c_n/2⌋`, `c₀=8`:
-- **Digit frequencies: `0 → 0.4991`, `1 → 0.0000`, `2 → 0.5009`.** Digit `1` is **completely absent**.
-- **Reason `[PROVEN]`:** `c_{n+1}=⌊3c_n/2⌋ ≡ 0 (mod 3)` if `c_n` even, `≡ 1 (mod 3)` if `c_n` odd — so the orbit
-  **never hits `≡2 mod 3`**, and `a₀=2c mod 3 ∈ {0,2}` only (digit `1 ⟺ c≡2 mod 3`, forbidden). Alphabet `{0,2}`.
-- **`a₀=0 ⟺ c≡0 mod 3 ⟺` previous step even; `a₀=2 ⟺` previous step odd.** So **digit-`0` frequency (`0.4991`) =
-  the `(K)` even-density (`0.49908`) exactly.**
+- **Digit frequencies: `0 → 0.4991`, `1 → ≈0`, `2 → 0.5009`.** Digit `1` occurs **exactly once** (see correction).
+- **Reason `[PROVEN]`:** `c_{n+1}=⌊3c_n/2⌋ ≡ 0 (mod 3)` if `c_n` even, `≡ 1 (mod 3)` if `c_n` odd — so for **all `n≥1`**
+  the orbit is `≡{0,1} mod 3`, and `a₀=2c mod 3 ∈ {0,2}` (digit `1 ⟺ c≡2 mod 3`). Alphabet `{0,2}` from `n=1`.
+- **`a₀=0 ⟺ c≡0 mod 3 ⟺` previous step even; `a₀=2 ⟺` previous step odd.** So **digit-`0` frequency `=` the `(K)`
+  even-density asymptotically** (same orbit, one-step shift; `O(1/N)` boundary).
+
+> **CORRECTIONS (2026-07-05, re-verification `BB6_PROOF_ATTEMPT_CAPSTONE_2026-07-05.md`):** (i) digit `1` is **not
+> literally absent** — the **seed `c₀=8 ≡ 2 mod 3`** gives the unique digit `1` at `n=0` (earlier "`0.0000`" was a
+> `%.4f` rounding of the single `1/N`); the `{0,2}` alphabet holds for `n≥1`. (ii) digit-`0`-freq `=` even-density is
+> **asymptotic, not exact** — `digit_n=0 ⟺ c_{n−1}` even, a one-step shift, agreeing up to `O(1/N)`. The mathematical
+> content (`(K)` = base-3/2 digit-`0` frequency, effective alphabet `{0,2}`) is unchanged.
 > **`(K)` = "the base-3/2 last-digit sequence of the Antihydra orbit (alphabet `{0,2}`) has digit-`0` frequency
 > `≥ 1/3`" — literally a base-3/2 digit-frequency / normality-type statement.** Confirms `(K)` is in the
 > Normality-Conjecture family (`arXiv:2510.11723`) concretely. **Caveat:** the orbit-digit alphabet `{0,2}` is
