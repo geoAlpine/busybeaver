@@ -51,3 +51,26 @@ No machine decided. No label upgraded.**
 - `/tmp/o4_genrule.py`: milestone form `0^G (10)^a 1001` uniform, odometer `G'=⌊4G/3⌋+c` exact 10/10; `/tmp/o4_crossing.py`
   (A/B/C/E write 1 on 0, D/F preserve — cascade not uniform crossing). Basis: `O4_CLOSURE_PROOF_ATTEMPT_2026-07-05`,
   `o4_transducer.py`, `FORK_A_O4_DECIDABLE_CANDIDATE_2026-07-05`.
+
+## Symbolic-verifier attempt — the crossing is accelerable but MULTI-PHASE; sound decider is careful engineering `[OBSERVED, honest]`
+Built toward the symbolic 1-generation verifier. Findings:
+- **The head DOES traverse the big gap** (penetration `≈ G`, grows) — it is **not** a bounded local computation, so a
+  "verify with `0^∞`" shortcut does not apply directly.
+- **The traversal is accelerable but multi-phase.** Microstep log inside the gap:
+  `…D1 E0 D1 E0 D1 E0 D1 E1 A0 B1 F0 B1 F0 B1 F0 B1…` — **period-2 sub-cycles** (`D1 E0` crossing a `1`-region,
+  `B1 F0` crossing another) in **different phases**, i.e. the cascade converts `0`s to `1`s and the head crosses the
+  resulting mixed region in a **sequence of uniform period-2 cycles** with bounded phase-transitions. Each phase is
+  accelerable (a uniform macro-step), but the generation is a **sequence of several** such macro-steps, not one.
+- **Consequence for a SOUND decision.** A rigorous decider must implement an **accelerated macro-machine** that (i)
+  detects each uniform period-`p` crossing and jumps it soundly (verifying uniformity before jumping), (ii) handles the
+  bounded phase-transitions and the boundary cascade concretely, (iii) confirms the output is `0^{G'}(10)^{a'}1001`
+  with `G'=⌊4G/3⌋+c` and no `B`-reads-`11`, for each `G mod 3` class. This is **decidable and bounded** but is genuine
+  (bug-sensitive) engineering — the kind bbchallenge contributors write per-machine.
+
+## Honest stopping point `[SOUNDNESS]`
+**o4 is NOT decided, and I will not claim it is.** Rushing a hand-rolled accelerated verifier risks an **unsound
+decision**, which the program's zero-false-proof discipline forbids. What is genuinely established and sound: the
+**explicit `0^G(10)^a1001` invariant**, the **exact base-4/3 odometer**, the **accelerable multi-phase crossing**, and
+**halt-freeness to 50M**. The decision is reduced to a **well-scoped accelerated-macro-machine verification** — the
+concrete, careful next task. o4 remains the BB(6) cryptid **closest to a rigorous decision**, with the certificate now
+built to the point where only the (validated) accelerated simulator is missing.
