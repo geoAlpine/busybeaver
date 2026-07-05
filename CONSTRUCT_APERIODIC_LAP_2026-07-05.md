@@ -49,3 +49,26 @@ should: a genuine attempt that produces a valid object and reveals, constructive
 - `/tmp/construct_lap.py` (`/opt/homebrew/bin/python3.13`, `N=2·10⁵`): chain `R≤E`, `O≤R·max_run`, `E≥n/(max_depth+1)`
   all verified; `max_odd_run=20=max_depth−1`. Basis: `MINPROP_RUNS`, `OCCUPANCY_PROFILE_THEORY §7`, `EXCURSION_SYNTHESIS`
   (potentials telescope to first moment), `K_LEADS_EVALUATED_2026-07-05` (2606.24972 periodic complete-lap).
+
+## Construction shot 2 — the seam subset-sum = Hamming weight of `3^n` `[PROVEN, verified]`
+Telescoping `2c_{k+1}=3c_k−[c_k odd]` gives the **exact** seam for the recursive orbit:
+`2^n c_n = 8·3^n − S_n`, `S_n = Σ_{odd k} 3^{n-1-k} 2^k` ⟹ `Σ_{odd k} 3^{n-1-k}2^k ≡ 8·3^n (mod 2^n)` (verified True,
+`n≤400`). The terms `t_k=3^{n-1-k}2^k` have **distinct valuations** `v₂(t_k)=k`, so the representation is **unique and
+greedy**, and:
+> **`O_n` (odd count) `=` the Hamming weight of `8·3^n mod 2^n` in the twisted basis `{3^{n-1-k}2^k}` `=` a digit-sum
+> of `3^n`.** Non-halt `⟺ O_n ≤ 2n/3 ⟺` this digit-sum has an **upper** bound (`≥1/3` of the twisted digits are zero).
+Stewart-type theorems give **lower** bounds on nonzero digits (`→∞`, `log`); `(K)` needs the **complementary
+frequency** (`≥1/3` zeros) — the same count→frequency barrier, now tying `(K)` directly to the **digit-sum-of-`3^n`
+literature** (Stewart, Erdős 400, Drmota–Spiegelhofer) as a clean bridge.
+
+## Construction-mode summary — every shot builds a valid object and reduces to `(K)` via a distinct seam
+| construction | valid object built | reduces to `(K)` via |
+|---|---|---|
+| 2-adic potential `Φ=v₂(c)` | telescoping identity | **first-moment tautology** (`EXCURSION_SYNTHESIS`) |
+| run-lap `E_n≥n/(max_depth+1)` | aperiodic deterministic inequality | **average-vs-max gap** = occupancy |
+| seam subset-sum | `O_n =` twisted Hamming weight of `3^n` | **digit-sum frequency** of `3^n` (Stewart-complement) |
+Three genuine shots, three valid new objects, three **distinct** seams — all landing on `(K)`'s irreducible core. This
+is the **constructive** confirmation (not the meta-theorem) that `(K)` is irreducible from every internal angle: the
+sharpest are *average-vs-max* (periodicity buys the average) and *Hamming-weight* (`(K) =` a digit-frequency of `3^n`).
+A genuinely new theorem must be a construction that does **not** reduce here — which, across these distinct attempts,
+appears to require the external breakthrough (aperiodic complete-lap / effective single-orbit equidistribution).
