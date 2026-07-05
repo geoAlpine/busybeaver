@@ -63,3 +63,12 @@ of arXiv:2606.24972 and arXiv:2510.11723.*
 
 *Contact / full materials: the BB(6) frontier program (notes: `MEETING_BRIEF_4`, `CROSSING_STRATEGY`,
 `DICT_AND_EXCDIM`, `FRONTIER_LIT`, `CITATIONS`). External: arXiv:2510.11723, 2504.13716, 2410.22701.*
+
+## What we can hand over (the seam atlas)
+Beyond the reduction and the ask, we have a **built (not asserted) map of where every internal route meets `(K)`** —
+six distinct constructive reductions (`CONSTRUCT_APERIODIC_LAP_2026-07-05`): first-moment tautology (2-adic potential),
+average-vs-max (run-lap), digit-frequency of `3^n` (Hamming-weight of `8·3^n` in a twisted basis), no-independent-
+resource (the 3-adic digit is a re-encoding of the 2-adic parity, so no mixed binary–ternary allocation), no-contraction
+(up-jumps are effectively independent, no bootstrap), and the Stewart-complement (a digit-sum *upper* bound). This atlas
+localizes precisely what a proof must supply and rules out the internal shortcuts, so a specialist can aim directly at
+the aperiodic-carry gap.
