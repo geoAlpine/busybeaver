@@ -44,7 +44,39 @@ retraction. Zero false proofs; every note carries an honest verdict. `(K)` `[OPE
 - **The ask (P1′):** effective single-orbit equidistribution with an exponential moving-diagonal rate = an effective
   normality rate for the base-3/2 word. Outreach target: the Eliahou group's Normality Conjecture.
 
+## Part 2 — the afternoon arc: proof, external anchor, cryptid classification, the o4 decision attempt
+11. **`BB6_PROOF_ATTEMPT_CAPSTONE`** — full data re-verification (real TM + big-int) + the complete proof chain: BB(6)
+    non-halt `⟺` `(K)`, verified to one open link; **2 soundness corrections** to the dictionary (seed digit-1; asymptotic).
+12. **`FRONTIER_LIT` + `K_RESEARCH_COUNT_VS_FREQ` + `K_LEADS_EVALUATED`** — `(K)` = one-sided **Normality Conjecture**
+    (Andrieu–Eliahou–Vivion 2025); the **count→frequency barrier** (universal in the 2–3 digit world); 2026 leads
+    evaluated → the missing tool is an **aperiodic complete-lap count** (positive-dyadic-density needs periodic carry).
+13. **`TYPEI_NORMALITY_FAMILY` + `CRYPTID_2D_CLASSIFICATION` + `B2_DECISION_FORK`** — Type-I = Normality family across
+    `{3/2,8/3,4/3}`; **object-axis ⟂ wall-axis** (o4 = Type-I × B2); the **B2 decision fork** (Fork A decidable / B1
+    anti-normal / B2 carry-timing); Space Needle = Fork-B1 `(K)`-hard.
+14. **The o4 decision attempt (~12 turns)** — `FORK_A_O4` → `O4_COUNTER_CERTIFICATE` (explicit `0^G(10)^{a-1}1001`) →
+    `o4_accel_sound.py` (**validated** accelerator) → `O4_FAR_VERIFICATION` (invariant **non-regular**) →
+    `O4_VERIFIER_BUILD_T1..T4/A1` (generation unbounded) → `O4_11AVOIDANCE_A2` (reduction "F never reads 1") →
+    `O4_INDUCTIVE_PROOF_A3` (finite boundary-graph + counter-dependent nondet) → `O4_ODOMETER_CLOSURE_A4` (**no finite
+    shortcut**, `0/25`). **o4 = base-4/3-odometer 11-avoidance theorem; all finite shortcuts rigorously excluded; not
+    decided; no false decision across ~12 turns.**
+15. **`CRYPTID_BOUNDARY_GRAPH_CENSUS` + `BOUNDARY_GRAPH_B1`** — the accelerated boundary-graph **unifies the whole
+    frontier** (B1 + B2): all finite-graph + counter-dependent; the wall distinction is the *nature* of the
+    counter-dependence (equidistribution `(K)` vs arithmetic odometer), not the graph.
+
+## Remaining tasks / open threads (for next session)
+- **`(K)` / proof (the real frontier):** the missing tool = effective single-orbit equidistribution / **aperiodic
+  complete-lap count** for base-3/2 (`= extend arXiv:2606.24972 from periodic to aperiodic carry`). External path:
+  outreach materials **ready** (`OUTREACH_ABSTRACT`, `MEETING_BRIEF_4`, `OUTREACH_EMAIL_DRAFT`) — **not sent** (needs
+  recipient + sender identity + go-ahead).
+- **o4 (decidable-in-principle):** remaining = **prove the base-4/3-odometer 11-avoidance theorem** (~25 counter-dependent
+  branches safe for all `G`) — a Collatz-like arithmetic result; `o4_accel_sound.py` is the reusable tool.
+- **Other cryptids:** o17 halt-flavor (timed out here), o15/o18 finalized (o15=B1, o18=B2); the whole B2 frontier =
+  o4-type counter theorems; Space Needle = Fork-B1 `(K)`-hard.
+- **Verifier tooling:** a sound **counter-automaton / base-4/3-odometer closure verifier** would decide the B2 cryptids
+  (new tooling, must be validated).
+
 ## Soundness ledger
-Zero false proofs. Retractions this session: `p<q²` exceptional-set softening (`DICT_AND_EXCDIM`). Phrasing fix:
-"iid" → "countdown attraction" (`BLIND_EFFECTIVENESS`). All predictions blind-tested; all verdicts labelled.
-`(K)` `[OPEN]`. No machine decided. No label upgraded.
+Zero false proofs; **zero false decisions** across ~15 decidability/proof turns. Retractions: `p<q²` exceptional-set
+softening (`DICT_AND_EXCDIM`); the o17 "B1-leaning" call → B2 (`B2_DECISION_FORK`); "B1 non-stabilizing" hypothesis
+(`BOUNDARY_GRAPH_B1`). Phrasing fixes: "iid"→"countdown attraction", dictionary digit-1/asymptotic. All predictions
+blind-tested; every note carries an honest verdict. `(K)` `[OPEN]`. No machine decided. No label upgraded.
