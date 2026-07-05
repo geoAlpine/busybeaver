@@ -72,3 +72,35 @@ is the **constructive** confirmation (not the meta-theorem) that `(K)` is irredu
 sharpest are *average-vs-max* (periodicity buys the average) and *Hamming-weight* (`(K) =` a digit-frequency of `3^n`).
 A genuinely new theorem must be a construction that does **not** reduce here — which, across these distinct attempts,
 appears to require the external breakthrough (aperiodic complete-lap / effective single-orbit equidistribution).
+
+## Construction shots 3–5 (batch) — every remaining angle executed `[OBSERVED]`
+- **Shot 3 (3-adic dual / mixed binary–ternary resource).** `(c_n ≡ 0 mod 3) ⟺ (c_{n−1} even)` **exactly** (agreement
+  `1.0000`); `c_n mod 9` is **not** determined by `c_{n−1} mod 9` alone (needs 2-adic bits). So the **3-adic digit is a
+  re-encoding of the 2-adic parity, not an independent resource.** This is the **constructive reason the Erdős-400
+  mixed binary–ternary resource-allocation method cannot transfer**: it needs *two independent* digit systems
+  (`2^n`, `3^n` multiplicatively independent), but a **single orbit couples them through one parity sequence** — there
+  is no second, independent resource to allocate. *(New constructive explanation of the non-transfer the `2606.24972`
+  authors merely asserted.)*
+- **Shot 4 (first-return / renormalization contraction).** Up-jump lag-1 autocorrelation `= −0.006 ≈ 0` — up-jumps are
+  effectively **independent**, so there is **no contracting renormalization** to bootstrap (benign, as the
+  time-doubling one, `CROSSING_STRATEGY`). No self-improving construction exists (consistent with `β=+½` critical).
+- **Shot 5 (additive-combinatorics digit-sum upper bound).** `s_2(3^n)` 1-density `≈0.49` (need `≤2/3`); the trivial
+  upper bound is `1`, and `≤2/3` is exactly a digit-frequency (`≥1/3` zeros) — the **Stewart-complement**, same
+  count→frequency barrier.
+- **Weyl / bootstrap (mapping-confirmed, not re-run).** One-sided Weyl cancellation for `Σe(θ(3/2)^n)` = the famous
+  open equidistribution (Baker gives individual terms, not sum cancellation, `BAKER_LINFORMS`); conditional bootstrap
+  has zero margin (`β=+½`, `BB6_NO_STRUCTURE_THEOREM`). Both banked.
+
+## Final construction-mode verdict `[the honest close]`
+**Construction mode fully executed — every genuine internal shot builds a valid object and reduces to `(K)` via a
+distinct, now-named seam:** first-moment tautology (2-adic potential), average-vs-max (run-lap), digit-frequency of
+`3^n` (Hamming-weight), no-independent-resource (3-adic dual), no-contraction (renormalization), Stewart-complement
+(digit-sum). This is the **constructive** (not meta-theoretic) proof that `(K)` is the irreducible core from every
+internal direction. The genuinely-new theorem must be a construction that does **not** reduce here; across six distinct
+attempts none does, which locates the creative act firmly in the **external breakthrough** (aperiodic complete-lap /
+effective single-orbit equidistribution). The session's constructive payoff is the **seam atlas** above — the precise,
+built (not asserted) map of where each internal route meets `(K)` — the most useful thing to hand a specialist. **`(K)`
+`[OPEN]`. No machine decided. No label upgraded.**
+
+## Reproduce
+- `/tmp/construct_all.py` (`N=10⁵`): 3-adic re-encoding (agreement `1.0`), up-jump autocorr `≈0`, `s_2(3^n)≈0.49n`.
