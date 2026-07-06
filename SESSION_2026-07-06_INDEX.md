@@ -53,6 +53,21 @@ truth throughout. Decisive impossibility computation independently reproduced. o
   → rephasing rules; "00"-pattern first1 miscount → canonicalization; milestone timing → per-micro check +
   record-breaking-G filter); tape equality re-verified after each fix. Reusable B2-cryptid template (o3/o15/o18).
 
+## Part 3 — the "next move": template closure + the a-ledger discovery (`O4_TEMPLATE_CLOSURE_2026-07-06.md`)
+The cap C-seam move escalated into the o4 track's sharpest result:
+- **Rigid template:** every generation = prefix(454, one hash ∀gens) · body(51)^r · suffix(G mod 3); turn-4's `0/25`
+  counter-dependence = template-position projected out.
+- **Certified lemmas `[PROVEN, certified trace-template method]`:** PREFIX = fixed 471-step word (span [−11,30], all
+  G≥37, all a); BODY = `B(k)→B(k+2)` in 15+4k steps, all odd k≥19 (verified to k=251); SUFFIX per class g∈{3,4,5}:
+  exact milestone landing, `G′={2k+12, 2k+9, 2k+13}`, `a′={a−1, a+4, a+6}`, valid a≥2 (g=3) / a≥0 (g=4,5).
+- **Odometer DERIVED:** `G′=⌊4G/3⌋+c`, `c={0→3,1→5,2→1}` falls out of the templates (matches real orbit).
+- **THE DISCOVERY — the a-ledger:** `a′=a+δ(G mod 3)`, `δ={1:−1, 2:+4, 0:+6}`; **`Z(41,g=3,a=0)` genuinely HALTS**;
+  o4 non-halt ⟸ ledger stays ≥2 at every G≡1 generation `[PROVEN + induction, base to G≈884k]`. **The B2 "arithmetic"
+  wall merges with the (K)-shaped one-sided ledger** — same species, enormous margin (drift +3/gen, failure needs
+  prefix ρ=1-freq ≳ 4/5 vs observed ≈ 1/3). o4's decision = an explicit Collatz-like ledger conjecture now.
+- Red-team of the composition/locality argument queued; cap C-seam subagent + G=10⁷ run still in flight (results to
+  be folded in).
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
