@@ -72,7 +72,9 @@ The cap C-seam move escalated into the o4 track's sharpest result:
   F-type arrival, k-uniform, requires a≥7 (corroborates the small-a danger). `[OBSERVED]` type-saturation (44
   sweep-end / 4 cap-arrival) through G=883,719 via a soundly-hooked macro. Residual = arrival completeness, subsumed
   under the a-ledger. Correction propagated into `O4_SEAM_PARITY_LEMMA`.
-- Red-team of the composition/locality argument IN FLIGHT; G=10⁷ run in flight (results to be folded in).
+- **G=10⁷ run COMPLETE:** 5.003×10¹³ steps in 7,341s — **G=8,827,295**, 48 milestones, odometer exact on all 47
+  transitions, |S|=23 frozen, UNSAFE=0, F-reads-1=0. Evidence now **450×** the pre-macro range.
+- Red-team of the composition/locality argument IN FLIGHT (final soundness gate for the lemma labels).
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All

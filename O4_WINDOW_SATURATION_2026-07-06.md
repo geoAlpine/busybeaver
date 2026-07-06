@@ -137,6 +137,9 @@ Goal: reach `G≫10⁴` soundly to extend closure evidence and to decide the oth
   **UNSAFE=0, F-reads-1=0, halt-free**; #segs=8 at end (bounded-defect structure holds at G~10⁶). Closure/safety/
   odometer/cap-C-seam evidence extended **45×** in G (19.5k → 883.7k), and the residual C-seam claim now has ~40
   generations of instances, all safe. The tool is the reusable B2-cryptid template (o3/o15/o18 next).
+- **G=10⁷ RUN [OBSERVED, same day]:** `5.003×10¹³ steps in 7,341s` — **G = 8,827,295**, 48 milestones, odometer
+  EXACT on all 47 transitions, **|S|=23 still frozen, UNSAFE=0, F-reads-1=0**, #segs=8. Total evidence now **450×**
+  the pre-macro range; every generation's a-ledger instance safe (a never near the fatal region on the real orbit).
 
 ## Verdict
 **(b) — substantial proven progress: o4's decision is reduced to a SINGLE precisely-localized odometer lemma, with the
