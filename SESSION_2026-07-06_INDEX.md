@@ -166,6 +166,22 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   fatal sets real & predictive where they exist, none found for o18. The B1/B2 dichotomy superseded by the
   gate/structure/protection decomposition.
 
+## Part 9 (2026-07-07) — the all-parallel sweep: growing-regime PROVEN, o15 joins the mirror ladder, outreach upgraded
+- **3 growing-regime configs NON-HALTING `[PROVEN, re-verified]`** (`O4_GROWING_REGIME_2026-07-07.md`): each collapses
+  to `C(m) = B(m−1)+1-step` (the proven body lemma's pure iteration, no gap/filler/ledger) — `C(m)→C(m+2)` forever;
+  even-m instances INHERITED from the proven body lemma. Small-a grid COMPLETELY decided: {recover / HALT(41,0) /
+  cycler / growing-bouncer}.
+- **o15 fixed-point structure `[PROVEN]`** (`O15_FIXEDPOINT_2026-07-07.md`): all four V-branch maps `V′=(8V+c)/3`
+  exact (c∈{+9,+11,−17,−5}); fixed points x=−c/5; queued-split x=1 integer ⇒ **run = v₃(V−1)**, cap ≈0.893n;
+  single-shallow-run fatality dead (needs V≡1 mod 27). **W=V−1 makes queued splits exactly ×8/3 — the mirror ladder
+  now has THREE members: Antihydra (×3/2, v₂), o4 (×4/3, v₃), o15 (×8/3, v₃)** — all flagship cores are p-adic depth
+  countdowns of ×p/q orbits. Honest residual: the fatal cylinder is a recursive string language, order-dependent,
+  provably NOT a V-congruence (the [1]^k family forces queue-depth dependence); + 2 session hypotheses refuted, 1
+  drain-law correction (discipline held).
+- **Outreach draft upgraded** with the o4 ladder (certified template → ledger → run closed-forms → mirror → margin
+  ladder); Gmail draft pending re-authorization; recipient + sender identity + go-ahead still required.
+- In flight: o18 depth-uniform certificate (the candidate first decision), o17 gate-law formulation.
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
