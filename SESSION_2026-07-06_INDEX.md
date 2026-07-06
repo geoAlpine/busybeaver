@@ -83,6 +83,33 @@ The cap C-seam move escalated into the o4 track's sharpest result:
   Z(41,3,0) halt at 55,170; zero spurious milestones (72 runs); composition verified at G=37..500; cone edges
   conservative. This is the ~31st–33rd self-caught correction; discipline held under the day's biggest claim.
 
+## Part 4 — the a-ledger attack (`O4_LEDGER_ANALYSIS_2026-07-06.md`) + o3 port (in flight)
+- **Itinerary bijection theorem `[PROVEN]`** (3-line proof + exhaustive L=1..8, `o4_ledger_bijection.py`): seed mod 3^L
+  ↔ residue itinerary. Consequences: fatal patterns are realized by full seed classes ⇒ **halting template orbits
+  exist for every a₀**; the safe seed set is a 3-adic Cantor set; **no seed-uniform safety theorem can exist** — the
+  o4 analogue of the No-Structure theorem, proving the ledger is irreducibly orbit-specific ((K)'s species) at the
+  B2 flagship.
+- **Ruin quantification:** annealed `P[fatal from a] ~ η^a`, **η = 0.334895 ≈ 1/3**; from the current frontier
+  (a=124): ~10⁻⁵⁹.
+- **Small-a map `[OBSERVED]`:** `Z(k,3,a≤1)` is k-IRREGULAR — {LAND via a different recovery branch (G′=2k+29, a′≥3) /
+  HALT (only k=41) / WANDER>3M `[OPEN]`}; the safety direction (non-halt ⟸ ledger ≥2) is UNAFFECTED.
+- **Real-orbit ledger `[OBSERVED to G=884k]`:** δ-rule exact; min a at ρ=1 = **12** (template regime), growing
+  +3/generation (115 by G=373k); longest ρ=1 run = 2. Margin enormous and widening.
+- Verdict: o4's remaining core = a quenched one-sided prefix condition on a specific 3-adic itinerary — (K)'s
+  species with a +3-drift margin = **the easiest-margin open case in the cryptid family**.
+- **o3 template-port subagent** in flight (stalled once on watchdog, resumed with a focused plan).
+
+## Part 5 — easy-tasks sweep: o17 halt-flavor pinned (`O17_HALT_FLAVOR_2026-07-06.md`) — the in-family COUNTEREXAMPLE
+o17 (`1RB1LD_1RC0LE_1LA1RE_0LF1LA_1RB0RB_---0LB`) pinned as **verdict (iii): "sparse-gate carry-timing"** — a THIRD
+species: `[PROVEN]` halt ⟺ `0 0 [1]_A` local seam condition (F only via (D,0), D only via (A,1)); 11-window
+saturation, all safe; blank orbit = core seed j=1. **Template test FAILS** (generation shapes unbounded: 69→91
+classes still growing — √step growth means the generation state is the whole digit string). Old "B1-leaning
+parity-density" REFUTED (the bit is a deterministic 3-state automaton read — no density statement exists); but **no
+o4-style ledger either** (no finite-residue δ-map; branch driver = full carry cascade; distance-to-fatal ≤1 at every
+gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall does NOT uniformly bottom out in a
+(K)-shaped ledger** — the family now has three species: (i) template+ledger (o4), (ii) density/(K) (Antihydra B1),
+(iii) sparse-gate carry-timing (o17). Re-verified by main loop (halt-reduction census reproduces).
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
