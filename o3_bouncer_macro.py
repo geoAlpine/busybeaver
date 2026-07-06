@@ -63,7 +63,7 @@ class Mach:
         w,d,ns=a
         t[pos]=w; pos+=d
         self.pos=pos; self.st=ns; self.steps+=1
-        if pos<self.lo: self.lo=pos; self.check_milestone()
+        if pos<self.lo: self.lo=pos
         if pos>self.hi: self.hi=pos
 
     # ---------- cycle detection on the actual tape ----------
@@ -179,7 +179,7 @@ class Mach:
         for o in info['winoffs']:
             b2=pos0+1*D
             self.wins.add(bytes(t[b2+o-W:b2+o+W+1]))
-        if self.pos<self.lo: self.lo=self.pos; self.check_milestone()
+        if self.pos<self.lo: self.lo=self.pos
         if self.pos>self.hi: self.hi=self.pos
         return m
 
@@ -193,13 +193,16 @@ class Mach:
         a=len(m.group(1))//2
         g2=m.group(2)
         if g2=='': k=0
-        elif g2.endswith('011') or g2=='11': k=(len(g2)+1)//3
+        elif g2=='110'*(len(g2)//3): k=len(g2)//3          # trailing 0 visited
+        elif g2=='110'*((len(g2)+1)//3-1)+'11': k=(len(g2)+1)//3
         else: return
-        if not (g2=='' or g2=='110'*(k-1)+'11'): return
         self.milestones.append((self.steps,a,k))
 
     def run(self,maxsteps):
         while not self.halted and self.steps<maxsteps:
+            # milestone check at the instant (state A, head at the left frontier),
+            # BEFORE stepping -- covers arrivals via both micro and jump paths
+            if self.st==0 and self.pos<=self.lo: self.check_milestone()
             if self.try_jump(maxsteps-self.steps)==0:
                 self.micro()
 

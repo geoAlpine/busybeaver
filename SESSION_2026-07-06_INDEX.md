@@ -138,9 +138,16 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   configs — contrast o3/o4). Non-halt = a LEVEL-INDUCTION target — arguably the most decision-adjacent cryptid.
   Family classification now **four species: {template+ledger (o4,o3), density/(K) (Antihydra), sparse-gate (o17),
   recursion-tower (o18)}**.
-- **WANDER cases resolved-in-kind:** the `Z(k,3,a≤1)` "WANDER" configs are a **milestone-free growing regime** —
-  1.1×10¹² steps each (bounded-time macro runs), G~530k, segs=5, **unsafe=0** — a different attractor family with no
-  halt signature; classified `[OPEN, non-halting-like]` (not needed for the safety reduction).
+- **WANDER cases RESOLVED (final, `o4_wander_certify.py`):** of the 7, **4 are NON-HALTING `[PROVEN]`** via verified
+  **translated-cycler certificates** (`Z(29,0), Z(101,0), Z(23,1), Z(41,1)`: exact (state, forward-window) recurrence
+  at new-leftmost + one-period replay in a known-content region; period 411, 19 cells left/period; left-of-leftmost
+  cells are unvisited-0 ⇒ sound). The remaining **3 (`Z(21,0), Z(23,0), Z(27,0)`) stay `[OPEN]`**: √steps-growth
+  milestone-free regime (1.1×10¹² steps, G≈530k, unsafe=0; no recurrence to 8M steps at W=10⁴). Tool note:
+  off-template configs exposed a merge-fixpoint hang in the macro (validated on the standard orbit only).
+- **o3 V3 FINAL: PASSED** — 200M macro run, blank-tape milestone stream matches the arithmetic ledger orbit exactly
+  (32 generations to (a=8748, k=15)). Final o3 refinement: **`Δk = δ(a mod 3)` exactly** (roles swapped vs o4 — `a` is
+  the odometer, `k` the ledger); refutes `O3_TRANSDUCER` §4's "history-dependent" claim; o3 = residue-ledger species,
+  the full ⟺ reduction to pure arithmetic (sharper than o4). Species-note row corrected.
 
 ## Part 8 (2026-07-07) — o15 port (fifth shape: template + STRING-LEDGER) + the species synthesis
 - **o15 (`1RB---_0RC0RE_1RD1RF_1LE0LB_1RC0LD_1RC1RA`, halt=A reads 1) — the B1/density call SURVIVES, sharpened

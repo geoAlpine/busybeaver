@@ -22,7 +22,7 @@ the protection — an orbit-specific quenched statement in five different coordi
   | machine | protection shape | fatal set | margin |
   |---|---|---|---|
   | o4 | **residue-ledger** `a′=a+δ(G mod 3)` | `[PROVEN nonempty]` Z(41,3,0) halts | drift +3/gen, ruin η^a, η≈0.335 |
-  | o3 | **int-ledger** (k,a) joint map, digit-driven | `[PROVEN nonempty]` + **predicted-then-confirmed** | drift +0.248/gen, drains ≤10 |
+  | o3 | **residue-ledger** — roles swapped vs o4: `a` is the base-4/3 odometer, `k` the ledger, `Δk=δ(a mod 3)` exactly (V3-final report; refutes `O3_TRANSDUCER` §4's "history-dependent" claim) | `[PROVEN nonempty]` + **predicted-then-confirmed** | drift +0.248/gen, drains ≤10 |
   | o15 | **string-ledger** — carry cascade never stacks leading `[2,2]` at a split (cylinder avoidance in the Mahler-8/3 digit string) | `[PROVEN nonempty]` + **predicted-then-confirmed** | no leading 2 in 11 gens (exposure record) |
   | Antihydra | **density** — even-density ≥ 1/3 = `(K)` | (halt = density failure) | zero margin (critical) |
   | o17 | **gate timing** — frontier gates thin super-exponentially | fatality distance ≤1 at every gate | timing sparsity (8 gates < 1.08M steps, then none to 3×10⁸) |

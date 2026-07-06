@@ -103,8 +103,9 @@ Generic verified p-cycle jump engine (o4's p=2 jump generalized: state-return + 
 tape, offline steady-state analysis → fresh-demand pattern / settled |D|-cell tiling / leading-edge profile with
 steadiness check, margin, per-cycle event bookkeeping; refuses to jump on any anomaly). Validation battery:
 **V1 PASSED** — exact tape/state/head/e0/unsafe equality vs concrete at 0.2M/1M/5M; **V2 PASSED** — E-reads-0
-window-set (r=5) equality over 32M steps (6 windows, e0=1,066,338 exact, unsafe 0==0); **V3** — blank-tape milestone
-stream (a,k) vs the arithmetic ledger orbit over a 200M-step run. Honest tool note: the generic-cycle engine's
+window-set (r=5) equality over 32M steps (6 windows, e0=1,066,338 exact, unsafe 0==0); **V3 PASSED** — blank-tape
+milestone stream over a 200M-step macro run matches the arithmetic ledger orbit EXACTLY: all **32 generations from
+(6,2) to (a=8748, k=15)**, no missing and no spurious milestone events. Honest tool note: the generic-cycle engine's
 speedup over concrete is modest (~5-10x; per-cycle Python bookkeeping), unlike o4's p=2 segment machine — adequate
 for validation, not for deep-orbit exploration (the arithmetic ledger covers that). Used ONLY for discovery/
 large-scale checks — every proof-path claim above is from pure concrete simulation on standalone configs.
@@ -115,7 +116,8 @@ large-scale checks — every proof-path claim above is from pure concrete simula
   standalone config, halt step observed); §5: exact bigint arithmetic of the verified map.
 - Known gaps (honest): (i) the boundary-chunk pinning grids stop at a=302/k=12 (law spot-checked beyond: k=50,120,
   a to 1005); (ii) the k=1 law grid stops at a=1005; (iii) the blank-tape orbit provenance is raw-concrete to 120M
-  steps (33 generations) + macro-validated beyond + arithmetic ledger; (iv) startup floor: the laws are verified
+  steps (33 generations) + macro-validated to 200M (V3, 32 generations to a=8748) + arithmetic ledger beyond;
+  (iv) startup floor: the laws are verified
   from a≥6 (real orbit joins at (6,2)); a≤5 startup is concrete-verified as part of the 120M run.
 - o3 `[OPEN]`. The decision reduces to §5's explicit ledger conjecture. **No machine decided. No label upgraded.**
 
