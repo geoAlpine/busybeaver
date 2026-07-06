@@ -17,10 +17,16 @@ at G mod 3 = 0/1/2, single hash per class)**, with jump (sweep) lengths exactly 
 ## 2. The certified lemmas `[PROVEN, certified trace-template method]`
 Method: compress a concrete trace into **bounded episodes** + **uniform sweeps** (`B1F0` read-only rightward, `D1E0`
 invert leftward — both proven for ARBITRARY length by 2-transition induction). Verify across a parameter grid: the
-compressed skeleton is IDENTICAL and sweep lengths are exactly affine. Any first divergence at an untested parameter
-would have to occur inside an episode whose preceding compressed trace — hence local tape content, by the locality
-lemma (identical window + head-confined ⇒ identical evolution) — is identical: contradiction. Hence the template holds
-for ALL parameters in the cone. (`o4_body_proof.py` + inline suffix/prefix verifications.)
+compressed skeleton is IDENTICAL and sweep lengths are exactly affine. **RED-TEAM-CORRECTED generalization step
+(`o4_redteam_*.py`):** the original "first divergence must lie in an episode" argument had a GENUINE LOGICAL GAP —
+sweep lemmas are *conditional* (they guarantee continuation only while the tape ahead is correctly tiled), so sweep
+*termination* is tape-determined and a parameter-dependent defect inside a swept region was not excluded. The repair is
+the **episode-landmark-pinning lemma** `[VERIFIED from the traces]`: every episode step sits at a parameter-INDEPENDENT
+offset (≤3) from a structural landmark (zone edge / cap / filler edge / landing point) — body: all 8 k's, offsets
+exactly affine; suffix: zero unpinned steps across the grid to k=251, all classes; prefix: span [−11,30] never touches
+gap-end or filler (airtight for all G≥31, all a). With edge-pinned episodes + sweeps traversing only
+uniform-by-invariant regions, the tape is symbolically reconstructible and the generalization closes.
+(`o4_body_proof.py` + inline suffix/prefix verifications + `o4_redteam_{milestone,body,suffix,prefix,locality}.py`.)
 - **PREFIX `[PROVEN]`:** from milestone `M(G,a)` (head on gap-left 0, state E): a **fixed 471-step word** (identical
   trace hash for all G∈{100,101,102,103,200,501}, a∈{8,20}), span `[−11,30]` (bounded, G,a-independent), unsafe=0,
   landing: zone `(10)^19 1001` at `−11`, gap and filler INTACT. Valid for all `G≥37`, all `a`.
@@ -28,13 +34,17 @@ for ALL parameters in the cone. (`o4_body_proof.py` + inline suffix/prefix verif
   skeleton identical (9 episodes + 2 sweeps), sweep lengths exactly `(2+2k, 4+2k)`, span `[−1, 2k+8]`, unsafe=0 —
   verified k=19..27,49,101,**251** ⇒ all odd `k≥19`. Consumes 3 gap cells per application; applies while gap ≥ 6.
 - **SUFFIX `[PROVEN]`, 3 classes** (gap-at-meet `g∈{3,4,5}`, `g ≡ G−31 (mod 3)`): `Z(k,g,a) → M(G′,a′)` EXACT
-  milestone landing; skeleton identical across the whole (k,a) grid (k∈{19,21,23,41}, a∈{8,12,30} and small-a 0..7),
-  steps affine; unsafe=0 throughout:
-  | g | valid | G′ | a′ | skeleton |
-  |---|---|---|---|---|
-  | 3 | **a≥2** | 2k+12 | a−1 | 19 |
-  | 4 | a≥0 | 2k+9 | a+4 | 41 |
-  | 5 | a≥0 | 2k+13 | a+6 | 74 |
+  milestone landing, steps affine, unsafe=0 throughout; landings verified to **k=251** (red-team, beyond the original
+  grid):
+  | g | valid | G′ | a′ |
+  |---|---|---|---|
+  | 3 | **a≥2** | 2k+12 | a−1 |
+  | 4 | a≥0 | 2k+9 | a+4 |
+  | 5 | a≥0 | 2k+13 | a+6 |
+  **RED-TEAM RESTATEMENT (small a):** "one skeleton per class" is FALSE at the method's own compression threshold for
+  `a≤4` (a-dependent stretches of length ~`a`/`2a` straddle it). Correct form: the cone is covered by **finitely many
+  per-a templates (a∈{0..4}, each k-uniform to k=251) + one generic a≥5 template per class** — landings and safety
+  identical; only the template COUNT changes. The lemma's conclusion is unaffected.
 
 ## 3. The odometer DERIVED `[PROVEN from templates]`
 Composing prefix + r bodies + suffix: `r=(G−31−g)/3`, `k_end=19+2r`, and the table gives
@@ -48,8 +58,9 @@ three gap-at-meet residues.
 - **`Z(41, g=3, a=0)` HALTS** (step 55,170) `[verified concrete]` — the small-a region is genuinely fatal; the g=3
   small-a cases are k-irregular (a=0: k=19 lands, k=21 wanders, k=41 halts). So the safety condition is NOT vacuous.
 - **o4 does not halt ⟸ the ledger satisfies `a ≥ 2` at every `G≡1 (mod 3)` generation** `[PROVEN: template closure +
-  induction, base concrete to G≈884k]`. The converse holds partially (specific small-a configs halt; full ⟺ needs the
-  small-a case analysis completed).
+  induction; base RAW-CONCRETE to G≈19.5k (induction needs only G≤43), macro-validated to G≈8.8M]`. (Provenance
+  corrected per red-team: the earlier "base concrete to G≈884k" conflated the validated macro run with raw concrete.)
+  The converse holds partially (specific small-a configs halt; full ⟺ needs the small-a case analysis completed).
 - Empirical margin ENORMOUS: δ-drift ≈ +3/generation vs the −1-only-at-g=3 drain; failure needs a prefix with
   ρ=1-frequency ≳ 4/5 (observed ≈ 1/3). Real orbit: a=34→38→37→… (rule verified against dumps: +4 at G=275≡2,
   −1 at G=367≡1 ✓).
@@ -65,9 +76,14 @@ decision is now the explicit conjecture: *the base-4/3 orbit `G↦⌊4G/3⌋+c` 
 ## 6. Soundness ledger `[discipline]`
 - All lemmas verified by exact concrete simulation on constructed configs (no acceleration in the proof path); the
   macro-machine used ONLY for template discovery, not for proof steps.
-- The composition/locality argument is stated explicitly (§2); it is the standard certified-bouncer soundness argument.
-  **Red-team of the composition argument queued** — until then the lemma labels carry "[PROVEN, certified-template
-  method]" with this caveat.
+- **RED-TEAM COMPLETED (same day, `o4_redteam_*.py`): no unsound conclusion; every lemma statement survives on
+  STRONGER grids (suffix to k=251; prefix G=31..1000; body k≥13 incl. even k — cone edges conservative). Three
+  corrections applied:** (1) the generalization argument's sweep-termination gap repaired by the episode-landmark-
+  pinning lemma (§2); (2) suffix small-a restated as per-a templates (§2 table note); (3) base-case provenance fixed
+  (§4). Independent confirmations: Z(41,3,0) halt at exactly 55,170 (via an unsafe B-reads-`11`, consistent with the
+  seam mechanism); zero spurious milestone-forms in all 72 suffix runs; full-generation composition
+  `M(G,a)→M(⌊4G/3⌋+c, a+δ)` verified concretely at G=37..48, 100..102, 275, 500; k-odd forced by prefix+body; a=2
+  validity floor confirmed. Minor: body span is [−1,2k+6] (tighter than the claimed [−1,2k+8]).
 - The halting config `Z(41,3,0)` is a STANDALONE config; NOT claimed reachable from o4's initial tape — reachability
   of small-a at g=3 is exactly the open ledger question.
 - o4 `[OPEN]`. **No machine decided. No label upgraded.**

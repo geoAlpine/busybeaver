@@ -74,7 +74,14 @@ The cap C-seam move escalated into the o4 track's sharpest result:
   under the a-ledger. Correction propagated into `O4_SEAM_PARITY_LEMMA`.
 - **G=10⁷ run COMPLETE:** 5.003×10¹³ steps in 7,341s — **G=8,827,295**, 48 milestones, odometer exact on all 47
   transitions, |S|=23 frozen, UNSAFE=0, F-reads-1=0. Evidence now **450×** the pre-macro range.
-- Red-team of the composition/locality argument IN FLIGHT (final soundness gate for the lemma labels).
+- **RED-TEAM COMPLETE — no unsound conclusion; labels stand with 3 corrections applied** (`o4_redteam_*.py`):
+  (1) GAP-FOUND in the generalization step (sweep termination is tape-determined; conditional sweep lemmas don't
+  exclude parameter-dependent defects inside swept regions) — REPAIRED by the episode-landmark-pinning lemma (every
+  episode step at parameter-independent offset ≤3 from a structural landmark; verified body/suffix/prefix, to k=251);
+  (2) suffix small-a "one skeleton per class" OVER-CLAIM → restated as per-a templates (a∈{0..4}) + generic a≥5;
+  (3) provenance mislabel (raw concrete = G≈19.5k, macro-validated = 8.8M) fixed. Independent confirmations:
+  Z(41,3,0) halt at 55,170; zero spurious milestones (72 runs); composition verified at G=37..500; cone edges
+  conservative. This is the ~31st–33rd self-caught correction; discipline held under the day's biggest claim.
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
