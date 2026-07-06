@@ -30,9 +30,25 @@ More broadly, the whole "Type-I" family of BB(6) cryptid machines turns out to b
 
 We have verified the dictionary and reductions, and checked numerically that every internal/annealed/structural route
 provably stops short (the needed input is single-orbit equidistribution at exponential depth, below the discrepancy
-horizon — the rank-1 amenable / Furstenberg-`×2×3` regime). I'd be very glad to share the write-up (a one-page abstract
-and detailed notes) and to hear whether the proved fragments of your conjecture, or your numerical machinery, might be
-pushed toward the one-sided / effective statement these machines need.
+horizon — the rank-1 amenable / Furstenberg-`×2×3` regime).
+
+Since first drafting this letter we have completed a result that may make the connection more attractive: for the
+`4/3` machine of the family we have PROVEN the entire dynamical reduction (a machine-checked "certified template"
+covering every step of every generation), so that its non-halting is now equivalent to a single explicit statement
+about the base-4/3 odometer `G ↦ ⌊4G/3⌋ + c(G mod 3)`: a prefix-sum ledger over its mod-3 residue itinerary staying
+above a line. Three structural facts sharpen this: (i) the seed-to-itinerary map mod `3^L` is a bijection (so the
+statement is provably orbit-specific — no seed-uniform theorem can exist); (ii) maximal residue runs have exact
+closed forms `run(G) = v₃(G − x_ρ)` via the integer fixed points `x_ρ = −e(ρ)` of the branch maps, which kills the
+single-run failure mode unconditionally and reduces everything to the FREQUENCY of deep 3-adic returns; (iii) in the
+coordinate `W = G + 14`, the ledger is exactly the 3-adic depth process of an affine ×4/3 orbit — the precise mirror
+of Antihydra's 2-adic depth process under ×3/2, but with a linearly-growing safety budget instead of a constant one.
+So the family offers a genuine LADDER of margins into your conjecture: the `4/3` instance needs only a crude
+one-sided return-frequency bound (any effective bound at all decides that machine), the `8/3` and `3/2` instances
+need progressively sharper versions, with Antihydra/your Conjecture 1.3 as the critical endpoint.
+
+I'd be very glad to share the write-up (a one-page abstract and detailed notes) and to hear whether the proved
+fragments of your conjecture, or your numerical machinery, might be pushed toward the one-sided / effective
+statement these machines need — starting, perhaps, at the easy end of the ladder.
 
 With thanks and best regards,
 [SENDER NAME], [AFFILIATION], [CONTACT]
