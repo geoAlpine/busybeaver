@@ -125,6 +125,23 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
 - Macro machine ported & validated (V1/V2 exact). **Species (i) now has TWO members (o4, o3)**; combined with Part 5,
   the three-species classification {template+ledger, density/(K), sparse-gate} is populated 2/1/1.
 
+## Part 7 (2026-07-07) — o18 port: a FOURTH species; WANDER cases = a milestone-free growing regime
+- **o18 (`1RB0RE_1LC0RA_1LA1LD_1LC1LF_0LC0LB_1LE---`, halt=F reads 1) — verdict (c), NEW species: "self-similar
+  3-adic recursion-tower bouncer"** (`O18_TEMPLATE_PORT_2026-07-07.md`): gate `[PROVEN]` (halt ⟺ D reads 1 with left-1;
+  window census saturates at ONE window — sharpest in family); clean resets `C_N=[F]01^{N-1}` with `⌊8N/3⌋+2` exact for
+  N≡0,1 (mod 3); rigid template `[PROVEN on grid]` with 3 certified sweep cycles; **CORRECTION to
+  `CRYPTID_O18_FRAMEWORK`**: the reset law is FALSE for N≡2 (mod 3) (old detector counted a dirty F-entry as a reset;
+  real orbit 3890→27660, 163.7M steps concrete). N≡2 recurses through a **self-similar 3-adic branch tower** with
+  closed exact laws at several levels (`(64N−20)/9`, `(64N−104)/9`, `(512N−1288)/27`, `(4096N−11618)/81` —
+  predict-and-confirm passed at fresh N), deeper branches `[OPEN]` and Collatz-irregular in depth (v₃-hypothesis
+  refuted); blank orbit enters the unclosed tower at generation 11. **No δ-map AND no fatal set found** (zero halting
+  configs — contrast o3/o4). Non-halt = a LEVEL-INDUCTION target — arguably the most decision-adjacent cryptid.
+  Family classification now **four species: {template+ledger (o4,o3), density/(K) (Antihydra), sparse-gate (o17),
+  recursion-tower (o18)}**.
+- **WANDER cases resolved-in-kind:** the `Z(k,3,a≤1)` "WANDER" configs are a **milestone-free growing regime** —
+  1.1×10¹² steps each (bounded-time macro runs), G~530k, segs=5, **unsafe=0** — a different attractor family with no
+  halt signature; classified `[OPEN, non-halting-like]` (not needed for the safety reduction).
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
