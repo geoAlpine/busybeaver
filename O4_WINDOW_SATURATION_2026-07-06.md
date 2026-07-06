@@ -119,6 +119,24 @@ Goal: reach `G≫10⁴` soundly to extend closure evidence and to decide the oth
   busy-beaver community) **plus** an odometer-reset step. The reset depends on `G mod 3` (the base-4/3 carry) — which is
   exactly the twist that puts o4 **outside existing bouncer/cycler deciders** and makes it a cryptid. This pins the tool
   precisely: a "bouncer + base-4/3-odometer-reset" macro-machine.
+- **BUILT & VALIDATED (`o4_bouncer_macro.py`, follow-up same day):** segment tape `(pat∈{0,1,01,10}, count)` with
+  canonicalizing merge (rightward single-push rephasing + zero-pattern collapse) + **generic VERIFIED p=2 cycle jump**
+  (per jump: state-return + monotone ±2 displacement + radius-W **behind wp-tiling check** + segment-arithmetic
+  **ahead rp-tiling count**; boundary cycles left to micro via MARGIN — the discarded accelerator's phase bug is
+  structurally excluded, and the representative-window identity across all jumped cycles is proven from the verified
+  tiling). **Validation battery ALL PASSED:** V1 exact (state, head, full tape) equality vs concrete at 200k/1M/5M;
+  V2 B-reads-1 window-set (r=5) EXACT equality over 32M steps (23==23, unsafe 0==0). Performance: 200M steps in 11.5s
+  (**~35× over concrete**, and asymptotically ~O(G) per generation vs concrete's ~O(G²)); G=15,735 with 26 milestones,
+  **odometer exact throughout**, |S|=23, unsafe=0, f1=0. Mid-generation structure surfaced by the tool: the tape is
+  `[11-seeded left zone][shrinking 0-gap][(10)-filler·cap]` — the gap is consumed from BOTH sides, the clean milestone
+  form exists only instantaneously at the turn-around (detected via count-reduction regex + record-breaking-G filter).
+- **PRODUCTION RUN [OBSERVED, the (2) deliverable]: closure verified to G=883,719** — `5.003×10¹¹ steps in 587s`
+  (~×1,800 over measured concrete throughput). **40 milestones, odometer `G↦⌊4G/3⌋+c(G mod 3)` EXACT on all 39
+  transitions** (G=3 → 883,719; last five: 279,607 → 372,814 → 497,090 → 662,787 → 883,719). **B-reads-1 window set
+  (r=5) = EXACTLY the canonical 23** (subset-of-canonical: True, outside: none — frozen since N≈2M/G≈100),
+  **UNSAFE=0, F-reads-1=0, halt-free**; #segs=8 at end (bounded-defect structure holds at G~10⁶). Closure/safety/
+  odometer/cap-C-seam evidence extended **45×** in G (19.5k → 883.7k), and the residual C-seam claim now has ~40
+  generations of instances, all safe. The tool is the reusable B2-cryptid template (o3/o15/o18 next).
 
 ## Verdict
 **(b) — substantial proven progress: o4's decision is reduced to a SINGLE precisely-localized odometer lemma, with the

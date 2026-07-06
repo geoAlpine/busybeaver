@@ -41,12 +41,17 @@ truth throughout. Decisive impossibility computation independently reproduced. o
   4-step `D→E→A→B` chain (`D:1→0LE` unique E-entry; zero odometer dependence) `[PROVEN, re-verified]`. Residual
   `[OPEN]`: the once-per-generation `1001`-cap C-seam (bounded cap-crossing, ~log G occurrences), contingent on
   uniform-interior alternation through the cascade. o4 = finite proven structure + one bounded cap-local claim.
-- **(2) sound accelerated macro-machine** — BUILT + VALIDATED foundations (`o4_accel_probe.py` sound step-accelerator,
-  validated accel==concrete & probe==pure-concrete; `o4_macro.py` faithful RLE micro-sim, validated 200k steps). KEY
-  FINDINGS: steps-to-gap-`G` ~ **½G²**; one generation is a **triangular BOUNCER** (~G/4 growing `A`-R/`C`-L sweeps, all
-  writing) + an **odometer reset (G mod 3)**. The reset is exactly why o4 escapes existing bouncer/cycler deciders. The
-  right tool = a **"bouncer + base-4/3-odometer-reset" macro-machine** (closed-form triangular jump → G~10⁶–10⁷); plain
-  RLE does not compress the `(10)^a` filler. Full build deferred (bug-sensitive; discipline: not rushed to unsoundness).
+- **(2) sound accelerated macro-machine — BUILT, VALIDATED, and RUN TO G≈884k (`o4_bouncer_macro.py`).** Foundations:
+  `o4_accel_probe.py` (validated accel==concrete & probe==pure-concrete), `o4_macro.py` (faithful RLE, 200k exact). KEY
+  FINDINGS: steps-to-gap-`G` ~ **½G²**; one generation = **triangular BOUNCER** (~G/4 growing sweeps) + **odometer reset
+  (G mod 3)** — the reset is why o4 escapes existing bouncer/cycler deciders. Final tool: segment tape + generic
+  VERIFIED p=2 cycle jumps (behind/ahead tiling checks; phase bug structurally excluded). **Validation: V1 exact
+  tape/state/head equality at 200k/1M/5M; V2 window-set exact equality over 32M (23==23).** **PRODUCTION:
+  5.003×10¹¹ steps in 587s (~×1,800), G=3→883,719, 40 milestones, odometer EXACT on all 39 transitions, window set
+  = canonical 23 exactly, UNSAFE=0, F-reads-1=0.** Closure evidence ×45 in G; C-seam instances ~40 generations all
+  safe. Development soundness ledger: 3 detector/representation bugs found & fixed via validation (seg fragmentation
+  → rephasing rules; "00"-pattern first1 miscount → canonicalization; milestone timing → per-micro check +
+  record-breaking-G filter); tape equality re-verified after each fix. Reusable B2-cryptid template (o3/o15/o18).
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
