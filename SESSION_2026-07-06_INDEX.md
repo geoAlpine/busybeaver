@@ -110,6 +110,21 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
 (K)-shaped ledger** — the family now has three species: (i) template+ledger (o4), (ii) density/(K) (Antihydra B1),
 (iii) sparse-gate carry-timing (o17). Re-verified by main loop (halt-reduction census reproduces).
 
+## Part 6 — o3 template port COMPLETE, verdict (a): o3 is the SECOND template+ledger machine (`O3_TEMPLATE_PORT_2026-07-06.md`)
+- o3 = `1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC` (spec pinned across 4 repo files). Halt gate `[PROVEN from table]`;
+  windows saturate (6 at r=5 by step 1,370), 0 unsafe / 1.67M events.
+- **Body lemma `[PROVEN]`** (`o3_body_proof.py`, re-verified): certified trace-template with **cycle certificates
+  (periods 10/20/6** — richer than o4's period-2) + landmark pinning + exact landing, j to 501, all j≥12 ≡0 mod 3;
+  locality span [−2, 2j+3] ⇒ valid with arbitrary content right of the defect block.
+- Generation law exact on grids (k=50/120, a to 1005); **halting configs FOUND & PREDICTED A-PRIORI by the ledger:
+  M(a,0) for a≡2 (mod 3), M(a,1) for a≡6 (mod 9) — two predicted halts confirmed by simulation** (the method's
+  strongest validation yet). Fatal set: (k=1 ∧ a≡6 mod 9) ∨ (k=0 ∧ a≡2 mod 3), reachable only via drains at a≡0 mod 3.
+- **Ledger:** deterministic (k,a) joint map; 200,000 generations NO fatal hit; drift +0.248/gen (much thinner than
+  o4's +3), max drain run 10; the counter `a` is a growing big integer (18,743 digits by gen 200k) — the ledger
+  driver is the digit string itself, a harder flavor than o4's residue-δ.
+- Macro machine ported & validated (V1/V2 exact). **Species (i) now has TWO members (o4, o3)**; combined with Part 5,
+  the three-species classification {template+ledger, density/(K), sparse-gate} is populated 2/1/1.
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
