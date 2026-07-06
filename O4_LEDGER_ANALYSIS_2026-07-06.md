@@ -46,11 +46,16 @@ enters a k-dependent finite mix {recover to a′≥3 / halt / translated-cycler 
 `[PROVEN]`** — `Z(29,0), Z(101,0), Z(23,1), Z(41,1)` carry verified **translated-cycler certificates** (exact
 recurrence of (state, forward-window) at new-leftmost events + one-period replay confined to a known-content region;
 period 411, 19 cells left per period; cells left of a new-leftmost are unvisited hence 0, making the certificate
-sound). The remaining **3 — `Z(21,0), Z(23,0), Z(27,0)` — stay `[OPEN]`**: a √steps-growth, milestone-free regime
-(macro: 1.1×10¹² steps, G≈530k, 5 segments, unsafe=0; no exact window recurrence to 8M steps at W=10⁴) — a distinct
-attractor family with no halt signature. Tool note: these off-template configs exposed a merge-fixpoint hang in
-`o4_bouncer_macro.py`'s representation maintenance (the macro is validated only on the standard orbit; off-template
-use needs care).
+sound). The remaining 3 — `Z(21,0), Z(23,0), Z(27,0)` — are now ALSO **NON-HALTING `[PROVEN]`** (2026-07-07,
+`O4_GROWING_REGIME_2026-07-07.md`, re-verified): each collapses through a bounded transient to the single-block
+family `C(m) = 0^∞ [A](10)^m 0 1 0^∞` — which is exactly the PROVEN body-lemma config `B(m−1)` after one step —
+and iterates `C(m)→C(m+2)` unconditionally forever (no gap, no filler, no ledger; a translated bouncer with
+leftmost ~ √steps/2, which is precisely why no milestone ever forms and no cycler recurrence exists). Entry +
+m=2..18 concrete-exact; m≥19 certified template AND inherited from the proven body lemma (even m).
+**The tested small-a grid is now COMPLETELY decided:** {recover to a′≥3 / HALT (only k=41, a=0) /
+translated-cycler `[PROVEN non-halt]` / growing-bouncer `[PROVEN non-halt]`}. Tool note: these off-template configs
+exposed a merge-fixpoint hang in `o4_bouncer_macro.py`'s representation maintenance (the macro is validated only on
+the standard orbit; off-template use needs care).
 
 ## 5. The real-orbit ledger `[OBSERVED, exact to G=883,719 here; G=8.8M in the big run]`
 | n | G | a | ρ | | n | G | a | ρ |
