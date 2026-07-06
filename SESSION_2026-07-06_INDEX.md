@@ -142,6 +142,23 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   1.1×10¹² steps each (bounded-time macro runs), G~530k, segs=5, **unsafe=0** — a different attractor family with no
   halt signature; classified `[OPEN, non-halting-like]` (not needed for the safety reduction).
 
+## Part 8 (2026-07-07) — o15 port (fifth shape: template + STRING-LEDGER) + the species synthesis
+- **o15 (`1RB---_0RC0RE_1RD1RF_1LE0LB_1RC0LD_1RC1RA`, halt=A reads 1) — the B1/density call SURVIVES, sharpened
+  in mechanism** (`O15_TEMPLATE_PORT_2026-07-07.md`): gate `[PROVEN]` (halt ⟺ F reads 1 with right-1; 2-window
+  saturation); complete state = digit-block queue + big block (prior `O15_REDUCTION` "carry corrections" corrected to
+  exact queue bookkeeping); template RIGID (5 shape classes, ~800 standalone runs, o17 failure-mode absent).
+  **DISCOVERY: a genuine fatal set on a B1-called machine** — `M([2,2,…],V)`, V≢2 (mod 3) HALTS; 9 found + fresh
+  members **a-priori predicted and confirmed** (`[2,2,151]`, `[2,2,301]`, `[2,2,1000]`, `[2,2,2,150]`). The ledger is
+  a digit-string TRANSDUCER (an end-local absorption law was honestly refuted by predict-and-confirm inside the
+  session); non-halt = "the carry cascade never stacks a leading `[2,2]` at a split step" — cylinder avoidance in the
+  Mahler-8/3 digit coordinate = Fork-B1's shape now grounded in a proven fatal set. Re-verified (fatal census
+  reproduces).
+- **`BB6_CRYPTID_SPECIES_2026-07-07.md`** — the campaign synthesis: every cryptid = **GATE `[PROVEN]` + STRUCTURE
+  (mostly PROVEN) + PROTECTION `[OPEN]`**; five protection shapes {residue-ledger o4, int-ledger o3, string-ledger
+  o15, density Antihydra, gate-timing o17} + level-induction (o18); margins ordered o4 ≫ o3 > o15 > o17 > Antihydra;
+  fatal sets real & predictive where they exist, none found for o18. The B1/B2 dichotomy superseded by the
+  gate/structure/protection decomposition.
+
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
   surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
