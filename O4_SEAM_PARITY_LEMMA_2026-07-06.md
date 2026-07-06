@@ -25,13 +25,15 @@ locally forced by the single `D:1→0LE` erase, **independent of G and of the ba
 mechanism does not exist.
 
 ## The residual `[OPEN, sharply localized]`
-Only **C-seams**, all at the fixed `1001` cap, once per generation (`21` by G≈7.7k — grows like #generations ≈
-log_{4/3}G, NOT with G). Unified observation: for ALL seams (E and C), `q+2` was **last written by `D:1→0LE`**
-(`7,711/7,711`) — since every head visit rewrites a cell, "last-writer of `q+2` is D" proves the head hasn't retouched
-`q+2` since the erase. The C-case closes iff the rightward ABC-sweep turns around left of `q+2` — contingent on the
-uniform-interior `(10)*` alternation (a **bounded cap-crossing**, per-filler-parity), `[OBSERVED]` through the cascade
-but not yet proven through it. The remaining gap is a **fixed bounded structure at the cap**, no longer an unbounded
-odometer statement.
+Only **C-seams**, once per generation (`21` by G≈7.7k — grows like #generations ≈ log_{4/3}G, NOT with G). Unified
+observation: for ALL seams (E and C), `q+2` was **last written by `D:1→0LE`** (`7,711/7,711`) — since every head visit
+rewrites a cell, "last-writer of `q+2` is D" proves the head hasn't retouched `q+2` since the erase.
+**LOCATION CORRECTED (same day, `O4_CSEAM_LOCALIZATION_2026-07-06.md`):** this note's census key labelled every
+non-gap-edge seam "CAP"; the follow-up localization shows C-seams sit at the **phase boundary INSIDE the filler** (the
+previous `D1E0` invert-sweep's turnaround), hundreds of cells from both gap and cap; the cap crossing itself is
+**seam-free**. The C-seam is the forced tail of a `B:0→1RC · C:1→0RA · A:0` sweep-end, its safety decided by **14
+fixed cells** and proven **k-uniform for all k≥4** (26/26 real instances match step-for-step). See the follow-up note
+for the proven closure of this residual within the suffix templates (`O4_TEMPLATE_CLOSURE_2026-07-06.md`).
 
 ## Verdict
 **(b) — substantial proven partial: the seam-parity lemma is decomposed and its dominant, odometer-critical class

@@ -65,8 +65,14 @@ The cap C-seam move escalated into the o4 track's sharpest result:
   o4 non-halt ⟸ ledger stays ≥2 at every G≡1 generation `[PROVEN + induction, base to G≈884k]`. **The B2 "arithmetic"
   wall merges with the (K)-shaped one-sided ledger** — same species, enormous margin (drift +3/gen, failure needs
   prefix ρ=1-freq ≳ 4/5 vs observed ≈ 1/3). o4's decision = an explicit Collatz-like ledger conjecture now.
-- Red-team of the composition/locality argument queued; cap C-seam subagent + G=10⁷ run still in flight (results to
-  be folded in).
+- **Cap/C-seam localization (parallel subagent, `O4_CSEAM_LOCALIZATION_2026-07-06.md`):** headline CORRECTION —
+  C-seams are NOT at the `1001` cap (census key was too coarse); they sit at the **filler-internal phase boundary**
+  (previous invert-sweep's turnaround). `[PROVEN]`: C-seam = forced sweep-end template (`B:0·C:1·A:0`), safety decided
+  by 14 fixed cells, k-uniform ∀k≥4, 26/26 real instances step-identical; the **cap crossing is seam-free**, single
+  F-type arrival, k-uniform, requires a≥7 (corroborates the small-a danger). `[OBSERVED]` type-saturation (44
+  sweep-end / 4 cap-arrival) through G=883,719 via a soundly-hooked macro. Residual = arrival completeness, subsumed
+  under the a-ledger. Correction propagated into `O4_SEAM_PARITY_LEMMA`.
+- Red-team of the composition/locality argument IN FLIGHT; G=10⁷ run in flight (results to be folded in).
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
