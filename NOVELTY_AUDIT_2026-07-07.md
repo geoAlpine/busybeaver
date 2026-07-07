@@ -114,11 +114,13 @@ Lucy's Moonlight, Space Needle (https://wiki.bbchallenge.org/wiki/Cryptids).
    "candidate decision" the repo is one step from. Racheline is similarly active on o17 (Feb 2025 +
    Lean traces at https://github.com/rwst/bbchallenge). Antihydra has continuous attention (apgoucher's
    2³⁸-iteration simulation, mechanical/3D-printed implementations, TMBR digests).
-4. **[PROVENANCE CHECK] The o17 wiki page's macro-rule section is attributed to "Opus 4.7 /
-   DrDisentangle"** — an AI-assisted analysis of unclear origin. Before citing it as independent prior
-   art (or before claiming novelty over it), check whether it derives from this project's own public
-   activity; if it is independent, it substantially overlaps our o17 macro-rule census
-   (dt=(8k+C)/3, Δk=+3, 335+ families).
+4. **[PROVENANCE RESOLVED 2026-07-07] The o17 wiki page's macro-rule section ("Opus 4.7 /
+   DrDisentangle") is NOT this project** (confirmed by the project owner) — it is genuine independent
+   third-party prior art, itself AI-assisted. It substantially overlaps our o17 macro-rule census
+   (dt=(8k+C)/3, Δk=+3, 335+ families) and MUST be cited; our incremental o17 contributions are the
+   exact gate-to-gate map F(μ,d⃗), the wall-and-erosion derivation of the tower law, and the
+   no-finite-reduction results for m≥3. Collision-risk note: another researcher is actively working
+   these machines with AI assistance — priority for the NOVEL items favors early community engagement.
 5. **[LOW] Collatz-side 2026 activity on parity vectors/rotations** (arXiv:2605.13886,
    arXiv:2601.04289) is adjacent to the run-structure theorems but not BB-specific; monitor, no action.
 6. **[LOW] AEV bridge window.** AEV (arXiv:2510.11723) has exactly one citation to date and no BB
