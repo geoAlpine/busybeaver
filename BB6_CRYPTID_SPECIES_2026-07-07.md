@@ -1,5 +1,12 @@
 # The cryptid species map — gate / structure / protection: the B1/B2 dichotomy refined into a five-shape classification (2026-07-07)
 
+> **CORRECTION (2026-07-07, `O15_O18_IDENTITY_2026-07-07.md`): o18 is o15's machine table mirrored and re-rooted
+> (verified isomorphism A→D,B→E,C→C,D→F,E→B,F→A) — one table, two seeds/orbits, analyzed here in two coordinate
+> systems.** The machine count below should be read accordingly (five distinct tables, six analyzed orbits). Also:
+> the o18 rows' "no fatal set found" is SUPERSEDED — via the identity, o15's proven fatal family and a
+> community Lean-verified halting congruence class (mod 3¹⁰⁸, @-d) apply to the same table; community status for
+> these orbits is "probviously halting". See the identity note for the integrated picture.
+
 *Synthesis of the 2026-07-06/07 template-closure campaign (o4 → o3 → o17 → o18 → o15). The old B1/B2 wall dichotomy
 (`BOUNDARY_GRAPH_B1`: "equidistribution vs arithmetic odometer") is superseded: every analyzed cryptid decomposes as
 **GATE + STRUCTURE + PROTECTION**, the first two now largely PROVEN per machine, and the whole open content living in

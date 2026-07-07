@@ -1,5 +1,13 @@
 # A gate/structure/protection classification of the BB(6) cryptids
 
+> **CORRECTION APPENDED 2026-07-07 (`O15_O18_IDENTITY_2026-07-07.md`):** after this survey was drafted, the
+> pre-release novelty audit established that **o18 is o15's machine table mirrored and re-rooted** (verified
+> isomorphism) — one table, two seeds, two coordinatizations. Read "six machines" as five tables / six orbits.
+> Further, o18's "no fatal set found" is superseded: o15's proven fatal family and a community **Lean-verified
+> halting congruence class (mod 3¹⁰⁸)** apply to the same table, whose orbits the community expects to HALT
+> ("probviously halting"). Community priors for the o3/o4 reduction statements (bbchallenge wiki, 2024) must be
+> cited on release; see `NOVELTY_AUDIT_2026-07-07.md` for the full verdict table.
+
 *Paper-style survey (classification only; no new results). Every claim below is a restatement of a result already
 established in the lab notes cited inline and in §7, with that note's own epistemic label. Discovery narrative,
 red-team logs, and reproduction scripts live in the notes; the theorem-level companion for the o4 run structure is

@@ -29,6 +29,11 @@ o4 $=$ `1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---`, one of the BB(6) cryptids; s
 $$\{\,G \bmod 3^L\,\} \;\longrightarrow\; (\rho_0, \rho_1, \dots, \rho_{L-1}) \in \{0,1,2\}^L$$
 *is a bijection.*
 
+**Classical antecedent.** Theorem 1 is the base-4/3-odometer analogue of the classical *parity-vector bijection*
+for the Collatz map (Terras 1976; Everett 1977): there, seeds mod $2^L$ biject with parity itineraries of length
+$L$. The proof pattern (affine branch maps, unit multiplier) is the same; we state and prove it in this system's
+coordinates because the ledger application (§5) consumes the exact constants.
+
 *Proof.* Induction on $L$; the case $L=1$ is the definition. Write $G = 3H + \rho$. By (1),
 $$T(G) \;=\; \frac{4(3H+\rho) + e(\rho)}{3} \;=\; 4H + s(\rho), \qquad s(\rho) := \frac{4\rho + e(\rho)}{3} \in \{3, 6, 3\}.$$
 For fixed $\rho$, the map $H \mapsto 4H + s(\rho)$ is a bijection of $\mathbb{Z}/3^{L-1}$ (as $4$ is a unit mod $3$).
