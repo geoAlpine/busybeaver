@@ -82,12 +82,17 @@ $e - 14 \in \{0, -13, -5\}$ for $\rho = 1, 2, 0$ respectively. $\blacksquare$
 **Remark (the mirror ladder).** Theorem 3 exhibits the deep structure of this system as *the 3-adic depth process of
 an affine $\times\frac43$ orbit*. The identical structure appears across the BB(6) cryptid kernels:
 
-| machine | orbit map | depth process | budget |
+| machine | orbit map | depth process | budget (ledger memory) |
 |---|---|---|---|
-| Antihydra | $c \mapsto \lfloor 3c/2 \rfloor$ | $v_2(c_n - 1)$ under $\times\frac32$ | constant (critical) |
-| o4 (this paper) | $T$ above | $v_3(W_n)$ under $\times\frac43$ | grows $+3$/generation |
-| o15 | $V' = (8V+c)/3$ family | $v_3(V_n - 1)$ under $\times\frac83$ | cylinder form |
-| o18 (depth) | push law $m' - 1 = \frac83(m-1)$ | $v_3(m - 1)$ | no fatal set known |
+| Antihydra | $c \mapsto \lfloor 3c/2 \rfloor$ | $v_2(c_n - 1)$ under $\times\frac32$ | cumulative, slope $\tfrac12$ — **critical: ratio $\log_2\tfrac32 / \tfrac12 = 1.17 > 1$** |
+| o4 (this paper) | $T$ above | $v_3(W_n)$ under $\times\frac43$ | cumulative, slope $+3$ — ratio $0.087 \ll 1$ |
+| o15 | $V' = (8V+c)/3$ family | $v_3(V_n - 1)$ under $\times\frac83$ | string-valued (cylinder form) |
+| o18 (depth) | push law $m' - 1 = \frac83(m-1)$ | $v_3(m - 1)$ | resets per generation (renewal) |
+
+*(Criticality criterion and table: `ANTIHYDRA_LEDGER_UNIFICATION_2026-07-07.md` — single-run fatality is excluded
+iff (run-cap slope)/(budget slope) $< 1$; Antihydra is the unique cumulative rung above $1$, matching the
+independently-derived "1.17× improvement $=$ (K)" of the earlier proof-tool analysis. A fatal family for the
+o15/o18 table was later found; see the note.)*
 
 (The o15 and o18 closed forms are proved by the same fixed-point argument as Theorem 2; see
 `O15_FIXEDPOINT_2026-07-07.md`, `O18_DEPTH_UNIFORM_2026-07-07.md`.) All four kernels are instances of ONE open
