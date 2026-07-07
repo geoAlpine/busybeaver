@@ -180,7 +180,15 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   drain-law correction (discipline held).
 - **Outreach draft upgraded** with the o4 ladder (certified template → ledger → run closed-forms → mirror → margin
   ladder); Gmail draft pending re-authorization; recipient + sender identity + go-ahead still required.
-- In flight: o18 depth-uniform certificate (the candidate first decision), o17 gate-law formulation.
+- **o17 gate-law FORMULATED** (`O17_GATE_LAW_2026-07-07.md`): the missing coordinate now exists — gate-to-gate map
+  `F(μ,d⃗)=(μ′,d⃗′,T,Δt)` exact (byte-exact vs blank orbit + independent C simulator); `t≈3.97n²`;
+  **`log n_{k+1} ≈ a·n_k`** = iterated-exponential (tower) gate sparsity via the wall-and-erosion mechanism (each
+  survival freezes a zero-block wall; the carry front erodes it at ~a·n ticks/block) — next blank gate ~10^{60±20};
+  branch determinant: rigid islands m≤2 (m alone decides), m≥3 provably not any finite reduction (residues/windows/
+  affine shifts all refuted) — minimal description is F itself. PROTECTION(o17) precisely stated; species refined to
+  **"tower-sparse regenerative-wall carry-timing"** (self-reinforcing in time, distance-1 in value; not
+  pattern-avoidance, not return-frequency — no v_p fixed-point structure, checked).
+- In flight: o18 depth-uniform certificate (the candidate first decision).
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All

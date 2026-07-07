@@ -25,7 +25,7 @@ the protection — an orbit-specific quenched statement in five different coordi
   | o3 | **residue-ledger** — roles swapped vs o4: `a` is the base-4/3 odometer, `k` the ledger, `Δk=δ(a mod 3)` exactly (V3-final report; refutes `O3_TRANSDUCER` §4's "history-dependent" claim) | `[PROVEN nonempty]` + **predicted-then-confirmed** | drift +0.248/gen, drains ≤10 |
   | o15 | **string-ledger** — carry cascade never stacks leading `[2,2]` at a split (cylinder avoidance in the Mahler-8/3 digit string) | `[PROVEN nonempty]` + **predicted-then-confirmed** | no leading 2 in 11 gens (exposure record) |
   | Antihydra | **density** — even-density ≥ 1/3 = `(K)` | (halt = density failure) | zero margin (critical) |
-  | o17 | **gate timing** — frontier gates thin super-exponentially | fatality distance ≤1 at every gate | timing sparsity (8 gates < 1.08M steps, then none to 3×10⁸) |
+  | o17 | **tower-sparse regenerative-wall carry-timing** (formulated 2026-07-07, `O17_GATE_LAW`): gate-to-gate map `F(μ,d⃗)` exact & validated; `t≈3.97n²`, **`log n_{k+1} ≈ a·n_k`** (iterated-exponential sparsity, next blank gate ~10⁶⁰); protection SELF-REINFORCING (each survival erects a wall delaying the next exposure exponentially) yet distance-1 in value; branch determinant has rigid islands (m≤2) but m≥3 provably reduces to F itself | fatality distance ≤1 at every gate | tower-sparse timing |
   | o18 | **level-induction** — every tower level lands cleanly | **none found** (0 halting configs) | n/a |
 
 ## The meta-facts
