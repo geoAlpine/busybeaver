@@ -1,6 +1,9 @@
 # Busy Beaver — a high mountain that also gives clean wins
 
-**Yosuke Aoki** — GeoAlpine LLC — started 2026-06-19 (evening, one shochu in)
+**Yosuke Aoki** — GeoAlpine LLC — started 2026-06-19
+
+*(Personal log note, kept for honesty: the first commit happened on the evening of 2026-06-19, one shochu in.
+Everything claimed since is machine-checked; see the soundness discipline below and in `STATUS.md`.)*
 
 > **Current state → `STATUS.md`** (this README is the early-days log). The sound decider suite proves
 > **46/63** of the three-state monsters (0 false proofs); run it with `python suite.py`. Soundness
