@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite it as below."
+type: dataset
+title: "The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic Return Problem"
+version: "1.0"
+date-released: "2026-07-08"
+authors:
+  - family-names: "Aoki"
+    given-names: "Yosuke"
+    affiliation: "GeoAlpine LLC"
+license: "CC-BY-4.0"
+notes: "Code components (verification/, lean/) are MIT-licensed; see LICENSE-CODE."
+keywords:
+  - busy beaver
+  - BB(6)
+  - halting problem
+  - Collatz-like maps
+  - rational base number systems
+  - normality conjecture
+  - p-adic dynamics
+  - certified deciders
+  - Lean 4
+references:
+  - type: article
+    title: "On the normality of numbers in rational base number systems (Normality Conjecture)"
+    authors: [{family-names: "Andrieu"}, {family-names: "Eliahou"}, {family-names: "Vivion"}]
+    identifiers: [{type: other, value: "arXiv:2510.11723"}]
