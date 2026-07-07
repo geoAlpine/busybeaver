@@ -15,7 +15,7 @@ the protection — an orbit-specific quenched statement in five different coordi
   | o4 | rigid template prefix·body^r·suffix (period-2 sweeps) | `[PROVEN, certified + red-teamed]` |
   | o3 | rigid template (cycle certificates p=10/20/6) | `[PROVEN on grid]` |
   | o15 | rigid template (5 shape classes, queue-stable) | `[PROVEN on grid]` |
-  | o18 | rigid at every closed level + **self-similar 3-adic recursion tower** between levels | levels `[PROVEN]`, tower `[OPEN]` |
+  | o18 | rigid at every closed level; the whole tower = **pushdown 3-adic odometer** (one finite table on `D(m,t,e)`, refined 2026-07-07) | levels + table `[PROVEN on grid]`; multi-defect regime `[OPEN]` |
   | o17 | **no template** — generation shapes unbounded (state = whole digit string, √step growth) | `[OBSERVED refutation]` (label corrected 2026-07-07: the class-growth is measured, not proven unbounded) |
   | Antihydra | boundary-graph finite but counter-dependent; no template extracted | (2026-07-05) |
 - **PROTECTION (= the open core)** — why the gate never fires, in five shapes:
