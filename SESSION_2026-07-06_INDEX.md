@@ -188,7 +188,17 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   affine shifts all refuted) — minimal description is F itself. PROTECTION(o17) precisely stated; species refined to
   **"tower-sparse regenerative-wall carry-timing"** (self-reinforcing in time, distance-1 in value; not
   pattern-avoidance, not return-frequency — no v_p fixed-point structure, checked).
-- In flight: o18 depth-uniform certificate (the candidate first decision).
+- **o18 depth-uniform: the tower COLLAPSES to a pushdown 3-adic odometer** (`O18_DEPTH_UNIFORM_2026-07-07.md`) — the
+  "Collatz-irregular recursion tower" is ONE finite transition table on `D(m,t,e) = [F]1^m 0 (10)^t 1^e` states
+  (LAND/FLUSH/PUSH2/PUSH/RECYCLE/POP by m mod 3), `[PROVEN on grid]` (~900 runs, zero exceptions, unsafe=0, zero
+  halting configs). **Prior-note REFUTATION: the ≡26/53 (mod 81) "unclosed" branches BOTH LAND** (N=26→C_22038 @
+  105,994,679; N=53→C_17948 @ 70,313,821; batch 12/12 exact incl. N=134 @ 3.44×10⁹ steps). Depth-irregularity
+  DERIVED: push law `m′−1=(8/3)(m−1)` (integer fixed point — o4's trick works a third time; push-cascade = v₃(m−1));
+  step counts exactly quadratic per cell. **Exact blocker for a candidate decision:** the orbit exits the
+  single-defect family at tower-step 8394 (m≈10³⁵⁷⁷) into a multi-defect regime whose rewrite grammar is UNCLOSED —
+  needed: (a) close the finite rule schema, (b) certify each rewrite as a parameter-uniform trace template (o4
+  pinning standard), (c) invariant closure ⇒ non-halt with NO termination argument. One self-caught detection bug
+  fixed mid-session (discipline held). o18 = a finite explicit rewrite system away from a candidate decision.
 
 ## Remaining tasks / open threads (updated)
 - **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All

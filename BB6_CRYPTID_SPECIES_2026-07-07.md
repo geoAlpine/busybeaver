@@ -26,7 +26,11 @@ the protection — an orbit-specific quenched statement in five different coordi
   | o15 | **string-ledger** — carry cascade never stacks leading `[2,2]` at a split (cylinder avoidance in the Mahler-8/3 digit string) | `[PROVEN nonempty]` + **predicted-then-confirmed** | no leading 2 in 11 gens (exposure record) |
   | Antihydra | **density** — even-density ≥ 1/3 = `(K)` | (halt = density failure) | zero margin (critical) |
   | o17 | **tower-sparse regenerative-wall carry-timing** (formulated 2026-07-07, `O17_GATE_LAW`): gate-to-gate map `F(μ,d⃗)` exact & validated; `t≈3.97n²`, **`log n_{k+1} ≈ a·n_k`** (iterated-exponential sparsity, next blank gate ~10⁶⁰); protection SELF-REINFORCING (each survival erects a wall delaying the next exposure exponentially) yet distance-1 in value; branch determinant has rigid islands (m≤2) but m≥3 provably reduces to F itself | fatality distance ≤1 at every gate | tower-sparse timing |
-  | o18 | **level-induction** — every tower level lands cleanly | **none found** (0 halting configs) | n/a |
+  | o18 | **pushdown 3-adic odometer** (refined 2026-07-07, `O18_DEPTH_UNIFORM`): the whole tower = ONE finite
+  transition table on `D(m,t,e)` states, grid-proven; prior "unclosed mod-81 branches" REFUTED — both LAND (12/12
+  predict-and-confirm to 3.44×10⁹ steps); push law `m′−1=(8/3)(m−1)` (the fixed-point trick again — o18 joins the
+  ×8/3 family); depth = v₃(m−1) DERIVED. Remaining: the multi-defect rewrite grammar (orbit exits the single-defect
+  family at m≈10³⁵⁷⁷) — a finite explicit rewrite system away from a candidate decision | **none found** (0 halting configs) | n/a |
 
 ## The meta-facts
 1. **Every protection is an orbit-specific quenched statement** — the `(K)`-species in five coordinates: one-sided
