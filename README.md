@@ -2,6 +2,27 @@
 
 **Yosuke Aoki** — GeoAlpine LLC — started 2026-06-19
 
+## For first-time readers (start here)
+
+This repository is a research lab notebook on the **BB(6) frontier** (deciding the halting of the hardest 6-state
+Turing machines, the "cryptids"). Three entry points, by audience:
+
+1. **"Show me the results"** → `CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md` — the current master index: per-machine
+   status table, the note map, and the mirror-ladder unification. Headline: for the cryptids o4/o3/o15/o18 the
+   full generation dynamics is now certified ("templates"), and each machine's non-halting is reduced to ONE
+   precisely-stated open conjecture (its "protection"); no cryptid is decided.
+2. **"Let me verify it"** → run `python verify_all.py` (or `--quick`, ~30 s) — re-executes every proof-path
+   certificate in the campaign and reports PASS/FAIL per item. All claims carry `[PROVEN]/[OBSERVED]/[OPEN]`
+   labels; every note ends with an honest verdict and "No machine decided" unless genuinely decided.
+3. **"What is the open mathematics?"** → `BB6_FRAMEWORK_PACKAGE.md` (the (K)-kernel program, anchored to the
+   Andrieu–Eliahou–Vivion Normality Conjecture) and `O4_RUN_STRUCTURE_2026-07-07.md` §4 (the unified
+   return-frequency spec + the margin ladder).
+
+**Honest scope statement:** "PROVEN" template lemmas are exhaustively grid-verified with an explicitly stated
+composition argument (episode-landmark pinning), red-team-audited — they are **not yet formalized in Lean/Coq**.
+The retraction/correction trail (~35 self-caught over-claims, all logged in place) is part of the record, not
+hidden. Zero false proofs and zero false decisions to date.
+
 *(Personal log note, kept for honesty: the first commit happened on the evening of 2026-06-19, one shochu in.
 Everything claimed since is machine-checked; see the soundness discipline below and in `STATUS.md`.)*
 
