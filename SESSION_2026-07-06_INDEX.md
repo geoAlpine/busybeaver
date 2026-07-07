@@ -200,13 +200,15 @@ gate, protection = super-exponentially thinning gate TIMING). ⇒ **the B2 wall 
   pinning standard), (c) invariant closure ⇒ non-halt with NO termination argument. One self-caught detection bug
   fixed mid-session (discipline held). o18 = a finite explicit rewrite system away from a candidate decision.
 
-## Remaining tasks / open threads (updated)
-- **o4:** prove the incoming-cell/seam-parity predictor lemma (the base-4/3 carry-cascade / Collatz-type theorem). All
-  surrounding structure now PROVEN; reusable tools banked (`o4_wave_width.py`, `o4_seam_closure.py`,
-  `o4_frontier_trace.py`, `o4_closure_fixpoint.py`, `o4_concrete_safety.py`, `o4_window_saturation.py`, `o4_macro.py`,
-  `o4_accel_probe.py`).
-- **Bouncer+odometer-reset macro-machine** would push closure to G~10⁶–10⁷ soundly and decide the B2 cryptids
-  (o3/o15/o18). Foundation (validated RLE) in place; the triangular-jump + reset step is the remaining careful build.
-- **`(K)` kernel (the real frontier):** unchanged — external outreach to the Eliahou/AEV Normality-Conjecture group
-  (materials ready: `OUTREACH_ABSTRACT`, `MEETING_BRIEF_4`, `OUTREACH_EMAIL_DRAFT`; not sent — needs recipient + sender
-  identity + go-ahead).
+## Remaining tasks / open threads (FINAL STATE as of 2026-07-07 PM — earlier versions of this section are superseded by Parts 3–9)
+- **o18 multi-defect rewrite grammar** — IN FLIGHT (dedicated subagent): the only remaining link to a CANDIDATE
+  DECISION for o18 (entry+single-defect table+exit law all PROVEN; needed: the general word transducer + closure +
+  zero halting cells). If returned, main-loop re-verification + independent red-team BEFORE any label change.
+- **The six protections** (the genuine wall, all now precisely formulated — see `BB6_CRYPTID_SPECIES_2026-07-07.md`):
+  o4 residue-ledger (drift +3, run-cap proven), o3 residue-ledger (drift +0.248), o15 string-ledger (recursive fatal
+  cylinder, run closed-forms proven), o17 tower-sparse wall-timing (F-map exact, no finite reduction for m≥3),
+  o18 (pending the grammar), Antihydra (K). Unified spec: quenched deep-p-adic-return FREQUENCY bound for explicit
+  ×p/q orbits (`O4_RUN_STRUCTURE_2026-07-07.md` §4) — the mirror ladder is the staging.
+- **`(K)` external outreach:** draft upgraded with the ladder (`OUTREACH_EMAIL_DRAFT.md`); Gmail draft pending
+  re-authorization; needs recipient (Eliahou group / Akiyama), sender identity, and explicit go-ahead.
+- Master navigation for the whole campaign: `CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md`.

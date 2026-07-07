@@ -1,5 +1,11 @@
 # Busy Beaver — status (2026-06-21)
 
+> **CURRENT FRONTIER (2026-07-07): the BB(6) cryptid template/ledger campaign — see
+> `CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md`** (master index: certified templates for o4/o3/o15/o18, all six
+> protections precisely formulated, the mirror-ladder unification, o18 one rewrite system from a candidate
+> decision). Chronology: `SESSION_2026-07-06_INDEX.md`. The (K)-kernel program: `BB6_FRAMEWORK_PACKAGE.md`.
+> The file below documents the earlier 3-state-monster stage.
+
 Deciding the **63 distinct 3-state "monster" holdouts** (`holdouts3_reps.txt`) — the hard residual the
 trivial + cycler deciders leave behind. Every claim here is SOUND: machine-checked and gated.
 
