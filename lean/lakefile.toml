@@ -1,6 +1,9 @@
 name = "runstructure"
 version = "0.1.0"
-defaultTargets = ["RunStructure"]
+defaultTargets = ["RunStructure", "Template"]
 
 [[lean_lib]]
 name = "RunStructure"
+
+[[lean_lib]]
+name = "Template"

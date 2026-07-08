@@ -61,3 +61,66 @@ Axiom audit: `lake env lean <file with '#print axioms RunStructure.run_closed_fo
   paper's elementary number-theoretic layer only.
 
 **No machine decided. No label upgraded.**
+# TEMPLATE-LAYER APPEND (2026-07-08) — the o4 TEMPLATE LEMMAS are FORMALIZED (L1–L4)
+
+*Second formalization target: the certified trace-template method's lemmas themselves
+(`PAPER_TEMPLATE_METHOD.md` §2–3), pilot = the o4 body lemma, stretch = the prefix. New module
+`lean/Template.lean` (same zero-dependency project; `lake build` builds both, Template in ~4 s).
+Cross-check `lean/template_crosscheck.py` (zipper semantics AND an independent dict-tape
+simulator). Not committed.*
+
+## Verdict: ALL FOUR LAYERS FORMALIZED (including the L4 stretch)
+
+| Layer | Lean theorem(s) in `Template.lean` | Status |
+|---|---|---|
+| **L1: the machine** | `St`/`Tape` (zipper)/`Cfg` (with `pos : Int`), `step` (`none` ⟺ the halt gate `F:1`), `steps`, `steps_add`; anchors `sanity100`, `sanity1000` (full-configuration `rfl` at N = 100, 1000, matching two independent Python simulators) | **FORMALIZED** |
+| **L2: sweep lemmas** | `sweepBF` (`B1F0` read-only rightward over `(01)^j`, exactly `2j` steps, tape unchanged), `sweepDE` (`D1E0` leftward invert: left `(01)^j` → right `(10)^j`, `2j` steps) — **for ARBITRARY `j` by 2-transition induction**, the method's "proven for arbitrary length" ingredients | **FORMALIZED** |
+| **L3: the body lemma** | `body_step`: `B(k) = 0^∞ [E] (10)^k 1001 0^∞ → B(k+2)` shifted −1 in **exactly `4k+15` steps**, composed as episode(2) · sweep(2k) · episode(8) · sweep(2k+4) · episode(1); `some` output = halt-free = every B-reads-1 safe (halt gate) | **FORMALIZED** |
+| L3 corollaries | `body_iter` (r-fold: `B(k) → B(k+2r)` shifted −r, exact step count); **`body_nonhalt`** (the standalone `B(k)` family NEVER halts — a fully formal translated-bouncer certificate; decides nothing about o4 itself: blank-left context only) | **FORMALIZED** |
+| **L4: the prefix lemma** (stretch) | `prefix471` — the fixed **471-step prefix word in parametric-window form**: from the real milestone shape `M(G,a) = 0^∞ [E] 0^G (10)^a 01 0^∞`, span [−11,30], with an ARBITRARY untouched suffix `Y` beyond 30 gap zeros ⇒ **(G,a)-uniform for ALL G ≥ 31, all a** (`prefix_milestone`; the note claimed G ≥ 37 — the window needs only 31). Kernel-checked in sixteen 30-step symbolic chunks (a monolithic symbolic-tail `rfl` blows the elaborator's whnf budget at ~60 steps; chunks are cheap) | **FORMALIZED** |
+| L4 composition | `steps_shift` (translation equivariance); `body_step_ctx`/`body_iter_ctx` (body with explicit right context — "consumes exactly 3 gap cells per application" made literal); **`prefix_bodies`** (`M(G,a) →` prefix · body^r `→` the suffix-entry zone `(10)^(19+2r) 1001`, all r with 31+3r ≤ G); real-orbit anchors **`real_milestone`** (blank tape reaches exactly `M(43,18)` at step 1548 — 1548-step kernel `rfl`, axiom-free) and **`real_generation`** (blank tape → step 2431 = the real generation's suffix-entry configuration) | **FORMALIZED** |
+
+## Axiom audit (printed at every build, `#print axioms` in-file)
+**All 13 audited theorems: `[propext, Quot.sound]` only** — no `sorryAx`, no `Classical.choice`,
+no `native_decide`/`ofReduceBool`. `real_milestone` and the `rfl` sanity anchors depend on **no
+axioms at all**. No `sorry` anywhere; `lake build` green (Template ≈ 3.3 s).
+
+## What the formalization ADDS to the lab-note record (statement deltas, all sound)
+- **The body lemma holds for ALL `k ≥ 0`, both parities** (formal composition), strictly
+  extending the note's odd `k ≥ 19` grid claim (red-team had k ≥ 13 "conservative"). Grid
+  anchor preserved: `example : steps 91 (Bcfg 19 0) = some (Bcfg 21 (-1)) := body_step 19 0`;
+  the k = 251 red-team point runs in `#eval` at every build.
+- **The §2.4 generalization argument (episode-landmark pinning + first-divergence) is
+  REPLACED, for the body and prefix lemmas, by machine-checked induction/symbolic
+  computation** — for these lemmas the method's grid-certification caveat is GONE. The prefix's
+  G,a-uniformity is exactly "the symbolic suffix `Y` is never inspected", now a kernel fact.
+- `body_nonhalt` is a new fully-formal non-halting theorem for the standalone bouncer family
+  `B(k)` (the `O4_GROWING_REGIME` growing-bouncer flavor, with the `1001` cap).
+- Prefix validity extended G ≥ 37 → **G ≥ 31**; the real-orbit milestone form is pinned by
+  kernel computation (steps 731/1548), and one real generation is driven formally to its
+  suffix entry (step 2431).
+
+## Numeric sanity (all green)
+- Lean `#eval` at build: N=100 config print; k=251 body check `true`.
+- `lean/template_crosscheck.py`: N=100/1000 zipper == Lean anchors; zipper == independent
+  dict-tape semantics; body k = 0..60, 101, 251; body_iter r=10; the five body proof
+  landmarks at k=5; prefix471 with adversarial suffixes; milestone grid G=31..501;
+  body_step_ctx grid; real-orbit anchors at steps 1548 and 2431. ALL OK (exit 0).
+
+## Build commands (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"
+cd /Users/aokiyousuke/busybeaver/lean
+lake build                          # RunStructure + Template; axiom audit prints
+/usr/bin/python3 template_crosscheck.py
+```
+
+## What's left (honest)
+- The SUFFIX lemmas (3 classes g ∈ {3,4,5}, plus the per-a small-parameter templates) — not
+  attempted; they are the remaining unformalized template piece.
+- Hence the full generation map `M(G,a) → M(G′,a′)`, the derived odometer `G′ = ⌊4G/3⌋ + c`,
+  and the a-ledger law stay on the lab-note record (the arithmetic layer is already formal in
+  `RunStructure.lean`).
+- o4's decision status is untouched: the a-ledger conjecture remains the open core.
+
+**No machine decided. No label upgraded.**
