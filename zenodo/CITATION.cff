@@ -8,6 +8,7 @@ authors:
   - family-names: "Aoki"
     given-names: "Yosuke"
     affiliation: "GeoAlpine LLC"
+    orcid: "https://orcid.org/0009-0002-3791-2372"
 license: "CC-BY-4.0"
 notes: "Code components (verification/, lean/) are MIT-licensed; see LICENSE-CODE."
 keywords:

@@ -2,13 +2,33 @@
   "title": "The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic Return Problem",
   "upload_type": "dataset",
   "publication_date": "2026-07-08",
-  "creators": [{"name": "Aoki, Yosuke", "affiliation": "GeoAlpine LLC"}],
+  "creators": [
+    {
+      "name": "Aoki, Yosuke",
+      "affiliation": "GeoAlpine LLC",
+      "orcid": "0009-0002-3791-2372"
+    }
+  ],
   "description": "A self-contained research artifact on the BB(6) busy-beaver frontier: paper-style writeups (certified trace-template reductions of the cryptid machines; exact p-adic run-structure theorems with a Lean 4 formalization; a gate/structure/protection classification), a one-command verification battery re-checking every proof-path certificate, and the supporting lab notes including the novelty audit and the full corrections trail. No cryptid is decided; every claim carries an explicit epistemic label. Methodology: AI-assisted under a strict zero-false-proof discipline (adversarial red-teams, independent re-verification), documented in the notes.",
   "access_right": "open",
   "license": "cc-by-4.0",
-  "keywords": ["busy beaver", "BB(6)", "halting problem", "Collatz-like maps", "rational base number systems", "normality conjecture", "p-adic dynamics", "certified deciders", "Lean 4"],
+  "keywords": [
+    "busy beaver",
+    "BB(6)",
+    "halting problem",
+    "Collatz-like maps",
+    "rational base number systems",
+    "normality conjecture",
+    "p-adic dynamics",
+    "certified deciders",
+    "Lean 4"
+  ],
   "related_identifiers": [
-    {"relation": "cites", "identifier": "arXiv:2510.11723", "resource_type": "publication-preprint"}
+    {
+      "relation": "cites",
+      "identifier": "arXiv:2510.11723",
+      "resource_type": "publication-preprint"
+    }
   ],
   "notes": "Code components (verification/, lean/) are MIT-licensed (LICENSE-CODE); documents are CC-BY 4.0 (LICENSE-DOCS). Prior work attributions for the individual machines: see notes/NOVELTY_AUDIT_2026-07-07.md."
 }
