@@ -50,15 +50,29 @@ sparsity); (7) collapsed o18's tower to a pushdown 3-adic odometer, leaving one 
   `o15_fp_*.py`, `o17_gate_*.py` (+`o17_gate_census.c`, 280M steps/s), `o18_depth_*.py`.
 - Discarded (UNSOUND, kept as failure-mode records): `o4_accel_windows.py`.
 
-## Status table (as of 2026-07-07 PM)
-| machine | gate | structure | protection (the open core) | margin |
-|---|---|---|---|---|
-| o4 | PROVEN | template PROVEN (red-teamed) | residue-ledger a≥2 at ρ=1 [OPEN] | drift +3/gen; ruin 10⁻⁵⁹ |
-| o3 | PROVEN | template PROVEN on grid | residue-ledger k∉fatal [OPEN] | drift +0.248/gen |
-| o15 | PROVEN | template PROVEN on grid | string-ledger [2,2]-cylinder [OPEN] | run-caps proven; recursive cylinder |
-| o17 | PROVEN | no template (proven) | gate branch F(5,·)=safe [OPEN] | tower-sparse (next gate ~10⁶⁰) |
-| o18 | PROVEN | pushdown odometer PROVEN on grid | multi-defect grammar → then NONE (no fatal set) | in flight |
-| Antihydra | (K) reduction PROVEN | boundary graph | even-density ≥ 1/3 = (K) [OPEN] | zero (critical) |
+## Status table (as of 2026-07-09 — 62 commits, Zenodo v1.3, 212 Lean theorems sorry-free)
+Full 13-orbit census; every machine = q-adic depth process of an explicit ×(p/q) orbit (uniform theorem, Lean-checked
+in `Mirror.lean`); depth axis unconditionally controlled, ONLY the frequency axis open (measured white +
+conditionally structureless — `FREQUENCY_AXIS_PROBE`). Fixed points from `PAPER_MIRROR_LADDER` §2.
+| machine | ×p/q | fixed pts | protection (open core) | memory | Lean |
+|---|---|---|---|---|---|
+| o4 | ×4/3 | (−9,−14,−1) | residue-ledger a≥2 at ρ=1 | cumulative, ratio 0.087 (free) | **END-TO-END** (machine→odometer+ledger) |
+| o3 | ×4/3 | mix | k-ledger (roles swapped) | cumulative, 0.79 | machine+body; gen-map in flight |
+| o15/o18 | ×8/3 | 1 | epoch-hit fatal congruence (Lean class mod 3¹⁰⁸ exists) | resetting/pushdown | explore in flight |
+| o2 | ×3/2 ceil | (0,1) | ceiling-(K) + mod-4 hatch | cumulative, 1.17 (critical) | Link0 certified; corollary in flight |
+| o11 | ×3/2 | (−8,−7) | seeded-(K) at doubly-exp refills | resetting | Mirror corollary |
+| o13 / o14 | ×3/2 | (−14,−7)/(−12,−11) | seeded-(K) parity/gap draw | resetting | corollary in flight |
+| o16 | ×3/2 | (−4,−3) | seeded-(K), tower-sparse gate | resetting | Mirror corollary |
+| o17 | — | none (no fixed pt) | gate branch, tower-sparse timing | no ledger | gate-map (Python) |
+| Space Needle | ×5/2 | even 0; **odd none** | non-(K) string-ledger (base-2 cylinder) | cumulative, summable | Mirror even-branch |
+| Antihydra / o10 | ×3/2 | (0,1) | even-density ≥ 1/3 = (K) | cumulative, 1.17 (critical) | Mirror corollary |
+
+**Since 2026-07-07 (Parts 10+):** Zenodo v1.0 PUBLISHED (DOI 10.5281/zenodo.21252622) + tag-driven auto-release
+(v1.1/1.2/1.3 drafts); ×3/2 trio split (o2 = 2nd Antihydra ceiling, o7 misclassified thin-set, o10 corrected); Mahler
+sea + Space Needle classified (fixed-point census COMPLETE, the trick transfers to ×5/2); the UNIFORM FIXED-POINT
+THEOREM (`PAPER_MIRROR_LADDER`, Lean `Mirror.lean` — 11 machines as corollaries); o4 coboundary LP → [PROVEN];
+o2 Link0 certified; o11/o13/o14/o16 fixed-point closed forms; o3 = 2nd Lean machine (body); Lean generation map
+(o4 machine→arithmetic END-TO-END); frequency-axis probe (K in every coordinate, run-depth white + structureless).
 
 ## The unification (what to tell an expert)
 All flagship protections = **quenched deep-p-adic-return frequency bounds for explicit ×p/q orbits**:
