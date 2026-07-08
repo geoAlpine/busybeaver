@@ -23,9 +23,22 @@ Layers (labels: FORMALIZED = `lake build` green + `sorry`-free):
   `p`-transition-tile + length induction.  These are the core engineering:
   the period-10 crawl needs a 10-step "one tile" base lemma reading an
   8-cell window, then a length induction over the deposited marker word.
-* **L3 (the body lemma)** — `body_step`: the standalone defect-transport
-  chunk `B(j) → shift(−2) of B(j−3)` in exactly `10j + 4` steps, composing
-  the crawls + episodes (`O3_TEMPLATE_PORT` §2, `o3_body_proof.py`).
+* **L3 (the body lemma, FULLY FORMALIZED)** — `body_step`: the standalone
+  defect-transport chunk `B(j) → shift(−2) of B(j−3)` (with the vacated cells
+  becoming gap fabric) in exactly `10j + 4` steps, for EVERY `j ≡ 0 (mod 3)`,
+  `j ≥ 3`, with an ARBITRARY right gap context `G` — the composition
+  `crawlR^(j/3) · [A0 B0] · zigzag^2 · mid8 · crawlL^(j/3−1) · [D1 C0]` gluing
+  the three FORMALIZED sweeps with the three fixed episodes.  The glue was
+  closed by the config-identity `cons_pow01` (`true :: (01)^n = (10)^n · 1`,
+  the o3 analogue of o4's `pow01_of_pow10`), which converts the leftward
+  crawl's deposited `(01)` fabric into the `(10)` marker the next pass reads.
+  Corrections vs the DRAFTED skeleton fell out of the concrete computation:
+  the zigzag is a fixed **2** tiles (the 3rd period-6-shaped tile lands on a
+  `0` and is a different phase, absorbed into the fixed 8-step `mid8`
+  turnaround).  Corollaries `body_iter` / `body_descent`: the FINITE
+  halt-free descent `B(3(M+r)) → B(3M)` (o3's body SHRINKS `j`, unlike o4's
+  growing family, so the honest certificate is the finite descent, not an
+  infinite non-halt — `o3_body_proof.py`).
 
 Honest scope: o3's generation map / a-k ledger (`O3_TEMPLATE_PORT` §3–5)
 stay on the lab record.  **This file decides no machine; o3 stays `[OPEN]`.**
@@ -341,22 +354,13 @@ theorem zigzag : ∀ (n : Nat) (p : Int) (Lr R : List Bool),
     rw [hr]
     exact congrArg some (cfgPos (by omega))
 
-/-! ## §4 (L3, partial) The body lemma — phase 1 is the period-10 crawl.
+/-! ## §4 (L3) The body lemma — phase 1 is the period-10 crawl.
 
 The standalone body/defect-transport configuration
 `B(j) = 0^∞ [A] 0 0 (10)^j 1 1 0^∞` (`o3_body_proof.py`) evolves to
-`shift(−2)` of `B(j−3)` in exactly `10j + 4` steps.  Its compressed
-decomposition is EXACTLY (verified over `j = 12 … 51`, `o3_body_proof.py`):
-
-  `crawlR^(j/3) · [A0·B0] · zigzag^3 · [episodes] · crawlL^(j/3−1) · [episodes]`
-
-— i.e. the period-10 rightward crawl runs `j/3` tiles, the period-6 zigzag a
-FIXED 3 tiles (a boundary turnaround), and the period-20 leftward crawl
-`j/3 − 1` tiles, plus 6 episode steps (`10·(j/3) + 6·3 + 20·(j/3−1) + 6 =
-10j + 4`).  We FORMALIZE the first phase exactly (`body_phase1`), driving the
-real body config with `crawlR`; the full composition (the fixed turnaround +
-the leftward return, threading the marker/right context) stays DRAFTED on the
-lab record (`O3_TEMPLATE_PORT` §2). -/
+`shift(−2)` of `B(j−3)` in exactly `10j + 4` steps.  Phase 1 (`body_phase1`,
+this section) drives the real body config with `crawlR` to the defect; the
+FULL composition is glued in §4b (`body_step`) and iterated in §4c. -/
 
 /-- The standalone body configuration `B(j) = 0^∞ [A] 0 0 (10)^j 1 1 0^∞`,
 head (state `A`) on the first `0`, at position 0. -/
@@ -390,6 +394,213 @@ chunk end-to-end, cross-checked against `o3_phase.py`). -/
 #eval decide ((steps 154 (Bcfg 15)).map (fun c => (c.st, c.pos)) = some (St.A, (-2 : Int)))
 #eval decide ((steps 244 (Bcfg 24)).map (fun c => (c.st, c.pos)) = some (St.A, (-2 : Int)))
 
+/-! ## §4b (L3) The FULL body lemma — composing the sweeps + episodes.
+
+Computed concretely (`o3_zipper.py`/`o3_detect.py`, cross-checked vs the trace
+for `m = 1 … 19` and three gap contexts) the body chunk is EXACTLY the uniform
+composition, identical for every `m ≥ 1`:
+
+  `crawlR^m · [A0·B0] · zigzag^2 · [mid8] · crawlL^(m−1) · [D1·C0]`
+
+with step count `10m + 2 + 12 + 8 + 20(m−1) + 2 = 30(m−1) + 34 = 10·(3m) + 4`.
+Two corrections to the DRAFTED skeleton fell out of the concrete computation:
+the zigzag runs a fixed **2** tiles (not 3 — the extra period-6-shaped tile is a
+different phase whose head lands on a `0`, so it is NOT a `zigzag_tile`; it is
+absorbed into the fixed 8-step `mid8` turnaround episode), and the leftward
+return is `crawlL^(m−1)`.  This resolves the flagged obstacle ("the zigzag
+shares crawlL's marker region with a different phase decomposition"): the shared
+region is exactly the 4-cell left window `[1 0 1 1]` and 5-cell right window
+`[1 0 1 0 1]` that `mid8` reads (verified: `mid8` reads NO tail cell), landing
+in state `D` on the head of the `dep6n(m−1)` deposit that `crawlL` consumes.
+
+The body config carries an ARBITRARY right gap context `G` (the locality of the
+lemma: nothing right of the defect is read), and lands as `shift(−2)` of the
+same family with `G` grown by one gap word `pow01 4 = 01010101`. -/
+
+/-- Standalone body config with explicit position and right gap context `G`:
+`BodyCfg j p G = [A] 0 0 (10)^j 1 1 G` at position `p` (head on the first `0`).
+`BodyCfg j 0 [] = Bcfg j`. -/
+def BodyCfg (j : Nat) (p : Int) (G : List Bool) : Cfg :=
+  ⟨.A, p, ⟨[], false, false :: (pow10 j ++ (true :: true :: G))⟩⟩
+
+theorem BodyCfg_congr {j l : Nat} {p q : Int} {G H : List Bool}
+    (hj : j = l) (hp : p = q) (hG : G = H) : BodyCfg j p G = BodyCfg l q H := by
+  rw [hj, hp, hG]
+
+/-- **The pivotal config-identity** (o3 analogue of o4's `pow01_of_pow10`):
+the leftward crawl deposits the vacated fabric as `(01)^n`; re-reading it shifted
+by one cell turns it into the `(10)^n` marker word the next body pass consumes.
+This is the identity that closes the glue's landing-config equality. -/
+theorem cons_pow01 : ∀ (n : Nat), true :: pow01 n = pow10 n ++ [true] := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    show true :: false :: (true :: pow01 n) = true :: false :: (pow10 n ++ [true])
+    rw [ih]
+
+/-- `true :: (01)^n · Z = (10)^n · true :: Z` (the shift-by-one restatement). -/
+theorem cons_pow01' (n : Nat) (Z : List Bool) :
+    true :: (pow01 n ++ Z) = pow10 n ++ (true :: Z) := by
+  rw [show true :: (pow01 n ++ Z) = (true :: pow01 n) ++ Z from rfl,
+      cons_pow01 n, List.append_assoc]
+  rfl
+
+/-- The landing list-identity assembled from `cons_pow01'` (at `n` and at `4`). -/
+theorem landing_id (n : Nat) (G : List Bool) :
+    true :: (pow01 n ++ (pow10 4 ++ (true :: G)))
+      = pow10 n ++ (true :: true :: (pow01 4 ++ G)) := by
+  rw [cons_pow01' n, ← cons_pow01' 4]
+
+/-! ### The three fixed episodes (kernel `rfl` with symbolic tails `L`/`X`/`G`,
+never read — the landmark-pinning made literal). -/
+
+/-- Episode `[A0·B0]` (2 steps): from the defect head `[A] 0 0 1 1 G`, write the
+first two cells and turn into state `C` on the leading `1`. -/
+theorem ep_intro (p : Int) (L G : List Bool) :
+    steps 2 ⟨.A, p, ⟨L, false, false :: true :: true :: G⟩⟩
+      = some ⟨.C, p + 2, ⟨true :: true :: L, true, true :: G⟩⟩ := by
+  have h : steps 2 (⟨.A, p, ⟨L, false, false :: true :: true :: G⟩⟩ : Cfg)
+      = some ⟨.C, p + 1 + 1, ⟨true :: true :: L, true, true :: G⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- Episode `mid8` (8 fixed steps `C1·B1·E1·A1·D0·D1·C0·A1`): the boundary
+turnaround.  Reads only the 4-cell left window `[1 0 1 1]` and 2 of the right
+window `[1 0 1 0 1]`; the tails `X` (left) and `G` (right) are UNTOUCHED, which
+is the composition's locality.  Lands in state `D` on the `crawlL` deposit,
+shifting `−4` and emitting `pow10 4 = 10101010` to the right. -/
+theorem ep_mid8 (p : Int) (X G : List Bool) :
+    steps 8 ⟨.C, p, ⟨true :: false :: true :: true :: X, true,
+        true :: false :: true :: false :: true :: G⟩⟩
+      = some ⟨.D, p - 4, ⟨X, true,
+          true :: false :: true :: false :: true :: false :: true :: false ::
+            true :: G⟩⟩ := by
+  have h : steps 8 (⟨.C, p, ⟨true :: false :: true :: true :: X, true,
+        true :: false :: true :: false :: true :: G⟩⟩ : Cfg)
+      = some ⟨.D, p - 1 + 1 + 1 - 1 - 1 - 1 - 1 - 1, ⟨X, true,
+          true :: false :: true :: false :: true :: false :: true :: false ::
+            true :: G⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- Episode `[D1·C0]` (2 steps): the landing back onto the shifted zone start,
+re-entering state `A` at `−2`; the right word `W` is untouched. -/
+theorem ep_final (p : Int) (W : List Bool) :
+    steps 2 ⟨.D, p, ⟨[], true, W⟩⟩
+      = some ⟨.A, p - 2, ⟨[], false, false :: true :: W⟩⟩ := by
+  have h : steps 2 (⟨.D, p, ⟨[], true, W⟩⟩ : Cfg)
+      = some ⟨.A, p - 1 - 1, ⟨[], false, false :: true :: W⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **THE o3 BODY LEMMA (L3), fully formal.**  For every `m'` (so `j = 3(m'+1)`,
+i.e. every positive multiple of 3), the standalone body config `BodyCfg j p G`
+evolves in exactly `10j + 4 = 30·m' + 34` steps to `shift(−2)` of `BodyCfg (j−3)`
+with the gap fabric `G` grown by one word `pow01 4`.  `some` output ⇒ halt-free ⇒
+every `E`-reads-0 safe (the halt gate).  Composition:
+`crawlR^(m'+1) · [A0 B0] · zigzag^2 · mid8 · crawlL^(m') · [D1 C0]`. -/
+theorem body_step (m' : Nat) (p : Int) (G : List Bool) :
+    steps (30 * m' + 34) (BodyCfg (3 * (m' + 1)) p G)
+      = some (BodyCfg (3 * m') (p - 2) (pow01 4 ++ G)) := by
+  -- split the step budget into the six phases (literal counts the lemmas emit)
+  have hsplit : 30 * m' + 34
+      = 10 * (m' + 1) + (2 + (6 * 2 + (8 + (20 * m' + 2)))) := by omega
+  rw [hsplit]
+  -- phase 1: crawlR^(m'+1)
+  show steps _ (⟨.A, p, ⟨[], false,
+      false :: (pow10 (3 * (m' + 1)) ++ (true :: true :: G))⟩⟩ : Cfg) = _
+  have hk : (3 * (m' + 1) : Nat) = 0 + 3 * (m' + 1) := by omega
+  rw [hk, steps_add, crawlR (m' + 1) 0 p [] (true :: true :: G), someBind,
+      List.append_nil]
+  show steps _ (⟨.A, p + 6 * ((m' + 1 : Nat) : Int),
+      ⟨dep6n (m' + 1), false, false :: true :: true :: G⟩⟩ : Cfg) = _
+  -- phase 2: [A0 B0]
+  rw [steps_add, ep_intro, someBind]
+  -- phase 3: zigzag^2.  `true::true::dep6n(m'+1) = ones 4 ++ (1 0 1 1 · dep6n m')`
+  show steps _ (⟨.C, p + 6 * ((m' + 1 : Nat) : Int) + 2,
+      ⟨ones (2 * 2) ++ (true :: false :: true :: true :: dep6n m'), true,
+        true :: G⟩⟩ : Cfg) = _
+  rw [steps_add, zigzag 2 _ _ G, someBind]
+  -- phase 4: mid8.  zigzag emitted `pow10 2 = 1010`, i.e. right = `1 0 1 0 1 · G`
+  show steps _ (⟨.C, p + 6 * ((m' + 1 : Nat) : Int) + 2 - 2 * (2 : Int),
+      ⟨true :: false :: true :: true :: dep6n m', true,
+        true :: false :: true :: false :: true :: G⟩⟩ : Cfg) = _
+  rw [steps_add, ep_mid8, someBind]
+  -- phase 5: crawlL^(m').  `dep6n m' = dep6n m' ++ []`
+  rw [steps_add,
+      show (dep6n m' : List Bool) = dep6n m' ++ [] from (List.append_nil _).symm,
+      crawlL m' _ [] _, someBind]
+  -- phase 6: [D1 C0], then the landing config-identity.
+  rw [ep_final]
+  -- assemble: position `p - 2`, gap grown by `pow01 4`.
+  apply congrArg some
+  show (⟨.A, _, ⟨[], false, false :: true ::
+      (pow01 (3 * m') ++ (true :: false :: true :: false :: true :: false ::
+        true :: false :: true :: G))⟩⟩ : Cfg) = _
+  have hlist : (true :: false :: true :: false :: true :: false :: true :: false ::
+        true :: G : List Bool)
+      = pow10 4 ++ (true :: G) := rfl
+  rw [hlist, landing_id]
+  exact cfgPos (by push_cast; omega)
+
+/-- The paper's grid instance `j = 12` (`m' = 3`): 124 steps, `10·12 + 4`. -/
+example (p : Int) (G : List Bool) :
+    steps 124 (BodyCfg 12 p G) = some (BodyCfg 9 (p - 2) (pow01 4 ++ G)) :=
+  body_step 3 p G
+
+/-! ## §4c (L3 corollaries) Iterated body: the finite halt-free descent.
+
+Unlike o4's body (which GROWS the zone, so the family provably never halts),
+o3's body SHRINKS `j` by 3 per pass, bottoming out at `BodyCfg 0` — whose fate
+depends on the accumulated gap (`o3_b0.py`: `BodyCfg 0` halts for a short gap,
+survives for a long one).  So the honest o3 certificate is the FINITE halt-free
+descent `B(3(M+r)) → B(3M)` in `bodyTime r M` steps: `steps` returning `some`
+is the halt-free (all-`E`-reads-0-safe) guarantee over the whole descent.  This
+is why o3 stays `[OPEN]` (its haltedness is the ledger conjecture, not a body
+non-halt). -/
+
+/-- Total steps of `r` body passes ending at parameter `3M` (starting `3(M+r)`);
+each pass at parameter `3(k+1)` costs `30k + 34`. -/
+def bodyTime : Nat → Nat → Nat
+  | 0, _ => 0
+  | r + 1, M => (30 * (M + r) + 34) + bodyTime r M
+
+/-- **Iterated body (halt-free descent):** `r` body passes take
+`BodyCfg (3(M+r)) p G` to `BodyCfg (3M) (p−r)` with `r` gap words prepended
+(`pow01 (4r)`), in exactly `bodyTime r M` steps — all halt-free. -/
+theorem body_iter : ∀ (r M : Nat) (p : Int) (G : List Bool),
+    steps (bodyTime r M) (BodyCfg (3 * (M + r)) p G)
+      = some (BodyCfg (3 * M) (p - 2 * (r : Int)) (pow01 (4 * r) ++ G)) := by
+  intro r
+  induction r with
+  | zero =>
+    intro M p G
+    show steps 0 _ = _
+    apply congrArg some
+    exact BodyCfg_congr (by omega) (by simp) rfl
+  | succ r ih =>
+    intro M p G
+    have h1 : steps (bodyTime (r + 1) M) (BodyCfg (3 * (M + (r + 1))) p G)
+        = (steps (30 * (M + r) + 34) (BodyCfg (3 * ((M + r) + 1)) p G)).bind
+            (steps (bodyTime r M)) := by
+      have he : (3 * (M + (r + 1)) : Nat) = 3 * ((M + r) + 1) := by omega
+      rw [he]
+      exact steps_add (30 * (M + r) + 34) (bodyTime r M) _
+    rw [h1, body_step, someBind, ih M (p - 2) (pow01 4 ++ G)]
+    apply congrArg some
+    have hpos : (p - 2) - 2 * (r : Int) = p - 2 * ((r + 1 : Nat) : Int) := by
+      push_cast; omega
+    have hgap : pow01 (4 * r) ++ (pow01 4 ++ G) = pow01 (4 * (r + 1)) ++ G := by
+      have h44 : 4 * (r + 1) = 4 * r + 4 := by omega
+      rw [h44, ← List.append_assoc, ← pow01_add]
+    exact BodyCfg_congr rfl hpos hgap
+
+/-- The full descent from `BodyCfg (3M)`: `M` passes reach `BodyCfg 0` at
+`p − M` with gap `pow01 (4M) ++ G`, HALT-FREE (the `some`). -/
+theorem body_descent (M : Nat) (p : Int) (G : List Bool) :
+    steps (bodyTime M 0) (BodyCfg (3 * M) p G)
+      = some (BodyCfg 0 (p - 2 * (M : Int)) (pow01 (4 * M) ++ G)) := by
+  have h := body_iter M 0 p G
+  rwa [Nat.zero_add, Nat.mul_zero] at h
+
 /-! ## §5 Axiom audit (printed at every build). -/
 
 #print axioms steps_add
@@ -402,6 +613,19 @@ chunk end-to-end, cross-checked against `o3_phase.py`). -/
 #print axioms zigzag_tile
 #print axioms zigzag
 #print axioms body_phase1
+#print axioms cons_pow01
+#print axioms landing_id
+#print axioms ep_mid8
+#print axioms body_step
+#print axioms body_iter
+#print axioms body_descent
+
+/-! ### §5a sanity: the FULL body lemma, kernel-executed on the real config. -/
+
+#eval decide (steps 124 (BodyCfg 12 0 [])
+      = some (BodyCfg 9 (-2) (pow01 4 ++ [])))   -- body_step m'=3: expect true
+#eval decide (steps (bodyTime 3 1) (BodyCfg 12 0 [])
+      = some (BodyCfg 3 (-6) (pow01 12 ++ [])))  -- body_iter r=3,M=1: expect true
 
 #eval steps 100 init  -- cross-check vs Python (N = 100)
 

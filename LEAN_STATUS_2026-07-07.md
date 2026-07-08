@@ -265,3 +265,117 @@ lake build                          # RunStructure + Template + Suffix + O3
 - o3's decision status is untouched: the (a,k)-ledger conjecture is OPEN.
 
 **No machine decided. No label upgraded.**
+# MIRROR APPEND (2026-07-08) — the UNIFORM fixed-point run theorem is FORMALIZED for arbitrary base q
+
+*Fourth formalization target: the single ABSTRACT theorem that makes every Type-I cryptid's run
+law a corollary (`PAPER_MIRROR_LADDER.md` §1). Generalizes `RunStructure.lean`'s q=3 `v3`/
+`v3_step_down`/`run_closed_form` to an ARBITRARY base `q ≥ 2` and a general branch map. New module
+`lean/Mirror.lean` (same zero-dependency, zero-mathlib project; `lake build Mirror` ≈ 0.5 s; own
+namespace `Mirror`, arithmetic over ℤ). Subsumes `mirror_census.py`. Not committed.*
+
+## Verdict: ALL FOUR TARGETS FORMALIZED
+
+Toolchain Lean **4.31.0**, no mathlib (core `Int`/`Nat` + `omega`; from-scratch `q`-adic valuation
+`vqn`/`vq`). **Axiom audit (every crown theorem): `[propext, Quot.sound]` only** — no `sorryAx`, no
+`Classical.choice` (note: `Nat.mul_lt_mul_right` pulls in `Classical.choice`, so `k < q·k` is proved
+Classical-free via `lt_mul_self` using `Nat.mul_le_mul` + `omega`), no `native_decide`. No `sorry`.
+
+| Target (spec) | Lean theorem(s) in `Mirror.lean` | Status |
+|---|---|---|
+| **1. `vpadic q v`** (q-adic valuation from scratch, q≥2) + basic lemmas | `vqn` (guarded recursion, terminates for VARIABLE base via `Nat.div_lt_self`), `vqn_of_dvd`/`vqn_of_not_dvd`, **`vqn_q_mul`** (`v_q(q·n)=v_q(n)+1`), and — the crux below — the unit lemma; ℤ wrappers `vq`, `vq_q_mul`, `vq_unit_mul`, `vq_pos_dvd`, `vq_eq_zero_not_dvd` | **FORMALIZED** |
+| **1-crux. coprime ⇒ valuation preserved** | **`vqn_unit_mul`** (`gcd(u,q)=1 → v_q(u·n)=v_q(n)`), resting on **`vqn_euclid`** (Euclid: `gcd(u,q)=1 ∧ q∣u·n → q∣n`) proved from scratch via `gcd(u·n,q·n)=gcd(u,q)·n=n` (`Nat.gcd_mul_right`+`Nat.dvd_gcd`, both core) | **FORMALIZED** |
+| **2. abstract branch map + fixed point** | `bmap p e q v = (p·v+e)/q`; **`branch_conj`** (at integer fixed point `q·x=p·x+e`, on-branch `q∣(v−x)`: `q·(bmap v − x) = p·(v−x)`, incl. integrality of `bmap` there); **`vq_step_down`** (`q·a=p·b, q∣b, b≠0, gcd ⇒ v_q(a)+1=v_q(b)`) | **FORMALIZED** |
+| **3. the uniform run theorem** | `orb` (orbit of `bmap`); **`run_invariant`** (`v_q(orb i − x)=v_q(v−x)−i` ∧ `orb i − x ≠ 0` inside the run); **`run_closed_form`** (maximal run = `v_q(v−x)`: branch residue `≡ x (mod q)` persists for all `i < v_q(v−x)` and breaks at `i = v_q(v−x)`, both halves); **`run_cap`** (`q^{v_q n} ≤ |n|`, i.e. run `≤ log_q|v−x|`) | **FORMALIZED** |
+| **4. census corollaries** (each `= run_closed_form` at concrete `(p,q,e,x)`; obligations `gcd`+fixed-point by `decide`/`omega`) | `antihydra_even` (x=0), `antihydra_odd` (x=1); `o16_even/odd` (x=−4,−3); `o11_even/odd` (x=−8,−7); `o4_r0/r1/r2` (q=3, x=−9,−14,−1); `o15_queued` (q=3, x=1 = o18 depth push); `space_needle_even` (×5/2, q=2, x=0) | **FORMALIZED** |
+
+The single `run_closed_form` covers the whole (2,3)/(2,5)-even/(3,4)/(3,8) ladder; `x`-values match
+`PAPER_MIRROR_LADDER.md` §2 and `mirror_census.py`. Space Needle's ODD branch is out of scope (no
+single fixed point, per paper §3) — only its even branch is a corollary.
+
+## The coprime→valuation lemma (the mathematical content), proof approach
+`vqn_unit_mul` by strong induction on `n`: (i) `n=0` trivial; (ii) `q∣n`, write `n=q·k`, then
+`u·(q·k)=q·(u·k)` and `v_q` drops the shared `q` on both sides, IH on `k`; (iii) `q∤n`, then by
+`vqn_euclid` (Euclid's lemma) `q∤u·n`, so both valuations are `0`. Euclid is the ONLY place
+coprimality is used and is proved WITHOUT Bézout: `q ∣ u·n` and `q ∣ q·n` give `q ∣ gcd(u·n,q·n) =
+gcd(u,q)·n = 1·n = n` (core `Nat.gcd_mul_right`, `Nat.dvd_gcd`). This is the general-`q` replacement
+for RunStructure's hard-wired `pow3_dvd_of_dvd_four_mul`/`v3n_unit_mul` ("4 is a unit mod 3^L").
+
+## Which census machines are now corollaries
+Antihydra (both branches), o16, o11 (hence o14/o13-flavor by the same closure), o4 (all three
+residue branches — the entire `RunStructure.lean` o4 run law is now a special case), o15/o18, and
+Space Needle's even branch — nine `example`-grade theorems, each a one-line specialization of
+`run_closed_form`. The lab-note per-machine run laws are now instances of ONE Lean theorem.
+
+## Numeric sanity (green) + build
+- Lean `#eval` at build: `[vq 2 12, vq 2 6, vq 3 57, vq 3 39] = [2,1,1,1]`; `vqCheck` (self-
+  consistency vs `vqn` over a range) `true`. `mirror_census.py` (ALL RUN LAWS VERIFIED) is the
+  independent Python mirror this module subsumes.
+- Build: `export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build Mirror` (green, axiom prints).
+
+## What's left (honest) / statement fidelity
+- The run law is formalized as: residue `(orb i − x) % q = 0` persists for `i < v_q(v−x)` and fails
+  at `i = v_q(v−x)` (the abstract mirror of RunStructure's `run_closed_form`; "branch residue" =
+  `≡ x (mod q)`, which for q=2 is the parity used in the paper). No hypothesis of positivity on `v`
+  is needed — only `v ≠ x`.
+- Off-branch dynamics (where `bmap` is not the true affine map) are out of scope by construction —
+  the theorem governs only the same-branch run, which is all the run law asserts.
+- Space Needle's odd branch (no fixed point), and the census's criticality/ledger-memory axes
+  (`PAPER_MIRROR_LADDER.md` §4), are NOT formalized — they are not part of the uniform depth theorem.
+- Nothing here decides any machine; it is the elementary p-adic depth layer, made uniform.
+
+(Concurrent-session note: at build time `lean/O3.lean` was mid-edit by another session and did not
+compile; `Mirror.lean` is independent and builds/audits clean on its own via `lake build Mirror`.)
+
+**No machine decided. No label upgraded.**
+
+---
+
+# O3 BODY-LEMMA APPEND (2026-07-09) — o3's FULL body lemma is now FORMALIZED: the SECOND machine with a complete, sorry-free defect-transport chunk
+
+*Completes the o3 append above (which had `L3 partial`: `body_phase1` FORMALIZED, full body DRAFTED).
+The full episode glue is now composed and machine-checked. `lean/O3.lean` extended in place; STRICT
+labels as above. Not committed.*
+
+## Verdict: L3 FULLY FORMALIZED — `body_step` + `body_iter` + `body_descent`
+
+The standalone o3 body chunk `B(j) = 0^∞ [A] 0 0 (10)^j 1 1 · G → shift(−2) of B(j−3)` (gap `G`
+grown by one word `0101 0101`) in EXACTLY `10j + 4` steps, for every `j ≡ 0 (mod 3)`, `j ≥ 3`, and
+ARBITRARY right context `G`, is proved by gluing the three FORMALIZED sweeps to three fixed episodes.
+
+| Target (spec) | Lean theorem(s) in `O3.lean` | Status |
+|---|---|---|
+| **1. full body glue** `B(j) → shift(−2) B(j−3)` in `10j+4` | **`body_step`** (`steps (30·m'+34) (BodyCfg (3(m'+1)) p G) = some (BodyCfg (3m') (p−2) (pow01 4 ++ G))`), composing `crawlR^(m'+1) · [A0 B0] · zigzag^2 · mid8 · crawlL^(m') · [D1 C0]`; helpers `ep_intro`/`ep_mid8`/`ep_final` (fixed episodes, symbolic tails, `rfl`), `BodyCfg` (position + gap context) | **FORMALIZED** |
+| **the config-identity that unblocked the glue** | **`cons_pow01`** (`true :: (01)^n = (10)^n · 1`) + `cons_pow01'`/`landing_id` — converts the leftward crawl's deposited `(01)` fabric into the `(10)` marker the next pass reads | **FORMALIZED** |
+| **2. iterated body / halt-free descent** | **`body_iter`** (`r`-fold: `BodyCfg (3(M+r)) p G → BodyCfg (3M) (p−2r) (pow01 (4r) ++ G)` in `bodyTime r M` steps) and **`body_descent`** (`M`-fold to `BodyCfg 0`) — `some` = halt-free (all-`E`-reads-0-safe) over the whole descent | **FORMALIZED** |
+
+## The config-identity that unblocked the glue (and the DRAFTED-skeleton corrections)
+Concrete recomputation (`o3_zipper.py`/`o3_detect.py`, cross-checked vs the trace for `m = 1..19`
+and three gap contexts) showed the DRAFTED `zigzag^3` was really **`zigzag^2`**: the 3rd
+period-6-shaped tile lands its head on a `0` (so it is NOT a `zigzag_tile` — those end on a `1`);
+it is a different phase, absorbed into a fixed **8-step `mid8`** turnaround (`C1 B1 E1 A1 D0 D1 C0 A1`)
+that reads only a 4-cell left window `[1 0 1 1]` and 2 of a 5-cell right window `[1 0 1 0 1]` — the
+"shared marker region" the earlier note flagged — leaving both tails UNTOUCHED (locality ⇒ arbitrary
+`G`). The leftward return is `crawlL^(m')` (= `crawlL^(j/3−1)`). Step count closes exactly:
+`10(m'+1) + 2 + 12 + 8 + 20m' + 2 = 30m' + 34 = 10·(3(m'+1)) + 4`. The LANDING config-identity is
+`cons_pow01 : true :: pow01 n = pow10 n ++ [true]` (proved by induction, axiom-free) — the o3
+analogue of o4's `pow01_of_pow10`; assembled by `landing_id` it shows the leftward crawl's `(01)^{3m'}`
+deposit, re-read shifted by one cell, is exactly the `(10)^{3m'}` zone the next `B(j−3)` pass consumes.
+
+## Honest scope note (why `body_iter`, not an infinite non-halt)
+Unlike o4's body (which GROWS the zone, so `body_nonhalt` is an infinite non-halting certificate),
+o3's body SHRINKS `j` by 3 per pass and bottoms out at `BodyCfg 0`, whose fate depends on the
+accumulated gap (`o3_b0.py`: `BodyCfg 0` HALTS for a short gap, survives for a long one). So the
+honest o3 certificate is the FINITE halt-free descent `body_descent` (its `some` output is the
+all-safe guarantee); o3's actual haltedness is the ledger conjecture and stays `[OPEN]`.
+
+## Axiom audit (printed at every build via in-file `#print axioms`)
+`body_step`, `body_iter`, `body_descent`, `ep_mid8`, `landing_id`: **`[propext, Quot.sound]`** only
+(`landing_id` `[propext]`; `cons_pow01` depends on NO axioms). No `sorryAx`, no `Classical.choice`,
+no `native_decide`. Two `#eval decide` sanity checks (`body_step` at `j=12`; `body_iter` r=3,M=1)
+print `true` (kernel-executed against `o3_zipper.py`).
+
+## Build (exact)
+`export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O3` — **green** (`Build completed
+successfully`). Full `lake build` green (all modules).
+
+**No machine decided. No label upgraded.**
