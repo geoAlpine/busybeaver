@@ -59,11 +59,23 @@ def main():
         rec = open(STATE).read().strip()
         print(f"== creating new version of record {rec} ==")
         d = api("POST", f"/deposit/depositions/{rec}/actions/newversion")
-        draft_url = d["links"]["latest_draft"]
-        dep = api("GET", draft_url)
-        # remove files inherited from the previous version
-        for f in dep.get("files", []):
-            api("DELETE", f["links"]["self"])
+        dep = api("GET", d["links"]["latest_draft"])
+        dep_id = dep["id"]
+        # remove ALL files inherited from the previous version (robust: list via the
+        # deposition's files endpoint, fall back to the inline files field).
+        try:
+            files = api("GET", f"/deposit/depositions/{dep_id}/files")
+        except SystemExit:
+            files = dep.get("files", [])
+        if not files:
+            files = dep.get("files", [])
+        print(f"== clearing {len(files)} inherited file(s) ==")
+        for f in files:
+            link = (f.get("links", {}) or {}).get("self")
+            if link:
+                api("DELETE", link)
+            elif f.get("id"):
+                api("DELETE", f"/deposit/depositions/{dep_id}/files/{f['id']}")
     else:
         print("== creating first deposition ==")
         dep = api("POST", "/deposit/depositions", {})
