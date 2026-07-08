@@ -25,8 +25,9 @@ VERIFICATION = [
     "o4_coboundary_lp.py", "ah_ledger_criticality.py",            # bonus exact certificates
 ]
 
-LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/lakefile.toml", "lean/lean-toolchain",
-        "lean/lake-manifest.json", "lean/crosscheck.py", "lean/template_crosscheck.py",
+LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean",
+        "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
+        "lean/crosscheck.py", "lean/template_crosscheck.py", "lean/suffix_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
 
 NOTES = [
@@ -45,8 +46,8 @@ NOTES = [
     "O15_O18_IDENTITY_2026-07-07.md", "NOVELTY_AUDIT_2026-07-07.md",
     "O18_CLEANUP_2026-07-08.md", "X32_CLEANUP_2026-07-08.md",
     "BB6_CRYPTID_SPECIES_2026-07-07.md", "ANTIHYDRA_LEDGER_UNIFICATION_2026-07-07.md",
-    "X32_FAMILY_REDUCTIONS_2026-07-07.md",
-    "MAHLER_SEA_CLASSIFICATION_2026-07-07.md",
+    "X32_FAMILY_REDUCTIONS_2026-07-07.md", "O2_LINK0_CERTIFIED_2026-07-08.md",
+    "MAHLER_SEA_CLASSIFICATION_2026-07-07.md", "O11_REFILL_LAW_2026-07-08.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
 ]
 
