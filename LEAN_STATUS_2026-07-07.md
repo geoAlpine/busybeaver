@@ -195,3 +195,73 @@ lake build                          # RunStructure + Template + Suffix; axiom au
 - o4's decision status is untouched.
 
 **No machine decided. No label upgraded.**
+# O3 APPEND (2026-07-08) — a SECOND fully-formalized machine: o3's period 10/20/6 sweeps are FORMALIZED (L1–L2, L3 partial)
+
+*Second machine formalized (after o4): the BB(6) cryptid
+`o3 = 1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_---0RC`, mirroring the
+`Template.lean` zipper/step/sweep-by-induction architecture but for o3's
+RICHER cycle structure — where o4's sweeps are period-2, o3's are period
+**10 / 20 / 6** (`O3_TEMPLATE_PORT_2026-07-06.md`). New module `lean/O3.lean`
+(same zero-dependency project; `lake build` builds all four libs, O3 ≈ 7 s;
+own namespace `O3`, machine-independent scaffolding copied from `Template`).
+Cross-check `lean/o3_crosscheck.py` (faithful zipper AND independent dict-tape
+sims). Not committed.*
+
+## Verdict: L1 FORMALIZED, L2 FORMALIZED (all THREE cycle lemmas), L3 partial (`body_phase1` FORMALIZED; full body DRAFTED)
+
+| Target | Lean theorem(s) in `O3.lean` | Status |
+|---|---|---|
+| **L1: the machine** | `St`/`Tape`(zipper)/`Cfg`, `step` (`none` ⟺ o3's halt gate `F` reads `0` = "`E` reads `0` with right-neighbour `0`"), `steps`, `steps_add`; kernel `rfl` anchors `sanity100`, `sanity300` (full config at N=100/300 vs two Python sims) | **FORMALIZED** |
+| **L2: sweep 1 — period-10 rightward crawl** | `crawlR_tile` (one 10-step tile: reads `[A] 0 0 (10)^3`, marches `+6`, deposits marker `dep6 = 111011`), **`crawlR`** (ARBITRARY length `n` by tile+length induction: `[A] 0 0 (10)^(k+3n) M → [A] 0 0 (10)^k M` shifted `+6n`, `dep6n n` deposited) | **FORMALIZED** |
+| **L2: sweep 2 — period-20 leftward crawl** | `crawlL_tile` (one 20-step tile: consumes one `dep6` block, deposits `(01)^3`, `−6`; fully right-context-independent), **`crawlL`** (ARBITRARY `n`: consumes `dep6n n`, deposits `(01)^(3n)`, `−6n`) | **FORMALIZED** |
+| **L2: sweep 3 — period-6 zigzag** | `zigzag_tile` (one 6-step tile: consumes `11`, prepends `10`, `−2`), **`zigzag`** (ARBITRARY `n`: consumes `(11)^n`, prepends `(10)^n`, `−2n`) | **FORMALIZED** |
+| **L3: body lemma** | `Bcfg j = 0^∞ [A] 0 0 (10)^j 1 1 0^∞`; **`body_phase1`** (`j=3m`: the first `10m` steps of the real body ARE `m` crawlR tiles → `dep6n m` deposit at the defect, an exact instance of `crawlR` on the live body config). Full `B(j)→shift(−2) B(j−3)` in `10j+4` steps: decomposition `crawlR^(j/3)·[A0 B0]·zigzag^3·[eps]·crawlL^(j/3−1)·[eps]` (zigzag count is a FIXED 3; verified `j=12…51`) — the fixed turnaround + leftward return not composed in Lean | **`body_phase1` FORMALIZED; full body DRAFTED** |
+
+## Axiom audit (printed at every build, `#print axioms` in-file)
+**All 10 audited theorems** (`steps_add`, `crawlR_tile`/`crawlR`,
+`crawlL_tile`/`crawlL`, `zigzag_tile`/`zigzag`, `body_phase1`): **`[propext,
+Quot.sound]` only** — no `sorryAx`, no `Classical.choice`, no `native_decide`.
+`sanity100`/`sanity300` depend on **no axioms at all**. No `sorry` anywhere;
+`lake build` green.
+
+## What the formalization establishes (the core challenge)
+- **All three of o3's sweeps are formalized as arbitrary-length uniform-
+  crossing lemmas** — the flagged "core challenge" (`O3_TEMPLATE_PORT` says
+  even ONE would be a result; all three are done). Each is a `p`-transition
+  "one tile" kernel-`rfl` lemma (reading a bounded window) + a length
+  induction over the deposited/consumed marker word — strictly harder than
+  o4's period-2 sweeps (`crawlL_tile` is a 20-step kernel reduction; the
+  crawls read AHEAD of their advance, offset `+7` vs advance `+6`, so the
+  tile carries lookahead the induction absorbs).
+- **The period-10 crawl is verified to BE the real body's first phase**
+  (`body_phase1`, an exact `crawlR` instance on `Bcfg (3m)`), and `#eval`
+  kernel-executes the FULL `B(j)→B(j−3)` chunk (state A at pos −2, halt-free)
+  for j = 15, 18, 24 — the crawls are the real building blocks.
+
+## Numeric sanity (all green)
+- Lean `#eval` at build: `crawlR` grid point (n=6) `true`; `body_phase1`
+  (j=18) `true`; full body (st,pos) checks j=15/18/24 `true`.
+- `lean/o3_crosscheck.py`: L1 anchors vs zipper+dict sims; crawlR/crawlL/
+  zigzag grids (all three sweeps, several n); `body_phase1` m=4…17; full
+  body j=12…51 (zipper==dict, halt-free, lands (A,−2)); o3 halt gate
+  (standalone `M(a,0)`, a≡2 mod 3, HALTS). **ALL OK** (exit 0).
+
+## Build commands (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"
+cd /Users/aokiyousuke/busybeaver/lean
+lake build                          # RunStructure + Template + Suffix + O3
+/usr/bin/python3 o3_crosscheck.py
+```
+
+## What's left (honest)
+- The full o3 body lemma composition (the fixed zigzag turnaround + the
+  leftward crawlL return, threading the marker deposit and the right/gap
+  context) — DRAFTED: structure and exact tile counts (crawlR = j/3,
+  zigzag = 3, crawlL = j/3−1) verified computationally, `body_phase1`
+  formalized, but the episode glue between the sweeps is not yet Lean.
+- Hence o3's generation map / the (a,k) counter ledger (`O3_TEMPLATE_PORT`
+  §3–5, the swapped-roles base-4/3 odometer) stay on the lab record.
+- o3's decision status is untouched: the (a,k)-ledger conjecture is OPEN.
+
+**No machine decided. No label upgraded.**
