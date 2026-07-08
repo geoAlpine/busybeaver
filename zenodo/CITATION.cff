@@ -10,6 +10,7 @@ authors:
     affiliation: "GeoAlpine LLC"
     orcid: "https://orcid.org/0009-0002-3791-2372"
 license: "CC-BY-4.0"
+doi: "10.5281/zenodo.21252622"
 notes: "Code components (verification/, lean/) are MIT-licensed; see LICENSE-CODE."
 keywords:
   - busy beaver

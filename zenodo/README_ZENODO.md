@@ -72,7 +72,7 @@ cd lean && lake build                              # Lean 4.31.0 via elan
 ## Cite as
 
 Aoki, Y. (2026). *The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic
-Return Problem* (Version 1.0) [Research artifact]. Zenodo. DOI: (assigned on publication)
+Return Problem* (Version 1.0) [Research artifact]. Zenodo. https://doi.org/10.5281/zenodo.21252622
 
 Related: Andrieu, Eliahou & Vivion, arXiv:2510.11723 (the Normality Conjecture this program's kernel instantiates);
 the bbchallenge project (machine discoveries and prior analyses; see the novelty audit for exact attributions).
