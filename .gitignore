@@ -13,3 +13,4 @@ scratchpad/
 __pycache__/
 *.pyc
 lean/.lake/
+zenodo/.zenodo_record_id*
