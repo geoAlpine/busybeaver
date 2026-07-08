@@ -18,7 +18,10 @@ of the core arithmetic theorems, and the supporting lab notes.
 2. **Exact run structure.** The branch maps' integer fixed points give exact closed forms: the maximal run of a
    residue ρ from G equals `v₃(G − x_ρ)` — with an unconditional run cap, a seed↔itinerary bijection (hence
    provable orbit-specificity), and a golden-ratio ruin constant for Antihydra's ledger. Machine-checked in
-   Lean 4 (zero `sorry`, zero external dependencies).
+   Lean 4 (zero `sorry`, zero external dependencies) — including the **template layer**: the o4 machine itself,
+   the arbitrary-length sweep lemmas, the body lemma `B(k) → B(k+2)` for ALL k (strictly stronger than the
+   grid-verified claim), a fully formal translated-bouncer non-halting certificate, and the 471-step prefix in
+   parametric-window form (all G ≥ 31) — for these pieces the grid-certification caveat no longer applies.
 3. **The unification.** The flagship kernels (Antihydra ×3/2, o4 ×4/3, o15/o18 ×8/3) are one problem — an
    effective quenched bound on deep p-adic return/hitting frequency for explicit ×p/q orbits — graded by an exact
    criticality criterion (run-cap slope / budget slope; Antihydra sits at 1.1699 > 1, the critical rung, matching
@@ -34,7 +37,8 @@ of the core arithmetic theorems, and the supporting lab notes.
   `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`, `PAPER_SPECIES_SURVEY.md`
 - `verification/` — `verify_all.py` (one-command re-verification; `--quick` ≈ 30 s, full ≈ minutes) and all
   scripts it invokes, self-contained
-- `lean/` — Lean 4 project (v4.31.0, no mathlib): the run-structure theorems, 42 theorems, zero `sorry`;
+- `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems + the o4 template core (machine, sweeps,
+  body, prefix) — 100+ theorems, zero `sorry`, axiom audit `[propext, Quot.sound]` only;
   build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
@@ -43,9 +47,12 @@ of the core arithmetic theorems, and the supporting lab notes.
 
 ## Epistemic status — read this first
 
-"PROVEN" template lemmas are exhaustively grid-verified with an explicitly stated composition argument
-(episode-landmark pinning), adversarially red-team-audited, and independently re-verified; they are **not yet
-formalized in a proof assistant** (the Lean layer currently covers the arithmetic run-structure theorems). The
+Claims live at two assurance tiers. **Machine-checked (Lean 4):** the arithmetic run-structure theorems and the o4
+template core — the machine itself, the arbitrary-length sweep lemmas, the body lemma (all k), and the 471-step
+prefix — proven in the proof assistant with axiom audit `[propext, Quot.sound]` only. **Grid-certified:** the
+remaining template lemmas (o4 suffix classes, the full generation map, and the o3/o15/o18 templates) are
+exhaustively grid-verified with an explicitly stated composition argument (episode-landmark pinning),
+adversarially red-team-audited, and independently re-verified — but not yet formalized. The
 corrections/retraction trail (~46 self-caught over-claims, all logged in place in `notes/`) is part of the record.
 **No cryptid is decided.** Prior work by the bbchallenge community (machine discoveries and reduction statements
 for several of these machines; a Lean-verified halting congruence class for the o15/o18 table) is cited in
