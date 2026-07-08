@@ -44,6 +44,22 @@
 > 毎コミット自動ではなく**タグ = 意図的なリリース操作**に紐付けるのが安全設計
 > （公開は不可逆・DOI は乱発しない）。
 
+### 完全自動化（導入済み）: GitHub Actions on tag
+
+`.github/workflows/zenodo-release.yml` により、**`v*` タグを push するだけ**で CI が
+パッケージをビルド（自己完結テスト込み）し、Zenodo に新バージョンを作成する。
+
+一度だけの設定（GitHub リポジトリの Settings → Secrets and variables → Actions）:
+1. **Secret** `ZENODO_TOKEN` = Zenodo の personal access token（deposit:write + deposit:actions）
+2. **Variable** `ZENODO_RECORD_ID` = `21252622`
+3. （任意）**Variable** `ZENODO_AUTOPUBLISH` = `1` にすると Publish まで全自動
+   （⚠️ 不可逆。未設定なら DRAFT 止まり = Web で確認して Publish する安全運転）
+
+以後のリリースはこれだけ:
+```
+git tag v1.1 && git push origin v1.1
+```
+
 ### 方式A（代替）: GitHub → Zenodo 連携
 
 Zenodo の GitHub 連携（zenodo.org → GitHub settings で対象リポジトリを ON）を使うと、

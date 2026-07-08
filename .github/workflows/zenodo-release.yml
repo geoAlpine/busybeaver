@@ -1,0 +1,42 @@
+name: Zenodo release
+# Fires when a version tag (v1.1, v2.0, ...) is pushed.
+# Builds the curated package (with its self-containment test) and creates a NEW VERSION
+# draft on Zenodo. By default it stays a DRAFT for web review; set the repository
+# variable ZENODO_AUTOPUBLISH=1 to publish automatically (irreversible!).
+#
+# Required repository secret:  ZENODO_TOKEN  (zenodo.org -> Applications -> Personal
+# access tokens; scopes: deposit:write + deposit:actions).
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore Zenodo record id
+        # .zenodo_record_id is gitignored locally; in CI we derive it from a repo variable.
+        run: |
+          if [ -n "${{ vars.ZENODO_RECORD_ID }}" ]; then
+            echo "${{ vars.ZENODO_RECORD_ID }}" > zenodo/.zenodo_record_id
+          fi
+
+      - name: Build package + create Zenodo version
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          FLAGS=""
+          if [ "${{ vars.ZENODO_AUTOPUBLISH }}" = "1" ]; then FLAGS="--publish"; fi
+          python3 zenodo/zenodo_release.py --version "$VERSION" $FLAGS
+
+      - name: Summary
+        run: echo "Zenodo release for tag $GITHUB_REF_NAME finished. If draft mode, publish from the Zenodo web UI." >> "$GITHUB_STEP_SUMMARY"
