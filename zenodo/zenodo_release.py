@@ -61,7 +61,7 @@ def main():
         concept = str(info.get("conceptrecid") or rec)
         # Reuse an existing unpublished draft in this concept if one is lingering
         # (a prior failed run leaves one; Zenodo refuses a second newversion then).
-        deps = api("GET", "/deposit/depositions/?all_versions=true&size=200&sort=mostrecent")
+        deps = api("GET", "/deposit/depositions?all_versions=true&size=200&sort=mostrecent")
         draft = next((d for d in (deps or [])
                       if str(d.get("conceptrecid")) == concept and not d.get("submitted", True)), None)
         if draft:
