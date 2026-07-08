@@ -11,7 +11,8 @@ def _ver():
     return "1.0"
 VERSION = None  # set in main()
 
-PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md"]
+PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
+          "PAPER_MIRROR_LADDER.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [
@@ -22,12 +23,13 @@ VERIFICATION = [
     "o17_gate_map_2026-07-07.py", "o4_bouncer_macro.py",
     # import closure:
     "o18_md_rules.py", "o18_md_probe.py", "o18_md_rules_ext.py",  # ext incl. for the documented correction
-    "o4_coboundary_lp.py", "ah_ledger_criticality.py",            # bonus exact certificates
+    "o4_coboundary_lp.py", "ah_ledger_criticality.py", "mirror_census.py",  # bonus exact certificates
 ]
 
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
-        "lean/crosscheck.py", "lean/template_crosscheck.py", "lean/suffix_crosscheck.py",
+        "lean/O3.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
+        "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
 
 NOTES = [
@@ -48,6 +50,7 @@ NOTES = [
     "BB6_CRYPTID_SPECIES_2026-07-07.md", "ANTIHYDRA_LEDGER_UNIFICATION_2026-07-07.md",
     "X32_FAMILY_REDUCTIONS_2026-07-07.md", "O2_LINK0_CERTIFIED_2026-07-08.md",
     "MAHLER_SEA_CLASSIFICATION_2026-07-07.md", "O11_REFILL_LAW_2026-07-08.md",
+    "O13_O14_FIXEDPOINT_2026-07-08.md", "O16_SPACENEEDLE_FIXEDPOINT_2026-07-08.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
 ]
 

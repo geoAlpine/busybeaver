@@ -41,6 +41,7 @@ ITEMS = [
     ("o15_fp_vmap.py",         True,  ["MISMATCH"],        []),
     ("o17_gate_map_2026-07-07.py", True, [],               []),
     ("o4_bouncer_macro.py",    True,  ["FAILED", "MISMATCH -- NOT sound"], ["ALL VALIDATIONS PASSED"]),
+    ("mirror_census.py",       False, ["MISMATCH"],        ["ALL x3/2 + x5/2-even RUN LAWS VERIFIED"]),
 ]
 
 def run(script, forbidden, required):

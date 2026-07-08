@@ -23,10 +23,13 @@ of the core arithmetic theorems, and the supporting lab notes.
    Lean 4 (zero `sorry`, zero external dependencies) — including the **full o4 template layer**: the o4 machine
    itself, the arbitrary-length sweep lemmas, the body lemma `B(k) → B(k+2)` for ALL k, the suffix lemmas, and the
    composed generation map — all with axiom audit `[propext, Quot.sound]` only.
-3. **The unification.** The flagship kernels (Antihydra ×3/2, o4 ×4/3, o15/o18 ×8/3) are one problem — an
-   effective quenched bound on deep p-adic return/hitting frequency for explicit ×p/q orbits — graded by an exact
-   criticality criterion (run-cap slope / budget slope; Antihydra sits at 1.1699 > 1, the critical rung, matching
-   the known "1.17×" barrier).
+3. **The unification (uniform theorem).** EVERY analyzed Type-I cryptid (Antihydra, o2, o4, o11, o13, o14, o16 —
+   all ×3/2 or ×4/3/×8/3; and Space Needle ×5/2) is the q-adic depth process of an explicit affine ×(p/q) orbit:
+   the branch maps have integer fixed points x, and since p is a q-adic unit the maximal run equals `v_q(v − x)`
+   (`mirror_census.py` verifies the whole census). So the frontier is ONE problem — an effective quenched bound on
+   deep q-adic return frequency — graded by an exact criticality criterion (Antihydra/o2 at 1.1699 > 1, the
+   critical rung matching the "1.17×" barrier; o4 at 0.087). Space Needle's odd branch, the sole machine without a
+   single fixed point, is the one non-(K)-seeded outlier.
 4. **A gate/structure/protection classification** of the analyzed cryptid orbits, with proven fatal
    configurations for the template machines (including a-priori predicted halting configurations later confirmed
    by simulation) and a ledger-memory dichotomy (cumulative vs resetting) that exactly tracks the annealed
