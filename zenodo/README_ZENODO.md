@@ -26,7 +26,7 @@ of the core arithmetic theorems, and the supporting lab notes.
 3. **The unification (uniform theorem).** EVERY analyzed Type-I cryptid (Antihydra, o2, o4, o11, o13, o14, o16 —
    all ×3/2 or ×4/3/×8/3; and Space Needle ×5/2) is the q-adic depth process of an explicit affine ×(p/q) orbit:
    the branch maps have integer fixed points x, and since p is a q-adic unit the maximal run equals `v_q(v − x)`
-   (`mirror_census.py` verifies the whole census). So the frontier is ONE problem — an effective quenched bound on
+   (`mirror_census.py` verifies the whole census; **the abstract theorem is machine-checked in `lean/Mirror.lean`** — all 11 census machines are corollaries of one Lean theorem). So the frontier is ONE problem — an effective quenched bound on
    deep q-adic return frequency — graded by an exact criticality criterion (Antihydra/o2 at 1.1699 > 1, the
    critical rung matching the "1.17×" barrier; o4 at 0.087). Space Needle's odd branch, the sole machine without a
    single fixed point, is the one non-(K)-seeded outlier.
@@ -41,9 +41,10 @@ of the core arithmetic theorems, and the supporting lab notes.
   `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`, `PAPER_SPECIES_SURVEY.md`
 - `verification/` — `verify_all.py` (one-command re-verification; `--quick` ≈ 30 s, full ≈ minutes) and all
   scripts it invokes, self-contained
-- `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems + the o4 template core (machine, sweeps,
-  body, prefix) — 100+ theorems, zero `sorry`, axiom audit `[propext, Quot.sound]` only;
-  build with `lake build`
+- `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
+  theorem (`Mirror.lean`, 11 census machines as corollaries), and the o4 AND o3 template cores (both machines,
+  sweep lemmas, body lemmas — o4's full generation map incl. odometer+ledger, o3's body) — 150+ theorems, zero
+  `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
 - `LICENSE-DOCS` (CC-BY 4.0, applies to `papers/`, `notes/`, this README),

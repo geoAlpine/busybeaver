@@ -23,10 +23,10 @@ VERIFICATION = [
     "o17_gate_map_2026-07-07.py", "o4_bouncer_macro.py",
     # import closure:
     "o18_md_rules.py", "o18_md_probe.py", "o18_md_rules_ext.py",  # ext incl. for the documented correction
-    "o4_coboundary_lp.py", "ah_ledger_criticality.py", "mirror_census.py",  # bonus exact certificates
+    "o4_coboundary_lp.py", "ah_ledger_criticality.py", "mirror_census.py", "freq_rundepth_whiteness.py",  # bonus exact certificates
 ]
 
-LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean",
+LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
         "lean/O3.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
         "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py",
@@ -51,6 +51,7 @@ NOTES = [
     "X32_FAMILY_REDUCTIONS_2026-07-07.md", "O2_LINK0_CERTIFIED_2026-07-08.md",
     "MAHLER_SEA_CLASSIFICATION_2026-07-07.md", "O11_REFILL_LAW_2026-07-08.md",
     "O13_O14_FIXEDPOINT_2026-07-08.md", "O16_SPACENEEDLE_FIXEDPOINT_2026-07-08.md",
+    "FREQUENCY_AXIS_PROBE_2026-07-08.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
 ]
 
