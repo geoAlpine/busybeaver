@@ -20,7 +20,7 @@ ROOT = os.path.dirname(HERE)
 SANDBOX = "--sandbox" in sys.argv
 BASE = "https://sandbox.zenodo.org/api" if SANDBOX else "https://zenodo.org/api"
 STATE = os.path.join(HERE, ".zenodo_record_id" + (".sandbox" if SANDBOX else ""))
-ZIP = os.path.join(HERE, "bb6-cryptid-frontier-v1.0.zip")
+
 
 def arg(flag, default=None):
     if flag in sys.argv:
@@ -49,7 +49,8 @@ def main():
     version = arg("--version", "1.0")
     # 1. rebuild + self-test
     print("== rebuilding package ==")
-    r = subprocess.run([sys.executable, os.path.join(HERE, "build_package.py")])
+    r = subprocess.run([sys.executable, os.path.join(HERE, "build_package.py"), "--version", version])
+    zip_path = os.path.join(HERE, f"bb6-cryptid-frontier-v{version}.zip")
     if r.returncode != 0:
         sys.exit("build_package.py failed (self-containment) -- aborting release")
 
@@ -69,10 +70,10 @@ def main():
     dep_id = dep["id"]
 
     # 3. upload zip via the bucket API
-    print(f"== uploading {os.path.basename(ZIP)} to deposition {dep_id} ==")
+    print(f"== uploading {os.path.basename(zip_path)} to deposition {dep_id} ==")
     bucket = dep["links"]["bucket"]
-    with open(ZIP, "rb") as fh:
-        api("PUT", f"{bucket}/{os.path.basename(ZIP)}", fh.read(), raw=True,
+    with open(zip_path, "rb") as fh:
+        api("PUT", f"{bucket}/{os.path.basename(zip_path)}", fh.read(), raw=True,
             ctype="application/octet-stream")
 
     # 4. metadata

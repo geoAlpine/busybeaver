@@ -14,3 +14,4 @@ __pycache__/
 *.pyc
 lean/.lake/
 zenodo/.zenodo_record_id*
+zenodo/bb6-cryptid-frontier-v*.zip

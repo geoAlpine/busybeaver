@@ -2,10 +2,14 @@
 # Zenodo package builder (2026-07-08).
 # Assembles the curated artifact: papers + verification battery (self-contained) + Lean layer + supporting notes.
 # Then SELF-TESTS: extracts to a temp dir and runs verify_all.py --quick inside it.
-import os, shutil, zipfile, subprocess, sys, tempfile
+import os, re, shutil, zipfile, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "zenodo", "bb6-cryptid-frontier-v1.0.zip")
+def _ver():
+    if "--version" in sys.argv:
+        return sys.argv[sys.argv.index("--version")+1]
+    return "1.0"
+VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md"]
 
@@ -39,9 +43,9 @@ NOTES = [
     "O18_MULTIDEFECT_2026-07-07.md", "O18_INVARIANT_SYNTHESIS_2026-07-07.md",
     "O18_ANNEALED_STANDOFF_2026-07-07.md", "O18_R1_PINNING_2026-07-08.md",
     "O15_O18_IDENTITY_2026-07-07.md", "NOVELTY_AUDIT_2026-07-07.md",
-    "O18_CLEANUP_2026-07-08.md", "O4_COBOUNDARY_LP_2026-07-08.md", "X32_CLEANUP_2026-07-08.md",
+    "O18_CLEANUP_2026-07-08.md", "X32_CLEANUP_2026-07-08.md",
     "BB6_CRYPTID_SPECIES_2026-07-07.md", "ANTIHYDRA_LEDGER_UNIFICATION_2026-07-07.md",
-    "X32_FAMILY_REDUCTIONS_2026-07-07.md", "X32_CLEANUP_2026-07-08.md",
+    "X32_FAMILY_REDUCTIONS_2026-07-07.md",
     "MAHLER_SEA_CLASSIFICATION_2026-07-07.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
 ]
@@ -50,25 +54,31 @@ META = ["zenodo/README_ZENODO.md", "zenodo/CITATION.cff",
         "zenodo/LICENSE-DOCS", "zenodo/LICENSE-CODE", "zenodo/metadata.json"]
 
 def main():
+    global VERSION
+    VERSION = _ver()
+    out = os.path.join(ROOT, "zenodo", f"bb6-cryptid-frontier-v{VERSION}.zip")
     missing = [f for group in (PAPERS, VERIFICATION, LEAN, NOTES, META) for f in group
                if not os.path.exists(os.path.join(ROOT, f))]
     if missing:
         print("MISSING FILES:"); [print("  ", m) for m in missing]; sys.exit(1)
 
-    with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
-        z.write(os.path.join(ROOT, "zenodo/README_ZENODO.md"), "README.md")
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        readme = open(os.path.join(ROOT, "zenodo/README_ZENODO.md")).read()
+        readme = re.sub(r"version \d+\.\d+(\.\d+)? \(", f"version {VERSION} (", readme)
+        readme = re.sub(r"\(Version \d+\.\d+(\.\d+)?\)", f"(Version {VERSION})", readme)
+        z.writestr("README.md", readme)
         for f in ["zenodo/CITATION.cff", "zenodo/LICENSE-DOCS", "zenodo/LICENSE-CODE", "zenodo/metadata.json"]:
             z.write(os.path.join(ROOT, f), os.path.basename(f))
         for f in PAPERS:        z.write(os.path.join(ROOT, f), f"papers/{f}")
         for f in VERIFICATION:  z.write(os.path.join(ROOT, f), f"verification/{f}")
         for f in LEAN:          z.write(os.path.join(ROOT, f), f.replace("lean/", "lean/", 1) if f.startswith("lean/") else f"lean/{os.path.basename(f)}")
         for f in NOTES:         z.write(os.path.join(ROOT, f), f"notes/{f}")
-    size = os.path.getsize(OUT)
-    print(f"built {OUT}  ({size/1e6:.2f} MB)")
+    size = os.path.getsize(out)
+    print(f"built {out}  ({size/1e6:.2f} MB)")
 
     # SELF-TEST: extract + run verify_all --quick inside
     with tempfile.TemporaryDirectory() as td:
-        with zipfile.ZipFile(OUT) as z: z.extractall(td)
+        with zipfile.ZipFile(out) as z: z.extractall(td)
         r = subprocess.run([sys.executable, "verify_all.py", "--quick"],
                            cwd=os.path.join(td, "verification"),
                            capture_output=True, text=True, timeout=600)
