@@ -57,20 +57,30 @@ def main():
     # 2. create deposition or new version
     if os.path.exists(STATE):
         rec = open(STATE).read().strip()
-        print(f"== creating new version of record {rec} ==")
-        d = api("POST", f"/deposit/depositions/{rec}/actions/newversion")
-        dep = api("GET", d["links"]["latest_draft"])
+        info = api("GET", f"/deposit/depositions/{rec}")
+        concept = str(info.get("conceptrecid") or rec)
+        # Reuse an existing unpublished draft in this concept if one is lingering
+        # (a prior failed run leaves one; Zenodo refuses a second newversion then).
+        deps = api("GET", "/deposit/depositions/?all_versions=true&size=200&sort=mostrecent")
+        draft = next((d for d in (deps or [])
+                      if str(d.get("conceptrecid")) == concept and not d.get("submitted", True)), None)
+        if draft:
+            print(f"== reusing existing unpublished draft {draft['id']} ==")
+            dep = api("GET", f"/deposit/depositions/{draft['id']}")
+        else:
+            print(f"== creating new version of record {rec} ==")
+            d = api("POST", f"/deposit/depositions/{rec}/actions/newversion")
+            dep = api("GET", d["links"]["latest_draft"])
         dep_id = dep["id"]
-        # remove ALL files inherited from the previous version (robust: list via the
-        # deposition's files endpoint, fall back to the inline files field).
+        # remove ALL inherited/stale files so the fresh zip can be uploaded
         try:
             files = api("GET", f"/deposit/depositions/{dep_id}/files")
         except SystemExit:
             files = dep.get("files", [])
         if not files:
             files = dep.get("files", [])
-        print(f"== clearing {len(files)} inherited file(s) ==")
-        for f in files:
+        print(f"== clearing {len(files or [])} existing file(s) ==")
+        for f in (files or []):
             link = (f.get("links", {}) or {}).get("self")
             if link:
                 api("DELETE", link)
