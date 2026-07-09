@@ -28,8 +28,8 @@ VERIFICATION = [
 
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
-        "lean/O3.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
-        "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py",
+        "lean/O3.lean", "lean/O18.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
+        "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py", "lean/o18_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
 
 NOTES = [
