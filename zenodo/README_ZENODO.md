@@ -43,7 +43,7 @@ of the core arithmetic theorems, and the supporting lab notes.
   scripts it invokes, self-contained
 - `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
   theorem (`Mirror.lean`, 11 census machines as corollaries), and the o4 AND o3 template cores (both machines,
-  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+sweeps; plus the abstract uniform fixed-point theorem and the criticality comparison) — 260+ theorems, zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
+  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate; plus the abstract uniform fixed-point theorem and the criticality comparison) — 324 theorems, zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
 - `LICENSE-DOCS` (CC-BY 4.0, applies to `papers/`, `notes/`, this README),

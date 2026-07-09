@@ -12,7 +12,7 @@ def _ver():
 VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
-          "PAPER_MIRROR_LADDER.md"]
+          "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [
@@ -28,7 +28,7 @@ VERIFICATION = [
 
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
-        "lean/O3.lean", "lean/O18.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
+        "lean/O3.lean", "lean/O18.lean", "lean/O2.lean", "lean/O17.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
         "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py", "lean/o18_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
 
@@ -51,7 +51,7 @@ NOTES = [
     "X32_FAMILY_REDUCTIONS_2026-07-07.md", "O2_LINK0_CERTIFIED_2026-07-08.md",
     "MAHLER_SEA_CLASSIFICATION_2026-07-07.md", "O11_REFILL_LAW_2026-07-08.md",
     "O13_O14_FIXEDPOINT_2026-07-08.md", "O16_SPACENEEDLE_FIXEDPOINT_2026-07-08.md",
-    "FREQUENCY_AXIS_PROBE_2026-07-08.md",
+    "FREQUENCY_AXIS_PROBE_2026-07-08.md", "O7_AND_CENSUS_COMPLETENESS_2026-07-09.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
 ]
 
