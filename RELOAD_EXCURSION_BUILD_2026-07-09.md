@@ -141,3 +141,11 @@ decay; explicit heavy-tail adversary). Basis: `NEWMATH_SOLENOID_BUILD_2026-07-09
 `O4_RUN_STRUCTURE_2026-07-07`, `NEW_MATH_PROGRAM`, kernel anchor AEV arXiv:2510.11723.
 
 No machine decided. No label upgraded.
+
+---
+**CORRECTION (2026-07-10, `U0_EXCLUSION_BUILD_2026-07-10.md`):** the heavy-tail adversary u₀ constructed above is
+ℚ₂-faithful but **solenoid-INFEASIBLE** — it violates the archimedean run-cap (depth-42 excursion at reload i=21 where
+the accumulated budget permits only 31.66 bits). It is an archimedean phantom, NOT realizable by any integer orbit.
+The corrected statement: a run-cap-RESPECTING heavy-tail adversary (deep excursions scheduled within the growing
+budget) remains fully solenoid-legal and map-faithful with E[K²]=∞ (0/4000 cap violations). The fatal CLASS survives;
+only the naive construction is excluded. See the U0 note for the full audit.
