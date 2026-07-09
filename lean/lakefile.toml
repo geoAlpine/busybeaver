@@ -1,6 +1,6 @@
 name = "runstructure"
 version = "0.1.0"
-defaultTargets = ["RunStructure", "Template", "Suffix", "O3", "Mirror"]
+defaultTargets = ["RunStructure", "Template", "Suffix", "O3", "Mirror", "O18"]
 
 [[lean_lib]]
 name = "RunStructure"
@@ -16,3 +16,6 @@ name = "Suffix"
 
 [[lean_lib]]
 name = "O3"
+
+[[lean_lib]]
+name = "O18"

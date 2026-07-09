@@ -40,8 +40,18 @@ Layers (labels: FORMALIZED = `lake build` green + `sorry`-free):
   growing family, so the honest certificate is the finite descent, not an
   infinite non-halt — `o3_body_proof.py`).
 
-Honest scope: o3's generation map / a-k ledger (`O3_TEMPLATE_PORT` §3–5)
-stay on the lab record.  **This file decides no machine; o3 stays `[OPEN]`.**
+* **L4 (the generation map, `a ≡ 0 (mod 3)` class, FORMALIZED, §5)** — the
+  milestone `Mcfg a k` (`= build_M`), the fixed 17-step reorganization `reorg17`,
+  and the prize `o3_gen0`: `M(3M, k+1) → M(4M+3, k)` in exactly `bodyTime M 0 + 17`
+  steps (descent · reorg), deriving o3's base-4/3 ODOMETER (`a′ = ⌊4a/3⌋ + 3`,
+  `c(0)=3`) and the k-LEDGER drain (`Δk = −1`) as theorems (`o3_odometer_mod0`).
+  Real-orbit anchors `blank_to_M62` / `blank_to_M111` (blank tape → `M(6,2)` →
+  `M(11,1)`, kernel-checked vs the Python milestone dump).
+
+Honest scope: only the `a ≡ 0` residue class of the generation is closed; the
+`a ≡ 1` cascade and `a ≡ 2` deposit reorgs (their own boundary episodes) and the
+ledger conjecture stay on the lab record (`O3_TEMPLATE_PORT` §3–5).  **This file
+decides no machine; o3 stays `[OPEN]`.**
 
 Dependency-free (core Lean only, no mathlib), self-contained in namespace
 `O3` (the machine-independent scaffolding mirrors `Template.lean`).
@@ -601,7 +611,149 @@ theorem body_descent (M : Nat) (p : Int) (G : List Bool) :
   have h := body_iter M 0 p G
   rwa [Nat.zero_add, Nat.mul_zero] at h
 
-/-! ## §5 Axiom audit (printed at every build). -/
+/-! ## §5 (the PRIZE) The milestone `M(a,k)` and the `a ≡ 0 (mod 3)` GENERATION.
+
+o3's milestone (from raw dumps, `O3_TEMPLATE_PORT` §1) is
+
+  `M(a,k) = 0^∞ [A] 0 0 (10)^a (110)^k 0^∞`   (head, state `A`, on the first `0`),
+
+with `a` = #single-`1` blocks (the ODOMETER) and `k` = #trailing `110` marker
+blocks (the LEDGER — roles SWAPPED vs o4).  The generation-to-generation map goes
+through the body DESCENT (`body_descent`, §4c — `a` SHRINKS to 0) followed by a
+fixed 17-step REORGANIZATION that rebuilds `a` via `⌊4a/3⌋`.  For the `a ≡ 0`
+class this composes into a clean Lean theorem: the odometer step `a′ = ⌊4a/3⌋ + 3`
+and the ledger drain `Δk = −1`, machine-checked end-to-end (`o3_gen_proof.py`,
+`o3_ledger.py`).
+
+The leading `0 0` of a milestone plus the first marker block `1 1 0 …` is exactly
+o3's body config: `M(a,k+1) = BodyCfg a p (0 · (110)^k)` — so the descent applies
+with the remaining `k` markers as the (never-read) right gap context `G`, and the
+`a ≡ 0` milestone bottoms out cleanly at `BodyCfg 0`. -/
+
+/-- Marker word `(110)^k` (nearest-first): `mk 0 = []`, `mk (k+1) = 1 1 0 · mk k`. -/
+def mk : Nat → List Bool
+  | 0 => []
+  | k + 1 => true :: true :: false :: mk k
+
+/-- The o3 milestone `M(a,k) = 0^∞ [A] 0 0 (10)^a (110)^k 0^∞`, head (state `A`)
+on the first of the two leading zeros, at position `p`.  Matches the Python
+`o3_gen_proof.build_M` cell-for-cell (verified: blank tape → `Mcfg 6 2 (-14)` at
+step 184, `Mcfg 11 1 (-21)` at step 299). -/
+def Mcfg (a k : Nat) (p : Int) : Cfg :=
+  ⟨.A, p, ⟨[], false, false :: (pow10 a ++ mk k)⟩⟩
+
+theorem Mcfg_congr {a a' k k' : Nat} {p q : Int}
+    (ha : a = a') (hk : k = k') (hp : p = q) : Mcfg a k p = Mcfg a' k' q := by
+  rw [ha, hk, hp]
+
+/-- **The milestone is a body config.**  Peeling the leading defect `1 1` off the
+first marker block exposes `M(a,k+1)` as `BodyCfg a p (0 · (110)^k)` — the entry
+point for the descent (definitional). -/
+theorem Mcfg_as_body (a k : Nat) (p : Int) :
+    Mcfg a (k + 1) p = BodyCfg a p (false :: mk k) := rfl
+
+/-- `(01)^n · 0 Z = 0 · (10)^n Z` (the reverse-shift companion of `cons_pow01'`;
+converts the descent's deposited `(01)` gap fabric back into the `(10)` blocks the
+milestone counts as the rebuilt odometer `a`). -/
+theorem pow01_cons_false : ∀ (n : Nat) (Z : List Bool),
+    pow01 n ++ (false :: Z) = false :: (pow10 n ++ Z) := by
+  intro n
+  induction n with
+  | zero => intro Z; rfl
+  | succ n ih =>
+    intro Z
+    show false :: true :: (pow01 n ++ (false :: Z))
+        = false :: true :: false :: (pow10 n ++ Z)
+    rw [ih]
+
+/-- **The reorganization episode (17 fixed steps, FORMALIZED).**  From `BodyCfg 0`
+(the bottom of the descent) the head does a fixed local dance over the frontier
+`[A] 0 0 1 1`, shifting `−3` and re-coding `1 1` into `(01)^3`, with the tail `X`
+(the gap fabric `(01)^(4M)` and the surviving markers) UNTOUCHED — head span
+`[p−3, p+3]`, nothing at `p+4` or beyond is read (`o3_gen_proof.py` reorg trace).
+This is what rebuilds the odometer: `1 1 (01)^(4M) 0 …` re-reads as `(10)^(4M+3) …`
+via `pow01_cons_false`. Kernel `rfl` with symbolic tail `X`. -/
+theorem reorg17 (p : Int) (X : List Bool) :
+    steps 17 ⟨.A, p, ⟨[], false, false :: true :: true :: X⟩⟩
+      = some ⟨.A, p - 3, ⟨[], false,
+          false :: true :: false :: true :: false :: true :: X⟩⟩ := by
+  have h : steps 17 (⟨.A, p, ⟨[], false, false :: true :: true :: X⟩⟩ : Cfg)
+      = some ⟨.A,
+          p + 1 + 1 - 1 + 1 + 1 - 1 - 1 - 1 - 1 + 1 - 1 + 1 + 1 - 1 - 1 - 1 - 1,
+          ⟨[], false, false :: true :: false :: true :: false :: true :: X⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **THE o3 GENERATION (`a ≡ 0 (mod 3)`), fully formal.**  For every `M` and `k`,
+the milestone `M(3M, k+1)` reaches `M(4M+3, k)` in exactly `bodyTime M 0 + 17`
+steps — the descent (`M` body passes) then the fixed reorganization.  `some` output
+⇒ HALT-FREE over the whole generation.  Reading off `a = 3M`: `a′ = 4M+3 = 4a/3+3`
+(the base-4/3 ODOMETER, constant `c(0)=3`) and `k+1 ↦ k` (the LEDGER drain,
+`Δk = −1`).  Composition: `body_descent M · reorg17`. -/
+theorem o3_gen0 (M k : Nat) (p : Int) :
+    steps (bodyTime M 0 + 17) (Mcfg (3 * M) (k + 1) p)
+      = some (Mcfg (4 * M + 3) k (p - 2 * (M : Int) - 3)) := by
+  rw [Mcfg_as_body, steps_add, body_descent M p (false :: mk k), someBind]
+  -- descent landed on `BodyCfg 0 (p−2M) ((01)^(4M) · 0 · (110)^k)`; unfold to the
+  -- reorg input and fire the 17-step episode (tail `X` never read)
+  show steps 17 (⟨.A, p - 2 * (M : Int), ⟨[], false,
+      false :: true :: true :: (pow01 (4 * M) ++ (false :: mk k))⟩⟩ : Cfg) = _
+  rw [reorg17]
+  apply congrArg some
+  -- assemble the landing milestone: `(01)^3 · (01)^(4M) · 0 · (110)^k`
+  --   = `(01)^(4M+3) · 0 · (110)^k` = `0 · (10)^(4M+3) · (110)^k`
+  have hlist : (false :: true :: false :: true :: false :: true
+        :: (pow01 (4 * M) ++ (false :: mk k)) : List Bool)
+      = false :: (pow10 (4 * M + 3) ++ mk k) := by
+    show (pow01 3 ++ (pow01 (4 * M) ++ (false :: mk k)))
+        = false :: (pow10 (4 * M + 3) ++ mk k)
+    rw [← List.append_assoc, ← pow01_add, show 3 + 4 * M = 4 * M + 3 from by omega]
+    exact pow01_cons_false (4 * M + 3) (mk k)
+  show (⟨.A, p - 2 * (M : Int) - 3, ⟨[], false, false :: true :: false :: true
+      :: false :: true :: (pow01 (4 * M) ++ (false :: mk k))⟩⟩ : Cfg)
+    = ⟨.A, p - 2 * (M : Int) - 3, ⟨[], false, false :: (pow10 (4 * M + 3) ++ mk k)⟩⟩
+  rw [hlist]
+
+/-- The paper's grid instance `M(12,3) → M(19,2)` (`M = 4, k = 2`): `316 + 17 = 333`
+steps (the descent `bodyTime 4 0 = 316`, then the reorg).  Position `p − 11`. -/
+example (p : Int) : steps (bodyTime 4 0 + 17) (Mcfg 12 3 p)
+    = some (Mcfg 19 2 (p - 2 * (4 : Int) - 3)) := o3_gen0 4 2 p
+
+/-- **THE o3 ODOMETER + LEDGER (`a ≡ 0 (mod 3)` class), DERIVED.**  Every milestone
+`M(a,k)` with `3 ∣ a` and `k ≥ 1` reaches `M(⌊4a/3⌋ + 3, k − 1)` — the base-4/3
+odometer step (constant `c(0) = 3`) and the ledger drain (`Δk = −1`), as a Lean
+theorem.  What is NOT here (the residual o3 OPEN core, `O3_TEMPLATE_PORT` §5): the
+`a ≡ 1` cascade / `a ≡ 2` deposit reorgs (different boundary episodes), and the
+ledger conjecture that the drains never push `k` below the fatal floor.  o3 stays
+`[OPEN]`. -/
+theorem o3_odometer_mod0 (a k : Nat) (p : Int) (ha : a % 3 = 0) (hk : 1 ≤ k) :
+    ∃ (N : Nat) (q : Int),
+      steps N (Mcfg a k p) = some (Mcfg (4 * a / 3 + 3) (k - 1) q) := by
+  obtain ⟨M, hM⟩ : ∃ M, a = 3 * M := ⟨a / 3, by omega⟩
+  obtain ⟨k', hk'⟩ : ∃ k', k = k' + 1 := ⟨k - 1, by omega⟩
+  subst hM; subst hk'
+  exact ⟨bodyTime M 0 + 17, p - 2 * (M : Int) - 3, by
+    rw [o3_gen0]; exact congrArg some (Mcfg_congr (by omega) (by omega) rfl)⟩
+
+/-! ### §5a real-orbit anchor: blank tape → the first two milestones.
+
+The blank-tape orbit joins the ledger map at `M(6,2)` (`O3_TEMPLATE_PORT` §5,
+concretely verified), which is an `a ≡ 0` milestone; one `o3_gen0` step (`M = 2,
+k = 1`) is the first generation `M(6,2) → M(11,1)`, matching the Python milestone
+dump (blank → `M(6,2)` at 184, → `M(11,1)` at 299). -/
+
+set_option maxRecDepth 8000 in
+/-- Blank tape → `M(6,2)` at position `−14` in 184 steps (kernel `rfl` vs Python). -/
+theorem blank_to_M62 : steps 184 init = some (Mcfg 6 2 (-14)) := rfl
+
+/-- Blank → `M(11,1)` at `−21` in 299 steps: `blank_to_M62` composed with the first
+generation `o3_gen0 2 1` (`M(6,2) → M(11,1)`, ledger drain `2 → 1`). -/
+theorem blank_to_M111 :
+    steps (184 + (bodyTime 2 0 + 17)) init = some (Mcfg 11 1 (-21)) := by
+  rw [steps_add, blank_to_M62, someBind,
+      show (Mcfg 6 2 (-14) : Cfg) = Mcfg (3 * 2) (1 + 1) (-14) from rfl, o3_gen0]
+  exact congrArg some (Mcfg_congr (by omega) rfl (by decide))
+
+/-! ## §6 Axiom audit (printed at every build). -/
 
 #print axioms steps_add
 #print axioms sanity100
@@ -619,6 +771,12 @@ theorem body_descent (M : Nat) (p : Int) (G : List Bool) :
 #print axioms body_step
 #print axioms body_iter
 #print axioms body_descent
+#print axioms pow01_cons_false
+#print axioms reorg17
+#print axioms o3_gen0
+#print axioms o3_odometer_mod0
+#print axioms blank_to_M62
+#print axioms blank_to_M111
 
 /-! ### §5a sanity: the FULL body lemma, kernel-executed on the real config. -/
 
@@ -628,5 +786,17 @@ theorem body_descent (M : Nat) (p : Int) (G : List Bool) :
       = some (BodyCfg 3 (-6) (pow01 12 ++ [])))  -- body_iter r=3,M=1: expect true
 
 #eval steps 100 init  -- cross-check vs Python (N = 100)
+
+/-! ### §5b sanity: the GENERATION map, kernel-executed on real milestones. -/
+
+-- a≡0 generation grid points (vs o3_gen_proof.py): M(12,3)→M(19,2), M(15,4)→M(23,3):
+#eval decide (steps (bodyTime 4 0 + 17) (Mcfg 12 3 0) = some (Mcfg 19 2 (-11)))
+#eval decide (steps (bodyTime 5 0 + 17) (Mcfg 15 4 0) = some (Mcfg 23 3 (-13)))
+-- the k=1 floor case M(6,1)→M(11,0) (the successor M(11,0) then halts downstream):
+#eval decide (steps (bodyTime 2 0 + 17) (Mcfg 6 1 0) = some (Mcfg 11 0 (-7)))
+-- real-orbit milestones (blank tape):
+#eval decide (steps 184 init = some (Mcfg 6 2 (-14)))          -- expect true
+#eval decide (steps (184 + (bodyTime 2 0 + 17)) init = some (Mcfg 11 1 (-21)))  -- true
+#eval (184 + (bodyTime 2 0 + 17))  -- = 299, the real orbit's step-2 milestone
 
 end O3

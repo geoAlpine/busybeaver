@@ -379,3 +379,209 @@ print `true` (kernel-executed against `o3_zipper.py`).
 successfully`). Full `lake build` green (all modules).
 
 **No machine decided. No label upgraded.**
+
+---
+
+# MIRROR CENSUS-COMPLETION + CRITICALITY APPEND (2026-07-09) — the FULL §2 census and the abstract CRITICALITY theorem are FORMALIZED in `Mirror.lean`
+
+*Fifth extension of `lean/Mirror.lean` (the uniform base-`q` run theorem). Two targets:
+(a) complete the census so EVERY machine in `PAPER_MIRROR_LADDER.md` §2 is a Lean
+corollary, and (b) formalize the run-cap-slope / budget-slope comparison that orders
+the mirror ladder — kept in pure `ℕ`/`ℤ` (no real logarithms). STRICT labels as above;
+`lake build Mirror` green, full axiom audit clean. Not committed.*
+
+## Verdict: BOTH targets FORMALIZED. `lake build Mirror` green; all 20 audited theorems `[propext, Quot.sound]` only (no `sorryAx`, no `Classical.choice`, no `native_decide`); zero `sorry`.
+
+### (a) Census now COMPLETE — every §2 machine is a `run_closed_form` corollary
+
+Added six one-line specializations (each `run_closed_form (by decide) (by decide) (by omega)`):
+
+| machine | Lean theorem(s) | (p,q,e) → fixed point x | run law |
+|---|---|---|---|
+| **o14** (o11 twin) | `o14_even`, `o14_odd` | (3,2,12)→−12, (3,2,11)→−11 | v₂(a+12), v₂(a+11) |
+| **o13** (o12-flavor) | `o13_even`, `o13_odd` | (3,2,14)→−14, (3,2,7)→−7 | v₂(a+14), v₂(a+7) |
+| **o2** (ceiling ×3/2) | `o2_even`, `o2_odd` | (3,2,0)→0, (3,2,1)→−1 | v₂(y), v₂(y+1) |
+
+**o2 ceiling status (the flagged subtlety): NO ceiling variant of the abstract lemma
+was needed.** On each parity branch `⌈3y/2⌉` is affine — even `y`: `3y/2` (e=0);
+odd `y`: `(3y+1)/2` (e=1) — and on-branch (`2 ∣ 3v+e`) the division is exact, so
+`bmap 3 e 2` coincides with the true ceiling map for the whole run. Both branches are
+therefore plain `run_closed_form` instances. Fidelity note: the §2 table's "fixed
+points (0,1)" lists the odd **correction** `c_o=1`; the run-law-consistent odd fixed
+point is `x = 1−2c_o = −1`, giving `run = v₂(v+1) = v₂(y+1)` exactly as tabulated
+(and as `mirror_census.py` verifies). With these, the census corollaries are:
+Antihydra, o2, o16, o11, o14, o13 (all ×3/2), o4 (three ×4/3 branches), o15/o18 (×8/3),
+Space Needle even (×5/2) — **all of §2**; Space Needle's odd branch stays out of scope
+(no single fixed point, paper §3).
+
+### (b) The criticality comparison — abstract, integer, FORMALIZED (`Mirror.lean` §6)
+
+The real-number slopes `ρ = log_q(p/q)` (run-cap) and `β` (budget) appear ONLY in
+comments; everything provable is exponentiated to `ℕ`:
+
+- **`run_cap_le`** : `|n| ≤ B ⇒ q^(v_q n) ≤ B` (run_cap + a bound).
+- **`run_cap_slope`** : `|n|·q^k ≤ C·p^k ⇒ q^(v_q n + k) ≤ C·p^k` — the integer form of
+  `run ≤ k·log_q(p/q) + log_q C`; the coefficient of `k` **is** `ρ = log_q p − 1`.
+- **`criticality_core`** : single-run fatality `b ≤ r`, run bound `q^(r+k) ≤ C·p^k`,
+  budget slope `(β+1)·k ≤ b+k` ⟹ `q^((β+1)·k) ≤ C·p^k`.
+- **`geom_binom`** (`p^(k+1)+k·p^k ≤ p·(p+1)^k`, elementary induction) → **`geom_horizon`**
+  (`1 ≤ p < base, k ≥ C·p ⇒ C·p^k < base^k`): the pure-ℕ fact that `q^(β+1)` outgrows
+  `C·p^k` once `p < q^(β+1)` — this integer condition **is** `ρ < β` (since
+  `log_q p − 1 < β ⇔ p < q^(β+1)`).
+- **`criticality_excluded`** (abstract punchline) : add subcriticality `p+1 ≤ q^(β+1)`;
+  then core ∧ horizon are contradictory ⟹ single-run fatality is impossible for `k ≥ C·p`.
+- **`o4_criticality_excluded`** : `(q,p,β) = (3,4,3)`, subcriticality witness the integer
+  `p+1 = 5 ≤ 81 = 3⁴`. ρ = log₃(4/3) ≈ 0.262, β = 3, ρ/β ≈ 0.087 < 1: **single maximal
+  3-adic run CANNOT exhaust the linearly-growing budget past the horizon `k ≥ 4C`.**
+
+**Antihydra is the criticality boundary and the lemma does NOT apply**: its budget slope
+`β = 1/2` is non-integer (cannot instantiate the ℕ-lemma at all), and the subcriticality
+test would be `p+1 = 4 ≤ 2^(3/2) ≈ 2.83` — FALSE (`ρ/β = log₂(3/2)/(1/2) = 1.1699 > 1`).
+The integer-vs-commented split is exactly as the task specified: the exponentiated
+inequalities are theorems; the logarithmic slope reading (and Antihydra's non-integer β)
+are comments.
+
+## What is integer (Lean-proved) vs commented
+- **Integer / proved:** all run laws (`run_closed_form` + 17 census corollaries), the
+  run cap `q^(v_q n) ≤ |n|`, the slope-exponentiated `q^(run+k) ≤ C·p^k`, the geometric
+  horizon, `criticality_core`, `criticality_excluded`, and the o4 instance — all in ℕ/ℤ.
+- **Commented only:** the identification of the `k`-coefficient with `log_q(p/q)`, the
+  numeric slope values (0.262, 0.087, 0.585, 1.1699), and Antihydra's non-integer β.
+
+## Axiom audit (printed at build) + sanity
+All twenty `#print axioms` targets (incl. `o13_odd`, `o14_even`, `o2_odd`, `geom_binom`,
+`geom_horizon`, `run_cap_slope`, `criticality_core`, `criticality_excluded`,
+`o4_criticality_excluded`): **`[propext, Quot.sound]` only.** `geom_horizon` was made
+Classical-free by avoiding `Nat.mul_lt_mul_right`/`Nat.lt_of_mul_lt_mul_left` (both pull
+`Classical.choice`) — the strict step uses `Nat.mul_le_mul` + `omega`, the cancellation
+uses `Nat.lt_or_ge` + `Nat.not_lt`. `#eval` sanity: `decide (5 ≤ 3^4) = true` (o4
+subcritical), `decide (1·4^4 < 81^4) = true` (horizon at k=C·p=4). `mirror_census.py`
+independently reconfirms o13 x=(−14,−7), o14 x=(−12,−11) (ALL RUN LAWS VERIFIED).
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build Mirror   # green, audit prints
+/usr/bin/python3 ../mirror_census.py                             # ALL RUN LAWS VERIFIED
+```
+
+**No machine decided. No label upgraded.**
+
+---
+
+# O18 APPEND (2026-07-09) — a THIRD machine toward formalization: o18's L1 machine + BOTH period-2 sweeps + one m-parametric branch tail are FORMALIZED
+
+*Exploratory third formalization target (after o4, o3): the BB(6) pushdown-odometer cryptid
+`o18 = 1RB0RE_1LC0RA_1LA1LD_1LC1LF_0LC0LB_1LE---` (halt = F reads 1), mirroring the
+`Template.lean`/`O3.lean` zipper/step/sweep-by-induction architecture. New module `lean/O18.lean`
+(same zero-dependency, zero-mathlib project; `lake build O18` ≈ 0.5 s; own namespace `O18`).
+Cross-check `lean/o18_crosscheck.py` (independent zipper sim). Goal: L1 + one/two structural
+lemmas, honestly labeled, pinning the exact scale-obstacle for a future full effort. Not committed.*
+
+## Verdict: L1 FORMALIZED, L2 FORMALIZED (BOTH sweeps), L3 FORMALIZED (the clean-reset formation tail)
+
+| Target | Lean theorem(s) in `O18.lean` | Status |
+|---|---|---|
+| **L1: the machine** | `St`/`Tape`(zipper)/`Cfg`, `step` (`none` ⟺ o18's halt gate `F` reads `1` = "`D` reads a `1` with left-neighbour `1`"), `steps`, `steps_add`; kernel `rfl` anchors `sanity100`, `sanity300` (full config at N=100/300 vs the Python sim) | **FORMALIZED** |
+| **L2: sweep 1 — rightward `A0·B1` crawl** (net `+2`) | `sweepAB_tile` (one 2-step tile: reads `[A] 0 (10)`, marches `+2`, deposits `(01)`), **`sweepAB`** (ARBITRARY length `k` by tile+`pow01_mid` induction: `[A] 0 (10)^k M → [A] 0 M` shifted `+2k`, `(01)^k` deposited — the filler-inversion pass, o18's `sweepBF`/`sweepDE` analogue) | **FORMALIZED** |
+| **L2: sweep 2 — leftward `D0·C1` crawl** (net `−2`) | `sweepDC_tile` (one 2-step tile: reads `[D] 0` over `(10)` on the left, deposits `1 1` on the right, `−2`), **`sweepDC`** (ARBITRARY `k` by tile+`ones_mid` induction: consumes `(10)^k` from the left, BUILDS the clean block `1^(2k)` on the right, `−2k`; `R` untouched — the clean-reset-formation sweep) | **FORMALIZED** |
+| **L3: one m-parametric branch tail** | `gate_episode` (fixed 3-step `D0·C1·D1`: collapses `[D] 1 1` into the F-gate, symbolic tail `R` untouched); **`clean_gate`** (`steps (2k+3) ⟨D, p, (10)^k 1 1 R⟩ = some ⟨F, p−2k−3, 0 1^(2k+3) R⟩`, the CLEAN-RESET FORMATION uniform in block length `k` = the LAND-branch `→ C_L` tail); **`clean_reset`** (`R=[]`: the fresh reset `C_(2k+4)`). `some` output ⇒ halt-free AND the landing gate is SAFE (`F` reads `0`, not the halting `1`) | **FORMALIZED** |
+
+## Axiom audit (printed at every build via in-file `#print axioms`)
+**All 8 audited theorems** (`steps_add`, `sweepAB_tile`/`sweepAB`, `sweepDC_tile`/`sweepDC`,
+`gate_episode`, `clean_gate`, `clean_reset`): **`[propext, Quot.sound]` only** — no `sorryAx`,
+no `Classical.choice`, no `native_decide`. `sanity100`/`sanity300` depend on **no axioms at all**.
+No `sorry` anywhere; `lake build` green (all six modules). Three `#eval decide` sanity checks
+(sweepAB k=5, sweepDC k=5, clean_gate/`C_16` k=6) print `true` (kernel-executed).
+
+## What this establishes (the exploratory finding)
+- **o18's in-cell crossings are architecturally the SAME as o4's** — both period **2**, both an
+  arbitrary-length uniform-crossing lemma by a one-tile kernel-`rfl` + a `_mid` length induction.
+  o18 is *easier* at the sweep layer than o3 (period 10/20/6). The `×8/3` pushdown structure lives
+  entirely in the branch ARITHMETIC (already formal, machine-independent, in `Mirror.lean`'s
+  `o15_queued`/`RunStructure.lean`'s stretch), NOT in the tape sweeps, which are plain period-2.
+- **The clean-reset formation is now an m-parametric theorem**: every LAND branch's shared tail
+  (`→ C_L`) is `sweepDC^k · gate_episode`, giving a fresh SAFE F-gate uniformly in the 1-block
+  length — the o18 analogue of o3/o4's `body_step` composition, at the clean-reset (`C_N`) level.
+
+## The exact scale-obstacle to going further (pinned)
+- The **full single-defect transition `D(m,t,e) → …`** (`O18_DEPTH_UNIFORM` §2 table) needs the
+  DEFECT-TURNAROUND front-end: the passage over `1^m 0 (10)^t 1^e`, whose branch (LAND/PUSH/POP/
+  FLUSH/RECYCLE/EXIT) depends on `m mod 3` and on `(t,e)`. That front-end is NOT a single uniform
+  sweep — it is a per-residue composition of the two sweeps with several fixed episodes and an
+  `m`-dependent number of tiles (the `m′−1=(8/3)(m−1)` push law). Formalizing even ONE full branch
+  (e.g. POP or a LAND from a real `D(m,t,e)`) would require pinning that residue-indexed episode
+  algebra — the same effort scale as o3's full `body_step`, times the 8-row branch table.
+- The **multi-defect word grammar** (`O18_DEPTH_UNIFORM` §5, the true-orbit exit at tower-step 8394)
+  is entirely out of scope — it is the open blocker even at the lab-note level.
+- Consequently the transition table's laws (`[PROVEN on grid]`), the derived `×8/3` odometer, and
+  o18's fate stay on the lab record. This file adds the L1 machine, the two reusable sweeps, and the
+  clean-reset-formation tail — the shared infrastructure a full branch proof would build on.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O18   # green; axiom audit prints
+/usr/bin/python3 o18_crosscheck.py                             # L1 anchors + both sweeps + clean_gate grid; ALL OK
+```
+
+**No machine decided. No label upgraded.**
+
+---
+
+# O3 GENERATION-MAP APPEND (2026-07-09) — o3 becomes the SECOND machine whose machine→arithmetic reduction is machine-checked to the GENERATION MAP (a≡0 class), after o4
+
+Extends `lean/O3.lean` (L1 machine, L2 sweeps, L3 body_step/body_iter/body_descent
+— all already FORMALIZED) to **L4: the generation map for the `a ≡ 0 (mod 3)`
+residue class**, mirroring `Suffix.lean`'s `generation_odometer`. o3's roles are
+SWAPPED vs o4: `a` (single-`1` blocks) is the base-4/3 ODOMETER, `k` (trailing
+`110` markers) is the LEDGER (`O3_TEMPLATE_PORT_2026-07-06.md` §1–5).
+
+## Verdict: the `a≡0` GENERATION is FORMALIZED (odometer + ledger derived); a≡1/a≡2 reorgs are the remaining gap
+
+The generation decomposition found (the subtlety flagged in the task — o3's body
+SHRINKS `a`): one generation = **descent · reorganization**, NOT o4's grow-then-
+suffix. `M(a,k)` is literally o3's body config with the surviving markers as the
+never-read right context, so the body DESCENT (`body_descent`, already proven)
+transports the defect left, shrinking `a` to 0; then a **fixed 17-step
+reorganization** rebuilds `a` via the `(01)→(10)` re-read. Measured exactly
+(`o3_gen_proof.py`): the reorg is a constant 17 steps, INDEPENDENT of `M` and `k`
+(head span `[p−3,p+3]`, the fabric/markers untouched).
+
+| Target | Lean theorem in `O3.lean` | Status |
+|---|---|---|
+| **1. milestone `M(a,k)`** | `mk` (marker word), `Mcfg a k p = 0^∞[A]00(10)^a(110)^k` (= Python `build_M`), `Mcfg_as_body` (`M(a,k+1)=BodyCfg a p (0·(110)^k)`, rfl) | **FORMALIZED** |
+| **2. reorg episode** | `reorg17` (17 fixed steps, `11·X → (01)^3·X` shift −3, symbolic tail `X` never read; kernel `rfl`), helper `pow01_cons_false` (`(01)^n·0Z = 0·(10)^n Z`) | **FORMALIZED** |
+| **3. `o3_gen0` (the prize)** | `M(3M,k+1) → M(4M+3,k)` in EXACTLY `bodyTime M 0 + 17` steps (descent · reorg); `o3_odometer_mod0`: `∀ a k, 3∣a → k≥1 → M(a,k)→M(⌊4a/3⌋+3, k−1)` — the ODOMETER (`c(0)=3`) and LEDGER drain (`Δk=−1`) as theorems | **FORMALIZED** |
+| **real-orbit anchor** | `blank_to_M62` (blank → `M(6,2)` at −14, 184 steps, `rfl`), `blank_to_M111` (→ `M(11,1)` at −21, 299 steps; `blank_to_M62 · o3_gen0 2 1`) | **FORMALIZED** |
+
+## Axiom audit (printed at every build, `#print axioms` in-file)
+`pow01_cons_false`, `blank_to_M62`: **no axioms.** `reorg17`, `o3_gen0`,
+`o3_odometer_mod0`, `blank_to_M111`: **`[propext, Quot.sound]` only.** No `sorry`,
+no `native_decide` (kernel `rfl`/`decide` anchors only).
+
+## Numeric sanity (`#eval decide`, kernel-executed, all `true`)
+`M(12,3)→M(19,2)` (333 steps), `M(15,4)→M(23,3)` (487), the k=1 floor
+`M(6,1)→M(11,0)` (115; successor halts downstream), `blank → M(6,2)` (184),
+`blank → M(11,1)` (299 = 184+115). Cross-checked cell-for-cell vs
+`o3_gen_proof.py`/`o3_ledger.py` (real orbit joins at `(6,2)`; first two ledger
+steps `(6,2)→(11,1)` reproduced).
+
+## What is FORMALIZED vs the remaining gap (honest)
+- **Formalized end-to-end (machine → arithmetic):** the full `a≡0` generation
+  `M(3M,k+1)→M(4M+3,k)`, deriving the base-4/3 odometer step and the ledger drain
+  as Lean theorems. o3 is now the second machine (after o4) reduced to its
+  arithmetic generation map by a `lake build`-green, `sorry`-free proof.
+- **Remaining gap (on the lab record):** (i) the `a≡1` cascade (`M(a,k)→M(a−1,k+2)`,
+  one chunk) and `a≡2` deposit (`M(a,k)→M((4a+4)/3,k+1)`) reorgs — their descents
+  do NOT bottom out at `BodyCfg 0` (they stay in residue class 1/2, running the
+  cascade/deposit boundary chunks, not the `j≡0` body), so each needs its own fixed
+  boundary episode + a phase-align prefix (both measured & pinned in
+  `o3_boundary_pinning.py`, not yet ported); (ii) the ledger conjecture (drains never
+  push `k` below the fatal floor). Same species as o4's open core.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O3   # green, audit prints, all #eval true
+/Users/aokiyousuke/quantum-ecc/.venv/bin/python ../o3_gen_proof.py   # generation-law grid
+```
+
+**No machine decided. No label upgraded.**

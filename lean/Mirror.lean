@@ -362,9 +362,205 @@ theorem space_needle_even (v : Int) (hv : v ≠ 0) :
       (orb 5 0 2 v (vq 2 (v - 0)) - 0) % (2 : Int) ≠ 0 :=
   run_closed_form (by decide) (by decide) (by omega) v hv
 
+/-- o14 (o11 twin, `×3/2`), even branch: `c_e = 6`, `e = 12`, fixed point `x = −12`;
+`run = v₂(a + 12)`. -/
+theorem o14_even (v : Int) (hv : v ≠ -12) :
+    (∀ i, i < vq 2 (v - (-12)) → (orb 3 12 2 v i - (-12)) % (2 : Int) = 0) ∧
+      (orb 3 12 2 v (vq 2 (v - (-12))) - (-12)) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
+/-- o14, odd branch: `c_o = 6`, `e = 11`, fixed point `x = −11`; `run = v₂(a + 11)`.
+(Matched pair `(−12,−11)` — the o11 shape `⌊3a/2⌋+C`, `C = 6`.) -/
+theorem o14_odd (v : Int) (hv : v ≠ -11) :
+    (∀ i, i < vq 2 (v - (-11)) → (orb 3 11 2 v i - (-11)) % (2 : Int) = 0) ∧
+      (orb 3 11 2 v (vq 2 (v - (-11))) - (-11)) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
+/-- o13 (o12-flavor, `×3/2`), even branch: `c_e = 7`, `e = 14`, fixed point `x = −14`;
+`run = v₂(a + 14)`. -/
+theorem o13_even (v : Int) (hv : v ≠ -14) :
+    (∀ i, i < vq 2 (v - (-14)) → (orb 3 14 2 v i - (-14)) % (2 : Int) = 0) ∧
+      (orb 3 14 2 v (vq 2 (v - (-14))) - (-14)) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
+/-- o13, odd branch: `c_o = 4`, `e = 7`, fixed point `x = −7`; `run = v₂(a + 7)`.
+(UNMATCHED pair `(−14,−7)`, differing by 7 = 3δ+1 — the correction is two-valued.) -/
+theorem o13_odd (v : Int) (hv : v ≠ -7) :
+    (∀ i, i < vq 2 (v - (-7)) → (orb 3 7 2 v i - (-7)) % (2 : Int) = 0) ∧
+      (orb 3 7 2 v (vq 2 (v - (-7))) - (-7)) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
+/-- o2 (ceiling `×3/2`), even branch `b(y) = ⌈3y/2⌉ = 3y/2`: `e = 0`, fixed point
+`x = 0`; `run = v₂(y)`.  The ceiling map is affine on each parity branch (on-branch
+`2 ∣ 3v`, so the division is exact and `bmap 3 0 2` coincides with `⌈3·/2⌉`), hence a
+plain instance of `run_closed_form` — NO ceiling variant of the abstract lemma is
+needed.  (Identical branch to `antihydra_even`.) -/
+theorem o2_even (v : Int) (hv : v ≠ 0) :
+    (∀ i, i < vq 2 (v - 0) → (orb 3 0 2 v i - 0) % (2 : Int) = 0) ∧
+      (orb 3 0 2 v (vq 2 (v - 0)) - 0) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
+/-- o2 ceiling, odd branch `b(y) = ⌈3y/2⌉ = (3y+1)/2`: `e = 1`, fixed point `x = −1`;
+`run = v₂(y + 1)`.  (The paper §2 lists this branch's "fixed point 1" as the
+correction `c_o = 1`; the run-law-consistent fixed point is `x = 1 − 2c_o = −1`, and
+`run = v₂(v − x) = v₂(y + 1)` matches the census table exactly.) -/
+theorem o2_odd (v : Int) (hv : v ≠ -1) :
+    (∀ i, i < vq 2 (v - (-1)) → (orb 3 1 2 v i - (-1)) % (2 : Int) = 0) ∧
+      (orb 3 1 2 v (vq 2 (v - (-1))) - (-1)) % (2 : Int) ≠ 0 :=
+  run_closed_form (by decide) (by decide) (by omega) v hv
+
 end Census
 
-/-! ## §6 Numeric sanity + axiom audit. -/
+/-! ## §6 The run-cap slope and the criticality comparison (abstract, integer form).
+
+`run_cap` (§5) gives `q^(v_q n) ≤ |n|`.  Fed an orbit growth bound it becomes the
+**run-cap slope** `ρ = log_q(p/q)`, and the ordering of the mirror ladder
+(`PAPER_MIRROR_LADDER.md` §4) is the comparison of `ρ` against the **budget slope**
+`β`.  Everything here stays in `ℕ`/`ℤ` — NO real logarithms:
+
+* `run ≤ ρ·k + O(1)` is packaged as the exponentiated integer inequality
+  `q^(run + k) ≤ C·p^k` (`run_cap_slope`);  the coefficient of `k` is
+  `log_q p − 1 = log_q(p/q) = ρ`.
+* subcriticality `ρ < β` is the integer condition `p < q^(β+1)`
+  (since `ρ = log_q p − 1 < β ⟺ log_q p < β+1 ⟺ p < q^(β+1)`).
+
+The real-number slopes appear only in comments.  `geom_binom`/`geom_horizon` supply
+the pure-`ℕ` fact that a base-`q^(β+1)` power outgrows any `C·p^k` when `p < q^(β+1)`
+(the integer form of `(q^(β+1)/p)^k → ∞`), and `criticality_core` is the inequality
+that a single fatal run would have to satisfy.  Their contradiction (`criticality_excluded`)
+is "single-run fatality is impossible beyond a bounded horizon". -/
+
+/-- `p·p^m = p^(m+1)` (avoids `Nat.pow_succ` orientation churn below). -/
+theorem p_mul_pow (p m : Nat) : p * p ^ m = p ^ (m + 1) := by
+  rw [Nat.mul_comm]; exact (Nat.pow_succ p m).symm
+
+/-- Binomial lower bound `p^(k+1) + k·p^k ≤ p·(p+1)^k` — the first two terms of
+`(p+1)^k` scaled by `p`.  Elementary induction; the engine of `geom_horizon`. -/
+theorem geom_binom (p : Nat) : ∀ k, p ^ (k + 1) + k * p ^ k ≤ p * (p + 1) ^ k := by
+  intro k
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    have hpow : (p + 1) ^ (k + 1) = (p + 1) ^ k * (p + 1) := Nat.pow_succ _ _
+    have hf : p * (p + 1) ^ (k + 1) = p * (p * (p + 1) ^ k) + p * (p + 1) ^ k := by
+      have hX : p * (p + 1) ^ (k + 1) = (p * (p + 1) ^ k) * (p + 1) := by
+        rw [hpow, ← Nat.mul_assoc]
+      rw [hX, Nat.mul_add, Nat.mul_one, Nat.mul_comm (p * (p + 1) ^ k) p]
+    have h1 : p * (p ^ (k + 1) + k * p ^ k) ≤ p * (p * (p + 1) ^ k) :=
+      Nat.mul_le_mul_left _ ih
+    have h2 : p * (p ^ (k + 1) + k * p ^ k) = p ^ (k + 2) + k * p ^ (k + 1) := by
+      rw [Nat.mul_add]
+      have a1 : p * p ^ (k + 1) = p ^ (k + 2) := p_mul_pow p (k + 1)
+      have a2 : p * (k * p ^ k) = k * p ^ (k + 1) := by
+        rw [Nat.mul_left_comm, p_mul_pow p k]
+      rw [a1, a2]
+    rw [hf]
+    have goalR : p ^ (k + 2) + (k + 1) * p ^ (k + 1)
+        ≤ (p ^ (k + 2) + k * p ^ (k + 1)) + (p ^ (k + 1) + k * p ^ k) := by
+      have : (k + 1) * p ^ (k + 1) = k * p ^ (k + 1) + p ^ (k + 1) := by
+        rw [Nat.add_mul, Nat.one_mul]
+      omega
+    have combine : (p ^ (k + 2) + k * p ^ (k + 1)) + (p ^ (k + 1) + k * p ^ k)
+        ≤ p * (p * (p + 1) ^ k) + p * (p + 1) ^ k := by
+      have hle1 : p ^ (k + 2) + k * p ^ (k + 1) ≤ p * (p * (p + 1) ^ k) := by
+        rw [← h2]; exact h1
+      exact Nat.add_le_add hle1 ih
+    exact Nat.le_trans goalR combine
+
+/-- **Strict geometric horizon.**  For `1 ≤ p < base`, once `k ≥ C·p` the geometric
+term `C·p^k` is strictly dominated by `base^k`.  The integer form of
+`base^k / p^k = (base/p)^k → ∞`; here `base = q^(β+1)`, so this is exactly
+`ρ = log_q(p/q) < β` forcing `q^((β+1)k)` past `C·p^k`. -/
+theorem geom_horizon {p base : Nat} (hp : 1 ≤ p) (hb : p + 1 ≤ base)
+    (C k : Nat) (hk : C * p ≤ k) : C * p ^ k < base ^ k := by
+  have hgb : p ^ (k + 1) + k * p ^ k ≤ p * (p + 1) ^ k := geom_binom p k
+  have hsum : p ^ (k + 1) + k * p ^ k = (p + k) * p ^ k := by
+    rw [Nat.add_mul, p_mul_pow p k]
+  have hpgt : C * p < p + k := by omega
+  have hpn : 0 < p ^ k := Nat.pow_pos (by omega)
+  have hstrict : C * p ^ (k + 1) < p * (p + 1) ^ k := by
+    have e1 : C * p ^ (k + 1) = (C * p) * p ^ k := by
+      rw [Nat.mul_assoc, p_mul_pow p k]
+    have e2 : (C * p) * p ^ k < (p + k) * p ^ k := by
+      have hle : (C * p + 1) * p ^ k ≤ (p + k) * p ^ k :=
+        Nat.mul_le_mul (by omega) (Nat.le_refl _)
+      have heq : (C * p + 1) * p ^ k = (C * p) * p ^ k + p ^ k := by
+        rw [Nat.add_mul, Nat.one_mul]
+      omega
+    calc C * p ^ (k + 1) = (C * p) * p ^ k := e1
+      _ < (p + k) * p ^ k := e2
+      _ = p ^ (k + 1) + k * p ^ k := hsum.symm
+      _ ≤ p * (p + 1) ^ k := hgb
+  have hmono : (p + 1) ^ k ≤ base ^ k := Nat.pow_le_pow_left hb k
+  have hpbase : p * (p + 1) ^ k ≤ p * base ^ k := Nat.mul_le_mul_left _ hmono
+  have hchain : C * p ^ (k + 1) < p * base ^ k := Nat.lt_of_lt_of_le hstrict hpbase
+  have hcp : C * p ^ (k + 1) = p * (C * p ^ k) := by
+    rw [← p_mul_pow p k, ← Nat.mul_assoc, Nat.mul_comm C p, Nat.mul_assoc]
+  rw [hcp] at hchain
+  -- Cancel the positive factor `p` Classical-free (avoid `Nat.lt_of_mul_lt_mul_left`).
+  rcases Nat.lt_or_ge (C * p ^ k) (base ^ k) with h | h
+  · exact h
+  · exact absurd hchain (Nat.not_lt.mpr (Nat.mul_le_mul_left _ h))
+
+/-- `run_cap` with an explicit magnitude bound plugged in: `|n| ≤ B ⇒ q^(v_q n) ≤ B`. -/
+theorem run_cap_le {q : Nat} (hq : 2 ≤ q) {n : Int} (hn : n ≠ 0) {B : Nat}
+    (h : n.natAbs ≤ B) : q ^ vq q n ≤ B :=
+  Nat.le_trans (run_cap hq hn) h
+
+/-- **Run-cap slope (integer form).**  Given an orbit growth bound `|n|·q^k ≤ C·p^k`
+(the `ℤ` form of `|v_k − x| ≤ C·(p/q)^k` at time `k`), the run `v_q n` obeys
+`q^(v_q n + k) ≤ C·p^k` — i.e. `v_q n ≤ k·log_q(p/q) + log_q C`.  The coefficient of
+`k`, `log_q(p/q) = log_q p − 1`, is the **run-cap slope ρ**. -/
+theorem run_cap_slope {q : Nat} (hq : 2 ≤ q) {n : Int} (hn : n ≠ 0)
+    {C p k : Nat} (h : n.natAbs * q ^ k ≤ C * p ^ k) :
+    q ^ (vq q n + k) ≤ C * p ^ k := by
+  rw [Nat.pow_add]
+  calc q ^ vq q n * q ^ k
+      ≤ n.natAbs * q ^ k := Nat.mul_le_mul (run_cap hq hn) (Nat.le_refl _)
+    _ ≤ C * p ^ k := h
+
+/-- **Criticality core (integer).**  At time `k`, suppose a single maximal run of
+length `r` would exhaust a budget of size `b` (**single-run fatality**, `b ≤ r`); the
+run obeys the run-cap-slope bound `q^(r+k) ≤ C·p^k`; and the budget grows at slope
+`β` (`(β+1)·k ≤ b + k`, i.e. `β·k ≤ b`).  Then `q^((β+1)·k) ≤ C·p^k` — the inequality
+a fatal run is forced into. -/
+theorem criticality_core {q p C b r k β : Nat} (hq : 2 ≤ q)
+    (hfat : b ≤ r) (hrun : q ^ (r + k) ≤ C * p ^ k) (hbud : (β + 1) * k ≤ b + k) :
+    q ^ ((β + 1) * k) ≤ C * p ^ k := by
+  have h1 : (β + 1) * k ≤ r + k := Nat.le_trans hbud (by omega)
+  have h2 : q ^ ((β + 1) * k) ≤ q ^ (r + k) := Nat.pow_le_pow_right (by omega) h1
+  exact Nat.le_trans h2 hrun
+
+/-- **Subcritical exclusion (abstract).**  Add subcriticality `p + 1 ≤ q^(β+1)`
+(exactly `ρ = log_q(p/q) < β`).  Then single-run fatality is **impossible** beyond the
+horizon `k ≥ C·p`: the run-cap-slope bound (`criticality_core`) and the geometric
+horizon (`geom_horizon`) are outright contradictory. -/
+theorem criticality_excluded {q p C b r k β : Nat} (hq : 2 ≤ q) (hp : 1 ≤ p)
+    (hsub : p + 1 ≤ q ^ (β + 1))
+    (hfat : b ≤ r) (hrun : q ^ (r + k) ≤ C * p ^ k) (hbud : (β + 1) * k ≤ b + k)
+    (hk : C * p ≤ k) : False := by
+  have hcore : q ^ ((β + 1) * k) ≤ C * p ^ k := criticality_core hq hfat hrun hbud
+  have hhor : C * p ^ k < (q ^ (β + 1)) ^ k := geom_horizon hp hsub C k hk
+  rw [← Nat.pow_mul] at hhor
+  exact absurd hcore (Nat.not_le.mpr hhor)
+
+/-- **o4 is subcritical — single-run fatality excluded** `(q,p,β) = (3,4,3)`.  o4 is
+the `×4/3` odometer (`v₃` depth), budget `a_n` growing at `+3`/gen: run-cap slope
+`ρ = log₃(4/3) ≈ 0.262`, budget slope `β = 3`, so `ρ/β ≈ 0.087 < 1`.  The integer
+witness of subcriticality is `p + 1 = 5 ≤ 81 = 3⁴ = q^(β+1)`.  Hence no single maximal
+3-adic run can drain the linearly-growing budget past the horizon `k ≥ 4·C`.
+
+Antihydra is the **critical rung** and this lemma does NOT apply to it: `(q,p) = (2,3)`
+with budget slope `β = 1/2` (non-integer, so it cannot even instantiate this `ℕ`-lemma),
+and the subcriticality test would be `p + 1 = 4 ≤ q^(β+1) = 2^(3/2) ≈ 2.83` — FALSE
+(`ρ/β = log₂(3/2)/(1/2) = 1.1699 > 1`).  That failure IS the criticality boundary. -/
+theorem o4_criticality_excluded {C b r k : Nat}
+    (hfat : b ≤ r) (hrun : 3 ^ (r + k) ≤ C * 4 ^ k) (hbud : 4 * k ≤ b + k)
+    (hk : C * 4 ≤ k) : False :=
+  criticality_excluded (q := 3) (p := 4) (β := 3) (by decide) (by decide)
+    (by decide) hfat hrun hbud hk
+
+/-! ## §7 Numeric sanity + axiom audit. -/
 
 -- Concrete run values, `vq` computed by the kernel (cross-checked in `mirror_census.py`).
 #eval [vq 2 (12 - 0), vq 2 (7 - 1), vq 3 (43 + 14), vq 3 (30 + 9)]
@@ -376,6 +572,14 @@ def vqCheck : Bool :=
 
 #eval vqCheck  -- expect true
 
+-- Subcriticality witness (integer form of `ρ < β`), kernel-checked:
+--   o4  : p+1 = 5 ≤ 3^(3+1) = 81  ⇒ SUBCRITICAL (ρ/β ≈ 0.087, single-run fatality excluded).
+--   Antihydra β = 1/2 is non-integer (cannot instantiate this ℕ-lemma); its real test
+--   p+1 = 4 ≤ 2^(3/2) ≈ 2.83 is FALSE — the ρ/β = 1.17 > 1 critical boundary.
+#eval decide (4 + 1 ≤ 3 ^ (3 + 1))  -- o4 subcritical: expect true
+-- geom_horizon sanity: with p=4, base=81, C=1, k = C·p = 4 ⇒ 4^4 < 81^4.
+#eval decide (1 * 4 ^ 4 < 81 ^ 4)  -- expect true
+
 #print axioms vqn_unit_mul
 #print axioms branch_conj
 #print axioms vq_step_down
@@ -384,5 +588,14 @@ def vqCheck : Bool :=
 #print axioms antihydra_odd
 #print axioms o4_r1
 #print axioms space_needle_even
+#print axioms o13_odd
+#print axioms o14_even
+#print axioms o2_odd
+#print axioms geom_binom
+#print axioms geom_horizon
+#print axioms run_cap_slope
+#print axioms criticality_core
+#print axioms criticality_excluded
+#print axioms o4_criticality_excluded
 
 end Mirror
