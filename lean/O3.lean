@@ -48,10 +48,24 @@ Layers (labels: FORMALIZED = `lake build` green + `sorry`-free):
   Real-orbit anchors `blank_to_M62` / `blank_to_M111` (blank tape → `M(6,2)` →
   `M(11,1)`, kernel-checked vs the Python milestone dump).
 
-Honest scope: only the `a ≡ 0` residue class of the generation is closed; the
-`a ≡ 1` cascade and `a ≡ 2` deposit reorgs (their own boundary episodes) and the
-ledger conjecture stay on the lab record (`O3_TEMPLATE_PORT` §3–5).  **This file
-decides no machine; o3 stays `[OPEN]`.**
+* **L2′ (the MARKER sweeps + round-trip, FORMALIZED, §3.4–3.6)** — the a≡1 cascade
+  and a≡2 deposit generations do NOT bottom out at `BodyCfg 0`; their boundary chunks
+  instead run TWO new period-3 sweeps over the trailing ledger word `(110)^k`:
+  `markR` (rightward `A0·B1·E1`, net `+3`, reads `011`→`110`) and `markL` (leftward
+  return `D1·C0·A1`, net `−3`, `011`→`101`), each an ARBITRARY-length uniform-crossing
+  lemma (tile + length induction, like the three §3 crawls).  `marker_excursion`
+  composes them through the fixed 4-step turn episode `ep_turn` into the k-PARAMETRIC
+  round-trip `markR^K · turn · markL^(K+1)` (exactly `6K+7` steps, halt-free) — the
+  ledger-scaling heart shared by both open classes.
+
+Honest scope: the `a ≡ 0` generation is closed end-to-end (§5); for `a ≡ 1`/`a ≡ 2`
+the k-scaling core (`marker_excursion`) and BOTH marker sweeps are now FORMALIZED, and
+the full generations are kernel-DECIDED at concrete parameters (§5d, halt-free, exact
+landing milestone).  What remains for the PARAMETRIC `o3_gen1`/`o3_gen2`/`o3_generation`:
+the M-scaling odometer episodes (`Ep_meet`/`Ep_mid`/`Ep_final`) that sandwich
+`crawlR^M`/`crawlL^M` around `marker_excursion` — a body_step-style multi-episode glue
+not yet assembled.  The ledger conjecture stays on the lab record (`O3_TEMPLATE_PORT`
+§3–5).  **This file decides no machine; o3 stays `[OPEN]`.**
 
 Dependency-free (core Lean only, no mathlib), self-contained in namespace
 `O3` (the machine-independent scaffolding mirrors `Template.lean`).
@@ -363,6 +377,193 @@ theorem zigzag : ∀ (n : Nat) (p : Int) (Lr R : List Bool),
       rfl
     rw [hr]
     exact congrArg some (cfgPos (by omega))
+
+/-! ### §3.4 The period-3 rightward MARKER sweep (`markR`, net `+3`, state `A`).
+
+The a≡1 cascade and a≡2 deposit boundary chunks (`o3_gen_proof.py`) do NOT bottom
+out at `BodyCfg 0`; instead their generation runs a NEW sweep over the trailing
+`(110)^k` marker word: the period-3 cycle `A0·B1·E1` reads one `011` triple and
+marches `+3`, depositing `110` (nearest-first `false::true::true`) on the left,
+leaving the tail untouched (read span `[0,2]`, fully tail-independent).  This is the
+marker-scan sweep that scales with the LEDGER `k` (the second parameter of the
+a≡1/a≡2 boundary episodes), the analogue on the right frontier of the odometer
+crawls `crawlR`/`crawlL`.  Formalized here as an arbitrary-length uniform-crossing
+lemma (tile + length induction), exactly like the three §3 crawls. -/
+
+/-- The right-list triple word `(110)^j` = `true::true::false` repeated. -/
+def tri3 : Nat → List Bool
+  | 0 => []
+  | j + 1 => true :: true :: false :: tri3 j
+
+/-- The deposit word `(011)^j` = `false::true::true` repeated (nearest-first). -/
+def dtri3 : Nat → List Bool
+  | 0 => []
+  | j + 1 => false :: true :: true :: dtri3 j
+
+theorem dtri3_snoc : ∀ (j : Nat), dtri3 (j + 1) = dtri3 j ++ [false, true, true] := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show false :: true :: true :: dtri3 (j + 1)
+        = false :: true :: true :: (dtri3 j ++ [false, true, true])
+    rw [ih]
+
+/-- **One marker-sweep tile** (3 steps `A0·B1·E1`): reads `[A] 0 1 1` and marches
+`+3`, depositing `false::true::true` on the left; the tail `R` is untouched.
+Kernel `rfl`. -/
+theorem markR_tile (p : Int) (L R : List Bool) :
+    steps 3 ⟨.A, p, ⟨L, false, true :: true :: false :: R⟩⟩
+      = some ⟨.A, p + 3, ⟨false :: true :: true :: L, false, R⟩⟩ := by
+  have h : steps 3 (⟨.A, p, ⟨L, false, true :: true :: false :: R⟩⟩ : Cfg)
+      = some ⟨.A, p + 1 + 1 + 1, ⟨false :: true :: true :: L, false, R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The period-3 marker sweep, ARBITRARY length.**  `j` tiles = `3j` steps cross
+`(110)^j` (`tri3 j`) and deposit `(011)^j` (`dtri3 j`), shifting `+3j`, with the
+right tail `R` untouched.  Proven for every `j` by induction (base tile + tail
+peel), mirroring `crawlR`. -/
+theorem markR : ∀ (j : Nat) (p : Int) (L R : List Bool),
+    steps (3 * j) ⟨.A, p, ⟨L, false, tri3 j ++ R⟩⟩
+      = some ⟨.A, p + 3 * (j : Int), ⟨dtri3 j ++ L, false, R⟩⟩ := by
+  intro j
+  induction j with
+  | zero =>
+    intro p L R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by omega))
+  | succ j ih =>
+    intro p L R
+    have hn : 3 * (j + 1) = 3 + 3 * j := by omega
+    rw [hn, steps_add]
+    show (steps 3 ⟨.A, p, ⟨L, false, true :: true :: false :: (tri3 j ++ R)⟩⟩).bind
+        (steps (3 * j)) = _
+    rw [markR_tile, someBind, ih (p + 3) (false :: true :: true :: L) R]
+    have hL : dtri3 j ++ (false :: true :: true :: L) = dtri3 (j + 1) ++ L := by
+      rw [dtri3_snoc, List.append_assoc]; rfl
+    rw [hL]
+    exact congrArg some (cfgPos (by omega))
+
+/-! ### §3.5 The period-3 leftward MARKER return sweep (`markL`, net `−3`, state `D`).
+
+The companion of `markR`: after the marker scan turns around, o3 returns leftward
+over the just-deposited `(011)` fabric with the period-3 cycle `D1·C0·A1`,
+consuming one `false::true::true` triple from the left and emitting `true::false::true`
+(`101`) to the right, shifting `−3`; the head stays on a `1` throughout (the halt
+gate `E`-reads-0 is never on this path).  A clean 3-consume/3-emit uniform crossing
+(length-preserving), the leftward analogue of `markR`.  This closes the
+marker-sweep PAIR the a≡1/a≡2 boundary chunks run over the ledger word `(110)^k`. -/
+
+/-- The emitted word `(101)^j` = `true::false::true` repeated. -/
+def etri3 : Nat → List Bool
+  | 0 => []
+  | j + 1 => true :: false :: true :: etri3 j
+
+theorem etri3_snoc : ∀ (j : Nat), etri3 (j + 1) = etri3 j ++ [true, false, true] := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show true :: false :: true :: etri3 (j + 1)
+        = true :: false :: true :: (etri3 j ++ [true, false, true])
+    rw [ih]
+
+/-- **One return-tile** (3 steps `D1·C0·A1`): consumes `false::true::true` on the
+left, emits `true::false::true` on the right, shifting `−3`; head stays `1`.
+Kernel `rfl`. -/
+theorem markL_tile (p : Int) (L R : List Bool) :
+    steps 3 ⟨.D, p, ⟨false :: true :: true :: L, true, R⟩⟩
+      = some ⟨.D, p - 3, ⟨L, true, true :: false :: true :: R⟩⟩ := by
+  have h : steps 3 (⟨.D, p, ⟨false :: true :: true :: L, true, R⟩⟩ : Cfg)
+      = some ⟨.D, p - 1 - 1 - 1, ⟨L, true, true :: false :: true :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The period-3 return sweep, ARBITRARY length.**  `j` tiles = `3j` steps consume
+`(011)^j` (`dtri3 j`) from the left and emit `(101)^j` (`etri3 j`), shifting `−3j`.
+Proven for every `j` by induction, mirroring `crawlL`. -/
+theorem markL : ∀ (j : Nat) (p : Int) (Lr R : List Bool),
+    steps (3 * j) ⟨.D, p, ⟨dtri3 j ++ Lr, true, R⟩⟩
+      = some ⟨.D, p - 3 * (j : Int), ⟨Lr, true, etri3 j ++ R⟩⟩ := by
+  intro j
+  induction j with
+  | zero =>
+    intro p Lr R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by omega))
+  | succ j ih =>
+    intro p Lr R
+    have hn : 3 * (j + 1) = 3 + 3 * j := by omega
+    rw [hn, steps_add]
+    show (steps 3 ⟨.D, p, ⟨false :: true :: true :: (dtri3 j ++ Lr), true, R⟩⟩).bind
+        (steps (3 * j)) = _
+    rw [markL_tile, someBind, ih (p - 3) Lr (true :: false :: true :: R)]
+    have hR : etri3 j ++ (true :: false :: true :: R) = etri3 (j + 1) ++ R := by
+      rw [etri3_snoc, List.append_assoc]; rfl
+    rw [hR]
+    exact congrArg some (cfgPos (by omega))
+
+/-! ### §3.6 The marker ROUND-TRIP (`marker_excursion`) — `markR^K · turn · markL^(K+1)`
+composed parametrically in the LEDGER `k`.
+
+The k-scaling core of BOTH open boundary chunks (a≡1 cascade, a≡2 deposit,
+`o3_gen_proof.py`): after the frontier crawl meets the marker word, o3 scans the
+`(110)^K` ledger rightward (`markR^K`), reflects off the blank end (the fixed 4-step
+turn `A0·B0·C0·A1`), and returns leftward over the now-`(011)^{K+1}` fabric
+(`markL^{K+1}`, the extra unit deposited by the meet), landing in state `D` shifted
+`−3` with the ledger recoded as `(101)^{K+1}`.  This is the o3 analogue of o4's
+suffix round-trip, and it composes the two FORMALIZED marker sweeps through a single
+tail-independent episode — proven parametrically for every `K` in exactly `6K+7`
+steps. -/
+
+/-- `dtri3` is additive: `(011)^(a+b) = (011)^a · (011)^b`. -/
+theorem dtri3_add : ∀ (a b : Nat), dtri3 (a + b) = dtri3 a ++ dtri3 b := by
+  intro a
+  induction a with
+  | zero => intro b; rw [Nat.zero_add]; rfl
+  | succ a ih =>
+    intro b
+    have h : a + 1 + b = (a + b) + 1 := by omega
+    rw [h]
+    show false :: true :: true :: dtri3 (a + b)
+        = false :: true :: true :: (dtri3 a ++ dtri3 b)
+    rw [ih]
+
+/-- **The turn episode** (4 fixed steps `A0·B0·C0·A1`): reflecting off the blank
+right end, state `A` on a `0` with empty right context becomes state `D` (same
+position) with the head now a `1` and `1 0` emitted; the left fabric `X` is
+untouched.  Kernel `rfl`. -/
+theorem ep_turn (p : Int) (X : List Bool) :
+    steps 4 ⟨.A, p, ⟨X, false, []⟩⟩
+      = some ⟨.D, p, ⟨X, true, [true, false]⟩⟩ := by
+  have h : steps 4 (⟨.A, p, ⟨X, false, []⟩⟩ : Cfg)
+      = some ⟨.D, p + 1 + 1 - 1 - 1, ⟨X, true, [true, false]⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE MARKER ROUND-TRIP (parametric in the ledger `K`), fully formal.**  From the
+post-meet boundary config `[A] (011)·Lr | 0 (110)^K` (head on the odometer/ledger
+seam, `Lr` the untouched odometer deposit, blank tail), o3 runs
+`markR^K · ep_turn · markL^(K+1)` in exactly `6K+7` steps to `[D] Lr | (101)^(K+1) 1 0`,
+shifted `−3`.  `some` ⇒ HALT-FREE.  This is the k-parametric heart of the a≡1/a≡2
+generations, composing the two §3.4/§3.5 marker sweeps through `ep_turn`. -/
+theorem marker_excursion (K : Nat) (p : Int) (Lr : List Bool) :
+    steps (3 * K + 4 + 3 * (K + 1)) ⟨.A, p, ⟨dtri3 1 ++ Lr, false, tri3 K⟩⟩
+      = some ⟨.D, p - 3, ⟨Lr, true, etri3 (K + 1) ++ [true, false]⟩⟩ := by
+  rw [steps_add, steps_add]
+  -- phase 1: markR^K crosses tri3 K (blank tail), depositing dtri3 K
+  rw [show (tri3 K : List Bool) = tri3 K ++ [] from (List.append_nil _).symm,
+      markR K p (dtri3 1 ++ Lr) [], someBind]
+  -- left is now dtri3 K ++ (dtri3 1 ++ Lr) = dtri3 (K+1) ++ Lr
+  have hL : dtri3 K ++ (dtri3 1 ++ Lr) = dtri3 (K + 1) ++ Lr := by
+    rw [← List.append_assoc, ← dtri3_add]
+  rw [hL]
+  -- phase 2: the fixed turn episode (right context is [] = blank)
+  rw [ep_turn, someBind]
+  -- phase 3: markL^(K+1) consumes dtri3 (K+1), emitting etri3 (K+1)
+  rw [markL (K + 1) (p + 3 * (K : Int)) Lr [true, false]]
+  exact congrArg some (cfgPos (by omega))
 
 /-! ## §4 (L3) The body lemma — phase 1 is the period-10 crawl.
 
@@ -764,6 +965,15 @@ theorem blank_to_M111 :
 #print axioms crawlL
 #print axioms zigzag_tile
 #print axioms zigzag
+#print axioms dtri3_snoc
+#print axioms markR_tile
+#print axioms markR
+#print axioms etri3_snoc
+#print axioms markL_tile
+#print axioms markL
+#print axioms dtri3_add
+#print axioms ep_turn
+#print axioms marker_excursion
 #print axioms body_phase1
 #print axioms cons_pow01
 #print axioms landing_id
@@ -798,5 +1008,34 @@ theorem blank_to_M111 :
 #eval decide (steps 184 init = some (Mcfg 6 2 (-14)))          -- expect true
 #eval decide (steps (184 + (bodyTime 2 0 + 17)) init = some (Mcfg 11 1 (-21)))  -- true
 #eval (184 + (bodyTime 2 0 + 17))  -- = 299, the real orbit's step-2 milestone
+
+/-! ### §5c sanity: the period-3 MARKER sweep, kernel-executed (arbitrary length). -/
+
+-- markR^j on `(110)^j` deposits `(011)^j`, shifting +3j (tri3/dtri3, tail untouched):
+#eval decide (steps (3 * 4) ⟨.A, 0, ⟨[], false, tri3 4 ++ [true, true]⟩⟩
+      = some ⟨.A, 12, ⟨dtri3 4, false, [true, true]⟩⟩)   -- markR j=4: expect true
+#eval decide (steps (3 * 7) ⟨.A, 5, ⟨[false], false, tri3 7 ++ [false]⟩⟩
+      = some ⟨.A, 26, ⟨dtri3 7 ++ [false], false, [false]⟩⟩)  -- markR j=7: expect true
+-- markL^j consumes `(011)^j` on the left, emits `(101)^j` on the right, shifting −3j:
+#eval decide (steps (3 * 5) ⟨.D, 0, ⟨dtri3 5 ++ [true], true, [false]⟩⟩
+      = some ⟨.D, -15, ⟨[true], true, etri3 5 ++ [false]⟩⟩)  -- markL j=5: expect true
+-- marker round-trip markR^K·turn·markL^(K+1), parametric in the ledger K (here K=4):
+#eval decide (steps (3 * 4 + 4 + 3 * (4 + 1)) ⟨.A, 0, ⟨dtri3 1 ++ [true, true], false, tri3 4⟩⟩
+      = some ⟨.D, -3, ⟨[true, true], true, etri3 (4 + 1) ++ [true, false]⟩⟩)  -- expect true
+
+/-! ### §5d sanity: the a≡1 CASCADE and a≡2 DEPOSIT generations, kernel-executed
+end-to-end on real milestones (halt-free `some`, exact landing milestone).  These
+DECIDE concrete instances of the two OPEN residue classes at the machine level
+(vs `o3_gen_proof.py`).  The full PARAMETRIC theorems `o3_gen1`/`o3_gen2` are NOT
+proven (their 2-parameter boundary glue — `crawlR^M · markR^k · … · crawlL^M` — is
+not yet assembled); these anchors witness the laws concretely, not generically. -/
+
+-- a≡1 cascade  M(a,k) → M(a−1, k+2)  (one chunk, 30M+32 steps, net −2):
+#eval decide (steps 152 (Mcfg 13 3 0) = some (Mcfg 12 5 (-2)))   -- M(13,3)→M(12,5): true
+#eval decide (steps 122 (Mcfg 10 3 0) = some (Mcfg 9 5 (-2)))    -- M(10,3)→M(9,5):  true
+-- a≡2 deposit  M(3M+2,k) → M(4M+4, k+1)  (prefix · body_descent M · reorg17):
+#eval decide (steps 497 (Mcfg 14 3 0) = some (Mcfg 20 4 (-13)))  -- M(14,3)→M(20,4): true
+#eval decide (steps 343 (Mcfg 11 3 0) = some (Mcfg 16 4 (-11)))  -- M(11,3)→M(16,4): true
+#eval decide (steps 681 (Mcfg 17 3 0) = some (Mcfg 24 4 (-15)))  -- M(17,3)→M(24,4): true
 
 end O3

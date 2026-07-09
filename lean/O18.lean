@@ -22,15 +22,21 @@ Layers (labels: FORMALIZED = `lake build` green + `sorry`-free):
   (`F` entered only by `D:1→1LF`, so HALT ⟺ `D` reads a `1` whose left
   neighbour is `1`, `O18_DEPTH_UNIFORM` §0).  Kernel-checked `rfl` anchors
   against the Python simulator at N = 100, 300.
-* **L2 (the sweeps)** — o18's two uniform in-cell crossings, each an
-  ARBITRARY-length uniform-crossing lemma by one-tile (period 2) + length
-  induction, mirroring o4's `sweepBF`/`sweepDE` and o3's `crawlR`:
-  * `sweepAB` — the rightward `A0·B1` crawl over `(10)^k`: consumes one
-    `(10)` pair per tile, deposits `(01)`, advances `+2k` (the read-only
+* **L2 (the sweeps)** — o18's THREE uniform in-cell crossings, each an
+  ARBITRARY-length uniform-crossing lemma by one-tile + length induction,
+  mirroring o4's `sweepBF`/`sweepDE` and o3's `crawlR`:
+  * `sweepAB` — the rightward `A0·B1` crawl over `(10)^k` (period 2): consumes
+    one `(10)` pair per tile, deposits `(01)`, advances `+2k` (the read-only
     filler-inversion pass, the o18 analogue of `sweepBF`).
-  * `sweepDC` — the leftward `D0·C1` crawl: consumes `(10)^k` from the left
-    and BUILDS the clean-reset block `1^(2k)` on the right, shifting `−2k`
-    (the o18 clean-reset-formation sweep).
+  * `sweepDC` — the leftward `D0·C1` crawl (period 2): consumes `(10)^k` from
+    the left and BUILDS the clean-reset block `1^(2k)` on the right, shifting
+    `−2k` (the o18 clean-reset-formation sweep).
+  * `sweepEB` — the leftward `E1·B0·C0·A1` filler-TRANSPORT crawl (period 4,
+    with the `A1→0RE` reflect half-step): reads `1` in the fixed frame `0 0`,
+    transports one `(10)` pair from left to right UNCHANGED per tile, shifting
+    `−2k`.  This is the odometer's leftward return pass — the crawl the head
+    makes carrying the filler back over the counter inside a defect turnaround
+    (`O18_DEPTH_UNIFORM` §2, the inner loop of every POP/LAND/PUSH transition).
 * **L3 (one m-parametric branch tail, FORMALIZED)** — `clean_gate`: the
   leftward sweep glued to the fixed 3-step gate episode (`D0·C1·D1`), giving
   the CLEAN-RESET FORMATION `D → C_(2k+4)` uniformly in the block length `k`:
@@ -40,9 +46,20 @@ Layers (labels: FORMALIZED = `lake build` green + `sorry`-free):
   (`O18_DEPTH_UNIFORM` §2, the `→ C_L` rows), formalized m-parametrically —
   ONE of the transition-table branches' shared uniform sub-passage.
 
-Honest scope: the FULL single-defect transition `D(m,t,e) → …` (the branch
-table's front-end defect turnaround, which is m-mod-3-dependent) and the
-multi-defect word grammar (`O18_DEPTH_UNIFORM` §5) stay on the lab record.
+Honest scope — the exact obstacle, pinned by trace (this session): the FULL
+single-defect transition `D(m,t,e) → D(m′,t′,e′)` is NOT a fixed episode.  Every
+branch (POP `m≡2`, LAND `m≡0`, PUSH2 `m≡1`) routes through a growing-amplitude
+ODOMETER bounce — alternating `sweepAB` rightward passes and `sweepEB` leftward
+passes whose lengths CHANGE each bounce, glued by turnaround pivots that are
+COUNTER-DEPENDENT (traced: the reflect pivot branches `A→B→A→E→C→A→…` on the
+surrounding counter digits, not a uniform frame).  The step count is exactly
+quadratic (`≈ (4/3)m²`, `O18_DEPTH_UNIFORM` §3), i.e. `O(m)` bounces of `O(m)`
+length — the aggregate `m′−1 = (8/3)(m−1)` push law is the o4-species odometer
+CLOSURE, which stays OPEN (it is the same counter-dependent nondeterminism the
+o4 boundary-graph program records as unclosed).  The multi-defect word grammar
+(`O18_DEPTH_UNIFORM` §5) stays on the lab record.  What L2/L3 DO close: the three
+uniform crawls the odometer is BUILT from, and the shared clean-reset-formation
+tail (`clean_gate`, the last leftward pass of every LAND/POP landing).
 **This file decides no machine; o18 stays `[OPEN]`.**
 
 Dependency-free (core Lean only, no mathlib), self-contained in namespace
@@ -285,6 +302,71 @@ theorem sweepDC : ∀ (k : Nat) (p : Int) (L R : List Bool),
     rw [h2, ih (p - 1 - 1) L (true :: true :: R), ones_mid]
     exact congrArg some (cfgPos (by omega))
 
+/-! ### §3.3 The leftward filler-transport crawl `sweepEB` (`E1·B0·C0·A1`, net `−2`).
+
+The THIRD uniform crossing of o18, and the one that reveals why the single-defect
+transition is an ODOMETER rather than a fixed episode.  In the defect turnaround,
+after a rightward `sweepAB` pass hits the block's right end and reflects into state
+`E`, the head crawls back LEFT over the `(10)^k` filler by the **period-4** 2½-cycle
+`E:1→0LB · B:0→1LC · C:0→1LA · A:1→0RE` (note the `A1→0RE` half-step that reflects
+the head one cell right to re-enter `E`).  Each tile is 4 machine steps, nets `−2`,
+and TRANSPORTS one `(10)` pair from the head's left to its right UNCHANGED — the
+filler is shuttled leftward past the head without inversion (contrast `sweepAB`,
+which inverts `(10)→(01)`).  The head reads `1` throughout, with the fixed frame
+`0 0` immediately to its left; `L` and `R` are untouched.  Kernel-confirmed against
+the o18 simulator (`o18_depth_map.py`, the defect-turnaround inner loop). -/
+
+/-- `(10)^k` with a `(10)` appended on the right equals `(10)^(k+1)` — the uniform
+repetition commutes end-to-end (needed to fold the transported filler). -/
+theorem pow10_snoc : ∀ (k : Nat),
+    pow10 k ++ [true, false] = pow10 (k + 1) := by
+  intro k
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    show true :: false :: (pow10 k ++ [true, false]) = true :: false :: pow10 (k + 1)
+    rw [ih]
+
+/-- **One leftward filler-transport tile** (4 steps): reads `[E on 1]` with frame
+`0 0` and one `(10)` pair to the left, marches `−2`, and re-deposits that `(10)`
+pair on the right; `Z`, `R` untouched, head still on `1`. Kernel `rfl`. -/
+theorem sweepEB_tile (p : Int) (Z R : List Bool) :
+    steps 4 ⟨.E, p, ⟨false :: false :: true :: false :: Z, true, R⟩⟩
+      = some ⟨.E, p - 2, ⟨false :: false :: Z, true, true :: false :: R⟩⟩ := by
+  have h : steps 4 (⟨.E, p, ⟨false :: false :: true :: false :: Z, true, R⟩⟩ : Cfg)
+      = some ⟨.E, p - 1 - 1 - 1 + 1, ⟨false :: false :: Z, true, true :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The leftward filler-transport crawl, ARBITRARY length.**  `k` tiles = `4k`
+steps take `[E on 1] 0 0 (10)^k L` to `[E on 1] 0 0 L`, transporting the whole
+`(10)^k` filler UNCHANGED to the right and shifting `−2k`.  This is the odometer's
+leftward return pass — the crawl that carries the filler back over the counter.
+Proven for every `k` by induction. -/
+theorem sweepEB : ∀ (k : Nat) (p : Int) (L R : List Bool),
+    steps (4 * k) ⟨.E, p, ⟨false :: false :: (pow10 k ++ L), true, R⟩⟩
+      = some ⟨.E, p - 2 * (k : Int), ⟨false :: false :: L, true, pow10 k ++ R⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro p L R
+    exact congrArg some (cfgPos (by omega))
+  | succ k ih =>
+    intro p L R
+    have hn : 4 * (k + 1) = 4 + 4 * k := by omega
+    rw [hn, steps_add]
+    have hpeel : false :: false :: (pow10 (k + 1) ++ L)
+        = false :: false :: true :: false :: (pow10 k ++ L) := rfl
+    rw [hpeel, sweepEB_tile, someBind,
+        ih (p - 2) L (true :: false :: R)]
+    apply congrArg some
+    -- fold the transported filler: pow10 k ++ (true::false::R) = pow10 (k+1) ++ R
+    have hr : pow10 k ++ (true :: false :: R) = pow10 (k + 1) ++ R := by
+      show pow10 k ++ ([true, false] ++ R) = pow10 (k + 1) ++ R
+      rw [← List.append_assoc, pow10_snoc]
+    rw [hr]
+    exact cfgPos (by omega)
+
 /-! ## §4 (L3) The clean-reset formation — one m-parametric branch tail.
 
 The leftward sweep glued to the fixed 3-step gate episode `D0·C1·D1`.  This is
@@ -342,6 +424,9 @@ theorem clean_reset (k : Nat) (p : Int) :
 #print axioms sweepAB
 #print axioms sweepDC_tile
 #print axioms sweepDC
+#print axioms pow10_snoc
+#print axioms sweepEB_tile
+#print axioms sweepEB
 #print axioms gate_episode
 #print axioms clean_gate
 #print axioms clean_reset
@@ -357,5 +442,10 @@ theorem clean_reset (k : Nat) (p : Int) :
       = some ⟨.D, -10, ⟨[true], false, ones 10⟩⟩)
 #eval decide (steps (2 * 6 + 3) ⟨.D, 0, ⟨pow10 6 ++ [true, true], false, []⟩⟩
       = some ⟨.F, -15, ⟨[], false, ones 15⟩⟩)  -- clean reset C_16
+
+-- sweepEB grid point (k=5): the leftward filler-transport crawl (expect true)
+#eval decide (steps (4 * 5) ⟨.E, 0, ⟨false :: false :: (pow10 5 ++ [true, true, true]),
+        true, [true, true]⟩⟩
+      = some ⟨.E, -10, ⟨false :: false :: [true, true, true], true, pow10 5 ++ [true, true]⟩⟩)
 
 end O18

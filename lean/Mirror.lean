@@ -560,6 +560,62 @@ theorem o4_criticality_excluded {C b r k : Nat}
   criticality_excluded (q := 3) (p := 4) (β := 3) (by decide) (by decide)
     (by decide) hfat hrun hbud hk
 
+/-! ## §6a The criticality verdict across the CUMULATIVE-ledger family.
+
+The criticality ratio `ρ/β` (run-cap slope over budget slope) is only meaningful for the
+**cumulative-ledger** machines — the ones whose safety balance never re-seeds
+(`PAPER_MIRROR_LADDER.md` §4): **Antihydra, o2, o4, o3, Space Needle**.  (The resetting
+"sea" machines o11/o13/o14/o16 + o15/o18 re-seed at every refill, so the in-epoch ratio is
+inapplicable — their fatality is a per-refill residue draw, not a single-run drain.)
+
+`criticality_excluded` certifies subcriticality via the INTEGER test `p + 1 ≤ q^(β+1)`.
+An HONEST integer certificate must instantiate the lemma with an integer budget slope that
+is a valid LOWER bound on the machine's real budget growth — i.e. `β = ⌊β*⌋` for the true
+(possibly non-integer) slope `β*`.  Working the five cumulative machines through this test
+in pure `ℕ` (real slopes in comments only) shows **o4 is the unique freely-subcritical rung.** -/
+
+/-- **o4 IS certifiable** — `⌊β*⌋ = β* = 3`, test `p+1 = 5 ≤ 3^(3+1) = 81`.  (This is the
+witness `o4_criticality_excluded` uses.  Real slopes: `ρ = log₃(4/3) ≈ 0.262`, `β = 3`,
+`ρ/β ≈ 0.087 < 1`.) -/
+theorem o4_has_certificate : (4 + 1 ≤ 3 ^ (3 + 1)) := by decide
+
+/-- **Antihydra and o2 are NOT certifiable — they sit ON the criticality boundary.**
+o2 (ceiling `×3/2`) shares Antihydra's `(p,q) = (3,2)` AND its cumulative budget slope
+`β* = 1/2` (the ×3/2 ledger fills at `+1/2` per step; the ceiling is the floor on-branch,
+`o2_even`/`o2_odd`), so the two land on the SAME rung: `ρ/β = log₂(3/2)/(1/2) = 1.1699 > 1`
+— critical, the `1.17×` barrier.  `β* = 1/2` is non-integer; the only valid integer lower
+bound is `⌊β*⌋ = 0`, and the test at `β = 0` FAILS: `p+1 = 4 ≤ 2^(0+1) = 2` is FALSE.  So
+`criticality_excluded` is NOT instantiable for Antihydra or o2 — that failure IS the
+criticality boundary (the same note attached to `o4_criticality_excluded`, made literal). -/
+theorem antihydra_o2_no_certificate : ¬ (3 + 1 ≤ 2 ^ (0 + 1)) := by decide
+
+/-- **o3 is NOT freely subcritical — the criterion applies DIFFERENTLY (the ledger DRAINS).**
+o3 is `×4/3` like o4 (`q=3, p=4`, so the SAME run-cap slope `ρ = log₃(4/3) ≈ 0.262`), but its
+roles are SWAPPED (`O3.lean` §5, `O3_TEMPLATE_PORT` §1): the odometer is `a` (single-`1`
+blocks, grows `⌊4a/3⌋+3`) and the LEDGER is `k` (trailing `110` markers), which DRAINS
+`Δk = −1` per generation.  The budget SHRINKS toward the fatal floor — unlike o4's `a`, which
+GROWS `+3` away from it.  o3's budget slope is only `β* ≈ 0.248` (non-integer and, crucially,
+`≈ ρ`, so `ρ/β ≈ 1.06 > 1`); the largest valid integer lower bound is `⌊β*⌋ = 0`, and the test
+at `β = 0` FAILS: `p+1 = 5 ≤ 3^(0+1) = 3` is FALSE.  (An integer `β = 1` WOULD pass the test —
+`5 ≤ 3^2 = 9` — but `β = 1 > β* ≈ 0.248` overstates o3's true budget growth, so it is NOT a
+valid instantiation; it would certify a machine draining faster than o3 actually does.)  Hence
+o3 admits NO honest integer subcriticality certificate: its safety is the ledger-drain-vs-floor
+question (the OPEN o3 ledger conjecture, `O3.lean` §5), NOT a slope comparison.  This is exactly
+why o4 is the sole freely-subcritical rung of the cumulative family. -/
+theorem o3_no_certificate : ¬ (4 + 1 ≤ 3 ^ (0 + 1)) := by decide
+
+/-- o3's `β = 1` over-instantiation (the test PASSES, but overstates the real slope `≈ 0.248`
+— see `o3_no_certificate`; recorded to make the "different criterion" explicit). -/
+theorem o3_beta1_overstated : (4 + 1 ≤ 3 ^ (1 + 1)) := by decide
+
+/-- **Space Needle: ratio INAPPLICABLE (no draining scalar ledger).**  Its even branch is
+`×5/2` (`space_needle_even`, `ρ = log₂(5/2) ≈ 1.322`), but its ODD branch has no single fixed
+point (`PAPER_MIRROR_LADDER.md` §3), so there is no scalar ledger to drain — the criticality
+ratio is replaced by summability (`∑ 2^{-width}` over a cumulative width), and `criticality_excluded`
+does not apply in either direction.  (No integer test: there is no `β`.)  Documented, not
+instantiated — completing the cumulative-family verdict: **certifiable = {o4} only.** -/
+example : True := trivial
+
 /-! ## §7 Numeric sanity + axiom audit. -/
 
 -- Concrete run values, `vq` computed by the kernel (cross-checked in `mirror_census.py`).
@@ -597,5 +653,9 @@ def vqCheck : Bool :=
 #print axioms criticality_core
 #print axioms criticality_excluded
 #print axioms o4_criticality_excluded
+#print axioms o4_has_certificate
+#print axioms antihydra_o2_no_certificate
+#print axioms o3_no_certificate
+#print axioms o3_beta1_overstated
 
 end Mirror

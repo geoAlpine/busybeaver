@@ -585,3 +585,235 @@ export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O3   # green, audit pri
 ```
 
 **No machine decided. No label upgraded.**
+
+---
+
+# O17 L1+GATE APPEND (2026-07-09) — o17's machine + halt gate are FORMALIZED; the FIRST template-FREE cryptid honestly formalized (gate only, NO body lemma)
+
+*New module `lean/O17.lean` (namespace `O17`, zero-dependency/zero-mathlib, verified with
+`lake env lean O17.lean` — green, `sorry`-free, axiom-audited; `lakefile.toml` untouched).
+o17 = `1RB1LD_1RC0LE_1LA1RE_0LF1LA_1RB0RB_---0LB` (halt = F reads 0). Cross-checked vs the
+zipper-faithful Python simulator (`o17_halt_reduction_2026-07-06.py` semantics; blank-orbit
+gate census). Not committed.*
+
+## Verdict: L1 FORMALIZED + the HALT GATE fully machine-checked. NO template (by design).
+
+o17 has **no rigid template** (`O17_HALT_FLAVOR_2026-07-06.md`, `O17_GATE_LAW_2026-07-07.md`:
+shape classes grow without bound, level-2 compression collapses nothing, no finite-residue
+δ-map; protection is carry-TIMING over an unbounded digit string). So there is **no body lemma
+to prove** — attempting one would be dishonest. The achievable, honest result is L1 + a complete
+characterization of the halt gate — the one rigid, finite, `[PROVEN]` part of o17's structure.
+
+| Target | Lean theorem(s) in `O17.lean` | Status |
+|---|---|---|
+| **L1: the machine** | `St`/`Tape`(zipper)/`Cfg`, `step` (`none` ⟺ HALT), `steps`, `steps_add`, `cfgPos`; full-config kernel-`rfl` anchors `sanity5`/`sanity100`/`sanity300` (blank orbit at N=5/100/300 vs Python; N=5 = `0 [A]0 1 1 1 0`, the core seed `A 0 1³`) | **FORMALIZED** |
+| **halt gate (iff)** | **`halt_gate`** : `step c = none ⟺ (c.st = .F ∧ c.tape.head = false)` — the literal gate, by case analysis on the 12 table branches | **FORMALIZED** |
+| **gate predecessor structure** | **`into_F`** (a step landing in `F` had predecessor `D`-reads-`0`), **`into_D`** (a step landing in `D` had predecessor `A`-reads-`1`) — "F entered only by `D:0→0LF`, D only by `A:1→1LD`" made literal; chaining backward: HALT ⟺ the seam `0 0 [1]_A` occurred 2 steps earlier | **FORMALIZED** |
+| **the seam ⟺ halt (forward)** | **`seam_to_gate`** (`0 0 [1]_A` → `F`-reads-`0` in exactly 2 steps, arbitrary tails), **`seam_halts`** (`steps 3 = none`, via `seam_to_gate`+`halt_gate`); **`near_miss_safe`**/`near_miss_not_halt` (`1 0 [1]_A` → `F`-reads-`1`, the 4,712 safe F-entries, does NOT halt) | **FORMALIZED** |
+| **gate-event anchors** (`#eval decide`, all `true`) | blank-orbit true-frontier A-gates at steps 5,22,44,101,314,724,2005 (positions −1,−2,−2,−3,−4,−4,−5, each `A`-reads-`0`, left empty), non-halt through 5000, seam/near-miss kernel checks — vs the C/Python gate census | **FORMALIZED** |
+
+## Axiom audit (in-file `#print axioms`, printed at every check)
+`steps_add`, `halt_gate`, `into_F`, `into_D`, `seam_to_gate`, `seam_halts`, `near_miss_safe`,
+`near_miss_not_halt`: **`[propext, Quot.sound]` (or fewer)** — `halt_gate`/`into_F`/`into_D`/
+`near_miss_not_halt` are `[propext]` only; **`sanity5`/`sanity100`/`sanity300` depend on NO axioms.**
+No `sorryAx`, no `Classical.choice`, no `native_decide`. No `sorry` anywhere.
+
+## What is FORMALIZED vs out of scope (honest)
+- **Formalized:** the machine (L1) and the ENTIRE halt gate — the `step=none ⟺ F:0` iff, the
+  unique-predecessor structure (`into_F`/`into_D`), and the two-step seam reduction both ways
+  (seam halts; near-miss safe). o17's halt condition is now machine-checked exactly as the
+  lab-note `[PROVEN]` reduction (`O17_HALT_FLAVOR` §1a) states it.
+- **Not attempted (by design):** any template/body lemma — o17 provably has none (unbounded
+  shape classes). The sparse-gate carry-timing protection conjecture (`O17_GATE_LAW` §4) stays
+  `[OPEN]`; the gate anchors prove nothing about halting, only cross-check the finite orbit.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean
+lake env lean O17.lean     # green; #eval sanity all true; axiom audit prints (lakefile.toml untouched)
+```
+
+---
+
+# MIRROR CRITICALITY-COMPLETION APPEND (2026-07-09) — the cumulative-ledger criticality verdict is FORMALIZED for ALL FIVE machines (o4 is the unique freely-subcritical rung)
+
+*Extends `lean/Mirror.lean` §6 (the criticality comparison). Completes the integer criticality
+verdict across the whole CUMULATIVE-ledger family (`PAPER_MIRROR_LADDER.md` §4: Antihydra, o2,
+o4, o3, Space Needle), with the resetting/inapplicable cases documented. `lake build Mirror`
+green, axiom audit clean. Everything integer/ℤ; real slopes in comments. Not committed.*
+
+## Verdict: o4 is the SOLE instantiation of `criticality_excluded` in the ledger family.
+
+The honest integer certificate instantiates `criticality_excluded` at `β = ⌊β*⌋` (the largest
+integer that is a valid LOWER bound on the machine's real budget growth `β*`). Worked through
+the five cumulative machines (`Mirror.lean` §6a, all integer facts by `decide`):
+
+| machine | ×p/q | real budget slope β* | ⌊β*⌋ integer test `p+1 ≤ q^(⌊β*⌋+1)` | verdict |
+|---|---|---|---|---|
+| **o4** | ×4/3 | β* = 3 | `5 ≤ 3⁴ = 81` **TRUE** (`o4_has_certificate`) | **SUBCRITICAL** (`o4_criticality_excluded`), ρ/β≈0.087 |
+| **Antihydra** | ×3/2 | β* = 1/2 | `4 ≤ 2¹ = 2` **FALSE** (`antihydra_o2_no_certificate`) | **CRITICAL** boundary, ρ/β=1.17 |
+| **o2** (ceiling) | ×3/2 | β* = 1/2 | same rung as Antihydra — same FALSE | **CRITICAL** (shares Antihydra's (p,q) AND slope) |
+| **o3** | ×4/3 | β* ≈ 0.248 (ledger DRAINS, Δk=−1) | `5 ≤ 3¹ = 3` **FALSE** (`o3_no_certificate`) | **NOT subcritical**; criterion applies differently |
+| **Space Needle** | ×5/2 | — (odd branch: no fixed point) | no β — no scalar ledger | **INAPPLICABLE** (replaced by summability) |
+
+New Lean facts (all `decide`, **axiom-free**): `o4_has_certificate`, `antihydra_o2_no_certificate`,
+`o3_no_certificate`, `o3_beta1_overstated` (o3's `β=1` test `5 ≤ 3²=9` PASSES but overstates the
+real slope `0.248`, so it is NOT a valid instantiation — recorded to make the "different criterion"
+explicit). Space Needle documented as an `example` (no β exists).
+
+## The two flagged subtleties, resolved
+- **o2 = Antihydra's boundary rung** (task 1): o2 shares `(p,q)=(3,2)` and the cumulative slope
+  `β*=1/2`; `ρ/β = log₂(3/2)/(1/2) = 1.1699 > 1`. `β*` is non-integer, so `criticality_excluded`
+  is NOT instantiable; the `β=⌊β*⌋=0` floor test already FAILS (4 > 2). Mirrors the existing
+  Antihydra note attached to `o4_criticality_excluded`, now with its own named theorem.
+- **o3's ledger DRAINS** (task 3): o3 is ×4/3 like o4 (same `ρ≈0.262`) but roles are SWAPPED —
+  the ledger `k` drains `Δk=−1` per generation (budget SHRINKS toward the floor), vs o4's `a`
+  growing `+3` away from it. So `β*≈0.248 ≈ ρ` (`ρ/β≈1.06>1`), the `⌊β*⌋=0` test FAILS, and o3
+  admits NO honest integer subcriticality certificate. o3's safety is the ledger-drain-vs-floor
+  question (the OPEN o3 ledger conjecture, `O3.lean` §5), not a slope comparison — exactly why
+  **o4 is the only freely-subcritical instance** (task 2, confirmed).
+
+## Axiom audit (in-file `#print axioms`)
+All four new theorems: **depend on NO axioms** (`decide` on decidable `ℕ` inequalities). The
+existing §6 crown theorems unchanged (`[propext, Quot.sound]` only). `lake build Mirror` green.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build Mirror   # green, audit prints
+```
+
+**No machine decided. No label upgraded.**
+
+---
+
+# O18.lean — L2 extended: the third uniform crawl `sweepEB` (2026-07-09)
+
+**Goal (this session):** push o18's Lean formalization from L3 (one branch tail) toward the
+single-defect transition branches (POP `m≡2`, LAND `m≡0`, PUSH2 `m≡1`).
+
+## What was formalized (compiles, sorry-free, axiom-audited)
+- **`sweepEB`** — NEW arbitrary-length uniform crossing, the odometer's **leftward
+  filler-transport crawl**: period-4 cycle `E1→0LB · B0→1LC · C0→1LA · A1→0RE`. `4k` steps take
+  `[E on 1] 0 0 (10)^k L` to `[E on 1] 0 0 L`, transporting `(10)^k` UNCHANGED to the right,
+  shifting `−2k`. Proven for every `k` by one-tile (`sweepEB_tile`, `rfl`) + length induction,
+  exactly like `sweepAB`/`sweepDC`. This is the third (and last) uniform in-cell crossing of o18
+  and the crawl the head makes returning over the counter inside every defect turnaround.
+- Helper `pow10_snoc : pow10 k ++ [true,false] = pow10 (k+1)` (**axiom-free**) folds the
+  transported filler in the induction.
+- Grid `#eval` cross-check at `k=5` (`decide ⇒ true`).
+
+## Branches NOT closed — the exact obstacle (pinned by trace this session)
+The task hypothesis "POP = one sweep + a fixed turnaround episode" is **REFUTED**. Trace of
+`D(m,t,e) → D(m′,t′,e′)` (e.g. `D(5,1,1)→D(18,0,1)` in 101 steps, `D(8,1,1)→D(26,0,1)` in 186)
+shows every branch routes through a **growing-amplitude odometer bounce**: alternating `sweepAB`
+rightward passes and `sweepEB` leftward passes whose lengths CHANGE each bounce, glued by
+turnaround pivots that are **counter-dependent** (the reflect pivot branches `A→B→A→E→C→A→…` on
+surrounding counter digits — not a uniform frame). Step count is quadratic `≈(4/3)m²` = `O(m)`
+bounces of `O(m)` length; the aggregate `m′−1=(8/3)(m−1)` push law is the o4-species odometer
+CLOSURE, which stays OPEN. So no full transition branch reduces to sweeps + a fixed episode.
+`clean_gate`/`clean_reset` remain the shared clean-reset-formation TAIL of every LAND/POP landing.
+PUSH2's `8/3` growth needs the same odometer aggregate (not blocked by the missing `ring`; blocked
+by the open closure). No `DRAFTED` block was needed — nothing partial is fit to isolate.
+
+## Axiom audit (in-file `#print axioms`, printed at build)
+`sweepEB`, `sweepEB_tile`, `sweepAB(_tile)`, `sweepDC(_tile)`, `gate_episode`, `clean_gate`,
+`clean_reset`, `steps_add`: **`[propext, Quot.sound]`** only. `pow10_snoc`, `sanity100`,
+`sanity300`: **NO axioms**. No `native_decide`, no `sorry`, no `sorryAx`.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O18   # green, audit + #evals print
+```
+
+**No machine decided. No label upgraded.**
+
+---
+
+# o2 machine formalization — the SECOND Antihydra (ceiling ×3/2), phase-1 generation branch (2026-07-09)
+
+*Third fully-formalized BB(6) machine after o4 (`Template.lean`) and o3 (`O3.lean`). File
+`lean/O2.lean`, namespace `O2`, zero-mathlib, core Lean only. Spec + certified decomposition from
+`o2_link0_certify.py` / `O2_LINK0_CERTIFIED_2026-07-08.md`.*
+
+Verified green by `~/.elan/bin/lake env lean lean/O2.lean` (the identical per-file kernel
+elaboration `lake build` runs): **no errors/warnings, no `sorry`, no `native_decide`**; `lake build
+O2` pending the main-loop `lean_lib O2` registration in `lakefile.toml` (not edited per task
+constraint). Machine: `o2 = 1RB1RC_1LC1LE_1RA1RD_0RF0RE_1LA0LB_---1RA`, halt gate F,0 (F entered
+only by D:0→0RF).
+
+**Axiom audit (`#print axioms`, every theorem): `[propext, Quot.sound]` only** (sanity/`cons_pow01`
+depend on no axioms) — no `sorryAx`, no `Classical.choice`.
+
+| Layer | Lean theorem(s) in `O2.lean` | Status |
+|---|---|---|
+| **L1 machine** | `step`/`steps`/`steps_add`; anchors `sanity44` (blank→D(2,1)), `sanity100`, `sanity200` (kernel `rfl` vs Python) | **FORMALIZED** |
+| **L2 both sweeps** | `sweepBE` (B1E1 leftward invert `1^{2n}→(01)^n`, head −2n) and `sweepCA` (C0A1 rightward invert `(01)^n→1^{2n}`, head +2n), arbitrary length by 2-transition tile + induction; helper `cons_pow01` (`1·(01)^n = (10)^n·1`) | **FORMALIZED** |
+| **L3 generation branch (phase 1)** | milestone `Mcfg a b` (=D(a,b)); `prefix10`/`prefix_mil` (fixed 10-step D(a+1,b)→cut 1); **`unit`** (canonical 16-item unit V(t,m+2)→V(t+1,m) in exactly 12t+32=12k+20 steps, suffix untouched — composition `ep_pre·sweepBE(3t+3)·ep_bnd·sweepCA(3t+4)·ep_tail`); `unit_iter` (J-fold drain); **`phase1`** (`prefix·unit^J`: D(a+1,b)→V(J) with m=r, a=2J+r); anchors `blank_to_D21`, `blank_to_cut1` | **FORMALIZED** |
+
+`#eval` sanity (kernel-executed each build, all `true`): `sweepBE` n=7, `sweepCA` n=5; `unit` at
+t=1,m=7 and t=2 with a symbolic W-suffix; `phase1` on D(9,3) (J=4). All cross-checked against
+`o2_link0_certify.py`'s standalone-unit / cut grids.
+
+**Honest scope / remaining gap.** Only PHASE 1 of a generation is Lean-checked (prefix + the unit
+loop, halt-free). NOT formalized (stay on the lab record `O2_LINK0_CERTIFIED` §2–5): the 7 exit
+templates (SUF_EVEN/ODD/MID/ESC/TERMINAL) that convert the last cut → the next milestone, the
+phase-2 drain, and hence the full milestone automaton `D(a,b)→D(a',b')`, the (y,b)=`⌈3y/2⌉`
+conjugacy, and the mod-4 halt/escape hatch. The ceiling-(K) ledger conjecture stays `[OPEN]`.
+**No machine decided. No label upgraded.**
+
+---
+
+# O3 MARKER-SWEEP APPEND (2026-07-09) — the a≡1/a≡2 boundary chunks: BOTH period-3 ledger sweeps + the k-parametric marker ROUND-TRIP are FORMALIZED; full generations kernel-DECIDED
+
+Extends `lean/O3.lean` (L1 machine, L2 crawls, L3 body, L4 a≡0 generation — all
+already FORMALIZED) toward the two OPEN residue classes. Concrete finding (traced
+via `o3_gen_proof.py`): the a≡1 CASCADE and a≡2 DEPOSIT generations do **not** bottom
+out at `BodyCfg 0` (they never leave residue class 1/2). Their boundary chunks are a
+genuine **2-parameter** composition — the odometer crawls `crawlR^M`/`crawlL^M`
+(scaling with `a=3M+r`) sandwiching a NEW **period-3 sweep over the trailing ledger
+word `(110)^k`**, plus fixed episodes. Full decompositions found:
+```
+a≡1 cascade  M(3M+1,k) → M(3M, k+2)  (one chunk, 30M+32 steps, net −2):
+   crawlR^M · Ep_meet(5) · markR^k · turn(4) · markL^(k+1) · Ep_mid · crawlL^M · Ep_final
+a≡2 deposit  M(3M+2,k) → M(4M+4, k+1)  (bodyTime M 0 + 30M + 62 steps):
+   crawlR^M · [markR/markL marker excursion + episodes] · crawlL^M · body_descent M · reorg17
+```
+
+## Verdict: the two MARKER sweeps + the k-parametric round-trip are FORMALIZED; the M-scaling odometer glue is the remaining gap
+
+| Target | Lean theorem in `O3.lean` (§3.4–3.6) | Status |
+|---|---|---|
+| **markR** (rightward ledger sweep) | `tri3`/`dtri3`, `markR_tile` (3-step `A0·B1·E1`, `011`→`110`, +3), `markR` (ARBITRARY length `j`: crosses `(110)^j`, deposits `(011)^j`, +3j, tail-independent; tile+induction) | **FORMALIZED** |
+| **markL** (leftward return sweep) | `etri3`, `markL_tile` (3-step `D1·C0·A1`, consumes `011`, emits `101`, −3), `markL` (ARBITRARY length: consumes `(011)^j`, emits `(101)^j`, −3j) | **FORMALIZED** |
+| **marker round-trip** (the k-scaling core) | `dtri3_add`, `ep_turn` (fixed 4-step reflect `A0·B0·C0·A1`), **`marker_excursion`**: `markR^K · turn · markL^(K+1)`, PARAMETRIC in ledger `K`, exactly `6K+7` steps, halt-free | **FORMALIZED** |
+| **full a≡1/a≡2 generations** | kernel-DECIDED at concrete params (§5d): `M(13,3)→M(12,5)`@152, `M(10,3)→M(9,5)`@122; `M(14,3)→M(20,4)`@497, `M(11,3)→M(16,4)`@343, `M(17,3)→M(24,4)`@681 — all `some` (halt-free) + exact landing milestone | **DECIDED (concrete), not parametric** |
+
+## Axiom audit (`#print axioms`, in-file, printed each build)
+`dtri3_snoc`, `etri3_snoc`: **no axioms.** `markR_tile`/`markR`/`markL_tile`/`markL`/
+`dtri3_add`/`ep_turn`/`marker_excursion`: **`[propext, Quot.sound]` only.** No `sorry`,
+no `native_decide`, no `Classical.choice`.
+
+## Numeric sanity (`#eval decide`, kernel-executed, all `true`)
+markR `j=4,7`; markL `j=5`; marker round-trip `K=4` (`6·4+7=31` steps); and the five
+full-generation anchors above (§5d), all cross-checked cell-for-cell vs `o3_gen_proof.py`.
+
+## What is FORMALIZED vs the remaining gap (honest)
+- **Formalized:** both period-3 ledger sweeps (`markR`/`markL`, arbitrary length) and
+  their k-parametric round-trip `marker_excursion` — the ledger-scaling heart shared by
+  BOTH open boundary chunks, composing the two sweeps through the fixed `ep_turn`.
+- **Kernel-decided (concrete, not generic):** the full a≡1 cascade and a≡2 deposit
+  generations at 5 grid points — halt-free, exact next-milestone landing.
+- **Remaining gap for PARAMETRIC `o3_gen1`/`o3_gen2`/`o3_generation`:** the M-scaling
+  odometer episodes `Ep_meet`/`Ep_mid`/`Ep_final` that sandwich `crawlR^M`/`crawlL^M`
+  around `marker_excursion` (and, for a≡2, chain into the already-proven `body_descent`
+  + `reorg17`). These are body_step-style fixed rfl episodes with symbolic tails, fully
+  traced and landmark-pinned (`o3_boundary_pinning.py`) but not yet assembled into the
+  parametric theorem — a multi-episode glue like `body_step`, left for the next pass.
+- The ledger conjecture (drains never push `k` below the fatal floor) stays `[OPEN]`.
+
+## Build (exact)
+```
+export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O3   # green, audit prints, all #eval true
+```
+
+**No machine decided. No label upgraded.**
