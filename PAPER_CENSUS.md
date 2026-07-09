@@ -82,6 +82,21 @@ ingredient (`FREQUENCY_AXIS_PROBE_2026-07-08.md`, `NEW_MATH_PROGRAM.md`). The ma
 1.17; o4 freely subcritical at 0.087; the sea machines' sparse resetting draws; Space Needle's cumulative summable
 lean) orders the *strength* of the ask; it opens no coordinate where the ask is easier than (K).
 
+## 5b. Frontier completeness `[OBSERVED, census re-audit 2026-07-09]`
+
+Of the **17 named open BB(6) cryptids** (Antihydra, Space Needle, o2–o5, o7, o8, o10–o18; Lucy's Moonlight halts and
+is not a holdout), **16 are Type-I** — q-adic fixed-point depth processes of ×(p/q) branch maps — namely the 11 tabled
+in §3 plus **o5 (×4/3), o8 (×3/2 nested), o12 (×3/2 sea)** (analyzed in the catalogue/sea notes, the same fixed-point
+structure; o8's ×3/2 reset orbit reconfirmed). **The sole genuine outlier is o7:** its two branches carry DIFFERENT
+multipliers (even ×3/2, fixed point −4, run v₂(a+4); odd a pure halving ×1/2, fixed point −3, run v₂(a+3)), so the
+fixed-point trick applies per-branch but there is no single scalar ×(p/q) orbit whose q-adic digit is o7's run-depth
+— o7 is **not (K)-seeded**; its protection is a **thin-set B2 reachability** wall (halt ⟺ a+3 = 2^k, fatal set of
+relative measure 2^{−bitlen}→0), not a B1 frequency/(K) statement (correcting the 2026-07-05 2D map's "o7 = B1
+density"). **Completeness verdict:** the strict claim "every cryptid is one ×(p/q) odometer" is FALSE (o7); the
+correct claim — **every named open cryptid is a q-adic fixed-point depth process of ×(p/q) branch maps** — holds for
+all 17, o7 included, with o7 the one two-multiplier B2 exception. Scope caveat: this is the *named* frontier; the
+~1090 un-catalogued 6-state holdouts remain `[OPEN]`. (`O7_AND_CENSUS_COMPLETENESS_2026-07-09.md`.)
+
 ## 6. What is decided, and what is not
 
 **Decided in Lean, machine-checked:** the uniform run-structure theorem and its census corollaries; the criticality
