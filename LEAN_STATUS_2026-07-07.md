@@ -924,3 +924,45 @@ uninterpreted (as the 16 Props were); its docstring pins its meaning. o13 shares
 FORM but is documented as the gap-7 variant, not claimed identical to the gap-1 engine.
 
 **No machine decided. No label upgraded.**
+
+---
+
+# X2 APPEND (2026-07-11) — the integer-×2 odometer machine + halt gate + the EVEN comb-repack sweep are FORMALIZED (and the "A1D0 eraser" is corrected)
+
+*New module `lean/X2.lean` (namespace `X2`, same zero-dependency zero-mathlib project;
+`lake build X2` ≈ 0.4 s). Target from the task: formalize the ERASER-EVEN channel of
+`x2 = 1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE`. STRICT labels as above. Not committed.*
+
+## Verdict: L1 machine + halt gate + the genuine EVEN sweep FORMALIZED; the literal `0^{2j}` eraser is corrected as a source-doc conflation.
+
+| Target | Lean theorem(s) in `X2.lean` | Status |
+|---|---|---|
+| **L1: the machine** | `St`/`Tape`(zipper)/`Cfg`, `step` (12 transitions read off the TNF spec), `steps`, `steps_add`; kernel `rfl` anchors `sanity50`/`sanity100` (full zipper config vs the Python simulator, exact incl. trailing blanks) | **FORMALIZED** |
+| **L2: the halt gate** | `halt_gate` : `step c = none ↔ (c.st = B ∧ head = true)` — the ONLY halt is `B:1` (the `---` field), proved by cases on `(state, read)` | **FORMALIZED** |
+| **L3: the EVEN sweep (the target)** | `sweepEF_tile` (one 2-step tile `E:0→1RF · F:1→1RE`) + **`sweepEF`** (ARBITRARY `m`: comb `(01)^m → 1^{2m}` in `2m` steps, `ones(2m)` deposited, `+2m`, by tile+length induction — the `Template.sweepBF`/`O3.crawlR` pattern); **`sweepEF_even`** pins the produced block length `= 2*m` (EVEN, all `m`) | **FORMALIZED** |
+| **L3′: leftward `D`-sweep** | `dSweepTurn` (ARBITRARY block length: `D:1→1LD` crosses `1^{n+1}` left, `D:0→0RE` turns into `E` at the left edge, `n+2` steps, block preserved) | **FORMALIZED** |
+
+## The correction (the load-bearing finding — SOUND, no false proof avoided)
+The lab notes (`X2_ARITHMETIC_PROOF`, `X2_TEMPLATE_PROOF`, `x2a_eraser.py`) describe an "`A1D0`
+eraser" 2-cycle `A:1→0LD · D:0→0LA` giving `(01)^j → 0^{2j}`. **That 2-cycle is o4's**
+(`Suffix.lean`'s `sweepAD`, machine `1RB0LD_...`), **NOT x2's**: here `A:1→0RE` and `D:0→0RE`
+both move RIGHT, and a brute-force search over all entry states finds x2 has NO clean cell-zeroing
+uniform-crossing sweep. The even-gap stream `[2,4,4,6,8,…]` `x2a_eraser.py` reports is an EMERGENT
+parity of the full compound sweep on a boundary-contaminated isolated comb (the script itself flags
+"the boundary differs, so the length is not the in-context `2j`") — not a clean single-cycle lemma.
+x2's genuine, cleanly-formalizable EVEN channel is the DUAL: the comb-REPACK `(01)^m → 1^{2m}` (the
+base-2 doubling engine, `X2_TEMPLATE §1/§3.1`), whose output length `2m` is provably even for all
+`m`. `sweepEF`/`sweepEF_even` formalize exactly that.
+
+## Axiom audit (printed at every build via in-file `#print axioms`)
+`steps_add`, `sweepEF`, `sweepEF_even`, `dSweepTurn`: **`[propext, Quot.sound]` only**; `halt_gate`
+**`[propext]`**; `sanity100` **NO axioms**. No `sorryAx`, no `Classical.choice`, no `native_decide`,
+no `sorry`. Four `#eval decide` sanity checks (repack `(01)^3→1^6`; D-sweep `1^4`→E; halt gate at
+`B:1` and non-halt at `B:0`) all print `true`. `lake build` green (all 21 jobs).
+
+## Honest scope
+Local channel only. This is NOT the global non-halt (the open core = "the `E`-scanner never meets a
+length-3 gap"), which is counter-dependent (`X2_TEMPLATE §3.2`) and not formalized. The literal
+`0^{2j}` eraser does not exist in this transition table; the even-block repack is the sound analogue.
+
+**No machine decided. No label upgraded.**
