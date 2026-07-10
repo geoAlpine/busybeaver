@@ -882,3 +882,45 @@ the actual o4 formalization (`Template`/`Suffix`) and makes o4 literal. Same zer
   protective direction (ledger ⇒ non-halt) is proven, which is the one the completion frame needs.
 
 **No machine decided. No label upgraded.**
+
+---
+
+## Append 2026-07-10 — minimal distinct-conjecture-schema collapse in `Completion.lean`
+
+The 17 named protection conjuncts were 16 opaque `axiom *_nonhalt : Prop` (+ literal o4). They are
+now regrouped into **5 conjecture SCHEMAS**, each `*_nonhalt` *defined* as its schema at a
+per-machine seed (`rfl`-checked). Full project still green (19 jobs), no new `sorry`/`sorryAx`.
+
+| schema | Lean form | seed-instances |
+|---|---|---|
+| `NormalityPQ 3 2` (`Normality32`) base-3/2 normality, place ℤ₂ | `axiom NormalityPQ : Nat→Nat→Int→Prop` | antihydra, o10, o2, o11, o13, o14, o16, o12, o8 (9) |
+| `NormalityPQ 4 3` (`Normality43`) base-4/3, place ℤ₃ | same symbol | o4 (Lean-literal), o3, o5 (3) |
+| `NormalityPQ 8 3` (`Normality83`) base-8/3, place ℤ₃ | same symbol | o15, o18 (2) |
+| `TwoPowerAvoidance` (generalized-Collatz 2^k-avoidance) | `def orbit ↦ ∀ n k, orbit n ≠ 2^k` (LITERAL) | o7 (`o7orbit`), Space Needle (`snOrbit`) (2) |
+| o17 gate-timing (own form) | `axiom o17_nonhalt : Prop` | o17 (1) |
+
+**Count:** 5 named schemas; the 3 normality bands are one meta-schema `NormalityPQ` at 3
+genuinely-distinct p-adic places → **3 meta-schemas** (`NormalityPQ`, `TwoPowerAvoidance`, o17)
+covering **17 seed-instances**. Distinctness of instances is preserved (per-seed open content
+transfers no bound — reload doc §3.3); only the FORM is unified.
+
+Numerically re-verified 2026-07-10 (`scratchpad/reload_unified.py` basis): gap-1 ×3/2 machines
+identical to `W↦⌊3W/2⌋` (20000/20000 exact); o2 negation-conjugate (4000/4000); o13 gap-7
+genuinely different map (2020/4000 mismatch) — hence o13 is a distinct instance, not the canonical
+engine; ×3/2 reads v₂ while ×4/3, ×8/3 read v₃ (different places, no ℤ₂→ℤ₃ map).
+
+### New axiom audit (`Completion.BB6_eq_championSteps`)
+`[BB6, NormalityPQ, championSteps, champion_lower, enumeration_upper, holdouts1087_nonhalt,
+o17_nonhalt, o7orbit, seed, snOrbit]` — the **16 opaque `*_nonhalt` axioms are gone**; the entire
+13-machine (K)-band now contributes the SINGLE symbol `NormalityPQ` (applied through `seed`), the
+thin-set band `o7orbit`/`snOrbit` (via the `TwoPowerAvoidance` def), o17 its own form. No `sorryAx`.
+`antihydra_nonhalt` audits as `[NormalityPQ, seed]`; `o7_nonhalt` as `[o7orbit]`.
+
+### Honest scope
+The definitional identities `oX_nonhalt := schema (seed X)` ENCODE the machine⟺arithmetic
+reductions ([PROVEN-in-lit]/[PROVEN on grid]/[OBSERVED]; only o4 is Lean end-to-end and kept
+literal). The enumeration bridge folds those reductions into its hypothesis. `NormalityPQ` stays
+uninterpreted (as the 16 Props were); its docstring pins its meaning. o13 shares the `Normality32`
+FORM but is documented as the gap-7 variant, not claimed identical to the gap-1 engine.
+
+**No machine decided. No label upgraded.**

@@ -10,6 +10,17 @@ structure* of the complete proof machine-checked, and localizes the entire remai
 difficulty to 17 named arithmetic conjectures (each equivalent to a famous open problem)
 plus the community-scale enumeration.
 
+**Minimal distinct-conjecture structure (2026-07-10).** The 17 named conjunctions are not 17
+unrelated problems: they are instances of **5 conjecture SCHEMAS** (§1.5) — base-3/2 normality
+(`Normality32`, 9 seeds), base-4/3 normality (`Normality43`, 3 seeds incl. o4), base-8/3
+normality (`Normality83`, 2 seeds), generalized-Collatz 2^k-avoidance (`TwoPowerAvoidance`, 2
+seeds), and o17 gate-timing (its own form). The three normality schemas are one meta-schema
+`NormalityPQ p q seed` at 3 genuinely-distinct p-adic places (3,2)/(4,3)/(8,3). Each `*_nonhalt`
+is now *defined* as its schema at a per-machine seed, so the axiom audit exhibits the shared
+conjecture FORM (one symbol `NormalityPQ`) rather than 16 opaque Props. **Honest:** sameness of
+FORM transfers no bound (per-seed open content, reload doc §3.3); the collapse is of shape, not
+of difficulty. See `MINIMAL_CONJECTURE_SET_2026-07-10.md`.
+
 **What is PROVEN here:** the assembly `BB6 = championSteps` from the named hypotheses,
 by antisymmetry of `≤`. **What is ASSUMED (the isolated hard content):** the 17 named
 protection conjectures (`*_nonhalt`), the 1087-holdout residual, and the enumeration
@@ -177,43 +188,127 @@ axiom o4_ledger : o4_ledger_conjecture
 reduction, rather than being an opaque assumption. -/
 theorem o4_nonhalt_of_ledger : o4_nonhalt := o4_reduction o4_ledger
 
-/-- **o3** never halts ⟺ its ×4/3 odometer never triggers the ledger gate. [Lean: body+gen map]. -/
-axiom o3_nonhalt : Prop
-/-- **Antihydra** never halts ⟺ even-density ≥ 1/3 — verbatim the AEV Normality Conjecture. -/
-axiom antihydra_nonhalt : Prop
-/-- **o10** never halts ⟺ the balance never drops (×3/2 density, an AEV-relative seed). -/
-axiom o10_nonhalt : Prop
-/-- **o2** never halts ⟺ the ceiling-×3/2 orbit's even-density bound holds (+ mod-4 hatch). -/
-axiom o2_nonhalt : Prop
-/-- **o11** never halts ⟺ a seeded ×3/2 return-frequency bound at doubly-exp refills. -/
-axiom o11_nonhalt : Prop
-/-- **o13** never halts ⟺ its ×3/2 parity/gap draw avoids the fatal congruence. -/
-axiom o13_nonhalt : Prop
-/-- **o14** never halts ⟺ the o11-twin ×3/2 return bound (fixed points −12,−11). -/
-axiom o14_nonhalt : Prop
-/-- **o16** never halts ⟺ a seeded ×3/2 bound at a tower-sparse gate. -/
-axiom o16_nonhalt : Prop
-/-- **o12** never halts ⟺ its ×3/2 sea-machine return bound. -/
-axiom o12_nonhalt : Prop
-/-- **o8** never halts ⟺ its nested-×3/2 orbit bound. -/
-axiom o8_nonhalt : Prop
-/-- **o5** never halts ⟺ its ×4/3 orbit frequency bound (o4-flavored). -/
-axiom o5_nonhalt : Prop
-/-- **o15** never halts ⟺ the ×8/3 epoch-hit congruence is avoided. [Lean: machine+sweeps]. -/
-axiom o15_nonhalt : Prop
-/-- **o18** never halts ⟺ the same ×8/3 congruence (o18 = o15 mirrored/re-rooted). -/
-axiom o18_nonhalt : Prop
+/-! ### §1.5  The conjecture SCHEMAS — the 17 named conjuncts collapse to 5 forms.
 
-/-- **o7** never halts ⟺ its orbit `u_n = a+3` never equals a power of two
-(`oddpart(u_n) ≠ 1` for all n). Generalized-Collatz Diophantine; no finite congruence
-invariant and no S-unit/Baker handle (2026-07-10 attacks). [OBSERVED milestone automaton]. -/
-axiom o7_nonhalt : Prop
-/-- **Space Needle** never halts ⟺ `m_n + 1` never equals a power of two. Thin-set
-reachability, `f` mixes all bits (no congruence, no S-unit handle). [OBSERVED]. -/
-axiom spaceNeedle_nonhalt : Prop
-/-- **o17** never halts ⟺ no `μ=5` gate ever branches to the halting `μ′=8`. The gate-state
-is genuinely unbounded (Nerode index 1,2,6,19,54,132 — no finite automaton). [Lean gate map: `O17`]. -/
+The reload-map analysis (`RELOAD_MAP_UNIFIED_2026-07-09.md`, re-verified numerically 2026-07-10:
+gap-1 ×3/2 machines identical to `W ↦ ⌊3W/2⌋`, 20000/20000 exact; o2 negation-conjugate,
+4000/4000; o13 gap-7 genuinely different, 2020/4000 mismatch) shows the 17 protections are
+instances of a small set of parametrized schemas.  This section makes that collapse
+machine-checked: each `*_nonhalt` below is *defined* as a schema at a machine-specific seed, so
+the axiom audit exhibits the shared conjecture FORM (one symbol `NormalityPQ`) rather than 16
+unrelated opaque Props.
+
+**Honest scope.**  A schema is the arithmetic conjecture FORM; the seed is per-machine data.
+Sameness of form does NOT transfer any bound between seeds (reload doc §3.3: two seeds of the
+*same* map give statistically unrelated reload-unit sequences — the open content is per-seed).
+So there remain genuinely-distinct per-seed open problems; only their SHAPE is unified.
+
+**The machine⟺arithmetic reductions** justifying each `oX_nonhalt := schema` identity are
+`[PROVEN-in-lit]` / `[PROVEN on grid]` / `[OBSERVED]` per machine (Mirror/RunStructure run-law
+corollaries; catalogue for o5/o8/o12; automata for o7/SN).  Only **o4** is Lean end-to-end
+(kept literal in §1.o4); for the other 16 the definitional identity ENCODES the documented
+reduction, and the enumeration bridge (§3) folds those reductions into its hypothesis. -/
+
+/-- Identifiers of the ×p/q named machines whose protection is a base-p/q normality instance.
+Each machine's seed is opaque per-machine data (`seed`), so distinct machines are distinct
+instances (never definitionally equal) even when they share a reload map. -/
+inductive Machine where
+  | antihydra | o10 | o2 | o11 | o13 | o14 | o16 | o12 | o8   -- ×3/2  (place ℤ₂)
+  | o3 | o5                                                    -- ×4/3  (place ℤ₃)
+  | o15 | o18                                                  -- ×8/3  (place ℤ₃)
+  deriving DecidableEq
+
+/-- The milestone seed integer of a named ×p/q machine (its initial orbit value / mirror seed
+`W₀`).  Opaque: the exact value is per-machine data not needed by the frame; distinctness of the
+constructors keeps the instances distinct. -/
+axiom seed : Machine → Int
+
+/-- **Base-p/q normality schema** — THE (K) open content, in one symbol.  `NormalityPQ p q s`
+asserts the `ℤ_q^×`-equidistribution of the reload units of the affine ×(p/q) milestone orbit
+seeded at `s` (equivalently: one-sided base-p/q digit-frequency normality of that seed orbit; the
+deep-`v_q`-return frequency bound `freq{v_q(vₙ − x) ≥ ℓ}` the gate needs).  This is AEV Normality
+Conjecture 1.6 / the floor-mirror of Mahler's 3/2 problem, instantiated at `(p, q, s)`.
+Uninterpreted here (exactly as the 16 opaque Props were); the docstring pins its meaning.  The 14
+(K)-band conjuncts are all `NormalityPQ` at 3 distinct places × their seeds. -/
+axiom NormalityPQ : Nat → Nat → Int → Prop
+
+/-- ×3/2 band (place ℤ₂).  The gap-1 machines `antihydra, o10, o11, o14, o16` are the *identical*
+engine `W ↦ ⌊3W/2⌋` in mirror coordinates (SAME conjecture, different seeds); `o2` is its
+negation-conjugate; `o13` (gap 7) is a genuinely different reload map — still base-3/2 normality,
+a distinct instance; `o12, o8` are ×3/2 sea/nested (same fixed-point structure). -/
+abbrev Normality32 (s : Int) : Prop := NormalityPQ 3 2 s
+/-- ×4/3 band (place ℤ₃).  o4 (Lean-literal: `o4_ledger_conjecture` is this schema's concrete
+realization at o4's seed), o3, o5. -/
+abbrev Normality43 (s : Int) : Prop := NormalityPQ 4 3 s
+/-- ×8/3 band (place ℤ₃).  o15, o18 (o18 = o15 mirrored/re-rooted). -/
+abbrev Normality83 (s : Int) : Prop := NormalityPQ 8 3 s
+
+/-- **Generalized-Collatz 2^k-avoidance schema** — the thin-set band (o7, Space Needle).  LITERAL:
+the orbit never hits a power of two.  o7 and Space Needle share this FORM but have genuinely
+different orbit maps (different multipliers: o7 two-multiplier ×3/2 & ×1/2; SN ×5/2), so they are
+two distinct instances of one schema — not a normality/density statement but a reachability wall. -/
+def TwoPowerAvoidance (orbit : Nat → Nat) : Prop := ∀ n k, orbit n ≠ 2 ^ k
+
+/-- o7's milestone orbit `u_n` (opaque; halt ⟺ `u_n = 2^k`, k ≥ 2). -/
+axiom o7orbit : Nat → Nat
+/-- Space Needle's orbit `m_n + 1` (opaque; halt ⟺ `m_n + 1 = 2^k`). -/
+axiom snOrbit : Nat → Nat
+
+/-! #### The 16 non-o4 conjuncts as schema instances (defs, not axioms). -/
+
+/-- **o3** ⟺ base-4/3 normality at o3's seed. [reduction `[PROVEN, Lean: O3]`: body + gen map]. -/
+def o3_nonhalt : Prop := Normality43 (seed .o3)
+/-- **Antihydra** ⟺ even-density ≥ 1/3 = base-3/2 normality (AEV Conj 1.6 verbatim). [PROVEN-in-lit]. -/
+def antihydra_nonhalt : Prop := Normality32 (seed .antihydra)
+/-- **o10** ⟺ base-3/2 normality (same reload map as Antihydra, distinct seed). [PROVEN on grid]. -/
+def o10_nonhalt : Prop := Normality32 (seed .o10)
+/-- **o2** ⟺ base-3/2 normality (ceiling; negation-conjugate of the canonical engine). [PROVEN on grid]. -/
+def o2_nonhalt : Prop := Normality32 (seed .o2)
+/-- **o11** ⟺ base-3/2 normality (gap-1 canonical engine, seeded). [PROVEN, Lean corollary]. -/
+def o11_nonhalt : Prop := Normality32 (seed .o11)
+/-- **o13** ⟺ base-3/2 normality (gap-7 VARIANT reload map; distinct instance). [PROVEN, Lean corollary]. -/
+def o13_nonhalt : Prop := Normality32 (seed .o13)
+/-- **o14** ⟺ base-3/2 normality (o11-twin, gap-1). [PROVEN, Lean corollary]. -/
+def o14_nonhalt : Prop := Normality32 (seed .o14)
+/-- **o16** ⟺ base-3/2 normality (gap-1). [PROVEN, Lean corollary]. -/
+def o16_nonhalt : Prop := Normality32 (seed .o16)
+/-- **o12** ⟺ base-3/2 normality (sea machine). [OBSERVED, catalogue]. -/
+def o12_nonhalt : Prop := Normality32 (seed .o12)
+/-- **o8** ⟺ base-3/2 normality (nested reset). [OBSERVED, catalogue]. -/
+def o8_nonhalt : Prop := Normality32 (seed .o8)
+/-- **o5** ⟺ base-4/3 normality (o4-class). [OBSERVED, catalogue]. -/
+def o5_nonhalt : Prop := Normality43 (seed .o5)
+/-- **o15** ⟺ base-8/3 normality. [PROVEN on grid + Lean depth]. -/
+def o15_nonhalt : Prop := Normality83 (seed .o15)
+/-- **o18** ⟺ base-8/3 normality (o18 = o15 mirrored). [PROVEN, Lean: O18]. -/
+def o18_nonhalt : Prop := Normality83 (seed .o18)
+
+/-- **o7** ⟺ its orbit never equals a power of two (`oddpart(u_n) ≠ 1`). Generalized-Collatz;
+no finite congruence invariant, no S-unit/Baker handle. [OBSERVED milestone automaton]. -/
+def o7_nonhalt : Prop := TwoPowerAvoidance o7orbit
+/-- **Space Needle** ⟺ `m_n + 1` never a power of two. Thin-set reachability; `f` mixes all bits
+(no congruence, no S-unit handle). [OBSERVED]. -/
+def spaceNeedle_nonhalt : Prop := TwoPowerAvoidance snOrbit
+/-- **o17** — the sole gate-timing form (its own schema, 1 instance): no `μ=5` gate ever branches
+to the halting `μ′=8`.  Genuinely unbounded gate-state (Nerode index 1,2,6,19,54,132 — no finite
+automaton), NOT a base-p/q normality statement. [Lean gate map: `O17`]. -/
 axiom o17_nonhalt : Prop
+
+/-! #### Machine-checked collapse: the conjuncts ARE their schemas at seeds (by `rfl`). -/
+
+/-- The five ×3/2 gap-1 conjuncts are literally one schema `NormalityPQ 3 2` at five seeds. -/
+example : antihydra_nonhalt = NormalityPQ 3 2 (seed .antihydra) := rfl
+example : o11_nonhalt = NormalityPQ 3 2 (seed .o11) := rfl
+example : o14_nonhalt = NormalityPQ 3 2 (seed .o14) := rfl
+example : o16_nonhalt = NormalityPQ 3 2 (seed .o16) := rfl
+example : o10_nonhalt = NormalityPQ 3 2 (seed .o10) := rfl
+/-- o3/o5 are the ×4/3 schema; o15/o18 the ×8/3 schema; o7/SN the avoidance schema. -/
+example : o3_nonhalt = NormalityPQ 4 3 (seed .o3) := rfl
+example : o5_nonhalt = NormalityPQ 4 3 (seed .o5) := rfl
+example : o15_nonhalt = NormalityPQ 8 3 (seed .o15) := rfl
+example : o18_nonhalt = NormalityPQ 8 3 (seed .o18) := rfl
+example : o7_nonhalt = (∀ n k, o7orbit n ≠ 2 ^ k) := rfl
+example : spaceNeedle_nonhalt = (∀ n k, snOrbit n ≠ 2 ^ k) := rfl
 
 /-- The ~1087 un-catalogued 6-state holdouts (bbchallenge April-2026 residual) are all
 non-halting. Community-scale [OPEN]: our certified suite is a subset of the community
@@ -278,11 +373,21 @@ theorem BB6_determined (h : AllHoldoutsNonHalt) : ∃ N, BB6 = N :=
 `BB6_eq_championSteps` no longer lists `o4_nonhalt` among its axioms: o4's conjunct is now
 a *defined* machine statement (`∀ n, Template.steps n Template.init ≠ none`), so it
 contributes no axiom.  The o4 reduction (`o4_reduction`) is `[propext, Quot.sound]` only —
-no `sorryAx` — and the sole remaining o4 axiom is the arithmetic `o4_ledger`. -/
+no `sorryAx` — and the sole remaining o4 axiom is the arithmetic `o4_ledger`.
+
+**The schema collapse in the audit.**  The 16 non-o4 conjuncts are now *defs* unfolding into
+schemas, so the audit of `BB6_eq_championSteps` no longer lists 16 opaque `*_nonhalt` axioms.
+Instead the entire (K)-band (13 machines) contributes the SINGLE schema symbol `NormalityPQ`
+(applied via `seed` at 13 constructors); the thin-set band contributes `TwoPowerAvoidance`
+(a def) over the two orbit symbols `o7orbit`, `snOrbit`; o17 keeps its own `o17_nonhalt`.
+That is the minimal distinct-conjecture structure made machine-visible: 5 schemas (3 of them
+one meta-schema `NormalityPQ` at 3 places), 17 seed-instances. No `sorryAx` appears. -/
 
 #print axioms BB6_eq_championSteps
 #print axioms o4_reduction
 #print axioms orbit_reaches
 #print axioms o4_nonhalt_of_ledger
+#print axioms antihydra_nonhalt
+#print axioms o7_nonhalt
 
 end Completion
