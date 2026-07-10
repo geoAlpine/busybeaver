@@ -817,3 +817,16 @@ export PATH="$HOME/.elan/bin:$PATH"; cd lean; lake build O3   # green, audit pri
 ```
 
 **No machine decided. No label upgraded.**
+
+## Completion.lean (2026-07-10) — the conditional completion theorem [FORMALIZED]
+`lake build Completion` green; part of the full 19-job build. `theorem BB6_eq_championSteps
+(h : AllHoldoutsNonHalt) : BB6 = championSteps` — the complete BB(6) proof as one conditional
+theorem, proven by `Nat.le_antisymm` from the champion lower bound + the enumeration upper
+bound. AXIOM AUDIT (`#print axioms BB6_eq_championSteps`): NO sorryAx; depends ONLY on the
+17 named protection conjectures (`o4_nonhalt`…`o17_nonhalt`), `holdouts1087_nonhalt`, the two
+enumeration bridges (`champion_lower`, `enumeration_upper`), and the interface `BB6`/
+`championSteps` — the hard content is isolated into exactly these explicit, documented axioms
+(not even propext/Quot.sound are needed). This is the machine-checked FRAME: the logical
+structure of the complete proof is verified; the remaining difficulty is localized to 17
+famous-open-problem conjectures + the community-scale 1087 sweep. Resolving one named axiom
+upgrades it to a theorem and decides that machine.
