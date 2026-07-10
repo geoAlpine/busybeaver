@@ -830,3 +830,55 @@ enumeration bridges (`champion_lower`, `enumeration_upper`), and the interface `
 structure of the complete proof is verified; the remaining difficulty is localized to 17
 famous-open-problem conjectures + the community-scale 1087 sweep. Resolving one named axiom
 upgrades it to a theorem and decides that machine.
+
+---
+
+# COMPLETION o4-LITERALIZATION APPEND (2026-07-10) — `o4_nonhalt` is now the REAL machine statement + a PROVEN reduction; only the arithmetic ledger stays axiomatic
+
+*Tightens `lean/Completion.lean`. Previously `axiom o4_nonhalt : Prop` was an opaque placeholder
+whose equivalence to the arithmetic conjecture was only DOCUMENTED. Now Completion `import Suffix`s
+the actual o4 formalization (`Template`/`Suffix`) and makes o4 literal. Same zero-dependency project;
+`lake build` green (19 jobs, Completion ≈ 2.5 s). Not committed.*
+
+## What o4's Lean layer proves about non-halting (assessment)
+- `Template.body_nonhalt` — the STANDALONE bouncer family `B(k)` never halts (unconditional).
+  Explicitly decides nothing about o4 from blank: blank-left context only.
+- `Suffix.generation_odometer` — the real machine→arithmetic generation map `M(G,a) →
+  M(⌊4G/3⌋+c(G%3), ledgerNext G a)`, exact step counts, for every `G ≥ 34`, `a ≥ 1`.
+- `Template.real_milestone` — blank tape reaches `M(43,18)` at step 1548 (kernel `rfl`, axiom-free).
+- The FULL "blank orbit non-halts ⟺ frequency/ledger conjecture" is NOT a single pre-existing
+  theorem; the pieces above are chainable into the reduction DIRECTION (arithmetic ⇒ non-halt).
+
+## What is now LITERAL / PROVEN in `Completion.lean`
+| Object | Definition / statement | Status |
+|---|---|---|
+| `o4_nonhalt` | `def := ∀ n, Template.steps n Template.init ≠ none` — the real o4 TM (`Template.step`) from blank never hits its halt transition | **LITERAL def** (was opaque `axiom … : Prop`) |
+| `Gseq`/`aseq` | the arithmetic milestone orbit, seeded `M(43,18)`, advanced by `Template.cOdo`/`ledgerNext` | def |
+| `Gseq_ge`, `mu_strict`, `pow10_len`, `Mcfg_right_len`, `prefix_ne_none` | odometer stays `≥34`; measure `G+2a` strictly grows/gen; tape-length; halt-free prefixes | **PROVEN** |
+| `orbit_reaches` | ledger `≥1` ⇒ blank orbit reaches `M(Gseq n, aseq n)` at a step `N ≥ n` (base = `real_milestone`; step = `generation_odometer`; `>0` steps/gen via `mu_strict`) | **PROVEN** `[propext, Quot.sound]` |
+| **`o4_reduction`** | **`o4_ledger_conjecture → o4_nonhalt`** — the machine→arithmetic reduction direction, now a Lean theorem (was documented prose) | **PROVEN** `[propext, Quot.sound]` |
+| `o4_ledger_conjecture` | `def := ∀ n, 1 ≤ aseq n` — the genuinely-open arithmetic content (base-4/3 (K)-normality rung) | def |
+| `o4_ledger` | the ONLY remaining o4 axiom (the arithmetic conjecture) | **axiom** |
+| `o4_nonhalt_of_ledger` | `: o4_nonhalt := o4_reduction o4_ledger` | **PROVEN** (from `o4_ledger`) |
+
+## New axiom audit (`#print axioms`, printed at build)
+- `Completion.BB6_eq_championSteps` — **`o4_nonhalt` is GONE from the list.** Now:
+  `[BB6, championSteps, champion_lower, enumeration_upper, holdouts1087_nonhalt,
+  antihydra/o2/o3/o5/o7/o8/o10/o11/o12/o13/o14/o15/o16/o17/o18/spaceNeedle_nonhalt]`
+  — the 16 still-opaque machines + holdouts + 2 enumeration bridges + interface. **No `sorryAx`.**
+- `Completion.o4_reduction`, `Completion.orbit_reaches` — **`[propext, Quot.sound]` only** (no `sorryAx`,
+  no `o4_ledger`): the reduction is unconditionally proven.
+- `Completion.o4_nonhalt_of_ledger` — `[propext, o4_ledger, Quot.sound]`: o4's non-halting now rests
+  on ONE named arithmetic axiom via a proven reduction, not an opaque `Prop`.
+
+## Honest scope — what remains genuinely axiomatic
+- o4: only `o4_ledger` (the a-ledger / base-4/3 return-frequency conjecture). The generation
+  dynamics, odometer, ledger update, and the non-halt reduction are all Lean theorems.
+- The other 16 named machines (`o3_nonhalt … o17_nonhalt`, `spaceNeedle_nonhalt`) stay opaque
+  `Prop` axioms — their machines are not literalized in Completion (o3/O18/O2/O17 have partial Lean
+  layers elsewhere, not wired in here). The 1087-holdout residual and the two enumeration bridges
+  stay axioms (community-scale engineering).
+- The full ⟺ (halting ⇒ ledger fails, the reverse direction) is NOT formalized; only the
+  protective direction (ledger ⇒ non-halt) is proven, which is the one the completion frame needs.
+
+**No machine decided. No label upgraded.**

@@ -1,3 +1,5 @@
+import Suffix
+
 /-!
 # BB(6) conditional completion theorem — the machine-checked logical frame
 
@@ -16,7 +18,14 @@ bridge (`enumeration_upper`, `champion_lower`) — the [C]+[D] Coq-BB5-scale eng
 The `reduction *` docstrings record where the machine⟺arithmetic equivalence is already
 Lean-proven elsewhere in this project (o4 end-to-end via `Mirror`/`Template`/`Suffix`),
 so that the `*_nonhalt` Props below are known to be *equivalent* to the stated arithmetic
-statements — this file keeps them opaque only to stay self-contained (no imports).
+statements.  For **o4** this is no longer merely documented: this file `import Suffix`s the
+actual o4 formalization and makes `o4_nonhalt` **literal** — it is *defined* as the real o4
+Turing machine (`Template.step`) never halting from the blank tape, and the machine→arithmetic
+reduction direction (`o4_reduction`: the a-ledger conjecture ⇒ o4 non-halts) is a **theorem**,
+proved by chaining `Template.real_milestone` (blank → `M(43,18)`) with
+`Suffix.generation_odometer` (the base-4/3 odometer + ledger generation map).  Only the
+genuinely-open arithmetic content (the a-ledger stays `≥ 1`) remains an axiom (`o4_ledger`).
+The other 16 named `*_nonhalt` stay opaque `Prop`s (their machines are not formalized here).
 
 Zero-mathlib, core only. No `sorry`. See `COMPLETION_SKELETON_2026-07-10.md`,
 `ROADMAP_COMPLETE_PROOF_2026-07-10.md`, `PAPER_CENSUS.md`.
@@ -31,10 +40,143 @@ equivalent to, and the status of the machine⟺arithmetic reduction. Band A (14 
 (K)-frequency = base-p/q normality = AEV Conjecture 1.6 = Mahler 3/2. Band B (2): thin-set
 reachability = generalized-Collatz Diophantine. Band C (1): gate-timing, unbounded state. -/
 
-/-- **o4** never halts ⟺ `freq{3∣W_n} < 4/5` for the seed-57 odometer orbit `W`.
-Reduction machine⟺arithmetic: [PROVEN, Lean END-TO-END] (`Mirror`+`Template`+`Suffix`).
-The easiest (K)-rung: subcritical, margin 2.4. Equivalent to a one-orbit base-4/3 normality. -/
-axiom o4_nonhalt : Prop
+/-! ### §1.o4  The LITERAL o4 layer (imported from `Template`/`Suffix`).
+
+`o4_nonhalt` below is not an opaque `Prop`: it is *defined* as the real o4 Turing machine
+never halting from the blank tape, and its arithmetic reduction (`o4_reduction`) is PROVEN
+here from the o4 formalization.  See §1.o4 lemmas. -/
+
+/-- The arithmetic milestone sequence of the o4 blank-tape orbit: `G` is the base-4/3
+odometer register, `a` the filler/ledger.  Seeded at the first `G ≥ 34` milestone
+`M(43, 18)` (`Template.real_milestone`, step 1548) and advanced by the derived generation
+map `Suffix.generation_odometer` (`G ↦ ⌊4G/3⌋ + c(G mod 3)`, `a ↦ ledgerNext`). -/
+def Gseq : Nat → Nat
+  | 0 => 43
+  | (n + 1) => 4 * Gseq n / 3 + Template.cOdo (Gseq n)
+
+def aseq : Nat → Nat
+  | 0 => 18
+  | (n + 1) => Template.ledgerNext (Gseq n) (aseq n)
+
+/-- The odometer register stays `≥ 34` (so every generation step is applicable). -/
+theorem Gseq_ge (n : Nat) : 34 ≤ Gseq n := by
+  induction n with
+  | zero => decide
+  | succ n ih =>
+    show 34 ≤ 4 * Gseq n / 3 + Template.cOdo (Gseq n)
+    omega
+
+/-- The measure `G + 2a` strictly increases each generation (used to certify that a
+generation consumes `> 0` steps).  Holds in all three residue classes, ledger drain
+included. -/
+theorem mu_strict (n : Nat) :
+    Gseq n + 2 * aseq n < Gseq (n + 1) + 2 * aseq (n + 1) := by
+  have hg : 34 ≤ Gseq n := Gseq_ge n
+  show Gseq n + 2 * aseq n
+      < 4 * Gseq n / 3 + Template.cOdo (Gseq n)
+        + 2 * Template.ledgerNext (Gseq n) (aseq n)
+  rcases (by omega : Gseq n % 3 = 0 ∨ Gseq n % 3 = 1 ∨ Gseq n % 3 = 2) with h | h | h
+  · have hc : Template.cOdo (Gseq n) = 3 := by unfold Template.cOdo; rw [if_pos h]
+    have hl : Template.ledgerNext (Gseq n) (aseq n) = aseq n + 6 := by
+      unfold Template.ledgerNext; rw [if_neg (by omega), if_neg (by omega)]
+    rw [hc, hl]; omega
+  · have hc : Template.cOdo (Gseq n) = 5 := by
+      unfold Template.cOdo; rw [if_neg (by omega), if_pos h]
+    have hl : Template.ledgerNext (Gseq n) (aseq n) = aseq n - 1 := by
+      unfold Template.ledgerNext; rw [if_pos h]
+    rw [hc, hl]; omega
+  · have hc : Template.cOdo (Gseq n) = 1 := by
+      unfold Template.cOdo; rw [if_neg (by omega), if_neg (by omega)]
+    have hl : Template.ledgerNext (Gseq n) (aseq n) = aseq n + 4 := by
+      unfold Template.ledgerNext; rw [if_neg (by omega), if_pos h]
+    rw [hc, hl]; omega
+
+/-- Length of the milestone tape's right half: `= (G-1) + 2a + 2`. -/
+theorem pow10_len (a : Nat) : (Template.pow10 a).length = 2 * a := by
+  induction a with
+  | zero => rfl
+  | succ a ih =>
+    rw [show Template.pow10 (a + 1) = true :: false :: Template.pow10 a from rfl]
+    simp only [List.length_cons, ih]; omega
+
+theorem Mcfg_right_len (G a : Nat) (p : Int) :
+    (Template.Mcfg G a p).tape.right.length = (G - 1) + 2 * a + 2 := by
+  show (List.replicate (G - 1) false ++ (Template.pow10 a ++ [false, true])).length = _
+  simp only [List.length_append, List.length_replicate, pow10_len,
+    List.length_cons, List.length_nil]
+  omega
+
+/-- A halt-free segment stays halt-free on every prefix: if `steps N c` succeeds then
+`steps m c ≠ none` for all `m ≤ N`.  (`steps = none` is absorbing: `noneBind`.) -/
+theorem prefix_ne_none {c c' : Template.Cfg} {N m : Nat}
+    (h : Template.steps N c = some c') (hm : m ≤ N) : Template.steps m c ≠ none := by
+  intro hnone
+  rw [show N = m + (N - m) from by omega, Template.steps_add, hnone,
+    Template.noneBind] at h
+  exact absurd h (by simp)
+
+/-- **The o4 orbit reaches every arithmetic milestone.**  Assuming the a-ledger stays
+`≥ 1`, the blank-tape orbit reaches milestone `n` (`M(Gseq n, aseq n)`) at a step
+`N ≥ n`.  Proved by induction: base = `Template.real_milestone`; step =
+`Suffix.generation_odometer` (applicable since `Gseq_ge` gives `G ≥ 34`, and the ledger
+hypothesis gives `a ≥ 1`); the step count grows by `> 0` via `mu_strict`. -/
+theorem orbit_reaches (h : ∀ n, 1 ≤ aseq n) :
+    ∀ n, ∃ (N : Nat) (p : Int),
+      n ≤ N ∧ Template.steps N Template.init = some (Template.Mcfg (Gseq n) (aseq n) p) := by
+  intro n
+  induction n with
+  | zero => exact ⟨1548, (-42 : Int), by omega, Template.real_milestone⟩
+  | succ n ih =>
+    obtain ⟨N, p, hNn, hN⟩ := ih
+    obtain ⟨M, q, hM⟩ :=
+      Template.generation_odometer (Gseq n) (aseq n) p (Gseq_ge n) (h n)
+    have hMpos : 0 < M := by
+      rcases Nat.eq_zero_or_pos M with h0 | h0
+      · exfalso
+        subst h0
+        have hM' : some (Template.Mcfg (Gseq n) (aseq n) p)
+            = some (Template.Mcfg (Gseq (n + 1)) (aseq (n + 1)) q) := hM
+        have hlen := congrArg (fun c => c.tape.right.length) (Option.some.inj hM')
+        simp only [Mcfg_right_len] at hlen
+        have hmu := mu_strict n
+        have hg := Gseq_ge n
+        have hg1 := Gseq_ge (n + 1)
+        omega
+      · exact h0
+    refine ⟨N + M, q, by omega, ?_⟩
+    rw [Template.steps_add, hN, Template.someBind]
+    exact hM
+
+/-- **o4** never halts — the LITERAL machine statement: the real o4 Turing machine
+`1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RB---` (`Template.step`) run from the blank tape
+(`Template.init`) never reaches its halt transition (`Template.steps n = none`).  This is
+the actual `o4` object of the formalization, not an opaque `Prop`. -/
+def o4_nonhalt : Prop := ∀ n, Template.steps n Template.init ≠ none
+
+/-- **The o4 a-ledger conjecture** (the genuinely-open arithmetic content): along the
+base-4/3 odometer orbit the filler/ledger `aseq` never drains to `0` (equivalently, the
+seed-orbit `v₃`-return frequency `freq{3∣W_n} < 4/5`, the easiest (K)/base-4/3 normality
+rung — subcritical, margin 2.4).  This is the ONE informal residue of the o4 decision. -/
+def o4_ledger_conjecture : Prop := ∀ n, 1 ≤ aseq n
+
+/-- **o4 reduction (PROVEN):** the a-ledger conjecture ⇒ o4 never halts from the blank
+tape.  This is the machine→arithmetic reduction direction, now LITERAL in Lean (chaining
+`Template.real_milestone` and `Suffix.generation_odometer` via `orbit_reaches` +
+`prefix_ne_none`), no longer merely documented.  [PROVEN, `[propext, Quot.sound]` only.] -/
+theorem o4_reduction (h : o4_ledger_conjecture) : o4_nonhalt := by
+  intro m
+  obtain ⟨N, p, hNm, hN⟩ := orbit_reaches h m
+  exact prefix_ne_none hN hNm
+
+/-- The only remaining o4 axiom: the open arithmetic a-ledger conjecture.  Everything
+between it and `o4_nonhalt` (the whole generation dynamics, odometer, and non-halting
+reduction) is now a Lean theorem — cf. `o4_reduction`. -/
+axiom o4_ledger : o4_ledger_conjecture
+
+/-- o4's non-halting now follows from a single named ARITHMETIC axiom via a PROVEN
+reduction, rather than being an opaque assumption. -/
+theorem o4_nonhalt_of_ledger : o4_nonhalt := o4_reduction o4_ledger
+
 /-- **o3** never halts ⟺ its ×4/3 odometer never triggers the ledger gate. [Lean: body+gen map]. -/
 axiom o3_nonhalt : Prop
 /-- **Antihydra** never halts ⟺ even-density ≥ 1/3 — verbatim the AEV Normality Conjecture. -/
@@ -130,5 +272,17 @@ theorem BB6_eq_championSteps (h : AllHoldoutsNonHalt) : BB6 = championSteps :=
 /-- Equivalent packaging: BB(6) is determined (equals a known value) once the holdouts fall. -/
 theorem BB6_determined (h : AllHoldoutsNonHalt) : ∃ N, BB6 = N :=
   ⟨championSteps, BB6_eq_championSteps h⟩
+
+/-! ## §5 Axiom audit (printed at every build).
+
+`BB6_eq_championSteps` no longer lists `o4_nonhalt` among its axioms: o4's conjunct is now
+a *defined* machine statement (`∀ n, Template.steps n Template.init ≠ none`), so it
+contributes no axiom.  The o4 reduction (`o4_reduction`) is `[propext, Quot.sound]` only —
+no `sorryAx` — and the sole remaining o4 axiom is the arithmetic `o4_ledger`. -/
+
+#print axioms BB6_eq_championSteps
+#print axioms o4_reduction
+#print axioms orbit_reaches
+#print axioms o4_nonhalt_of_ledger
 
 end Completion
