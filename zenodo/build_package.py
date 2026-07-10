@@ -12,7 +12,7 @@ def _ver():
 VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
-          "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md"]
+          "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md", "PAPER_RIGIDITY_LIMITS.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [
@@ -28,7 +28,8 @@ VERIFICATION = [
 
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
-        "lean/O3.lean", "lean/O18.lean", "lean/O2.lean", "lean/O17.lean", "lean/crosscheck.py", "lean/template_crosscheck.py",
+        "lean/O3.lean", "lean/O18.lean", "lean/O2.lean", "lean/O17.lean", "lean/Completion.lean",
+        "lean/crosscheck.py", "lean/template_crosscheck.py",
         "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py", "lean/o18_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
 
@@ -53,6 +54,23 @@ NOTES = [
     "O13_O14_FIXEDPOINT_2026-07-08.md", "O16_SPACENEEDLE_FIXEDPOINT_2026-07-08.md",
     "FREQUENCY_AXIS_PROBE_2026-07-08.md", "O7_AND_CENSUS_COMPLETENESS_2026-07-09.md",
     "CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md", "BB6_FRAMEWORK_PACKAGE.md",
+    # --- the (K)-wall program: synthesis + the complete-proof frame (2026-07-09/10) ---
+    "ROADMAP_COMPLETE_PROOF_2026-07-10.md", "COMPLETION_SKELETON_2026-07-10.md",
+    "OPEN_PROBLEM_2026-07-10.md", "ATTACK_PLAN_2026-07-10.md",
+    "NEWMATH_BUILD_SYNTHESIS_2026-07-09.md", "NEWMATH_SOLENOID_BUILD_2026-07-09.md",
+    "NEWMATH_DIGIT_BRIDGE_2026-07-09.md", "O4_NEWMATH_BUILD_2026-07-09.md",
+    "RELOAD_EXCURSION_BUILD_2026-07-09.md", "RELOAD_MAP_UNIFIED_2026-07-09.md",
+    "RIGIDITY_LIMITS_HOST_2026-07-09.md", "U0_EXCLUSION_BUILD_2026-07-10.md",
+    "JOINT_ADELIC_BUILD_2026-07-10.md", "O4_CERTIFIED_FREQUENCY_BUILD_2026-07-10.md",
+    # --- the (K)-wall tool sweep (2026-07-10): all honest negatives, each a sharp characterization ---
+    "O4_EXPSUM_FREQUENCY_BUILD_2026-07-10.md", "O4_TRANSFER_OPERATOR_BUILD_2026-07-10.md",
+    "O4_CHRISTOL_TEST_2026-07-10.md", "O4_GOWERS_TEST_2026-07-10.md",
+    "O4_OSTROWSKI_TEST_2026-07-10.md", "O4_FREQUENCY_RIGIDITY_2026-07-10.md",
+    "O4_PADIC_DYNAMICS_2026-07-10.md", "O4_EQUIVALENTS_SEARCH_2026-07-10.md",
+    # --- Category B decision attempts (2026-07-10): the thin-set / timing walls ---
+    "O7_DECISION_ATTEMPT_2026-07-10.md", "SPACENEEDLE_DECISION_ATTEMPT_2026-07-10.md",
+    "O17_GATE_DECISION_ATTEMPT_2026-07-10.md", "O7_TRANSCENDENCE_ATTEMPT_2026-07-10.md",
+    "SPACENEEDLE_TRANSCENDENCE_ATTEMPT_2026-07-10.md", "HOLDOUT_SWEEP_FEASIBILITY_2026-07-10.md",
 ]
 
 META = ["zenodo/README_ZENODO.md", "zenodo/CITATION.cff",
