@@ -230,6 +230,68 @@ def est_sawtooth(fast):
     return best
 
 
+# ---------- estimator (G): slow-side base-odometer power-fit ----------
+def _dedupe(vals, steps):
+    ov = []; os_ = []
+    for v, s in zip(vals, steps):
+        if not ov or ov[-1] != v:
+            ov.append(v); os_.append(s)
+    return ov, os_
+
+
+def est_slow_geom(slow, tailN=14):
+    """Catch the base-(p/q) odometer whose VALUE register lives on the SLOW side (the
+    macro-generation record-extremes), not the fast intra-generation crawl.  This is the
+    o2/o3 class: the fast side is a LINEAR crawl (+1/milestone), while the odometer grows
+    x(p/q) per macro-generation but is only sampled at record-breaking slow-side extremes,
+    which SKIP generations irregularly -- so a slow ratio appears as an INTEGER POWER e^n of
+    the true multiplier e (o2: 3.55,2.27,1.503 = powers of 3/2; o3: ~1.33 = 4/3).
+
+    Power-fit test (identifying + safe): report a KNOWN engine e only if, over the slow-side
+    tail, (i) each record-extreme ratio r_i is a consistent integer power e^{n_i} (n_i>=1),
+    AND (ii) the step-ratio tracks value-ratio^2 (steps ∝ value^2, holds at any skip depth).
+    Requiring EVERY ratio to be a power of a SINGLE engine is strong enough that no other
+    named machine's slow side false-fires.  Returns (Fraction e, observable, nfit, nsc) or None."""
+    if len(slow) < 6:
+        return None
+    best = None
+    for name, idx in (('total1', 2), ('maxrun', 3), ('width', 4)):
+        vals = [f[idx] for f in slow]; steps = [f[0] for f in slow]
+        vals, steps = _dedupe(vals, steps)
+        if len(vals) < 6:
+            continue
+        v = vals[-tailN:]; s = steps[-tailN:]
+        pairs = []
+        for i in range(len(v) - 1):
+            if v[i] > 0 and s[i] > 0:
+                r = v[i + 1] / v[i]; sr = s[i + 1] / s[i]
+                if r > 1.05:
+                    pairs.append((r, sr))
+        if len(pairs) < 3:
+            continue
+        # per-pair self-consistency: step-ratio ~ value-ratio^2 (true at every skip depth)
+        sc = [(r, sr) for r, sr in pairs if sr > 1 and abs(sr - r * r) < 0.20 * r * r]
+        if len(sc) < 3:
+            continue
+        for e in ENGINES:
+            fe = float(e); ok = 0; devs = []
+            for r, sr in sc:
+                n = round(math.log(r) / math.log(fe))
+                if n < 1:
+                    continue
+                pred = fe ** n
+                dev = abs(r - pred) / pred
+                if dev < 0.06:
+                    ok += 1; devs.append(dev)
+            if ok >= 3 and ok >= 0.8 * len(sc):
+                score = (ok / len(sc), -(sum(devs) / len(devs)), ok)
+                if best is None or score > best[0]:
+                    best = (score, e, name, ok, len(sc))
+    if best:
+        return (best[1], best[2], best[3], best[4])
+    return None
+
+
 def match_engine(rho, tol=0.05):
     if rho is None or rho <= 1.0:
         return None, None
@@ -250,6 +312,7 @@ def extract(spec, cap=8_000_000):
     outc, step, fast, slow, ftail, nL, nR = simulate(spec, cap)
     tr, tinfo = est_transfer(ftail)
     saw = est_sawtooth(fast)
+    sg = est_slow_geom(slow)   # (G) slow-side base-odometer power-fit (o2/o3 class)
     # candidate multipliers with provenance
     cands = []
     if tr is not None:
@@ -257,6 +320,8 @@ def extract(spec, cap=8_000_000):
     if saw is not None:
         eng, f = match_engine(saw[0])
         cands.append(('sawtooth', saw[0], f))
+    if sg is not None:
+        cands.append(('slowgeom', float(sg[0]), sg[0]))
     # decide reported engine: match each candidate to a known engine
     reported = None; rho_rep = None; conf = None; src = None
     matches = []          # (source, eng_label, fraction, rho, is_known)
@@ -285,24 +350,26 @@ def extract(spec, cap=8_000_000):
             conf = 'med(exact-transfer)'
         elif saw is not None and saw[4] and src == 'sawtooth':
             conf = 'med(peak~sqrt-step)'
+        elif src == 'slowgeom':
+            conf = 'med(slow-geom power-fit)'
         else:
             conf = 'low(1-estimator)'
     return dict(outc=outc, step=step, nfast=len(fast), nslow=len(slow), nL=nL, nR=nR,
-                transfer=tr, tinfo=tinfo, sawtooth=saw,
+                transfer=tr, tinfo=tinfo, sawtooth=saw, slowgeom=sg,
                 reported=reported, rho=rho_rep, src=src, conf=conf)
 
 
 def gate(cap=8_000_000):
     print("=== VALIDATION GATE: 17 named cryptids (KNOWN multipliers must be recovered) ===\n")
-    print(f"{'name':11}{'true':>6}  {'out':>4}{'nfast':>6}  "
-          f"{'transfer':>9} {'saw-peak':>9} {'saw-obs':>7}  {'REPORTED':>9}  {'conf':<22} ok")
+    print(f"{'name':11}{'true':>6}  {'out':>4}{'nfast':>6}{'nslow':>6}  "
+          f"{'transfer':>9} {'saw-peak':>9} {'slow-geom':>10}  {'REPORTED':>9}  {'conf':<24} ok")
     npass = 0; ntest = 0; rows = []
     for name, (sp, true) in NAMED.items():
         c = extract(sp, cap=cap)
         rows.append((name, true, c))
         tr = str(c['transfer']) if c['transfer'] else "-"
         sw = f"{c['sawtooth'][0]:.4f}" if c['sawtooth'] else "-"
-        so = c['sawtooth'][3] if c['sawtooth'] else "-"
+        sg = f"{c['slowgeom'][0]}({c['slowgeom'][1]})" if c.get('slowgeom') else "-"
         rep = c['reported'] or "-"
         conf = c['conf'] or "-"
         ok = ""
@@ -317,8 +384,8 @@ def gate(cap=8_000_000):
                 ok = "WRONG"
         else:
             ok = "n/a(o17)"
-        print(f"{name:11}{str(float(true)) if true else 'n/a':>6}  {c['outc']:>4}{c['nfast']:>6}  "
-              f"{tr:>9} {sw:>9} {so:>7}  {rep:>9}  {conf:<22} {ok}")
+        print(f"{name:11}{str(float(true)) if true else 'n/a':>6}  {c['outc']:>4}{c['nfast']:>6}{c['nslow']:>6}  "
+              f"{tr:>9} {sw:>9} {sg:>10}  {rep:>9}  {conf:<24} {ok}")
     print(f"\nGATE RESULT: recovered {npass}/{ntest} known multipliers "
           f"(0 WRONG required for trust). o17 has no scalar p/q.")
     wrong = [r[0] for r in rows if r[1] is not None and r[2]['reported'] is not None
