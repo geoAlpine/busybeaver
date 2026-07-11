@@ -130,3 +130,10 @@ automaton is certified to close.
 
 **No machine decided. No label upgraded.** The parity separation proves the ordering half and
 shrinks the open core to the odometer carry-parity, which remains the o4-class wall.
+
+---
+**CORRECTION (2026-07-11, per lean/X2.lean audit, commit 7760aa5):** the "A1D0 eraser `A:1→0LD, D:0→0LA` giving
+`(01)^j → 0^{2j}`, PROVEN via Lean `sweepAD`" cited above is a MISATTRIBUTION to o4's machine. The x2 machine has
+`A:1→0RE` and `D:0→0RE` (both move RIGHT); it has NO clean cell-zeroing eraser sweep. The genuine clean even channel is
+the comb-repack `(01)^m → 1^{2m}` (Lean-proven in `lean/X2.lean` `sweepEF_even`). The eraser-opened-gap even-ness is
+[OBSERVED], not proven via a clean sweep. See `X2_STATUS_2026-07-11.md` and commit 7760aa5.
