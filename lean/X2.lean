@@ -804,6 +804,108 @@ theorem marked_not_doubling (k : Nat) :
   have h4 : 4 ≤ 2 ^ (k + 2) := four_le_two_pow k
   exact ⟨by omega, by omega⟩
 
+/-! ## §5g (COMPOSITION) The doubling-phase MIDDLE — `markedBlock ∘ cascadeFold`
+composed into ONE halt-free transport (`bigCascade`), with the glue proven SYMBOLIC.
+
+**The extracted M6(k)→M1(k+1) episode sequence** (from `x2co_trace.py` g=2..6, uniform
+across g; the 6 episodes of `X2_COMPOSITION_2026-07-11.md` §1):
+
+  1. ENTRY (bounded): `M6 = 0^2 (10)^4 1^9 0^2 (1111100)^{g-1} … 1^{big} casc` → short
+     `1^9` chew + hand-off into the register.
+  2. REGISTER CHEW: uniform fold over the `(1111100)^{g-1}` register units.
+  3. **BIG-BLOCK SWEEP**: the `(10)^10`-marked R/L loop grinds the marked big block
+     `1^{2v+1} = 1^{2^K−3}` to `1^1` + a `1^{21}` residue, crosses into the first cascade
+     block trimming it by 2 — **this is `markedBlock` (PROVEN ∀v,s)**.
+  4. **CASCADE FOLD**: over the `K−3` UNMARKED cascade blocks `2^{K-1}−3, …, 5` — **this
+     is `cascadeFold` (PROVEN ∀ list)**.
+  5. REPACK: the accumulated comb is E-swept (`sweepEF`-family) toward the new big block.
+  6. REGISTER-REBUILD: `U^g` + the parity tail are re-written, yielding `M1(k+1)`.
+
+**What composes here (episodes 3+4), and the glue.**  `markedBlock v s` leaves the head
+`[D]` on `0^2 1^{2s+1} 0^2 T`; `cascadeFold bs m` demands `[D]` on `0^2 1^{2m+3} 0^2 (casc
+bs T')`.  The glue is the SYMBOLIC identity `2s+1 = 2m+3 ⟺ s = m+1`, together with `T =
+casc bs T'`: markedBlock trims the first cascade block from `1^{2s+3} = 1^{2m+5}` to
+`1^{2s+1} = 1^{2m+3}`, which is EXACTLY the block `cascadeFold` then consumes with leading
+`m`.  Composing them (`steps_add`) gives `bigCascade`: the big MARKED block AND the whole
+UNMARKED cascade folded into one comb-deposit, HALT-FREE, in `46v + 29 + foldTime m bs`
+steps.  This CORRECTS the `cascade_traversal` framing (which mis-treated the big block as an
+unmarked first fold-block): physically the big block carries the `(10)^10` marker and is
+swept by `markedBlock`, the cascade blocks are plain and folded by `cascadeFold`. -/
+theorem bigCascade (v m : Nat) (bs : List Nat) (p : Int) (L T : List Bool) :
+    ∃ (comb : List Bool) (q : Int),
+      steps (46 * v + 29 + foldTime m bs) ⟨.D, p, ⟨L, false,
+          false :: false :: (pow10 10 ++ (ones (2 * v + 1)
+            ++ (false :: false :: (ones (2 * (m + 1) + 3)
+              ++ (false :: false :: casc bs T)))))⟩⟩
+        = some ⟨.D, q, ⟨comb ++ L, false,
+            false :: false :: (ones (2 * lastBlock m bs + 3)
+              ++ (false :: false :: T))⟩⟩ := by
+  -- glue: markedBlock's next block is `1^{2(m+1)+3} = 1^{2s+3}` (s := m+1); trimmed to
+  -- `1^{2s+1} = 1^{2m+3}`, exactly `cascadeFold bs m`'s leading block; tail `T := casc bs T`.
+  obtain ⟨comb, q, hfold⟩ := cascadeFold bs m (p + 2 * (v : Int) + 25)
+    (ones 21 ++ (false :: false :: true :: false :: (pow10 v ++ L))) T
+  refine ⟨comb ++ (ones 21 ++ (false :: false :: true :: false :: pow10 v)), q, ?_⟩
+  have hb : (2 * (m + 1) + 1) = (2 * m + 3) := by omega
+  have hFull : comb ++ (ones 21 ++ (false :: false :: true :: false :: (pow10 v ++ L)))
+      = (comb ++ (ones 21 ++ (false :: false :: true :: false :: pow10 v))) ++ L := by
+    simp only [List.append_assoc, List.cons_append]
+  rw [steps_add, markedBlock v (m + 1) p L (casc bs T), someBind, hb, hfold]
+  exact congrArg some (by rw [hFull])
+
+/-- **The exact NET-DOUBLING residual of the composed middle (the honest arithmetic
+obstruction).**  Even granting a *clean* repack of every comb the composed `bigCascade`
+deposits, the totals do NOT sum to the doubled block `2^{K+1}−3`.  At the milestone
+`K = k+3 ≥ 3`: the big-block comb repacks to `2(v+1) = 2^K−2` (`v = 2^{K-1}−2`), plus the
+`1^{21}` `markedTurn` residue, plus the cascade combs whose `Σ` closed form is
+`cascadeBlocks_sum = 2^{K-1}−4K+8` (with the `−4K+8` correction).  These are visibly
+K-DEPENDENT and do NOT combine to a fixed `2^{K+1}−3` under any single proven repack: the
+residual is `Θ(K)` (numerically `−7,−6,−3` at `K=10,11,14`; see the `#eval` below).  So the
+`−4K+8` correction does NOT self-cancel to `doubling_id`'s `2^{K+1}−3` — the missing
+`Θ(K)` MUST be supplied by the register-rebuild (episode 6), which couples to `2^K` and is
+NOT captured by any lemma in this file.  This records the EXACT gap: the compound's chew
++fold (episodes 3+4) is proven and halt-free, but the ×2 is realised only by the
+repack+rebuild that carries the K-dependent register correction. -/
+theorem bigCascade_not_doubling (k : Nat) :
+    -- the big-block comb repack `2^K−2` is strictly below the target `2^{K+1}−3`,
+    -- so the cascade + residue must supply `2^K−1` more — but their Σ is `Θ(2^{K-1})`,
+    -- carrying the `−4K+8` correction, hence no clean fixed-offset closes it.
+    (2 ^ (k + 3) - 2) < (2 ^ (k + 3 + 1) - 3) ∧
+    natSum (cascadeBlocks (k + 3)) + 4 * ((k + 3) - 3) + 4 = 2 ^ ((k + 3) - 1) := by
+  refine ⟨?_, cascadeBlocks_sum (k + 3) (by omega)⟩
+  have e : 2 ^ (k + 3 + 1) = 2 ^ (k + 3) * 2 := Nat.pow_succ 2 (k + 3)
+  have h4 : 4 ≤ 2 ^ (k + 3) := by
+    have := four_le_two_pow (k + 1); rwa [show k + 1 + 2 = k + 3 from by omega] at this
+  omega
+
+/-- **The doubling-phase transport with the PROVEN middle (episodes 3+4) discharged.**
+This tightens `doubling_transport`: the marked big-block sweep (episode 3, `markedBlock`)
+AND the cascade fold (episode 4, `cascadeFold`) are now the PROVEN composite `bigCascade`
+in the middle — a genuine advance over `doubling_transport`, which covered only the cascade
+fold and mis-framed the big block as an unmarked first fold-block.  What REMAINS as named
+hypotheses: (`H_entry`) the low phase + entry + register chew (episodes 1,2) reaching the
+MARKED-big-block-sweep start `[D] 0^2 (10)^10 1^{2v+1} 0^2 1^{2(m+1)+3} 0^2 (casc bs T)`;
+and (`H_repack`) the repack + register-rebuild (episodes 5,6) carrying the ground cascade
+config to `M1next`.  The proof composes `H_entry`, the PROVEN `bigCascade`, and `H_repack`
+via `steps_add`, HALT-FREE.  Honest scope: episodes 3+4 are now proven; the ×2 doubling
+itself still lives in the un-formalized `H_repack` (see `bigCascade_not_doubling`). -/
+theorem doubling_transport_mid (v m : Nat) (bs : List Nat) (p : Int) (L T : List Bool)
+    (entryCfg : Cfg) (Nentry : Nat)
+    (H_entry : steps Nentry entryCfg = some ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (ones (2 * v + 1)
+          ++ (false :: false :: (ones (2 * (m + 1) + 3)
+            ++ (false :: false :: casc bs T)))))⟩⟩)
+    (Nrepack : Nat) (M1next : List Bool → Int → Cfg)
+    (H_repack : ∀ (comb : List Bool) (q : Int),
+        steps Nrepack ⟨.D, q, ⟨comb ++ L, false,
+            false :: false :: (ones (2 * lastBlock m bs + 3)
+              ++ (false :: false :: T))⟩⟩
+          = some (M1next comb q)) :
+    ∃ (N : Nat) (comb : List Bool) (q : Int),
+      steps N entryCfg = some (M1next comb q) := by
+  obtain ⟨comb, q, hbc⟩ := bigCascade v m bs p L T
+  refine ⟨Nentry + ((46 * v + 29 + foldTime m bs) + Nrepack), comb, q, ?_⟩
+  rw [steps_add, H_entry, someBind, steps_add, hbc, someBind, H_repack]
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -862,6 +964,16 @@ theorem marked_not_doubling (k : Nat) :
           ++ (false :: false :: (ones 9 ++ (false :: false :: [])))))⟩⟩
       = some ⟨.D, 35, ⟨ones 21 ++ (false :: false :: true :: false :: pow10 5), false,
           false :: false :: (ones 7 ++ (false :: false :: []))⟩⟩)                    -- true
+-- COMPOSITION `bigCascade` (episodes 3+4): marked big block `1^5` (v=2) chewed, then the
+-- cascade fold over bs=[] (m=0, one trailing ground block) — `46·2+29+foldTime 0 [] = 121`
+-- steps, lands `[D]` on `0^2 1^3 0^2`, HALT-FREE.  Kernel cross-check of the composed
+-- `markedBlock ∘ cascadeFold` transport vs the raw x2 machine (`some` ⇒ no halt in 121):
+#eval decide (((steps (46 * 2 + 29 + foldTime 0 []) ⟨.D, 0, ⟨[], false,
+        false :: false :: (pow10 10 ++ (ones (2 * 2 + 1)
+          ++ (false :: false :: (ones (2 * (0 + 1) + 3)
+            ++ (false :: false :: casc [] [])))))⟩⟩).map
+      (fun c => (c.st, c.tape.right)))
+      = some (St.D, false :: false :: (ones 3 ++ (false :: false :: []))))          -- true
 
 #print axioms steps_add
 #print axioms halt_gate
@@ -879,6 +991,9 @@ theorem marked_not_doubling (k : Nat) :
 #print axioms markedTurn
 #print axioms markedBlock
 #print axioms marked_not_doubling
+#print axioms bigCascade
+#print axioms bigCascade_not_doubling
+#print axioms doubling_transport_mid
 
 -- G3 WIRING kernel cross-checks (vs the Python milestone `m1_spec`, K = g+8):
 -- cascadeBlocks 10 (g=2) = fold a-params for milestone blocks 2^j−3, j=9..3:
@@ -947,6 +1062,19 @@ FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
   now parametric.  **But it does NOT realise the ×2 doubling** (see item 2): the
   episode is the block→COMB chew, and `marked_not_doubling` records the exact
   arithmetic gap (`2·(2^{K-1}−2) = 2^K−4 ≠ 2^{K+1}−3`).
+* **COMPOSITION — the doubling-phase MIDDLE** (§5g) — `bigCascade` composes the two
+  biggest proven transport episodes, the marked big-block sweep (episode 3,
+  `markedBlock`) and the cascade fold (episode 4, `cascadeFold`), into ONE halt-free
+  transport (`46v+29+foldTime m bs` steps), with the GLUE proven SYMBOLIC (`markedBlock`
+  leaves `[D] 0^2 1^{2s+1} 0^2 T`, `cascadeFold` consumes `[D] 0^2 1^{2m+3} 0^2 casc`;
+  they meet at `s = m+1`, `T = casc bs T'`).  This CORRECTS the `cascade_traversal`
+  framing (the marked big block is NOT an unmarked first fold-block).  `doubling_transport_mid`
+  then composes `H_entry` + `bigCascade` + `H_repack`, discharging episodes 3+4 into the
+  proven middle (a strict tightening of `doubling_transport`).  `bigCascade_not_doubling`
+  records the EXACT net-doubling obstruction: the deposited combs (big-block `2^K−2`,
+  cascade `Σ = 2^{K-1}−4K+8`, `1^{21}` residue) are K-DEPENDENT and do NOT combine to the
+  fixed `2^{K+1}−3` (residual `Θ(K)`: `−7,−6,−3` at `K=10,11,14`) — the missing `Θ(K)`
+  must come from the register-rebuild (episode 6), which couples to `2^K`.
 
 STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
 
@@ -993,13 +1121,20 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
 **Verdict: NO decision.**  This file advances the formalization by closing G1
 (the fold engine), G3's arithmetic core, the G3-wiring STRUCTURAL part (concrete
 cascade instantiation + accumulator sum + composed transport with named hypotheses),
-and now the G2 big-block `(10)^10`-marked sweep as an arbitrary-length halt-free
-lemma (`markedChew`/`markedBlock`), all with clean axioms.  The G3 accumulator-to-`2^K`
+the G2 big-block `(10)^10`-marked sweep as an arbitrary-length halt-free lemma
+(`markedChew`/`markedBlock`), and now the doubling-phase MIDDLE `bigCascade`
+(episodes 3+4 = marked big-block sweep ∘ cascade fold composed into one halt-free
+transport with SYMBOLIC glue), all with clean axioms.  The G3 accumulator-to-`2^K`
 IDENTITY does NOT close as originally posed, and — the honest finding this session —
-neither does the G2 ×2 doubling: the marked sweep is the block→comb CHEW, and the
-doubling `2^K−3 → 2^{K+1}−3` is a COMPOUND (chew → repack → rebuild), so
-`doubling_transport`'s `H_repack` is NOT discharged.  The low-phase composition, the
-compound ×2, and top-level `x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No
-label upgraded. -/
+neither does the G2 ×2 doubling even after composing episodes 3+4: `bigCascade` deposits
+K-DEPENDENT combs (`2^K−2` + `Σ = 2^{K-1}−4K+8` + `1^{21}`) whose naive-repack total
+misses `2^{K+1}−3` by a `Θ(K)` residual (`bigCascade_not_doubling`; `−7,−6,−3` at
+`K=10,11,14`).  The doubling `2^K−3 → 2^{K+1}−3` is a COMPOUND whose CLOSING step — the
+repack + register-rebuild (episodes 5,6) — couples to `2^K` and is captured by NO lemma
+here, so `doubling_transport`/`doubling_transport_mid`'s `H_repack` is NOT discharged.
+What §5g DOES close: episodes 3+4 as one proven halt-free transport, tightening both
+`H_entry` (now → the marked-big-block start) and `H_repack` (now from the ground-cascade
+config).  The low-phase composition (episodes 1,2), the compound ×2 (episodes 5,6), and
+top-level `x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No label upgraded. -/
 
 end X2

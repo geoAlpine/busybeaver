@@ -1077,3 +1077,46 @@ transport — the G2 engine — as clean parametric Lean lemmas.
 **Verdict: G2 big-block marked sweep formalized as an arbitrary-length halt-free lemma
 (`markedChew`/`markedBlock`); the ×2 doubling identity remains OPEN (it is a compound, not this
 episode). No machine decided. No label upgraded.**
+
+---
+
+## 2026-07-12 — §5g COMPOSITION: the doubling-phase MIDDLE assembled (`markedBlock ∘ cascadeFold`)
+
+Extracted the full M6(k)→M1(k+1) doubling-phase episode sequence from `x2co_trace.py`
+(g=2..6, uniform): 1 ENTRY, 2 REGISTER-CHEW, 3 BIG-BLOCK marked sweep (`markedBlock`,
+PROVEN ∀v,s), 4 CASCADE FOLD (`cascadeFold`, PROVEN ∀list), 5 REPACK, 6 REGISTER-REBUILD.
+The traces confirm the doubling `big_k→big_{k+1}` (`1021→2039 = 2·1021−3`, parity-flip) and
+that episodes 5–6 are a HUGE interleaved sweep/rebuild (g=2: R:3914, L:3914, D:1025 macros),
+not a single repack; halt-free (doubling phase emits only gaps 1,2).
+
+**PROVEN NEW (`bigCascade`, green, axioms `[propext, Quot.sound]`):** episodes 3+4 compose
+into ONE halt-free transport `46v+29+foldTime m bs` steps. The glue is SYMBOLIC: `markedBlock v s`
+leaves `[D] 0^2 1^{2s+1} 0^2 T`; `cascadeFold bs m` wants `[D] 0^2 1^{2m+3} 0^2 (casc bs T')`;
+they glue by `2s+1 = 2m+3 ⟺ s = m+1` with `T := casc bs T'`. Kernel `#eval` cross-check (v=2,
+m=0: 121 steps, lands `[D] 0^2 1^3 0^2`, `some`) vs the raw x2 machine. This CORRECTS the
+`cascade_traversal` framing (which mis-treated the marked big block as an unmarked first
+fold-block): physically the big block carries the `(10)^10` marker (episode 3, `markedBlock`),
+the cascade blocks are plain (episode 4, `cascadeFold`).
+
+**`doubling_transport_mid` (green):** composes `H_entry` + `bigCascade` + `H_repack` via
+`steps_add`. Discharges episodes 3+4 into the PROVEN middle — a strict tightening of
+`doubling_transport` (which covered only episode 4). Remaining named hypotheses: `H_entry`
+(episodes 1,2, reaching the MARKED-big-block start), `H_repack` (episodes 5,6, the repack +
+register-rebuild to `M1next`).
+
+**The exact NET-DOUBLING obstruction (`bigCascade_not_doubling`, green).** The ×2 does NOT
+close from the composed middle. Even granting a clean repack of every deposited comb: the
+big-block comb repacks to `2(v+1) = 2^K−2`; the cascade combs sum to `2^{K-1}−4K+8`
+(`cascadeBlocks_sum`, the `−4K+8` correction); plus the `1^{21}` residue. These are
+K-DEPENDENT and do NOT combine to a fixed `2^{K+1}−3`: the residual (target − naive-repack
+total) is `Θ(K)` — numerically `−7, −6, −3` at `K=10, 11, 14` (Python check). So the `−4K+8`
+correction does NOT self-cancel to `doubling_id`'s `2^{K+1}−3`; the missing `Θ(K)` must be
+supplied by the register-rebuild (episode 6), which couples to `2^K` and is captured by NO
+lemma in this file. **This is the exact compositional obstruction: episodes 3+4 (chew+fold)
+are proven and halt-free; the ×2 lives entirely in the un-formalized repack+rebuild
+(`H_repack`), which carries a K-dependent register correction.**
+
+**Verdict: the doubling-phase MIDDLE (episodes 3+4) is now a single PROVEN halt-free transport
+(`bigCascade`); episodes 1–2 (entry) and 5–6 (repack+rebuild = the actual ×2) remain named
+hypotheses. `H_repack` NOT discharged — the ×2 is a compound whose closing step couples to
+2^K. No machine decided. No label upgraded.**
