@@ -966,3 +966,37 @@ length-3 gap"), which is counter-dependent (`X2_TEMPLATE §3.2`) and not formali
 `0^{2j}` eraser does not exist in this transition table; the even-block repack is the sound analogue.
 
 **No machine decided. No label upgraded.**
+
+---
+
+## Appendix (2026-07-12): x2 doubling-phase — G1 cascade FOLD + G3 arithmetic core formalized
+
+Extended `lean/X2.lean` (full project green, 21 jobs, no `sorry`/`native_decide`; every new
+theorem audits to `[propext, Quot.sound]`), targeting the `X2_COMPOSITION_2026-07-11.md` gaps.
+
+NEW, FORMALIZED:
+- `sepCross_tile` (15-step kernel `rfl`): the cascade separator crossing `[D] 0^3 1^3 0^2 1^2·X
+  → (deposit) [D] 0^3·X`, head +7, opaque `X` untouched — derived from + cross-checked against
+  the verified machine.
+- `blockStep m s` (`chewFold m · sepCross_tile`, `6m+15` steps): the per-block cascade step
+  `[D] 0^3 1^{2m+3} 0^2 1^{2s+5} 0^2 T → (comb) [D] 0^3 1^{2s+3} 0^2 T` — this is
+  `x2co_compose.py`'s certified `L1`, now a Lean composite.
+- **`cascadeFold` (G1)**: `blockStep` iterated over an ARBITRARY, non-uniform `List Nat` of
+  blocks by List induction, halt-free (`some`) for every list. This closes the exact
+  representational gap G1 — the fold the affine `x2cc` executor (fixed-length run-lists,
+  distinct block sizes 61,29,13,5,1) provably could not express. In Lean it is a routine
+  `List` recursion whose inductive step (`blockStep`) is a kernel composite.
+- **`doubling_id` (G3 arithmetic core)**: `2·(2^K−3)+3 = 2^{K+1}−3` (all `K≥2`), the
+  exponential-`2^K` block-doubling identity the affine executor could not represent.
+
+STILL OPEN (the exact remaining Lean gaps, NOT closed): (1) the low-phase M1(g)→M6(g) ∀g
+sweep-induction (Python-`x2cc_prove` PROVEN, not ported — ~1k-line analogue of Template+Suffix);
+(2) G2 entry/big-block-marked-sweep/repack as parametric tiles (machine-checked g=2..6 only);
+(3) the **G3 register-rebuild WIRING** — `cascadeFold` is not yet instantiated at the milestone
+cascade (`2^j−3` blocks) and the accumulated comb-total is not yet equated (via `doubling_id`)
+to the rebuilt block, the deepest step; (4) the milestone `Cfg` M(g), the transport
+M1(g)→M1(g+1) ∀g, and the composed `x2_nonhalt`.
+
+**Verdict: NO decision.** G1 (the fold engine) and G3's arithmetic core are formalized with
+clean axioms; the low-phase composition, G2, the G3 wiring, and top-level `x2_nonhalt` remain.
+No machine decided. No label upgraded.

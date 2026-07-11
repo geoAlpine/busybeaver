@@ -366,6 +366,154 @@ theorem chewFold : ∀ (m : Nat) (p : Int) (L R : List Bool),
     rw [hL]
     exact congrArg some (cfgPos (by push_cast; omega))
 
+/-! ## §5c (G1) The cascade SEPARATOR-CROSS tile + the cascade FOLD over a
+`List Nat` of non-uniform blocks — the doubling phase's variable-length list
+induction, the exact piece the affine Python executor could NOT represent.
+
+After `chewFold` grinds a cascade block `1^{2m+3}` down to `1^3`, the machine
+must CROSS the `0^2` separator into the next block.  `sepCross_tile` (15 fixed
+steps `D0·E1·C0·D1·E0·F0·A0·E0·F0·A0·E0·F0·A0·E1·C0`, kernel `rfl`) reads the
+fixed window `0^3 1^3 0^2 1^2` (the marker, the ground-down `1^3`, the separator,
+and the first two `1`s of the NEXT block), deposits the comb pattern
+`(01)^2 0^2 1` on the left, shifts `+7`, and re-forms `[D] 0^3 …` sitting on the
+next block — which it trims by 2 (`1^{2s+5} → 1^{2s+3}`).  Composing
+`chewFold m · sepCross_tile` gives the per-block step `blockStep`
+(`= x2co_compose.py`'s certified `L1`, here a Lean tile+fold).  `cascadeFold`
+then ITERATES `blockStep` over an arbitrary `List Nat bs` of block sizes by LIST
+INDUCTION (the o4 `prefix_bodies` / o3 `body_iter` analogue): this is `G1` of
+`X2_COMPOSITION_2026-07-11.md` — the fold the `x2cc` fixed-length-run executor
+provably cannot express (block entry sizes `61,29,13,5,1` are all distinct, no
+uniform `config(p)→config(p−1)` shift).  Every step lands `some` ⇒ HALT-FREE (the
+`E`-met gap-3 halt gate never fires anywhere in the whole cascade). -/
+
+/-- **The separator-cross tile** (15 steps): from state `D` on the first `0` of a
+`0^3` marker, with the ground-down block `1^3`, the `0^2` separator, and the next
+block's first two `1`s ahead (`0 0 · 1 1 1 · 0 0 · 1 1 · X`), the head crosses into
+the next block, deposits `1 0 0 1 0 1 0` (nearest-first, `= (01)^2 0^2 1`) on the
+left, advances `+7`, and re-forms `[D] 0^3 …` on the next block with its first two
+`1`s consumed; `X` (the rest of the next block) is untouched.  Kernel `rfl`. -/
+theorem sepCross_tile (p : Int) (L X : List Bool) :
+    steps 15 ⟨.D, p, ⟨L, false,
+        false :: false :: true :: true :: true :: false :: false :: true :: true :: X⟩⟩
+      = some ⟨.D, p + 7,
+          ⟨true :: false :: false :: true :: false :: true :: false :: L, false,
+           false :: false :: X⟩⟩ := by
+  have h : steps 15 (⟨.D, p, ⟨L, false,
+        false :: false :: true :: true :: true :: false :: false :: true :: true :: X⟩⟩ : Cfg)
+      = some ⟨.D, p + 1 + 1 + 1 + 1 - 1 - 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1,
+          ⟨true :: false :: false :: true :: false :: true :: false :: L, false,
+           false :: false :: X⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The per-block cascade step** `blockStep m s` (`6m + 15` steps): grind the
+current block `1^{2m+3}` down to `1^3` (`chewFold`, depositing `pow10 m`), then
+cross the separator into the next block `1^{2s+5}` (`sepCross_tile`), leaving it
+as `1^{2s+3}` with `[D] 0^3` re-formed and the deposit `(01)^2 0^2 1 · (10)^m`
+grown on the left; `T` (everything past the next block's trailing `0^2`) is
+untouched.  This is `x2co_compose.py`'s `L1`, mechanized as a Lean composite.
+`some` ⇒ HALT-FREE. -/
+theorem blockStep (m s : Nat) (p : Int) (L T : List Bool) :
+    steps (6 * m + 15) ⟨.D, p, ⟨L, false,
+        false :: false :: (ones (2 * m + 3)
+          ++ (false :: false :: (ones (2 * s + 5) ++ (false :: false :: T))))⟩⟩
+      = some ⟨.D, p + 2 * (m : Int) + 7,
+          ⟨(true :: false :: false :: true :: false :: true :: false :: pow10 m) ++ L, false,
+           false :: false :: (ones (2 * s + 3) ++ (false :: false :: T))⟩⟩ := by
+  rw [steps_add, chewFold m p L (ones (2 * s + 5) ++ (false :: false :: T)), someBind]
+  have h5 : ones (2 * s + 5) = true :: true :: ones (2 * s + 3) := by
+    rw [show 2 * s + 5 = 2 + (2 * s + 3) from by omega, ones_add]; rfl
+  rw [h5]
+  show steps 15 ⟨.D, p + 2 * (m : Int), ⟨pow10 m ++ L, false,
+      false :: false :: true :: true :: true :: false :: false :: true :: true
+        :: (ones (2 * s + 3) ++ (false :: false :: T))⟩⟩ = _
+  rw [sepCross_tile]
+  exact congrArg some (cfgPos (by omega))
+
+/-- The raw cascade tail as a function of a block-size list: each block `a` is
+stored `1^{2a+5}` and separated by `0^2`, terminating in the opaque word `T`. -/
+def casc : List Nat → List Bool → List Bool
+  | [], T => T
+  | a :: rest, T => ones (2 * a + 5) ++ (false :: false :: casc rest T)
+
+/-- The size of the block the fold lands on after consuming the whole list. -/
+def lastBlock (m : Nat) : List Nat → Nat
+  | [] => m
+  | a :: rest => lastBlock a rest
+
+/-- Total step count of the fold: `Σ (6·(block) + 15)` down the list. -/
+def foldTime (m : Nat) : List Nat → Nat
+  | [] => 0
+  | a :: rest => (6 * m + 15) + foldTime a rest
+
+/-- **THE CASCADE FOLD (G1), variable-length LIST INDUCTION.**  Starting in
+state `D` on the marker `0^3` of a block `1^{2m+3}` whose cascade tail is
+`casc bs T` (an arbitrary, NON-UNIFORM list `bs` of further blocks), the machine
+runs `foldTime m bs` steps and lands in state `D` on the final block
+`1^{2·lastBlock+3}` sitting directly on the terminator `T`, with the whole cascade
+folded into a comb deposited on the left.  Proven for EVERY list `bs` by List
+induction on `bs` (base = 0 steps; step = `blockStep` then the IH), each step
+`some` ⇒ the entire cascade traversal is HALT-FREE.  This is the fold the affine
+executor could not represent; in Lean it is a routine `List` recursion whose
+inductive STEP (`blockStep`) is a kernel composite. -/
+theorem cascadeFold : ∀ (bs : List Nat) (m : Nat) (p : Int) (L T : List Bool),
+    ∃ (comb : List Bool) (q : Int),
+      steps (foldTime m bs) ⟨.D, p, ⟨L, false,
+          false :: false :: (ones (2 * m + 3) ++ (false :: false :: casc bs T))⟩⟩
+        = some ⟨.D, q, ⟨comb ++ L, false,
+            false :: false :: (ones (2 * lastBlock m bs + 3)
+              ++ (false :: false :: T))⟩⟩ := by
+  intro bs
+  induction bs with
+  | nil =>
+    intro m p L T
+    exact ⟨[], p, by
+      show steps 0 _ = _
+      rfl⟩
+  | cons a rest ih =>
+    intro m p L T
+    obtain ⟨comb', q', hIH⟩ := ih a (p + 2 * (m : Int) + 7)
+      ((true :: false :: false :: true :: false :: true :: false :: pow10 m) ++ L) T
+    refine ⟨comb' ++ (true :: false :: false :: true :: false :: true :: false :: pow10 m),
+        q', ?_⟩
+    show steps ((6 * m + 15) + foldTime a rest) ⟨.D, p, ⟨L, false,
+        false :: false :: (ones (2 * m + 3)
+          ++ (false :: false :: (ones (2 * a + 5) ++ (false :: false :: casc rest T))))⟩⟩ = _
+    rw [steps_add, blockStep m a p L (casc rest T), someBind, hIH, List.append_assoc]
+    rfl
+
+/-! ## §5d (G3, arithmetic core) The big-block doubling identity in `2^K`.
+
+The milestone big block is `B_K = 2^K − 3`; the doubling phase's register-rebuild
+must equate the rebuilt block to `B_{K+1} = 2^{K+1} − 3`, i.e. prove
+`2·B_K + 3 = B_{K+1}` — exponential (`2^K`) arithmetic that the affine Python
+executor provably could NOT represent (`X2_COMPOSITION` §3, G3).  In Lean's `Nat`
+it is a two-line fact.  This formalizes the *arithmetic core* of G3 (the
+"couples-to-`2^K`" identity); it does NOT by itself close G3 — wiring it to the
+`cascadeFold` output (proving the accumulated comb-total equals `B_K`, so the
+repack yields exactly `B_{K+1}`) is the part that remains open (see the honest
+scope note at the foot of this file). -/
+
+/-- `4 ≤ 2^{k+2}` for every `k` (so the truncated `Nat` subtraction below is exact). -/
+theorem four_le_two_pow : ∀ k, 4 ≤ 2 ^ (k + 2) := by
+  intro k
+  induction k with
+  | zero => decide
+  | succ k ih =>
+    have e : 2 ^ (k + 1 + 2) = 2 ^ (k + 2) * 2 := by
+      rw [show k + 1 + 2 = (k + 2) + 1 from by omega]; exact Nat.pow_succ 2 (k + 2)
+    rw [e]; omega
+
+/-- **The big-block doubling identity** `2·(2^K − 3) + 3 = 2^{K+1} − 3` (all
+`K = k + 2 ≥ 2`): the register-rebuild's exponential-arithmetic obligation, the
+`B → 2B + 3` doubling law of the base-2 odometer, PROVEN in Lean's `2^K` `Nat`
+arithmetic — the representation the affine executor lacked. -/
+theorem doubling_id (k : Nat) :
+    2 * (2 ^ (k + 2) - 3) + 3 = 2 ^ (k + 2 + 1) - 3 := by
+  have h := four_le_two_pow k
+  have e : 2 ^ (k + 2 + 1) = 2 ^ (k + 2) * 2 := Nat.pow_succ 2 (k + 2)
+  rw [e]; omega
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -384,6 +532,19 @@ theorem chewFold : ∀ (m : Nat) (p : Int) (L R : List Bool),
       = some ⟨.D, 4, ⟨pow10 2, false,
           false :: false :: (ones 3 ++ (false :: false :: []))⟩⟩)              -- true
 
+-- separator-cross tile: `0^3 1^3 0^2 1^2 · X` → deposit `(01)^2 0^2 1`, `[D] 0^3 · X`,
+-- head +7, `X` untouched (kernel cross-check of the 15-step crossing):
+#eval decide (steps 15 ⟨.D, 0, ⟨[], false,
+        false :: false :: true :: true :: true :: false :: false :: true :: true :: [true, false]⟩⟩
+      = some ⟨.D, 7, ⟨[true, false, false, true, false, true, false], false,
+          false :: false :: [true, false]⟩⟩)                                    -- true
+-- per-block step `blockStep 2 4`: block `1^7` (m=2) chewed + separator-crossed into the
+-- next block `1^{13}` (s=4), leaving it `1^{11}`, `[D] 0^3` re-formed, head +11, halt-free:
+#eval decide (steps (6 * 2 + 15) ⟨.D, 0, ⟨[], false,
+        false :: false :: (ones 7 ++ (false :: false :: (ones 13 ++ (false :: false :: []))))⟩⟩
+      = some ⟨.D, 11, ⟨(true :: false :: false :: true :: false :: true :: false :: pow10 2), false,
+          false :: false :: (ones 11 ++ (false :: false :: []))⟩⟩)              -- true
+
 #print axioms steps_add
 #print axioms halt_gate
 #print axioms sweepEF
@@ -391,6 +552,51 @@ theorem chewFold : ∀ (m : Nat) (p : Int) (L R : List Bool),
 #print axioms dSweepTurn
 #print axioms chew_tile
 #print axioms chewFold
+#print axioms sepCross_tile
+#print axioms blockStep
+#print axioms cascadeFold
+#print axioms doubling_id
 #print axioms sanity100
+
+/-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
+
+FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
+`[propext, Quot.sound]` only):
+
+* the x2 machine `step`/`steps` + halt gate (`step = none ↔ B reads 1`);
+* the doubling-engine sweeps `sweepEF` (comb-repack `(01)^m → 1^{2m}` ∀m) and
+  `dSweepTurn` (`1`-block crossing ∀n);
+* the cascade CHEW `chew_tile`/`chewFold` (block `1^{2m+3} → 1^3` ∀m);
+* **G1 — the cascade FOLD** (`sepCross_tile`, `blockStep`, `cascadeFold`): the
+  per-block step composed over an ARBITRARY, non-uniform `List Nat` of blocks by
+  List induction, halt-free (`some`) for every list.  This closes the exact
+  representational gap flagged in `X2_COMPOSITION_2026-07-11.md` §3 (G1) — the
+  fold the affine Python executor (fixed-length run-lists) provably could not
+  express, here a routine Lean `List` recursion;
+* **G3 arithmetic core** — `doubling_id`: `2·(2^K−3)+3 = 2^{K+1}−3`, the
+  exponential (`2^K`) block-doubling identity the affine executor could not
+  represent.
+
+STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
+
+1. **Low phase M1(g)→M6(g) ∀g** — the full sweep-induction that x2's low phase
+   emits only gaps `{18,10,2(g+1),6-iff-even}`, never 3 (Python-`x2cc_prove`
+   PROVEN, not yet ported; it is the analogue of the entire `Template`+`Suffix`
+   generation-map, ~1k lines).
+2. **G2** — the entry / `10^10`-marked big-block R/L sweep / repack as PARAMETRIC
+   tiles (bounded, machine-checked g=2..6 only).
+3. **G3 wiring** — `cascadeFold` takes an ARBITRARY block list; it is NOT yet
+   instantiated at the milestone cascade (blocks `2^j−3`), and the accumulated
+   comb-total is NOT yet equated (via `doubling_id`) to the rebuilt block
+   `2^{K+1}−3`.  Wiring the fold OUTPUT to `M1(g+1)` — the register-rebuild — is
+   the deepest remaining step.
+4. **The milestone form M(g) and the composed `x2_nonhalt`** — the nested cascade
+   as a concrete `Cfg`, the transport `M1(g)→M1(g+1)` ∀g, and the prefix-closed
+   non-halt (`∀n, steps n init ≠ none`) — NONE assembled.
+
+**Verdict: NO decision.**  This file advances the formalization by closing G1
+(the fold engine) and G3's arithmetic core with clean axioms, but x2 stays
+`[OPEN]`: the low-phase composition, G2, the G3 register-rebuild wiring, and the
+top-level `x2_nonhalt` are not formalized.  No label upgraded. -/
 
 end X2
