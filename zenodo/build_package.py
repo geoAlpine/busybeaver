@@ -12,7 +12,8 @@ def _ver():
 VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
-          "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md", "PAPER_RIGIDITY_LIMITS.md"]
+          "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md", "PAPER_RIGIDITY_LIMITS.md",
+          "MINIMAL_OPEN_KERNEL.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [

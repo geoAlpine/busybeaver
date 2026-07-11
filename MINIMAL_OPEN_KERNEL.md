@@ -5,6 +5,23 @@ specialist can judge in minutes whether their tools apply. We are NOT claiming a
 new mathematics is provably required; we present a reduction and the precise place where known methods, as
 far as we have found, stop. All [PROVEN] items are machine-checked in exact integer/2-adic arithmetic.*
 
+## Frontier context (2026-07 update — Antihydra is one rung of a unified frontier)
+Since this page was written, the program proved a **uniform fixed-point theorem** (`PAPER_MIRROR_LADDER.md`,
+Lean-checked in `lean/Mirror.lean`): **every** analyzed BB(6) Type-I cryptid — Antihydra, o2, o4, o11, o13, o14, o16
+(all ×3/2 or ×4/3/×8/3), plus Space Needle (×5/2) — is the q-adic **depth** process of an explicit affine `×(p/q)`
+orbit, with maximal run `= v_q(v − x)` at the branch fixed point `x`. So the **depth axis is unconditionally
+controlled** and all these machines reduce to the **same** open object as (K) below: an effective **quenched** bound
+on the *frequency* of deep q-adic returns = base-`p/q` normality of one seed. Antihydra (×3/2) sits at the **critical**
+rung (criticality ratio 1.17). **The strictly easiest rung is o4 (×4/3, subcritical, margin 2.4):** non-halt ⟺
+`freq{3∣W_n} ≤ 4/5` for `3W_{n+1}=4W_n+e(W_n mod 3)`, seed 57 — equivalently, prove `Re Σ_{n<N} e(W_n/3) < 0.7·N`
+(only a one-sided large-deviation bound, no equidistribution, is needed). A specialist may prefer to aim there.
+Since writing this page ~14 distinct tool classes were run against (K) (transfer operator, Gowers U²/U³, Christol
+automaticity, Ostrowski/Baker, p-adic dynamics, measure rigidity, …); **all converge on the same fixed-point seam**
+(annealed-effective / quenched-(K)); see `NEWMATH_BUILD_SYNTHESIS`, `PAPER_RIGIDITY_LIMITS`. The Antihydra-specific
+obstruction map below remains current and is the most detailed single-machine entry point.
+
+---
+
 ## Setup (3 lines)
 Integer orbit `c_{n+1} = ⌊3 c_n / 2⌋`, `c_0 = 8` (so `c_n = ⌊8·(3/2)^n⌋`-type, `c_n ∼ A·(3/2)^n`).
 Let `E_n = #{ i<n : c_i even }`. **[PROVEN]** The Turing machine *Antihydra* never halts **iff**

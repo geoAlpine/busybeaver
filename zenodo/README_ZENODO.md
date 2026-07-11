@@ -2,10 +2,33 @@
 
 **Yosuke Aoki (GeoAlpine LLC)** — research artifact, version 1.0 (2026-07-08)
 
+## Quick start
+
+```
+# 1. Re-run the whole proof-path verification battery (pure Python stdlib, no pip install):
+cd verification && python3 verify_all.py --quick     # ~30 s;  drop --quick for the full run
+
+# 2. Build the Lean 4 formalization (needs elan/lake; toolchain pinned in lean/lean-toolchain):
+cd lean && lake build                                # green, zero sorry, axiom audit [propext, Quot.sound]
+```
+**Dependencies:** the `verification/` scripts use the Python **standard library only** (Python 3.10+; no
+`requirements.txt` needed). Lean needs `elan` (installs the pinned toolchain automatically).
+
+## Reading guide
+
+**Shortest path** (specialist, ~5 min): `papers/MINIMAL_OPEN_KERNEL.md` — the single open problem the whole program reduces to, with the per-method obstruction map. Then, if you only read **three more files**: `papers/PAPER_CENSUS.md` (the whole frontier as one map),
+`papers/PAPER_MIRROR_LADDER.md` (the uniform theorem), and this README's *Epistemic status* section below.
+
+- **~10 min** — this README + `papers/PAPER_CENSUS.md` §0–6 (what every cryptid is, what's proven, what's open).
+- **~30 min** — add `papers/PAPER_MIRROR_LADDER.md` (the uniform fixed-point theorem) and
+  `papers/PAPER_RIGIDITY_LIMITS.md` (the (K)-independent limits-of-rigidity theorem).
+- **~2 hours** — add `lean/Mirror.lean` + `lean/Completion.lean` (the machine-checked core and the conditional
+  completion frame), run `verify_all.py`, and skim the `notes/` corrections trail.
+
 ## What this is
 
 A self-contained research artifact on the **BB(6) frontier** — the halting problems of the hardest 6-state Turing
-machines ("cryptids"), each of which encodes an open arithmetic problem. It contains six paper-style documents,
+machines ("cryptids"), each of which encodes an open arithmetic problem. It contains a ~2-page specialist entry point (MINIMAL_OPEN_KERNEL) plus six paper-style documents,
 the machine-verification battery that re-checks every proof-path certificate in one command, a Lean 4 formalization
 of the core arithmetic theorems, and the supporting lab notes.
 
@@ -37,9 +60,9 @@ of the core arithmetic theorems, and the supporting lab notes.
 
 ## Contents
 
-- `papers/` — the six paper-style documents (theorem–proof style):
-  `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`, `PAPER_SPECIES_SURVEY.md`,
-  `PAPER_MIRROR_LADDER.md`, `PAPER_CENSUS.md`, `PAPER_RIGIDITY_LIMITS.md`
+- `papers/` — `MINIMAL_OPEN_KERNEL.md` (the ~2-page specialist entry point: the single open problem + obstruction map)
+  and the six paper-style documents (theorem–proof style): `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`,
+  `PAPER_SPECIES_SURVEY.md`, `PAPER_MIRROR_LADDER.md`, `PAPER_CENSUS.md`, `PAPER_RIGIDITY_LIMITS.md`
 - `verification/` — `verify_all.py` (one-command re-verification; `--quick` ≈ 30 s, full ≈ minutes) and all
   scripts it invokes, self-contained
 - `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
@@ -70,9 +93,29 @@ the discipline and its audit trail are themselves documented in the notes.
 ## How to verify
 
 ```
-cd verification && python3 verify_all.py --quick   # ~30 s
+cd verification && python3 verify_all.py --quick   # ~30 s  (pure Python stdlib)
 cd lean && lake build                              # Lean 4.31.0 via elan
 ```
+
+`verify_all.py` runs every proof-path certificate and reports PASS/FAIL per item. What each certifies:
+
+| script | verifies |
+|---|---|
+| `o4_body_proof.py` | o4 body lemma `B(k) → B(k+2)`, all k to 251 |
+| `o4_growing_certify.py` / `o4_wander_certify.py` | o4 growing-config + translated-cycler non-halt certificates |
+| `o4_ledger_bijection.py` | the seed↔itinerary bijection + ruin constant |
+| `o4_closure_fixpoint.py` | the HALT-in-closure impossibility (no local certificate) |
+| `o4_seam_lemma_verify.py` | the o4 seam-decomposition census |
+| `o3_body_proof.py` | o3 body lemma, period-10/20/6 cycles |
+| `o18_depth_map.py` / `o15_fp_vmap.py` | o18 pushdown-odometer table; o15 fixed-point run laws |
+| `mirror_census.py` | the uniform fixed-point run law across the whole census |
+| `o4_bouncer_macro.py` | the macro-machine validation battery (slow) |
+| `freq_rundepth_whiteness.py` | the frequency-axis white/structureless measurement |
+
+**Proven vs measured:** items whose name ends in `_proof`/`_verify`/`_bijection`/`_census` are exact assertion-checked
+certificates (`[PROVEN]`); `freq_*`/`*_probe` are empirical measurements (`[OBSERVED]`). The Lean layer is the strict
+machine-checked tier; see *Epistemic status* above for exactly what Lean guarantees and what it does not (the
+`NormalityPQ` conjecture is an uninterpreted axiom — Lean verifies the reduction's assembly, not the conjecture's truth).
 
 ## Cite as
 
