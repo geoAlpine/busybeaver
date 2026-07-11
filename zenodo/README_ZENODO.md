@@ -44,7 +44,7 @@ of the core arithmetic theorems, and the supporting lab notes.
   scripts it invokes, self-contained
 - `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
   theorem (`Mirror.lean`, 8 machines as Lean corollaries), and the o4 AND o3 template cores (both machines,
-  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 11 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison) — 290+ theorems (292 theorem/lemma declarations), zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
+  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 11 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison) — 280 theorem/lemma declarations across the 9 shipped Lean files, zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
 - `LICENSE-DOCS` (CC-BY 4.0, applies to `papers/`, `notes/`, this README),
