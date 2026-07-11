@@ -5,7 +5,7 @@
 ## What this is
 
 A self-contained research artifact on the **BB(6) frontier** — the halting problems of the hardest 6-state Turing
-machines ("cryptids"), each of which encodes an open arithmetic problem. It contains three paper-style documents,
+machines ("cryptids"), each of which encodes an open arithmetic problem. It contains six paper-style documents,
 the machine-verification battery that re-checks every proof-path certificate in one command, a Lean 4 formalization
 of the core arithmetic theorems, and the supporting lab notes.
 
@@ -26,7 +26,7 @@ of the core arithmetic theorems, and the supporting lab notes.
 3. **The unification (uniform theorem).** EVERY analyzed Type-I cryptid (Antihydra, o2, o4, o11, o13, o14, o16 —
    all ×3/2 or ×4/3/×8/3; and Space Needle ×5/2) is the q-adic depth process of an explicit affine ×(p/q) orbit:
    the branch maps have integer fixed points x, and since p is a q-adic unit the maximal run equals `v_q(v − x)`
-   (`mirror_census.py` verifies the whole census; **the abstract theorem is machine-checked in `lean/Mirror.lean`** — all 11 census machines are corollaries of one Lean theorem). So the frontier is ONE problem — an effective quenched bound on
+   (`mirror_census.py` verifies the whole census; **the abstract theorem is machine-checked in `lean/Mirror.lean`** — 8 machines are corollaries of one Lean theorem (Antihydra, o2, o4, o11, o13, o14, o15, o16; mirror_census.py covers the full 11-orbit census)). So the frontier is ONE problem — an effective quenched bound on
    deep q-adic return frequency — graded by an exact criticality criterion (Antihydra/o2 at 1.1699 > 1, the
    critical rung matching the "1.17×" barrier; o4 at 0.087). Space Needle's odd branch, the sole machine without a
    single fixed point, is the one non-(K)-seeded outlier.
@@ -37,13 +37,14 @@ of the core arithmetic theorems, and the supporting lab notes.
 
 ## Contents
 
-- `papers/` — the three paper-style documents (theorem–proof style):
-  `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`, `PAPER_SPECIES_SURVEY.md`
+- `papers/` — the six paper-style documents (theorem–proof style):
+  `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`, `PAPER_SPECIES_SURVEY.md`,
+  `PAPER_MIRROR_LADDER.md`, `PAPER_CENSUS.md`, `PAPER_RIGIDITY_LIMITS.md`
 - `verification/` — `verify_all.py` (one-command re-verification; `--quick` ≈ 30 s, full ≈ minutes) and all
   scripts it invokes, self-contained
 - `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
-  theorem (`Mirror.lean`, 11 census machines as corollaries), and the o4 AND o3 template cores (both machines,
-  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 12 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison) — 290+ theorems (292 theorem/lemma declarations), zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
+  theorem (`Mirror.lean`, 8 machines as Lean corollaries), and the o4 AND o3 template cores (both machines,
+  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 11 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison) — 290+ theorems (292 theorem/lemma declarations), zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
 - `LICENSE-DOCS` (CC-BY 4.0, applies to `papers/`, `notes/`, this README),
