@@ -1034,3 +1034,46 @@ is the BIG-BLOCK marked-sweep episode's law, not the cascade fold's** — the fr
 **Verdict: G3 wiring STRUCTURAL part closed (concrete instantiation + Σ closed form + composed
 transport with named hypotheses); the G3 accumulator IDENTITY does not close (obstruction (a)-(c),
 the doubling lives in G2). No machine decided. No label upgraded.**
+
+---
+
+## Append 2026-07-12 (b) — G2 the BIG-BLOCK `(10)^10`-MARKED SWEEP, lifted to all lengths
+
+Extended `lean/X2.lean` §5f (single-agent; full project green — 21 jobs; all new lemmas
+`[propext, Quot.sound]` only, no `sorry`, no `native_decide`; 4 kernel `#eval` = `true`).
+
+**Episode EXTRACTED cell-for-cell from the raw x2 machine** (a raw simulator matching Lean
+`step`, run on the M6 tape reconstructed from `m1_spec`; NOT from prose). In the doubling
+phase the head enters state `D` on the first `0` of a fixed marker `0^3 (10)^10` left of the
+big block `1^{2v+1}` and runs a UNIFORM `4·10+6 = 46`-step R/L cycle: sweep RIGHT across the
+whole `(10)^10` marker (24 R), edit the block's first two `1`s, sweep back LEFT (22 L, net +2),
+depositing one `1 0` comb pair, shrinking the block by 2, marker + tail preserved. Marker
+length `10` is `K`-INDEPENDENT (the constant `1 0^10` even-parity tail `T_g`; verified g=2..8).
+
+- **`markedChew_tile`** (46-step kernel `rfl`): `[D] 0^3 (10)^10 1^{b+2} … → 1 0 [D] 0^3 (10)^10 1^b …`.
+- **`markedChew` ∀v** (tile + length induction, the `chewFold`/`crawlR` pattern): grinds the big
+  block `1^{2v+1}` down to `1^1` in `46v` steps, depositing `pow10 v`, marker preserved,
+  head +2v, HALT-FREE. **This is the G2 marked sweep as an arbitrary-length parametric lemma.**
+- **`markedTurn`** (29-step `rfl`): repacks the exhausted `(10)^10 1^1` into `1^{21} = 1^{2·10+1}`
+  and crosses the `0^2` separator into the next block `1^{n+2}`→`1^n`, head +25.
+- **`markedBlock v s` ∀v,s** (compose): the FULL big-block episode `46v+29` steps, HALT-FREE.
+- **`marked_not_doubling`**: `2·(2^{K−1}−2) = 2^K−4 ≠ 2^{K+1}−3` — the exact off-by.
+
+**HONEST VERDICT — the ×2 doubling is NOT in this episode (framing scrutinised).** The marked
+sweep is the block→COMB CHEW, not the ×2. With `2v+1 = B_K = 2^K−3` (so `v = 2^{K−1}−2`) the
+deposited comb `pow10 v` repacks (via `sweepEF`) to `1^{2v} = 1^{2^K−4}` — plus a fixed `1^{21}`
+residue and a next-block trim; it does NOT emit the doubled solid block `1^{2^{K+1}−3}`. So
+`doubling_id` (`2·(2^K−3)+3 = 2^{K+1}−3`) is the milestone ARITHMETIC law, realised only by the
+FULL compound (this chew → comb repack → register/cascade rebuild carrying the `−4K+8`
+correction), NOT by the marked sweep alone (`marked_not_doubling` records the `2^K+1` gap).
+
+**`H_repack` of `doubling_transport` is NOT discharged** and I did not force it: (i) `H_repack`
+is literally the DISTINCT post-cascade repack episode (episodes 5–6), whereas the big-block
+marked sweep is episode 3 (before the cascade fold); (ii) even under the task's "big-block
+sweep = the doubling episode" framing, the sweep performs only the chew half of the ×2. What
+IS lifted to all lengths here: the marked sweep's SAFETY (halt-free ∀v) and STRUCTURAL
+transport — the G2 engine — as clean parametric Lean lemmas.
+
+**Verdict: G2 big-block marked sweep formalized as an arbitrary-length halt-free lemma
+(`markedChew`/`markedBlock`); the ×2 doubling identity remains OPEN (it is a compound, not this
+episode). No machine decided. No label upgraded.**

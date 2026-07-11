@@ -651,6 +651,159 @@ theorem doubling_transport (K : Nat) (p : Int) (L T : List Bool)
   refine ⟨Nentry + (foldTime (2 ^ (K - 1) - 3) (cascadeBlocks K) + Nrepack), comb, q, ?_⟩
   rw [steps_add, H_entry, someBind, steps_add, hfold, someBind, H_repack]
 
+/-! ## §5f (G2) THE BIG-BLOCK `(10)^10`-MARKED SWEEP — extracted from the raw g=2..6
+traces, formalized as an arbitrary-length parametric lemma.
+
+**What the episode ACTUALLY is (extracted cell-for-cell from the raw x2 machine,
+NOT from prose).**  In the doubling phase (M6→M1(g+1)) the head enters state `D` on
+the first `0` of a fixed marker `0^3 (10)^10` sitting immediately left of the leading
+big block `1^{2v+1}` (in M6 the big block carries the constant `(10)^10` marker; the
+marker length `10` comes from the `1 0^10` even-parity tail `T_g` of the M1 template
+and is `K`-INDEPENDENT — verified g=2..8).  From there the machine runs a UNIFORM
+`4·10+6 = 46`-step R/L cycle that:
+
+* sweeps RIGHT across the whole `(10)^10` marker (24 R-moves) into the block's first
+  two `1`s, then sweeps back LEFT (22 L-moves), net `+2`;
+* deposits one `1 0` (`pow10 1`) comb pair on the LEFT of the marker;
+* shrinks the block by exactly `2` (`1^{2v+1} → 1^{2v-1}`);
+* leaves the `0^3 (10)^10` marker PRESERVED and the tail untouched.
+
+Iterated `v` times (length induction, the `chewFold` pattern) this grinds the big
+block `1^{2v+1}` down to `1^1`, depositing `pow10 v` — the `markedChew` fold below.
+A final fixed `29`-step `markedTurn` repacks the exhausted `(10)^10 1^1` into a solid
+`1^{21} = 1^{2·10+1}` block and crosses the `0^2` separator into the next block,
+trimming it by `2`.  `markedBlock` composes the two.  Every step lands `some` ⇒ the
+whole marked sweep is HALT-FREE (the `E`-met gap-3 gate never fires).
+
+**HONEST verdict on the ×2 doubling (the framing scrutinised, per the task).**  This
+episode is the block→COMB CHEW, **not** the ×2 doubling.  With the milestone value
+`2v+1 = B_K = 2^K − 3` (so `v = 2^{K-1} − 2`) the sweep outputs the comb `pow10 v`
+(whose eventual `sweepEF` repack is `1^{2v} = 1^{2^K − 4}`) PLUS a fixed `1^{21}`
+residue and a next-block trim — it does NOT emit the doubled solid block
+`1^{2^{K+1}−3}`.  So `doubling_id`'s `2·(2^K−3)+3 = 2^{K+1}−3` is the milestone
+ARITHMETIC law, but it is realised only by the FULL compound (this chew, THEN the
+comb repack, THEN the register/cascade recombination carrying the `−4K+8` correction),
+not by the marked sweep in isolation (`marked_not_doubling` below records the exact
+off-by arithmetic `2·(2^{K-1}−2) = 2^K − 4 ≠ 2^{K+1}−3`).  `H_repack` of
+`doubling_transport` is therefore NOT discharged by this lemma: `H_repack` is the
+DISTINCT post-cascade repack episode, and even the big-block sweep only performs the
+chew half of the ×2.  What IS lifted to all lengths here: the marked sweep's SAFETY
+and STRUCTURAL transport (the G2 engine), halt-free ∀v. -/
+
+set_option maxRecDepth 4000 in
+/-- **One `(10)^10`-marked chew tile** (46 steps): head `D` on the first `0` of the
+marker `0^3 (10)^10`, block `1^{b+2}` ahead; sweeps across the marker and back,
+depositing `1 0` on the left, shrinking the block to `1^b`, marker + tail (`ones b`,
+`R`) preserved, advancing `+2`.  Kernel `rfl` (the fixed 46-step window
+`0^3 (10)^10 1 1`; `ones b`/`R` never read).  Extracted from the raw traces. -/
+theorem markedChew_tile (p : Int) (b : Nat) (L R : List Bool) :
+    steps 46 ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (true :: true :: (ones b ++ (false :: false :: R))))⟩⟩
+      = some ⟨.D, p + 2, ⟨true :: false :: L, false,
+          false :: false :: (pow10 10 ++ (ones b ++ (false :: false :: R)))⟩⟩ := by
+  have h : steps 46 (⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (true :: true :: (ones b ++ (false :: false :: R))))⟩⟩ : Cfg)
+      = some ⟨.D, p + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+              + 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1
+              - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1,
+          ⟨true :: false :: L, false,
+           false :: false :: (pow10 10 ++ (ones b ++ (false :: false :: R)))⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The `(10)^10`-marked chew fold, ARBITRARY block length.**  `v` tiles = `46v`
+steps grind the big block `1^{2v+1}` down to `1^1`, depositing the comb `pow10 v` on
+the left, advancing `+2v`; the marker `0^3 (10)^10` and the tail `R` are preserved.
+Proven for EVERY `v` by tile + length induction (the `chewFold`/`O3.crawlR` pattern).
+`some` ⇒ HALT-FREE.  This is the G2 big-block marked sweep as a parametric lemma. -/
+theorem markedChew : ∀ (v : Nat) (p : Int) (L R : List Bool),
+    steps (46 * v) ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (ones (2 * v + 1) ++ (false :: false :: R)))⟩⟩
+      = some ⟨.D, p + 2 * (v : Int), ⟨pow10 v ++ L, false,
+          false :: false :: (pow10 10 ++ (ones 1 ++ (false :: false :: R)))⟩⟩ := by
+  intro v
+  induction v with
+  | zero =>
+    intro p L R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ v ih =>
+    intro p L R
+    have hn : 46 * (v + 1) = 46 + 46 * v := by omega
+    rw [hn, steps_add]
+    have hb : ones (2 * (v + 1) + 1) = true :: true :: ones (2 * v + 1) := by
+      rw [show 2 * (v + 1) + 1 = 2 + (2 * v + 1) from by omega, ones_add]; rfl
+    rw [hb]
+    show (steps 46 ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (true :: true :: (ones (2 * v + 1)
+          ++ (false :: false :: R))))⟩⟩).bind (steps (46 * v)) = _
+    rw [markedChew_tile, someBind, ih (p + 2) (true :: false :: L) R]
+    have hL : pow10 v ++ (true :: false :: L) = pow10 (v + 1) ++ L := by
+      rw [show (true :: false :: L) = pow10 1 ++ L from rfl, ← List.append_assoc, ← pow10_add]
+    rw [hL]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
+set_option maxRecDepth 4000 in
+/-- **The marked-sweep TURN/repack tile** (29 steps): once the big block is ground to
+`1^1`, the head reads the exhausted `(10)^10 1^1 0^2` marker + the next block's first
+two `1`s (`1^{n+2}`) and REPACKS the marker into a solid `1^{21} = 1^{2·10+1}` block,
+deposits `0^2 1 0` on the left, crosses into the next block trimming it by `2`
+(`1^{n+2} → 1^n`), landing `[D]` on a fresh `0^3`, advancing `+25`; the tail
+`ones n`/`T` are preserved.  Kernel `rfl` (fixed 29-step window).  Extracted raw. -/
+theorem markedTurn (p : Int) (n : Nat) (L T : List Bool) :
+    steps 29 ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (true :: false :: false ::
+          (true :: true :: (ones n ++ (false :: false :: T)))))⟩⟩
+      = some ⟨.D, p + 25, ⟨ones 21 ++ (false :: false :: true :: false :: L), false,
+          false :: false :: (ones n ++ (false :: false :: T))⟩⟩ := by
+  have h : steps 29 (⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (true :: false :: false ::
+          (true :: true :: (ones n ++ (false :: false :: T)))))⟩⟩ : Cfg)
+      = some ⟨.D, p + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+              + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1,
+          ⟨ones 21 ++ (false :: false :: true :: false :: L), false,
+           false :: false :: (ones n ++ (false :: false :: T))⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE FULL BIG-BLOCK MARKED SWEEP** `markedBlock v s` (`46v + 29` steps):
+`markedChew` (grind `1^{2v+1}` to `1^1`, deposit `pow10 v`) then `markedTurn` (repack
+`(10)^10 1^1` into `1^{21}`, cross into the next block `1^{2s+3}` leaving `1^{2s+1}`).
+Net: the big block `1^{2v+1}` and its marker become the comb-and-residue deposit
+`1^{21} 0^2 (10) (10)^v` on the left, the head re-forms `[D] 0^3` on the trimmed next
+block, `T` untouched.  Proven ∀v,s, `some` ⇒ HALT-FREE.  This is the extracted G2
+episode, lifted to all block lengths. -/
+theorem markedBlock (v s : Nat) (p : Int) (L T : List Bool) :
+    steps (46 * v + 29) ⟨.D, p, ⟨L, false,
+        false :: false :: (pow10 10 ++ (ones (2 * v + 1)
+          ++ (false :: false :: (ones (2 * s + 3) ++ (false :: false :: T)))))⟩⟩
+      = some ⟨.D, p + 2 * (v : Int) + 25,
+          ⟨ones 21 ++ (false :: false :: true :: false :: (pow10 v ++ L)), false,
+           false :: false :: (ones (2 * s + 1) ++ (false :: false :: T))⟩⟩ := by
+  rw [steps_add, markedChew v p L (ones (2 * s + 3) ++ (false :: false :: T)), someBind]
+  have h3 : ones (2 * s + 3) = true :: true :: ones (2 * s + 1) := by
+    rw [show 2 * s + 3 = 2 + (2 * s + 1) from by omega, ones_add]; rfl
+  rw [h3]
+  show steps 29 ⟨.D, p + 2 * (v : Int), ⟨pow10 v ++ L, false,
+      false :: false :: (pow10 10 ++ (true :: false :: false ::
+        (true :: true :: (ones (2 * s + 1) ++ (false :: false :: T)))))⟩⟩ = _
+  rw [markedTurn]
+
+/-- **The exact "off-by" the marked sweep leaves (the honest doubling gap).**  With the
+milestone big-block value `B_K = 2^K − 3 = 2v+1` (so `v = 2^{K-1} − 2`), the comb
+`pow10 v` the marked sweep deposits repacks (via `sweepEF`) to `1^{2v} = 1^{2^K − 4}`,
+which is NOT the doubled block `1^{2^{K+1}−3} = 1^{2·B_K + 3}`: the gap is
+`(2^{K+1}−3) − (2^K − 4) = 2^K + 1 ≠ 0`.  So the marked sweep alone does not realise
+`doubling_id`; the ×2 emerges only after the comb repack + register/cascade rebuild
+(the still-open G3 wiring).  Kernel arithmetic for all `K = k+2 ≥ 2`. -/
+theorem marked_not_doubling (k : Nat) :
+    2 * (2 ^ (k + 1) - 2) = 2 ^ (k + 2) - 4 ∧
+    2 ^ (k + 2) - 4 ≠ 2 ^ (k + 2 + 1) - 3 := by
+  have e1 : 2 ^ (k + 2) = 2 ^ (k + 1) * 2 := Nat.pow_succ 2 (k + 1)
+  have e2 : 2 ^ (k + 2 + 1) = 2 ^ (k + 2) * 2 := Nat.pow_succ 2 (k + 2)
+  have h4 : 4 ≤ 2 ^ (k + 2) := four_le_two_pow k
+  exact ⟨by omega, by omega⟩
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -682,6 +835,34 @@ theorem doubling_transport (K : Nat) (p : Int) (L T : List Bool)
       = some ⟨.D, 11, ⟨(true :: false :: false :: true :: false :: true :: false :: pow10 2), false,
           false :: false :: (ones 11 ++ (false :: false :: []))⟩⟩)              -- true
 
+-- G2 big-block `(10)^10`-marked sweep kernel cross-checks (vs the raw x2 machine):
+-- one marked chew tile (46 steps): block `1^{b+2}` (b=5) → `1^b`, marker preserved,
+-- deposit `1 0`, head +2, halt-free (`ones b`/tail untouched):
+#eval decide (steps 46 ⟨.D, 0, ⟨[], false,
+        false :: false :: (pow10 10 ++ (true :: true :: (ones 5 ++ (false :: false :: []))))⟩⟩
+      = some ⟨.D, 2, ⟨[true, false], false,
+          false :: false :: (pow10 10 ++ (ones 5 ++ (false :: false :: [])))⟩⟩)     -- true
+-- markedChew fold, v=8: big block `1^17` ground to `1^1` in 46·8=368 steps, deposit
+-- `pow10 8`, marker `0^3 (10)^10` preserved, head +16, halt-free:
+#eval decide (steps (46 * 8) ⟨.D, 0, ⟨[], false,
+        false :: false :: (pow10 10 ++ (ones 17 ++ (false :: false :: [])))⟩⟩
+      = some ⟨.D, 16, ⟨pow10 8, false,
+          false :: false :: (pow10 10 ++ (ones 1 ++ (false :: false :: [])))⟩⟩)      -- true
+-- markedTurn (29 steps): repack `(10)^10 1^1` → `1^{21}`, cross next block `1^{n+2}`
+-- (n=7) → `1^7`, deposit `0^2 1 0`, head +25, halt-free:
+#eval decide (steps 29 ⟨.D, 0, ⟨[], false,
+        false :: false :: (pow10 10 ++ (true :: false :: false ::
+          (true :: true :: (ones 7 ++ (false :: false :: [])))))⟩⟩
+      = some ⟨.D, 25, ⟨ones 21 ++ (false :: false :: true :: false :: []), false,
+          false :: false :: (ones 7 ++ (false :: false :: []))⟩⟩)                    -- true
+-- markedBlock (46·5+29=259 steps), v=5,s=3: big block `1^11` + marker → comb-residue,
+-- next block `1^9` → `1^7`, `[D] 0^3` re-formed, head +35, halt-free:
+#eval decide (steps (46 * 5 + 29) ⟨.D, 0, ⟨[], false,
+        false :: false :: (pow10 10 ++ (ones 11
+          ++ (false :: false :: (ones 9 ++ (false :: false :: [])))))⟩⟩
+      = some ⟨.D, 35, ⟨ones 21 ++ (false :: false :: true :: false :: pow10 5), false,
+          false :: false :: (ones 7 ++ (false :: false :: []))⟩⟩)                    -- true
+
 #print axioms steps_add
 #print axioms halt_gate
 #print axioms sweepEF
@@ -693,6 +874,11 @@ theorem doubling_transport (K : Nat) (p : Int) (L T : List Bool)
 #print axioms blockStep
 #print axioms cascadeFold
 #print axioms doubling_id
+#print axioms markedChew_tile
+#print axioms markedChew
+#print axioms markedTurn
+#print axioms markedBlock
+#print axioms marked_not_doubling
 
 -- G3 WIRING kernel cross-checks (vs the Python milestone `m1_spec`, K = g+8):
 -- cascadeBlocks 10 (g=2) = fold a-params for milestone blocks 2^j−3, j=9..3:
@@ -751,6 +937,16 @@ FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
   `doubling_transport`, which composes entry + `cascade_traversal` + repack into a
   halt-free transport, taking the low-phase/entry and G2-repack pieces as NAMED
   hypotheses so the structural G3 result stands alone.
+* **G2 the BIG-BLOCK `(10)^10`-MARKED SWEEP** (§5f) — `markedChew_tile`/`markedChew`
+  (the big block `1^{2v+1}` ground to `1^1` in `46v` steps, marker `0^3 (10)^10`
+  preserved, depositing `pow10 v`, HALT-FREE ∀v — a tile+length-induction sweep
+  lemma EXTRACTED cell-for-cell from the raw g=2..6 machine, mirror of `chewFold`),
+  `markedTurn` (the `(10)^10 1^1 → 1^{21}` repack + separator cross), and
+  `markedBlock` (the full episode ∀v,s).  This lifts the marked sweep's SAFETY and
+  STRUCTURAL transport to all block lengths — the bounded g=2..6 gap of item 2 below,
+  now parametric.  **But it does NOT realise the ×2 doubling** (see item 2): the
+  episode is the block→COMB chew, and `marked_not_doubling` records the exact
+  arithmetic gap (`2·(2^{K-1}−2) = 2^K−4 ≠ 2^{K+1}−3`).
 
 STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
 
@@ -758,10 +954,20 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
    emits only gaps `{18,10,2(g+1),6-iff-even}`, never 3 (Python-`x2cc_prove`
    PROVEN, not yet ported; it is the analogue of the entire `Template`+`Suffix`
    generation-map, ~1k lines).  Supplies `doubling_transport`'s `H_entry`.
-2. **G2** — the entry / `10^10`-marked big-block R/L sweep / repack as PARAMETRIC
-   tiles (bounded, machine-checked g=2..6 only).  Supplies `doubling_transport`'s
-   `H_repack`; the big-block value it must target is `2^{K+1}−3 = 2·(2^K−3)+3`,
-   certified by `doubling_id`.
+2. **G2 — the ×2 DOUBLING itself is a COMPOUND, NOT the marked sweep** (the exact
+   obstruction found this session, the framing scrutinised).  §5f DOES lift the
+   `10^10`-marked big-block R/L sweep to a parametric ∀-length halt-free lemma
+   (`markedChew`/`markedBlock`) — extracted from the raw traces, not prose.  But that
+   episode performs the block→COMB CHEW only: `1^{2v+1}` (with `2v+1 = 2^K−3`, so
+   `v = 2^{K-1}−2`) becomes the comb `pow10 v` (repacking via `sweepEF` to
+   `1^{2v} = 1^{2^K−4}`) PLUS a fixed `1^{21}` residue and a next-block trim — it does
+   NOT emit the doubled block `1^{2^{K+1}−3}` (`marked_not_doubling`: the `2^K+1` gap).
+   The genuine ×2 `2·(2^K−3)+3 = 2^{K+1}−3` (`doubling_id`) emerges only from the FULL
+   compound (this chew → comb repack → register/cascade rebuild carrying the `−4K+8`
+   correction).  Hence `doubling_transport`'s `H_repack` — the DISTINCT post-cascade
+   repack episode — is NOT discharged by the marked sweep; it remains a named
+   hypothesis.  What §5f closes: the marked-sweep engine's safety + transport ∀length;
+   what remains: the compound composition that actually doubles.
 3. **G3 wiring — the accumulator-to-`2^K` IDENTITY does NOT close as posed**
    (the honest obstruction found this session).  Three exact mismatches:
    (a) the terminal `1^1` (`= 2^2−3`, j=2) block is NOT fold-representable
@@ -785,11 +991,15 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
    non-halt (`∀n, steps n init ≠ none`) — NONE assembled.
 
 **Verdict: NO decision.**  This file advances the formalization by closing G1
-(the fold engine), G3's arithmetic core, and the G3-wiring STRUCTURAL part
-(concrete cascade instantiation + accumulator sum + composed transport with named
-hypotheses) with clean axioms.  The G3 accumulator-to-`2^K` IDENTITY does NOT
-close as originally posed (the doubling lives in the separate G2 big-block episode,
-not the cascade fold), and the low-phase composition, G2, and top-level
-`x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No label upgraded. -/
+(the fold engine), G3's arithmetic core, the G3-wiring STRUCTURAL part (concrete
+cascade instantiation + accumulator sum + composed transport with named hypotheses),
+and now the G2 big-block `(10)^10`-marked sweep as an arbitrary-length halt-free
+lemma (`markedChew`/`markedBlock`), all with clean axioms.  The G3 accumulator-to-`2^K`
+IDENTITY does NOT close as originally posed, and — the honest finding this session —
+neither does the G2 ×2 doubling: the marked sweep is the block→comb CHEW, and the
+doubling `2^K−3 → 2^{K+1}−3` is a COMPOUND (chew → repack → rebuild), so
+`doubling_transport`'s `H_repack` is NOT discharged.  The low-phase composition, the
+compound ×2, and top-level `x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No
+label upgraded. -/
 
 end X2
