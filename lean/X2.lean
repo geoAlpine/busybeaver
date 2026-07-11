@@ -906,6 +906,74 @@ theorem doubling_transport_mid (v m : Nat) (bs : List Nat) (p : Int) (L T : List
   refine ⟨Nentry + ((46 * v + 29 + foldTime m bs) + Nrepack), comb, q, ?_⟩
   rw [steps_add, H_entry, someBind, steps_add, hbc, someBind, H_repack]
 
+/-! ## §5h (EPISODES 5,6 — the REPACK + REGISTER-REBUILD) — extracted cell-for-cell
+from the RAW machine (= this file's `step`), and the EXACT obstruction to formalizing
+them as `rebuild_transport : M_mid(k) → M1(k+1)` (the piece that would discharge
+`doubling_transport_mid`'s `H_repack`).
+
+**What was extracted (all cross-checked against `step` on the real milestone tapes,
+g = 2,3; see `x2co_trace.py`/`x2cc_gencheck.py` and the raw-tape harness).**  The
+doubling phase M6(g)→M1(g+1) is ONE braided milestone-to-milestone segment — there are
+NO intermediate `E`-on-leading-`0` milestones between M6 and M1(g+1).  Its length is
+`2 119 358` steps at g=2 and `8 477 210` at g=3 (a `≈4×` jump = `Θ(2^{2K})`, `K=g+8`).
+Decomposed into this file's certified macros (the executor's `try_R_cycle` = `sweepEF`,
+`try_L_cycle`, `try_D_loop` = `dSweepTurn`):
+
+* g=2: `R = 3914`, `L = 3914`, `D = 1025`;   g=3: `R = 9856`, `L = 9854`, `D = 2050`.
+
+`R ≈ L` (equal, not off by a bounded amount) and both are `Θ(2^K)`.  The macro STREAM is a
+continuous braid `…L,R,L,R,…,D,D,…,L,R,…` in which the register units `(1^5 0^2)` are
+pulled in INTERMITTENTLY across the WHOLE phase — there is NO contiguous prefix that is
+"the repack" followed by a suffix that is "the register-rebuild".  A single full
+round-trip is: an `E`-sweep RIGHT over the live comb `(01)^n` (this is `sweepEF`, the
+genuine on-path `×2` primitive, PROVEN ∀n), a turn into `C` at the next `1`-block
+boundary, and a leftward RETURN sweep; the NEXT round-trip runs over a comb SHORTER by
+one unit.  So the phase is a shrinking-comb ODOMETER (quadratic, `Θ(N^2)`, `N ≈ 2^K`,
+matching the `4×` scaling), whose round-trips have a DIFFERENT length every trip and are
+interleaved with `D`-loop register/cascade crossings at data-dependent positions.
+
+**THE EXACT LEAN OBSTRUCTION (why `rebuild_transport` does not exist as this file's kind
+of lemma), scrutinised as the FOURTH framing.**
+1. **`M_mid(k)` is off-path.**  `bigCascade`'s output — the intended start of episode 5 —
+   is reached from `bigCascade`'s INPUT, the `(10)^10`-MARKED big block
+   `[D] 0^2 (10)^10 1^{2v+1} 0^2 …`.  That marked input occurs `0` times in the real
+   doubling phase (exhaustively scanned, g=2): the real big block `1^{2^K−3}` is preceded
+   by the register `(1^5 0^2)^{g-1} 1 0^2`, NOT a `(10)^10` marker, and is consumed by
+   `D`-sweeps INSIDE the block (`1^{24} [D] 1^{24}`) interleaved with the comb repack.  So
+   `markedBlock`/`bigCascade`, though VALID lemmas about `step`, lie OFF the trajectory —
+   the machine never reaches `M_mid(k)`, and `doubling_transport_mid` is a true transport
+   whose hypotheses `H_entry`/`H_repack` are jointly UNSATISFIABLE on the real path (the
+   real path has no such `[D]`-marked hand-off).
+2. **No fixed-length tile, no uniform-shift invariant.**  The phase is a single non-nested
+   braid whose `L`/`R` round-trip lengths shrink every trip (`R = L`, `Θ(2^K)`); there is
+   NO recurring sub-configuration `Cfg(p) → Cfg(p−1)` with a uniform shift, so neither a
+   bounded set of `steps_add`-composed tile lemmas nor a `List`-induction fold (the
+   `cascadeFold` pattern) captures it.  It is a genuine DOUBLE induction (outer: comb
+   length; inner: each variable-length `sweepEF`), and the outer invariant must carry the
+   ENTIRE cascade + register state simultaneously — it does not localize.
+3. **The `×2` couples to `2^K` and to the FULL cascade.**  `bigCascade_not_doubling`
+   already proved the deposited combs (`2^K−2` + `Σ = 2^{K-1}−4K+8` + the `1^{21}`
+   residue) miss the target `2^{K+1}−3` by a `Θ(K)` residual.  The extraction shows WHY
+   nothing local supplies it: the missing `Θ(K)` is realised only by the braid's
+   SIMULTANEOUS processing of every cascade block and the register `U^g` — exactly the
+   "register-rebuild couples to the high part" wall (`X2_COMPOSITION` §3, G3).
+
+**VERDICT (honest, no overclaim).**  `H_repack` is NOT dischargeable as posed: episodes
+5,6 do not exist as a contiguous, localizable segment.  "REPACK" and "REGISTER-REBUILD"
+are abstractions of ONE interleaved shrinking-comb odometer braid spanning the whole
+doubling phase, coupled to the full cascade and to `2^K`.  No `rebuild_transport` /
+`M_mid(k) → M1(k+1)` lemma is added (adding one would be false-on-path or vacuous).  What
+IS certified on-path: `sweepEF` (the `×2` repack primitive ∀n), `dSweepTurn` (the block
+crossings ∀n), and the halt-freedom of the repack round-trip context (anchor below). -/
+
+-- **On-path repack round-trip is HALT-FREE (small-scale anchor).**  A config in the
+-- shape the braid actually runs — a grown big block `1^{20}` on the left, head `E` on the
+-- leading `0` of a live comb `(01)^8`, backed by a `1^5` residue block — runs `800` steps
+-- with `step` never `none` (the `E`-met gap-3 halt gate never fires).  Kernel-checked,
+-- mirroring the raw-trace round-trip `1^{20} [E] (01)^8 1^5 → … C-turn … → return`:
+set_option maxRecDepth 4000 in
+#eval decide (steps 800 ⟨.E, 0, ⟨ones 20, false, pow10 8 ++ ones 5⟩⟩ ≠ none)   -- true
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1096,6 +1164,19 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
    repack episode — is NOT discharged by the marked sweep; it remains a named
    hypothesis.  What §5f closes: the marked-sweep engine's safety + transport ∀length;
    what remains: the compound composition that actually doubles.
+   **§5h UPDATE (episodes 5,6 extracted cell-for-cell — the FOURTH framing, refuted).**
+   The `H_repack` episodes 5,6 (REPACK + REGISTER-REBUILD) were extracted from the RAW
+   machine on the real milestone tapes (g=2,3).  They do NOT form a contiguous segment:
+   the whole doubling phase M6→M1(g+1) is ONE braid (g=2: `2 119 358` steps, macros
+   `R=L=3914`, `D=1025`; g=3: `8 477 210` steps, `R=9856,L=9854,D=2050` — `Θ(2^{2K})`), a
+   shrinking-comb ODOMETER (`sweepEF` round-trips of a length that shrinks every trip,
+   interleaved with register/cascade `D`-loops).  Moreover `bigCascade`'s `(10)^10`-marked
+   input occurs `0` times on the real path (the big block is register-preceded, not
+   marker-preceded), so `M_mid(k)` is OFF-path and `doubling_transport_mid`'s
+   `H_entry`/`H_repack` are jointly unsatisfiable on the real trajectory.  `H_repack` is
+   therefore NOT dischargeable as posed; the exact obstruction (no fixed tile, no
+   uniform-shift invariant, `×2` couples to the full cascade + `2^K`) is recorded in §5h,
+   with a kernel halt-free anchor for the on-path repack round-trip context.
 3. **G3 wiring — the accumulator-to-`2^K` IDENTITY does NOT close as posed**
    (the honest obstruction found this session).  Three exact mismatches:
    (a) the terminal `1^1` (`= 2^2−3`, j=2) block is NOT fold-representable
@@ -1134,7 +1215,16 @@ repack + register-rebuild (episodes 5,6) — couples to `2^K` and is captured by
 here, so `doubling_transport`/`doubling_transport_mid`'s `H_repack` is NOT discharged.
 What §5g DOES close: episodes 3+4 as one proven halt-free transport, tightening both
 `H_entry` (now → the marked-big-block start) and `H_repack` (now from the ground-cascade
-config).  The low-phase composition (episodes 1,2), the compound ×2 (episodes 5,6), and
-top-level `x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No label upgraded. -/
+config).  **§5h then EXTRACTED episodes 5,6 (`H_repack`) cell-for-cell from the raw machine
+and REFUTED their formalizability as posed** (the fourth framing scrutinised): the whole
+doubling phase is a single interleaved shrinking-comb odometer braid (`Θ(2^{2K})` steps,
+`R=L=Θ(2^K)`, register `D`-loops braided throughout), with NO contiguous repack/rebuild
+split, NO fixed-length tile, and NO uniform-shift invariant; and `bigCascade`'s
+`(10)^10`-marked input is `0`-occurrence on the real path, so `M_mid(k)` is off-path and
+`doubling_transport_mid`'s hypotheses are jointly unsatisfiable on the real trajectory.
+`H_repack` is NOT discharged; the ×2 doubling couples to the full cascade + `2^K` and is
+captured by NO lemma here.  The low-phase composition (episodes 1,2), the compound ×2
+(episodes 5,6), and top-level `x2_nonhalt` remain not formalized.  x2 stays `[OPEN]`.
+No label upgraded. -/
 
 end X2

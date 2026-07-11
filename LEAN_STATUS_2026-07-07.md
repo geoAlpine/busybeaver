@@ -1120,3 +1120,54 @@ are proven and halt-free; the ×2 lives entirely in the un-formalized repack+reb
 (`bigCascade`); episodes 1–2 (entry) and 5–6 (repack+rebuild = the actual ×2) remain named
 hypotheses. `H_repack` NOT discharged — the ×2 is a compound whose closing step couples to
 2^K. No machine decided. No label upgraded.**
+
+---
+
+## §5h (2026-07-12) — Episodes 5,6 (REPACK + REGISTER-REBUILD) EXTRACTED cell-for-cell; the FOURTH framing, REFUTED
+
+**Goal.** Formalize episodes 5,6 as `rebuild_transport : M_mid(k) → M1(k+1)`, discharging
+`doubling_transport_mid`'s `H_repack`. **Result: NOT dischargeable as posed — but now with a
+machine-checked reason.** Extraction ran the RAW machine (= X2.lean `step`) on the real
+milestone tapes M1(g) for g=2,3 (harness cross-checks `x2co_trace.py`/`x2cc_gencheck.py`).
+
+**Extracted reality of the doubling phase M6(g)→M1(g+1).** It is ONE braided
+milestone-to-milestone segment (no intermediate E-on-leading-0 milestones). Length
+`2 119 358` steps (g=2), `8 477 210` (g=3) — a `≈4×` jump = `Θ(2^{2K})`, `K=g+8`. In this
+file's certified macros (`try_R_cycle` = `sweepEF`, `try_L_cycle`, `try_D_loop` =
+`dSweepTurn`): g=2 `R=L=3914`, `D=1025`; g=3 `R=9856, L=9854, D=2050`. `R≈L` and both
+`Θ(2^K)`. The macro STREAM is a continuous braid `…L,R,L,R,…,D,D,…` with the register units
+`(1^5 0^2)` pulled in INTERMITTENTLY across the WHOLE phase. One full round-trip = an
+`E`-sweep RIGHT over the live comb `(01)^n` (this is `sweepEF`, the genuine on-path ×2
+primitive, PROVEN ∀n), a turn into `C` at the next 1-block boundary, and a leftward RETURN;
+the next round-trip runs over a comb SHORTER by one unit → a shrinking-comb ODOMETER
+(quadratic, matching the `4×` scaling), interleaved with `D`-loop register/cascade crossings.
+
+**The exact Lean obstruction (three findings, all machine-checked).**
+1. **`M_mid(k)` is OFF-path.** `bigCascade`/`markedBlock` require the `(10)^10`-MARKED big
+   block `[D] 0^2 (10)^10 1^{2v+1} 0^2 …`. That marked input occurs **0 times** in the real
+   doubling phase (exhaustive scan, g=2): the real big block `1^{2^K−3}` is preceded by the
+   register `(1^5 0^2)^{g-1} 1 0^2`, NOT a `(10)^10` marker, and is crossed by `D`-sweeps
+   INSIDE the block (`1^24 [D] 1^24`) interleaved with the repack. So `bigCascade` — a VALID
+   `step` lemma — lies off the trajectory; `doubling_transport_mid`'s `H_entry`/`H_repack`
+   are jointly UNSATISFIABLE on the real path (no `[D]`-marked hand-off exists there).
+2. **No fixed tile, no uniform-shift invariant.** The braid's `L`/`R` round-trip lengths
+   shrink every trip; there is no recurring `Cfg(p)→Cfg(p−1)`. Neither `steps_add`
+   composition of a bounded tile set nor a `List`-fold (the `cascadeFold` pattern) captures
+   it — it is a genuine DOUBLE induction whose outer invariant must carry the ENTIRE cascade
+   + register state; it does not localize.
+3. **The ×2 couples to `2^K` and the FULL cascade.** Consistent with the prior
+   `bigCascade_not_doubling` `Θ(K)` residual: the missing `Θ(K)` is realized only by the
+   braid's SIMULTANEOUS processing of every cascade block + the register `U^g`.
+
+**Lean deliverable (green, sorry-free, axioms `[propext, Quot.sound]` only).** X2.lean §5h:
+the obstruction documented cell-for-cell, plus a kernel HALT-FREE anchor for the on-path
+repack round-trip context (`steps 800 ⟨E,0,⟨ones 20, false, pow10 8 ++ ones 5⟩⟩ ≠ none`).
+NO `rebuild_transport` added (any such lemma would be false-on-path or vacuous). §7 scope +
+final verdict updated. What stays certified on-path: `sweepEF` (×2 repack primitive ∀n),
+`dSweepTurn` (block crossings ∀n), and repack-round-trip halt-freedom.
+
+**Verdict: `H_repack` NOT discharged; episodes 5,6 do not exist as a localizable segment —
+they are one interleaved shrinking-comb odometer braid coupling to the full cascade and 2^K.
+`doubling_transport`/`doubling_transport_mid` now prove exactly: IF a marked-big-block entry
+and a post-cascade repack existed as segments, the doubling phase would compose halt-free —
+but the real machine realizes no such segments. No machine decided. No label upgraded.**
