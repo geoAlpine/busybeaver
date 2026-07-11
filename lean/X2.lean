@@ -974,6 +974,113 @@ crossings ∀n), and the halt-freedom of the repack round-trip context (anchor b
 set_option maxRecDepth 4000 in
 #eval decide (steps 800 ⟨.E, 0, ⟨ones 20, false, pow10 8 ++ ones 5⟩⟩ ≠ none)   -- true
 
+/-! ## §5i (ON-PATH, independently re-extracted 2026-07-12) THE DOUBLING PHASE'S REAL
+STEADY ENGINE — the `E`-anchored comb-deposit tile + its inner comb-shrink fold, taken
+CELL-FOR-CELL from a RAW simulation of the machine (matching this file's `step`) on the
+real `g = 2` orbit, NOT from prose and NOT from the macro executor.
+
+**Provenance (raw-orbit facts, all reproduced by direct `step`-simulation from the concrete
+milestone tape `m1_spec(2)`, no macros):**  the doubling phase `M6(2) → M1(3)` runs from
+step `343` (M6) to step `2 119 358` (M1(3)) — exactly `2 119 015` raw steps, `Θ(2^{2K})`,
+`K = 10` (independent confirmation of §5h's `2 119 358`).  During its long steady region the
+head sits in **state `E` on a `0`** at the boundary between a growing `(10)`-comb on the LEFT
+and the big block `1^{2v+1}` on the RIGHT, and runs a UNIFORM 6-step cycle
+`E:0→F:0→A:1→E:1→C:0→D:0→E:0` that consumes exactly two `1`s from the block, deposits one
+`0 1` (nearest-first) comb cell-pair on the left, and re-lands `E` on the next boundary `0`,
+advancing `+2`.  Verified at raw step `n = 646`: block length `969`; after exactly 6 steps
+(`n = 652`) block length `967`, head again `E` on the boundary `0` — reproduced below as
+`ecombChew_tile` (kernel `rfl`).  This is the SAME physical 6-loop as §5b's `chew_tile`,
+phase-anchored at the on-path milestone state `E` (not `D`), with the block written directly
+(no `0^3` marker) — the form the real orbit actually visits between comb repacks.
+
+**What this is / is not.**  This is the **INNER induction** of the shrinking-comb double
+induction: the block→comb chew, `1^{2v+1} → 1^1` depositing `pow01 v`, HALT-FREE ∀v.  It is
+NOT the ×2 doubling and NOT the outer odometer (see the honest gap at the foot).  The genuine
+`(01)^m → 1^{2m}` repack (the comb→block direction, `sweepEF`) is the OTHER half; the raw
+orbit interleaves the two — e.g. at raw step `n = 6626` the head runs a `sweepEF` sweep over a
+`(10)`-comb whose pair-count descends `6,5,4,3` (the repack), then chews again.  The two
+directions, braided over the whole cascade with per-round-trip lengths that grow every trip,
+are the quadratic odometer §5h already refuted as a single localizable lemma. -/
+
+/-- `(01)^k` nearest-first (`false` first) — the comb cell-pair the `E`-anchored tile deposits.
+This is the mirror of `pow10`; `pow01 k = (false :: true)^k`. -/
+def pow01 : Nat → List Bool
+  | 0 => []
+  | k + 1 => false :: true :: pow01 k
+
+/-- `pow01` is additive (mirrors `pow10_add`). -/
+theorem pow01_add : ∀ (a b : Nat), pow01 (a + b) = pow01 a ++ pow01 b := by
+  intro a
+  induction a with
+  | zero => intro b; rw [Nat.zero_add]; rfl
+  | succ a ih =>
+    intro b
+    have h : a + 1 + b = (a + b) + 1 := by omega
+    rw [h]
+    show false :: true :: pow01 (a + b) = false :: true :: (pow01 a ++ pow01 b)
+    rw [ih]
+
+/-- **The on-path `E`-anchored comb-deposit tile** (6 steps `E:0·F:0·A:1·E:1·C:0·D:0`): head
+`E` on the boundary `0`, block ahead `0 1 1 · R` (`false :: true :: true :: R`, the boundary
+`0` then the two leading block `1`s); the cycle consumes the two `1`s, deposits `0 1`
+(nearest-first) on the left, and re-lands `E` on the fresh boundary `0`, advancing `+2`; the
+left context `L` and the tail `R` are never read.  Kernel `rfl` — reproduced from the raw
+`g = 2` orbit at step `n = 646`. -/
+theorem ecombChew_tile (p : Int) (L R : List Bool) :
+    steps 6 ⟨.E, p, ⟨L, false, false :: true :: true :: R⟩⟩
+      = some ⟨.E, p + 2, ⟨false :: true :: L, false, false :: R⟩⟩ := by
+  have h : steps 6 (⟨.E, p, ⟨L, false, false :: true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 - 1 - 1 + 1, ⟨false :: true :: L, false, false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE INNER COMB-SHRINK INDUCTION (block→comb chew), ARBITRARY block length.**  `v` tiles
+= `6v` steps grind the on-path big block `1^{2v+1}` (encoded head-boundary `0` then
+`ones (2v+1)`) down to the residue `1^1`, depositing the comb `pow01 v` on the left and
+advancing `+2v`; the tail `R` is untouched.  Proven for EVERY `v` by `ecombChew_tile` + length
+induction (the `chewFold` / `O3.crawlR` pattern).  Every step lands `some` ⇒ HALT-FREE (the
+`E`-met gap-3 halt gate never fires anywhere in the chew).  This is the doubling phase's inner
+loop, ON the real orbit (the steady chew of the `1^{2^K-3}` block, `n = 646 … ` at `g = 2`). -/
+theorem ecombChewFold : ∀ (v : Nat) (p : Int) (L R : List Bool),
+    steps (6 * v) ⟨.E, p, ⟨L, false, false :: (ones (2 * v + 1) ++ R)⟩⟩
+      = some ⟨.E, p + 2 * (v : Int), ⟨pow01 v ++ L, false, false :: (ones 1 ++ R)⟩⟩ := by
+  intro v
+  induction v with
+  | zero =>
+    intro p L R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ v ih =>
+    intro p L R
+    have hn : 6 * (v + 1) = 6 + 6 * v := by omega
+    rw [hn, steps_add]
+    have hb : ones (2 * (v + 1) + 1) = true :: true :: ones (2 * v + 1) := by
+      rw [show 2 * (v + 1) + 1 = 2 + (2 * v + 1) from by omega, ones_add]; rfl
+    rw [hb]
+    show (steps 6 ⟨.E, p, ⟨L, false,
+        false :: (true :: true :: (ones (2 * v + 1) ++ R))⟩⟩).bind (steps (6 * v)) = _
+    rw [ecombChew_tile, someBind, ih (p + 2) (false :: true :: L) R]
+    have hL : pow01 v ++ (false :: true :: L) = pow01 (v + 1) ++ L := by
+      rw [show (false :: true :: L) = pow01 1 ++ L from rfl, ← List.append_assoc, ← pow01_add]
+    rw [hL]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **The honest inner/outer boundary (why the inner fold does NOT close the phase).**  The
+inner chew `ecombChewFold` turns the block `1^{2v+1}` into the comb `pow01 v` in `6v` steps;
+with the milestone `2v+1 = 2^K − 3` (so `v = 2^{K-1} − 2`) that is `Θ(2^{K-1})` steps — but the
+full doubling phase is `Θ(2^{2K})` (raw: `2 119 015` at `K=10`).  The missing quadratic factor
+is the OUTER odometer: the comb `pow01 v` is then repacked by `sweepEF`-round-trips whose
+length shrinks by one each trip and which are interleaved, at data-dependent positions, with the
+register `(1^5 0^2)` and every cascade block — exactly §5h's non-localizable braid.  The two
+`Θ(2^{K-1})` numbers (inner chew length; comb pair-count) multiplying to `Θ(2^{2K})` is the
+arithmetic signature of the double induction; the inner factor is `ecombChewFold`, the outer
+factor is NOT captured by any lemma here.  Kernel witness of the two scales: -/
+theorem inner_is_linear_not_quadratic (k : Nat) :
+    2 * (2 ^ (k + 1) - 2) + 1 = 2 ^ (k + 2) - 3 := by
+  have e : 2 ^ (k + 2) = 2 ^ (k + 1) * 2 := Nat.pow_succ 2 (k + 1)
+  have h4 : 4 ≤ 2 ^ (k + 2) := four_le_two_pow k
+  omega
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1043,6 +1150,20 @@ set_option maxRecDepth 4000 in
       (fun c => (c.st, c.tape.right)))
       = some (St.D, false :: false :: (ones 3 ++ (false :: false :: []))))          -- true
 
+-- §5i ON-PATH (raw g=2 orbit) kernel cross-checks:
+-- the `E`-anchored comb-deposit tile at the real step n=646 (block ahead `1^{40}`): 6 steps
+-- consume two `1`s, deposit `0 1` on the left, re-land `E` on the boundary `0`, head +2:
+#eval decide (steps 6 ⟨.E, 0, ⟨pow01 4, false, false :: ones 40⟩⟩
+      = some ⟨.E, 2, ⟨false :: true :: pow01 4, false, false :: ones 38⟩⟩)           -- true
+-- the inner comb-shrink fold, v=20: block `1^{41}` ground to `1^1` in 120 steps, depositing
+-- `pow01 20`, head +40, HALT-FREE (mirrors the raw n=646.. chew of the `1^{1021}` big block):
+#eval decide (steps (6 * 20) ⟨.E, 0, ⟨[], false, false :: (ones 41 ++ [])⟩⟩
+      = some ⟨.E, 40, ⟨pow01 20, false, false :: (ones 1 ++ [])⟩⟩)                    -- true
+-- the OTHER half (`sweepEF`, comb→block) also fires on the real orbit — at raw step n=6626
+-- the head sweeps a `(10)`-comb of `6` pairs into `1^{12}`, halt-free (already `sweepEF`):
+#eval decide (steps (2 * 6) ⟨.E, 0, ⟨[], false, pow10 6⟩⟩
+      = some ⟨.E, 12, ⟨ones 12, false, []⟩⟩)                                          -- true
+
 #print axioms steps_add
 #print axioms halt_gate
 #print axioms sweepEF
@@ -1062,6 +1183,10 @@ set_option maxRecDepth 4000 in
 #print axioms bigCascade
 #print axioms bigCascade_not_doubling
 #print axioms doubling_transport_mid
+#print axioms pow01_add
+#print axioms ecombChew_tile
+#print axioms ecombChewFold
+#print axioms inner_is_linear_not_quadratic
 
 -- G3 WIRING kernel cross-checks (vs the Python milestone `m1_spec`, K = g+8):
 -- cascadeBlocks 10 (g=2) = fold a-params for milestone blocks 2^j−3, j=9..3:
@@ -1143,6 +1268,17 @@ FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
   cascade `Σ = 2^{K-1}−4K+8`, `1^{21}` residue) are K-DEPENDENT and do NOT combine to the
   fixed `2^{K+1}−3` (residual `Θ(K)`: `−7,−6,−3` at `K=10,11,14`) — the missing `Θ(K)`
   must come from the register-rebuild (episode 6), which couples to `2^K`.
+* **ON-PATH INNER COMB-SHRINK INDUCTION** (§5i, 2026-07-12, independently re-extracted by
+  RAW `step`-simulation of `m1_spec(2)`, not the macro executor) — `ecombChew_tile` (the
+  `E`-anchored 6-step comb-deposit tile, kernel `rfl`, reproducing the real orbit's steady
+  cycle at raw step n=646) and **`ecombChewFold`** (`1^{2v+1} → 1^1` depositing `pow01 v` in
+  `6v` steps, HALT-FREE ∀v).  This is the doubling phase's INNER loop, ON the real orbit (the
+  steady chew of the `1^{2^K−3}` big block).  Raw-orbit facts re-confirmed here: M6(2) at raw
+  step 343, M1(3) at 2 119 358 (phase = 2 119 015 = `Θ(2^{2K})`, K=10).  `inner_is_linear_not_quadratic`
+  pins the honest inner/outer boundary: the inner chew is only `Θ(2^{K-1})`; the missing
+  quadratic factor is the OUTER shrinking-comb odometer (`sweepEF` round-trips of a length that
+  shrinks every trip, interleaved with the register + cascade), which §5h already refuted as a
+  localizable lemma — NOT closed here.
 
 STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
 

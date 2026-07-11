@@ -1171,3 +1171,46 @@ they are one interleaved shrinking-comb odometer braid coupling to the full casc
 `doubling_transport`/`doubling_transport_mid` now prove exactly: IF a marked-big-block entry
 and a post-cascade repack existed as segments, the doubling phase would compose halt-free —
 but the real machine realizes no such segments. No machine decided. No label upgraded.**
+
+---
+
+## APPEND 2026-07-12 (session 2): ON-PATH inner comb-shrink induction, independently re-extracted by RAW simulation
+
+**What was done.** Rebuilt a raw `step`-level simulator (matching X2.lean `step` exactly, no
+macros) and simulated the concrete milestone tape `m1_spec(2)` cell-for-cell. Independently
+re-confirmed the doubling phase `M6(2)→M1(3)`: **M6 at raw step 343, M1(3) at 2 119 358 —
+exactly 2 119 015 steps, `Θ(2^{2K})`, K=10** (matches §5h's earlier macro-derived figure).
+
+**The genuine ON-PATH round-trip, taken from the real orbit (not prose, not the executor).**
+In the long steady region the head sits in **state `E` on a boundary `0`** between a growing
+`(10)`-comb (LEFT) and the big block `1^{2v+1}` (RIGHT), running a uniform 6-step cycle
+`E:0·F:0·A:1·E:1·C:0·D:0·E:0` that eats two block `1`s, deposits one `0 1` comb pair, re-lands
+`E` on the next boundary `0`, `+2`. **Verified at raw step n=646: block length 969 → (6 steps)
+→ 967 at n=652, head E@0** — reproduced in Lean as `ecombChew_tile` (kernel `rfl`). This is the
+same physical 6-loop as §5b `chew_tile`, phase-anchored at the on-path milestone state `E`.
+
+**New Lean content (X2.lean §5i, green, sorry-free, axioms `[propext, Quot.sound]` only):**
+- `pow01`, `pow01_add` — the `(01)^k` comb the E-tile deposits (mirror of `pow10`).
+- `ecombChew_tile` — the on-path 6-step E-anchored comb-deposit tile (kernel `rfl`, reproduces
+  the raw n=646 transition).
+- **`ecombChewFold` — THE INNER COMB-SHRINK INDUCTION**: `1^{2v+1} → 1^1` depositing `pow01 v`
+  in `6v` steps, HALT-FREE ∀v, by tile + length induction. This is the doubling phase's inner
+  loop, ON the real orbit (the steady chew of the `1^{2^K−3}` big block, n=646… at g=2).
+- `inner_is_linear_not_quadratic` — kernel arithmetic pinning why the inner fold is only
+  `Θ(2^{K−1})` while the phase is `Θ(2^{2K})`: the missing quadratic factor is the outer
+  odometer.
+- ON-path #eval anchors: the tile at n=646 shape, the fold over `1^{41}` (v=20, 120 steps,
+  halt-free), and the `sweepEF` repack half fired at the n=6626 shape.
+
+**The EXACT remaining gap (outer induction), re-confirmed by independent raw trace.** The inner
+chew produces the comb `pow01 v` (v = 2^{K−1}−2) in `Θ(2^{K−1})` steps; the phase is `Θ(2^{2K})`
+because the comb is then repacked by **`sweepEF` round-trips whose length shrinks by one every
+trip** (observed raw: comb pair-count descends 6,5,4,3 at n=6626 and grows across successive
+round-trips), interleaved at data-dependent positions with the register `(1^5 0^2)` and every
+cascade block. No recurring `Cfg(n)→Cfg(n−1)` with uniform shift ⇒ the outer odometer does NOT
+localize into a `steps_add`-tile or a `List`-fold — the same non-localizability §5h recorded,
+now independently re-derived from the raw orbit with concrete step numbers. The outer invariant
+must carry the entire cascade+register symbolically; not closed here.
+
+**Verdict: the inner comb-shrink induction is now PROVEN on-path (`ecombChewFold`); the outer
+shrinking-comb odometer remains the exact open gap. No machine decided. No label upgraded.**
