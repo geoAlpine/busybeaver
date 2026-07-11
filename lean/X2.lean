@@ -292,6 +292,80 @@ theorem dSweepTurn : ∀ (n : Nat) (p : Int) (L R : List Bool),
     rw [h1, someBind, ih (p - 1) L (true :: R), ones_append_true]
     exact congrArg some (cfgPos (by push_cast; omega))
 
+/-! ## §5b (L3″) The cascade CHEW tile + fold — the doubling cascade's inductive core.
+
+The doubling phase drives the base-2 cascade `… 0^2 1^{b} 0^2 …` down by a fixed
+6-step tile `chew_tile` (state `D` on the first `0` of a `0^3` marker, reading two
+`1`s of the block ahead): it shrinks the block by 2, deposits one `1 0` comb pair
+on the left, and re-forms the `0^3` marker.  Composed by length induction
+(`chewFold`) it drives a block `1^{2m+3}` down to `1^3` in `6m` steps, depositing
+`pow10 m` — the `O3.crawlR` / `Suffix.sweepAD` pattern.  This is the cascade fold's
+per-block inductive core: the `x2cc` executor's certified C1 lemma (proven ∀k,r
+there), re-proven here as a Lean `rfl` tile + length induction — the piece the
+Python AFFINE executor could not fold for a symbolic cascade (fixed-length run lists),
+now tractable in Lean exactly as o3's `crawlR`.  `some` ⇒ HALT-FREE (no `E`-met
+gap-3 anywhere in the chew). -/
+
+/-- `pow10` is additive: `(10)^{a+b} = (10)^a · (10)^b`. -/
+theorem pow10_add : ∀ (a b : Nat), pow10 (a + b) = pow10 a ++ pow10 b := by
+  intro a
+  induction a with
+  | zero => intro b; rw [Nat.zero_add]; rfl
+  | succ a ih =>
+    intro b
+    have h : a + 1 + b = (a + b) + 1 := by omega
+    rw [h]
+    show true :: false :: pow10 (a + b) = true :: false :: (pow10 a ++ pow10 b)
+    rw [ih]
+
+/-- **One chew tile** (6 steps `D0·E0·F0·A1·E1·C0`): head `D` on the first `0` of a
+`0^3` marker with block `1^{b+2}` ahead (`0 0 · 1 1 · 1^b · 0 0 · R`); shrinks the
+block to `1^b`, deposits `1 0` on the left, re-forms `0^3`, advances `+2`; `ones b`
+and `R` untouched (read window is the marker + two leading `1`s).  Kernel `rfl`. -/
+theorem chew_tile (p : Int) (b : Nat) (L R : List Bool) :
+    steps 6 ⟨.D, p, ⟨L, false,
+        false :: false :: true :: true :: (ones b ++ (false :: false :: R))⟩⟩
+      = some ⟨.D, p + 2, ⟨true :: false :: L, false,
+          false :: false :: (ones b ++ (false :: false :: R))⟩⟩ := by
+  have h : steps 6 (⟨.D, p, ⟨L, false,
+        false :: false :: true :: true :: (ones b ++ (false :: false :: R))⟩⟩ : Cfg)
+      = some ⟨.D, p + 1 + 1 + 1 + 1 - 1 - 1, ⟨true :: false :: L, false,
+          false :: false :: (ones b ++ (false :: false :: R))⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The chew fold, ARBITRARY length.**  `m` tiles = `6m` steps drive the block
+`1^{2m+3}` down to `1^3`, depositing `pow10 m` on the left, advancing `+2m`; the
+`0^3`/`0^2` markers and `R` are preserved.  Proven for every `m` by tile + length
+induction.  `some` ⇒ HALT-FREE. -/
+theorem chewFold : ∀ (m : Nat) (p : Int) (L R : List Bool),
+    steps (6 * m) ⟨.D, p, ⟨L, false,
+        false :: false :: (ones (2 * m + 3) ++ (false :: false :: R))⟩⟩
+      = some ⟨.D, p + 2 * (m : Int), ⟨pow10 m ++ L, false,
+          false :: false :: (ones 3 ++ (false :: false :: R))⟩⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro p L R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ m ih =>
+    intro p L R
+    have hn : 6 * (m + 1) = 6 + 6 * m := by omega
+    rw [hn, steps_add]
+    have hb : ones (2 * (m + 1) + 3) = true :: true :: ones (2 * m + 3) := by
+      rw [show 2 * (m + 1) + 3 = 2 + (2 * m + 3) from by omega, ones_add]; rfl
+    rw [hb]
+    show (steps 6 ⟨.D, p, ⟨L, false,
+        false :: false :: true :: true :: (ones (2 * m + 3) ++ (false :: false :: R))⟩⟩).bind
+        (steps (6 * m)) = _
+    rw [chew_tile, someBind, ih (p + 2) (true :: false :: L) R]
+    have hL : pow10 m ++ (true :: false :: L) = pow10 (m + 1) ++ L := by
+      rw [show (true :: false :: L) = pow10 1 ++ L from rfl, ← List.append_assoc,
+          ← pow10_add]
+    rw [hL]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -303,12 +377,20 @@ theorem dSweepTurn : ∀ (n : Nat) (p : Int) (L R : List Bool),
 -- halt gate fires only at B reading 1:
 #eval decide (step ⟨.B, 0, ⟨[], true, []⟩⟩ = none)                            -- true
 #eval decide (step ⟨.B, 0, ⟨[], false, []⟩⟩ ≠ none)                           -- true
+-- chew fold: block `1^7` (m=2) chewed to `1^3` in 12 steps, depositing `(10)^2`,
+-- head +4, markers preserved, halt-free (cross-checks the Python x2cc C1 trace):
+#eval decide (steps (6 * 2) ⟨.D, 0, ⟨[], false,
+        false :: false :: (ones 7 ++ (false :: false :: []))⟩⟩
+      = some ⟨.D, 4, ⟨pow10 2, false,
+          false :: false :: (ones 3 ++ (false :: false :: []))⟩⟩)              -- true
 
 #print axioms steps_add
 #print axioms halt_gate
 #print axioms sweepEF
 #print axioms sweepEF_even
 #print axioms dSweepTurn
+#print axioms chew_tile
+#print axioms chewFold
 #print axioms sanity100
 
 end X2
