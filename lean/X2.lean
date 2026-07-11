@@ -514,6 +514,143 @@ theorem doubling_id (k : Nat) :
   have e : 2 ^ (k + 2 + 1) = 2 ^ (k + 2) * 2 := Nat.pow_succ 2 (k + 2)
   rw [e]; omega
 
+/-! ## §5e (G3 WIRING) The milestone cascade as a concrete `List Nat`,
+`cascadeFold` instantiated at it, the accumulator SUM lemma, and the
+doubling-phase transport (with the still-open pieces as explicit hypotheses).
+
+This section carries out the G3-wiring program:
+1. `cascadeBlocks K` — the milestone `M(K)` cascade's WAITING-block sizes in the
+   fold's `a`-convention (each waiting block is stored `1^{2a+5}`).  The milestone
+   cascade is `1^{big} 0^2 1^{2^{K-1}-3} 0^2 ⋯ 0^2 1^{2^2-3}` with leading
+   `big = 2^K − 3 = 2·(2^{K-1}−3) + 3`; the waiting blocks `2^j−3` map to
+   `a = 2^{j-1} − 4` (representable exactly for `j ≥ 3`).
+2. `cascade_traversal` — `cascadeFold` at `cascadeBlocks K`, halt-free (immediate
+   from G1).
+3. `cascadeBlocks_sum` — the accumulator/`Σ` closed form (`Σ = 2^{K-1} − 4K + 8`),
+   proved by List/Nat induction (the "Σ blocks → closed form" step; mirrors the way
+   `Suffix.lean` equates o4's accumulated filler to the odometer register).
+4. `doubling_transport` — the doubling-phase transport assembled from (2), taking
+   the low-phase/entry and the G2 repack as NAMED hypotheses (to be discharged
+   later), so the structural G3 result stands alone.
+
+**HONEST BOUNDARIES (the exact obstructions, see the §7 note):**
+* the terminal `1^1` (`= 2^2−3`, `j=2`) block is NOT fold-representable
+  (`2a+5 = 1 ⟹ a = −2`); it necessarily sits in the opaque tail `T`.  So the fold
+  processes the cascade blocks `j = K-1 … 3` only.
+* `cascadeFold` lands on `1^{2·lastBlock+3}` — the LAST block ground down — NOT on
+  `1^{2·acc+3}` for an accumulated `acc`; the repack that would fuse the deposited
+  comb into a single `1^{2·acc}` big block is a SEPARATE G2 episode, absent here.
+* the cascade accumulator is `Σ ≈ 2^{K-1}`, so `2·Σ + 3 ≠ 2^{K+1} − 3` (checked by
+  `#eval` below).  The genuine `2^K` doubling `2·(2^K−3)+3 = 2^{K+1}−3` is
+  `doubling_id`, which applies to the BIG-BLOCK marked-sweep episode (G2), NOT to
+  the cascade fold.  Hence the "accumulator = 2^K via `doubling_id`" identity as
+  originally posed does NOT hold; `doubling_id` is the big-block episode's law. -/
+
+/-- Sum of a `List Nat` (the fold accumulator's arithmetic support). -/
+def natSum : List Nat → Nat
+  | [] => 0
+  | a :: r => a + natSum r
+
+/-- The cascade waiting-blocks in the fold `a`-convention: `n` blocks with
+descending exponents `hi, hi−1, …, hi−n+1`, block `a`-value `2^i − 4` (so the
+stored block length is `2·(2^i−4)+5 = 2^{i+1}−3`). -/
+def cascDesc : Nat → Nat → List Nat
+  | 0, _ => []
+  | n + 1, hi => (2 ^ hi - 4) :: cascDesc n (hi - 1)
+
+/-- **The milestone `M(K)` cascade** (representable waiting blocks): exponents
+`i = K−2 … 2`, i.e. block lengths `2^{i+1}−3 = 2^{K-1}−3, …, 2^3−3 = 5` — the
+`K−3` blocks `j = K−1 … 3` of the milestone.  The leading big block `2^K−3` is the
+fold's CURRENT block `m = 2^{K-1}−3` (not in this list), and the terminal `1^1`
+(`j=2`) is in the tail `T` (not fold-representable). -/
+def cascadeBlocks (K : Nat) : List Nat := cascDesc (K - 3) (K - 2)
+
+/-- **The accumulator SUM lemma (the "Σ blocks → closed form" core).**  For every
+`n ≤ hi−1`, the fold `a`-values `2^{hi}−4, …, 2^{hi−n+1}−4` sum to
+`2^{hi+1} − 2^{hi−n+1} − 4n`, written additively (no `Nat` truncation) as
+`Σ + 4n + 2^{hi−n+1} = 2^{hi+1}`.  Proved by induction on `n` (the geometric
+telescoping); the exponent `hi−n+1` is the invariant bottom of the block range. -/
+theorem cascDesc_sum : ∀ (n hi : Nat), n + 1 ≤ hi →
+    natSum (cascDesc n hi) + 4 * n + 2 ^ (hi - n + 1) = 2 ^ (hi + 1) := by
+  intro n
+  induction n with
+  | zero =>
+    intro hi _
+    show natSum ([] : List Nat) + 4 * 0 + 2 ^ (hi - 0 + 1) = 2 ^ (hi + 1)
+    show 0 + 4 * 0 + 2 ^ (hi - 0 + 1) = 2 ^ (hi + 1)
+    rw [show hi - 0 + 1 = hi + 1 from by omega]; omega
+  | succ n ih =>
+    intro hi h
+    show (2 ^ hi - 4) + natSum (cascDesc n (hi - 1)) + 4 * (n + 1)
+        + 2 ^ (hi - (n + 1) + 1) = 2 ^ (hi + 1)
+    have IH := ih (hi - 1) (by omega)
+    rw [show (hi - 1) - n + 1 = hi - (n + 1) + 1 from by omega,
+        show (hi - 1) + 1 = hi from by omega] at IH
+    have hpow : 2 ^ (hi + 1) = 2 ^ hi * 2 := Nat.pow_succ 2 hi
+    have h4 : 4 ≤ 2 ^ hi := by
+      have := four_le_two_pow (hi - 2)
+      rwa [show hi - 2 + 2 = hi from by omega] at this
+    omega
+
+/-- **The closed form for the milestone cascade** (`K ≥ 3`):
+`Σ cascadeBlocks K = 2^{K-1} − 4·(K−3) − 4 = 2^{K-1} − 4K + 8`.  The accumulated
+comb sum is `Θ(2^{K-1})` — visibly NOT the big-block value `2^K−3` nor the rebuilt
+`2^{K+1}−3`; this is the arithmetic witness that the cascade fold does not itself
+carry the `2^K` doubling. -/
+theorem cascadeBlocks_sum (K : Nat) (hK : 3 ≤ K) :
+    natSum (cascadeBlocks K) + 4 * (K - 3) + 4 = 2 ^ (K - 1) := by
+  unfold cascadeBlocks
+  have h := cascDesc_sum (K - 3) (K - 2) (by omega)
+  rw [show (K - 2) - (K - 3) + 1 = 2 from by omega,
+      show (K - 2) + 1 = K - 1 from by omega,
+      show (2 : Nat) ^ 2 = 4 from by decide] at h
+  omega
+
+/-- **The cascade traversal (G1 instantiated at the real milestone cascade).**
+`cascadeFold` at `cascadeBlocks K`, starting from state `D` on the leading big
+block `1^{2·(2^{K-1}−3)+3} = 1^{2^K−3}`, runs `foldTime (2^{K-1}−3) (cascadeBlocks K)`
+steps HALT-FREE (`some`) and lands in state `D` on the ground block
+`1^{2·lastBlock+3}` with the whole cascade folded into a comb on the left.
+Immediate from `cascadeFold`; this is the doubling-phase's cascade sweep over the
+CONCRETE milestone block list. -/
+theorem cascade_traversal (K : Nat) (p : Int) (L T : List Bool) :
+    ∃ (comb : List Bool) (q : Int),
+      steps (foldTime (2 ^ (K - 1) - 3) (cascadeBlocks K)) ⟨.D, p, ⟨L, false,
+          false :: false :: (ones (2 * (2 ^ (K - 1) - 3) + 3)
+            ++ (false :: false :: casc (cascadeBlocks K) T))⟩⟩
+        = some ⟨.D, q, ⟨comb ++ L, false,
+            false :: false :: (ones (2 * lastBlock (2 ^ (K - 1) - 3) (cascadeBlocks K) + 3)
+              ++ (false :: false :: T))⟩⟩ :=
+  cascadeFold (cascadeBlocks K) (2 ^ (K - 1) - 3) p L T
+
+/-- **The doubling-phase transport (structural G3), with the still-open pieces as
+NAMED hypotheses.**  Given (`H_entry`) that the low phase + entry (`[OPEN]`,
+STILL-OPEN item 1/2) reach the cascade-start config — state `D` on the leading
+`1^{2^K−3}` big block with cascade tail `casc (cascadeBlocks K) T` — and
+(`H_repack`) that the G2 repack episode (`[OPEN]`, STILL-OPEN item 2) carries the
+ground cascade config to the next milestone `M1next`, the doubling phase reaches
+`M1next` HALT-FREE.  The proof genuinely composes `H_entry`, the proven
+`cascade_traversal` (G1), and `H_repack` via `steps_add`; the big-block value the
+repack must target is `2^{K+1}−3 = 2·(2^K−3)+3` by `doubling_id` (its `2^K` law).
+No `cascadeFold`/`doubling_id` step is assumed — only entry and repack, the pieces
+this file does not yet formalize. -/
+theorem doubling_transport (K : Nat) (p : Int) (L T : List Bool)
+    (entryCfg : Cfg) (Nentry : Nat)
+    (H_entry : steps Nentry entryCfg = some ⟨.D, p, ⟨L, false,
+        false :: false :: (ones (2 * (2 ^ (K - 1) - 3) + 3)
+          ++ (false :: false :: casc (cascadeBlocks K) T))⟩⟩)
+    (Nrepack : Nat) (M1next : List Bool → Int → Cfg)
+    (H_repack : ∀ (comb : List Bool) (q : Int),
+        steps Nrepack ⟨.D, q, ⟨comb ++ L, false,
+            false :: false :: (ones (2 * lastBlock (2 ^ (K - 1) - 3) (cascadeBlocks K) + 3)
+              ++ (false :: false :: T))⟩⟩
+          = some (M1next comb q)) :
+    ∃ (N : Nat) (comb : List Bool) (q : Int),
+      steps N entryCfg = some (M1next comb q) := by
+  obtain ⟨comb, q, hfold⟩ := cascade_traversal K p L T
+  refine ⟨Nentry + (foldTime (2 ^ (K - 1) - 3) (cascadeBlocks K) + Nrepack), comb, q, ?_⟩
+  rw [steps_add, H_entry, someBind, steps_add, hfold, someBind, H_repack]
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -556,6 +693,35 @@ theorem doubling_id (k : Nat) :
 #print axioms blockStep
 #print axioms cascadeFold
 #print axioms doubling_id
+
+-- G3 WIRING kernel cross-checks (vs the Python milestone `m1_spec`, K = g+8):
+-- cascadeBlocks 10 (g=2) = fold a-params for milestone blocks 2^j−3, j=9..3:
+#eval decide (cascadeBlocks 10 = [252, 124, 60, 28, 12, 4, 0])                  -- true
+-- reconstructing 1^{2a+5} recovers the milestone cascade blocks 509,253,…,5:
+#eval decide ((cascadeBlocks 10).map (fun a => 2 * a + 5) = [509, 253, 125, 61, 29, 13, 5]) -- true
+-- leading big block: 2·(2^9−3)+3 = 2^10−3 = 1021 (the milestone `big`, g even):
+#eval decide (2 * (2 ^ 9 - 3) + 3 = 1021)                                       -- true
+-- the terminal 1^1 (2^2−3, j=2) is NOT fold-representable (2a+5 = 1 ⟹ a = −2):
+--   it lives in the opaque tail T; cascadeBlocks stops at j=3 (block 1^5).
+-- sum closed form Σ cascadeBlocks 10 = 2^9 − 4·10 + 8 = 480:
+#eval decide (natSum (cascadeBlocks 10) = 480)                                  -- true
+#eval decide (natSum (cascadeBlocks 10) + 4 * (10 - 3) + 4 = 2 ^ (10 - 1))      -- true
+-- g=2..6 (K=10..14): reconstruction of the milestone cascade block lengths:
+#eval decide ((cascadeBlocks 11).map (fun a => 2 * a + 5)
+      = [1021, 509, 253, 125, 61, 29, 13, 5])                                   -- true (g=3)
+#eval decide ((cascadeBlocks 14).map (fun a => 2 * a + 5)
+      = [8189, 4093, 2045, 1021, 509, 253, 125, 61, 29, 13, 5])                 -- true (g=6)
+-- THE OBSTRUCTION, concretely: the cascade accumulator is ≈2^{K-1}, so
+-- 2·Σ+3 ≠ 2^{K+1}−3 (963 ≠ 2045) — the fold does NOT carry the 2^K doubling:
+#eval decide (2 * natSum (cascadeBlocks 10) + 3 ≠ 2 ^ 11 - 3)                    -- true
+-- the genuine 2^K doubling is doubling_id on the BIG block (a separate G2 episode):
+#eval decide (2 * (2 ^ 10 - 3) + 3 = 2 ^ 11 - 3)                                -- true
+
+#print axioms natSum
+#print axioms cascDesc_sum
+#print axioms cascadeBlocks_sum
+#print axioms cascade_traversal
+#print axioms doubling_transport
 #print axioms sanity100
 
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
@@ -576,27 +742,54 @@ FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
 * **G3 arithmetic core** — `doubling_id`: `2·(2^K−3)+3 = 2^{K+1}−3`, the
   exponential (`2^K`) block-doubling identity the affine executor could not
   represent.
+* **G3 WIRING, structural part** (§5e) — `cascadeBlocks K` (the milestone `M(K)`
+  cascade as a concrete `List Nat` in the fold `a`-convention, kernel-`#eval`
+  cross-checked vs the Python `m1_spec` for K = 10..14 / g = 2..6);
+  `cascade_traversal` (`cascadeFold` INSTANTIATED at `cascadeBlocks K`, halt-free);
+  `cascDesc_sum`/`cascadeBlocks_sum` (the accumulator `Σ = 2^{K-1} − 4K + 8` closed
+  form by List/Nat induction — the "Σ blocks → closed form" step); and
+  `doubling_transport`, which composes entry + `cascade_traversal` + repack into a
+  halt-free transport, taking the low-phase/entry and G2-repack pieces as NAMED
+  hypotheses so the structural G3 result stands alone.
 
 STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
 
 1. **Low phase M1(g)→M6(g) ∀g** — the full sweep-induction that x2's low phase
    emits only gaps `{18,10,2(g+1),6-iff-even}`, never 3 (Python-`x2cc_prove`
    PROVEN, not yet ported; it is the analogue of the entire `Template`+`Suffix`
-   generation-map, ~1k lines).
+   generation-map, ~1k lines).  Supplies `doubling_transport`'s `H_entry`.
 2. **G2** — the entry / `10^10`-marked big-block R/L sweep / repack as PARAMETRIC
-   tiles (bounded, machine-checked g=2..6 only).
-3. **G3 wiring** — `cascadeFold` takes an ARBITRARY block list; it is NOT yet
-   instantiated at the milestone cascade (blocks `2^j−3`), and the accumulated
-   comb-total is NOT yet equated (via `doubling_id`) to the rebuilt block
-   `2^{K+1}−3`.  Wiring the fold OUTPUT to `M1(g+1)` — the register-rebuild — is
-   the deepest remaining step.
+   tiles (bounded, machine-checked g=2..6 only).  Supplies `doubling_transport`'s
+   `H_repack`; the big-block value it must target is `2^{K+1}−3 = 2·(2^K−3)+3`,
+   certified by `doubling_id`.
+3. **G3 wiring — the accumulator-to-`2^K` IDENTITY does NOT close as posed**
+   (the honest obstruction found this session).  Three exact mismatches:
+   (a) the terminal `1^1` (`= 2^2−3`, j=2) block is NOT fold-representable
+       (`2a+5 = 1 ⟹ a = −2`); it lives in the opaque tail `T`, so `cascadeBlocks`
+       covers only `j = K−1 … 3` — a genuine parity/boundary cut at the cascade
+       bottom;
+   (b) `cascadeFold` lands on `1^{2·lastBlock+3}` (the last block ground down), NOT
+       on `1^{2·acc+3}`; the repack that fuses the deposited comb into a single big
+       block is a SEPARATE G2 episode (item 2), absent here;
+   (c) the cascade accumulator is `Σ ≈ 2^{K-1}`, so `2·Σ + 3 ≠ 2^{K+1}−3`
+       (`#eval`: `963 ≠ 2045` at K=10).  **`doubling_id` is the BIG-BLOCK
+       marked-sweep episode's law, NOT the cascade fold's** — the original
+       "cascadeFold accumulator = 2^K via `doubling_id`" framing is refuted.  What
+       IS wired: the cascade traversal is halt-free over the concrete milestone
+       list, its `Σ` has a proven closed form, and the transport composes cleanly
+       ONCE `H_entry`/`H_repack` are supplied.  The register-rebuild `2·(comb) +
+       corrections = 2^{K+1}−3` (with the `−4K+8` correction the fold's `Σ` carries)
+       remains OPEN — it needs the G2 big-block sweep, not further fold work.
 4. **The milestone form M(g) and the composed `x2_nonhalt`** — the nested cascade
    as a concrete `Cfg`, the transport `M1(g)→M1(g+1)` ∀g, and the prefix-closed
    non-halt (`∀n, steps n init ≠ none`) — NONE assembled.
 
 **Verdict: NO decision.**  This file advances the formalization by closing G1
-(the fold engine) and G3's arithmetic core with clean axioms, but x2 stays
-`[OPEN]`: the low-phase composition, G2, the G3 register-rebuild wiring, and the
-top-level `x2_nonhalt` are not formalized.  No label upgraded. -/
+(the fold engine), G3's arithmetic core, and the G3-wiring STRUCTURAL part
+(concrete cascade instantiation + accumulator sum + composed transport with named
+hypotheses) with clean axioms.  The G3 accumulator-to-`2^K` IDENTITY does NOT
+close as originally posed (the doubling lives in the separate G2 big-block episode,
+not the cascade fold), and the low-phase composition, G2, and top-level
+`x2_nonhalt` are not formalized.  x2 stays `[OPEN]`.  No label upgraded. -/
 
 end X2

@@ -1000,3 +1000,37 @@ M1(g)→M1(g+1) ∀g, and the composed `x2_nonhalt`.
 **Verdict: NO decision.** G1 (the fold engine) and G3's arithmetic core are formalized with
 clean axioms; the low-phase composition, G2, the G3 wiring, and top-level `x2_nonhalt` remain.
 No machine decided. No label upgraded.
+
+---
+
+## Append 2026-07-12 — G3 WIRING (structural part) + the honest obstruction
+
+Extended `lean/X2.lean` §5e (single-agent; full project green, axioms `[propext, Quot.sound]`
+only, no `sorry`, no `native_decide`):
+
+- **`cascadeBlocks K : List Nat`** — the milestone `M(K)` cascade as a CONCRETE fold block list
+  (fold `a`-convention: waiting block stored `1^{2a+5}`). Milestone blocks `2^j−3` (j = K−1…3)
+  map to `a = 2^{j−1}−4`. Kernel `#eval` cross-checked vs the Python `m1_spec` for K = 10..14
+  (g = 2..6): `(cascadeBlocks K).map (2a+5)` reproduces `509,253,…,5` etc. exactly.
+- **`cascade_traversal K`** — `cascadeFold` INSTANTIATED at `cascadeBlocks K`, starting on the
+  leading `1^{2·(2^{K−1}−3)+3} = 1^{2^K−3}` big block; halt-free (`some`), lands on
+  `1^{2·lastBlock+3}`. Immediate corollary of G1.
+- **`cascDesc_sum` / `cascadeBlocks_sum`** — the accumulator SUM lemma by List/Nat induction:
+  `Σ cascadeBlocks K = 2^{K−1} − 4K + 8` (geometric telescoping, additive form to dodge `Nat`
+  truncation; uses `four_le_two_pow` + `Nat.pow_succ`). The "Σ blocks → closed form" step.
+- **`doubling_transport`** — composes `H_entry` (low-phase/entry, NAMED hyp) + `cascade_traversal`
+  (proven) + `H_repack` (G2 repack, NAMED hyp) into a HALT-FREE transport to `M1next`, via
+  `steps_add`. The structural G3 result standing on the two still-open pieces.
+
+**HONEST OBSTRUCTION (the accumulator-to-`2^K` identity does NOT close as posed):**
+(a) the terminal `1^1` (`2^2−3`, j=2) block is not fold-representable (`2a+5=1 ⟹ a=−2`) — it
+sits in the opaque tail `T`; the cascade cut is at j=3. (b) `cascadeFold` lands on
+`1^{2·lastBlock+3}`, NOT `1^{2·acc+3}` — the comb→big-block repack is a separate G2 episode,
+absent here. (c) `Σ ≈ 2^{K−1}` ⟹ `2·Σ+3 ≠ 2^{K+1}−3` (`#eval`: 963 ≠ 2045 at K=10). **`doubling_id`
+is the BIG-BLOCK marked-sweep episode's law, not the cascade fold's** — the framing
+"cascadeFold accumulator = 2^K via `doubling_id`" is REFUTED. The register-rebuild
+`2·(comb)+corrections = 2^{K+1}−3` needs the G2 big-block sweep, not the fold.
+
+**Verdict: G3 wiring STRUCTURAL part closed (concrete instantiation + Σ closed form + composed
+transport with named hypotheses); the G3 accumulator IDENTITY does not close (obstruction (a)-(c),
+the doubling lives in G2). No machine decided. No label upgraded.**
