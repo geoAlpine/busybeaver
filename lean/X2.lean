@@ -1662,6 +1662,269 @@ ENTRY/EXIT are recursive `Θ(2^j)` sub-phases (nested lower carries + proven
 closure is the open Layer-B odometer iteration — the project's `Suffix.lean`-scale
 object.  No `sorry`, no axiom added; no machine decided by this section. -/
 
+/-! ## §5n (LAYER B, PURE ODOMETER, 2026-07-12) THE WELL-FOUNDED COUNTER RECURSION.
+
+This is the design's **Layer B**: the PURE (no-tape) model of the doubling-phase
+odometer, where termination is CLEAN.  The doubling phase's outer dynamics is a
+BINARY COUNTER with ripple carry (`X2_WELLFOUNDED_DESIGN_2026-07-12.md` §2–§4,
+`x2wf_counter.py`): the low bits are the comb accumulator, a level-`j` carry fires
+when the low `j` bits are all `1` (comb `= 2^j − 1`), and it ripples through those
+`j` ones, setting bit `j` (the doubled cascade digit).  We model this as the binary
+counter `binInc`/`binVal` and prove the design's **clean-measure trick**:
+
+* `binInc_val` — `binVal (binInc bs) = binVal bs + 1`: the RIPPLE CARRY NETS EXACTLY
+  `+1` in value (the crux `+1` law; a textbook ripple-incrementer-correctness proof).
+* `binInc_ripple` — a level-`j` carry `(1^j 0 …) ↦ (0^j 1 …)`: ripples through the
+  `j` threshold ones and sets bit `j` — the FAITHFUL overflow-at-`2^j−1` rule.
+* `odoValue_odoNext` — `+1` per tick; `odo_terminates` — WF on `μ = odoValue
+  (odoFinal K) − odoValue o`, decreasing by exactly `1` each `odoNext`, hitting `0`
+  at `odoFinal K` after `T = 2^K − 1` steps; `rippleDepth_le` — ripple depth ≤ width.
+
+**STRUCTURAL FAITHFULNESS [OBSERVED, matches `x2wf_*.py`].**  (i) each no-carry tick
+increments the comb (`binInc (false :: bs) = true :: bs`, no ripple); (ii) overflow
+at `comb = 2^j − 1` (`binInc_ripple`, `binVal (replicate j true) = 2^j − 1`); (iii)
+the carry doubles the cascade digit `d_j = 2^{j+2}−3 ↦ 2·d_j+3 = d_{j+1}` — reuse
+`carryDigit`/`carryDigit_closed`/`doubling_id`, chain `1,5,13,29,61,…`; (iv) the
+carry RIPPLES, depth = the run of threshold ones, ≤ K (`rippleDepth_le`, matches
+`x2wf_pure.py`'s depth histogram, max 1–2 at g=2,3).
+
+**HONEST GAP [OBSERVED + DESIGN] — scope of this register, with a correction.**
+This `binInc`/`binVal` models the COMB SUB-COUNTER faithfully in STRUCTURE (checks
+(i)–(iv) above), but it is NOT yet the full-phase register: its value counts comb
+increments, so its sweep length `T = 2^K − 1 = 1023/2047/4095` does NOT equal the
+raw round-trip (chew-start) count (`x2wf_*.py`, main-loop reconfirmed: **3852 @K=10,
+9729 @K=11, 19470 @K=12**, with **192 / 386** carries), which the design's Layer B
+wanted the register value to equal.  A single carry spans a `Θ(2^j)`-length tape
+block-chew (§5m ENTRY/EXIT), so the full odometer tick-count is finer than the flat
+comb counter.  **Correction to an earlier over-strong reading:** this mismatch does
+**NOT** prove the round-trip count is "irreducibly tape-determined."  Main-loop
+analysis found the real counts carry pure combinatorial STRUCTURE — carries
+`≈ 3·2^{K−4}` (EXACT `192` at K=10; `384` vs `386` at K=11) and chew-starts `Θ(2^K)`
+— so a RICHER pure register (the full cascade + comb, not this flat counter) could
+plausibly reproduce them as pure quantities; whether that faithful register is a
+clean WF recursion is **OPEN**, not a settled tape-determined wall.  The flat counter
+here is a correct, reusable ripple-incrementer (the `+1` law + WF termination are the
+design's clean-measure core), but the FAITHFUL full-phase register (value = 3852…)
+and its tape grounding (Layer C) remain unbuilt.  Layer B alone does NOT connect to
+the tape and does NOT decide the machine.  No `sorry`, no axiom, no `native_decide`. -/
+
+namespace LayerB
+
+/-- Binary counter as a `List Bool`, **LSB first**.  `binVal` is its value. -/
+def binVal : List Bool → Nat
+  | [] => 0
+  | b :: bs => b.toNat + 2 * binVal bs
+
+/-- The ripple-carry increment (`+1`).  No-carry: `false :: bs ↦ true :: bs`.
+Carry: `true :: bs ↦ false :: binInc bs` (ripple into the tail). -/
+def binInc : List Bool → List Bool
+  | [] => [true]
+  | false :: bs => true :: bs
+  | true :: bs => false :: binInc bs
+
+/-- **THE `+1` LAW (crux).**  The ripple carry nets EXACTLY `+1` in value. -/
+theorem binInc_val : ∀ bs, binVal (binInc bs) = binVal bs + 1 := by
+  intro bs
+  induction bs with
+  | nil => rfl
+  | cons b bs ih =>
+    cases b with
+    | false =>
+      show binVal (true :: bs) = binVal (false :: bs) + 1
+      simp only [binVal, Bool.toNat_true, Bool.toNat_false]; omega
+    | true =>
+      show binVal (false :: binInc bs) = binVal (true :: bs) + 1
+      simp only [binVal, Bool.toNat_true, Bool.toNat_false]
+      rw [ih]; omega
+
+/-- **THE LEVEL-`j` CARRY (faithful overflow-at-`2^j−1`).**  When the low `j` bits
+are all `1` (comb `= 2^j − 1`, `binVal (replicate j true) = 2^j − 1` below), the
+increment RIPPLES through those `j` ones and sets bit `j`. -/
+theorem binInc_ripple : ∀ (j : Nat) (bs : List Bool),
+    binInc (List.replicate j true ++ (false :: bs))
+      = List.replicate j false ++ (true :: bs) := by
+  intro j
+  induction j with
+  | zero => intro bs; rfl
+  | succ j ih =>
+    intro bs
+    show binInc (true :: (List.replicate j true ++ (false :: bs)))
+        = List.replicate (j + 1) false ++ (true :: bs)
+    show false :: binInc (List.replicate j true ++ (false :: bs))
+        = false :: (List.replicate j false ++ (true :: bs))
+    rw [ih]
+
+/-- Ripple depth = the run of leading `1`s that a carry flips (`= j` in
+`binInc_ripple`); bounded by the counter width. -/
+def rippleDepth : List Bool → Nat
+  | [] => 0
+  | false :: _ => 0
+  | true :: bs => rippleDepth bs + 1
+
+theorem rippleDepth_le : ∀ bs, rippleDepth bs ≤ bs.length := by
+  intro bs
+  induction bs with
+  | nil => exact Nat.le_refl 0
+  | cons b bs ih =>
+    cases b with
+    | false => exact Nat.zero_le _
+    | true =>
+      show rippleDepth bs + 1 ≤ bs.length + 1
+      exact Nat.succ_le_succ ih
+
+/-- `0 < 2^w` (zero-mathlib helper). -/
+theorem two_pow_pos : ∀ w, 0 < 2 ^ w := by
+  intro w
+  induction w with
+  | zero => decide
+  | succ w ih => rw [Nat.pow_succ]; omega
+
+theorem binVal_replicate_false : ∀ w, binVal (List.replicate w false) = 0 := by
+  intro w
+  induction w with
+  | zero => rfl
+  | succ w ih =>
+    show binVal (false :: List.replicate w false) = 0
+    simp only [binVal, Bool.toNat_false]; rw [ih]
+
+/-- `comb = 2^j − 1` at the level-`j` overflow threshold. -/
+theorem binVal_replicate_true : ∀ w, binVal (List.replicate w true) = 2 ^ w - 1 := by
+  intro w
+  induction w with
+  | zero => rfl
+  | succ w ih =>
+    show binVal (true :: List.replicate w true) = 2 ^ (w + 1) - 1
+    simp only [binVal, Bool.toNat_true]
+    rw [ih]
+    have hp : 2 ^ (w + 1) = 2 ^ w * 2 := Nat.pow_succ 2 w
+    have h1 := two_pow_pos w
+    omega
+
+/-- Fixed-width binary representation (width, value), LSB first. -/
+def toBits : Nat → Nat → List Bool
+  | 0, _ => []
+  | w + 1, v => decide (v % 2 = 1) :: toBits w (v / 2)
+
+theorem toBits_zero : ∀ w, toBits w 0 = List.replicate w false := by
+  intro w
+  induction w with
+  | zero => rfl
+  | succ w ih =>
+    show false :: toBits w 0 = false :: List.replicate w false
+    rw [ih]
+
+theorem toBits_max : ∀ w, toBits w (2 ^ w - 1) = List.replicate w true := by
+  intro w
+  induction w with
+  | zero => rfl
+  | succ w ih =>
+    have hp : 2 ^ (w + 1) = 2 ^ w * 2 := Nat.pow_succ 2 w
+    have h1 := two_pow_pos w
+    have hm : (2 ^ (w + 1) - 1) % 2 = 1 := by omega
+    have hd : (2 ^ (w + 1) - 1) / 2 = 2 ^ w - 1 := by omega
+    show decide ((2 ^ (w + 1) - 1) % 2 = 1) :: toBits w ((2 ^ (w + 1) - 1) / 2)
+        = List.replicate (w + 1) true
+    rw [hm, hd, ih]; rfl
+
+/-- Fixed-width increment: `binInc ∘ toBits = toBits ∘ (·+1)` below overflow. -/
+theorem binInc_toBits : ∀ (w v : Nat), v + 1 < 2 ^ w →
+    binInc (toBits w v) = toBits w (v + 1) := by
+  intro w
+  induction w with
+  | zero => intro v h; simp only [Nat.pow_zero] at h; omega
+  | succ w ih =>
+    intro v h
+    have hp : 2 ^ (w + 1) = 2 ^ w * 2 := Nat.pow_succ 2 w
+    show binInc (decide (v % 2 = 1) :: toBits w (v / 2))
+        = decide ((v + 1) % 2 = 1) :: toBits w ((v + 1) / 2)
+    rcases Nat.mod_two_eq_zero_or_one v with hv | hv
+    · -- v even: no ripple, just set the low bit
+      have hm : (v + 1) % 2 = 1 := by omega
+      have hd : (v + 1) / 2 = v / 2 := by omega
+      rw [hv, hm, hd]; rfl
+    · -- v odd: ripple into the tail
+      have hm : (v + 1) % 2 = 0 := by omega
+      have hd : (v + 1) / 2 = v / 2 + 1 := by omega
+      have hlt : v / 2 + 1 < 2 ^ w := by omega
+      rw [hv, hm, hd]
+      show false :: binInc (toBits w (v / 2)) = false :: toBits w (v / 2 + 1)
+      rw [ih (v / 2) hlt]
+
+/-- The pure odometer register (Layer B): the ripple-carry binary counter. -/
+structure OdoB where
+  bits : List Bool
+
+/-- One outer odometer tick = one ripple-carry increment. -/
+def odoNext (o : OdoB) : OdoB := ⟨binInc o.bits⟩
+
+/-- `odoValue` DEFINED so `odoNext` increments it by `1` (the clean measure). -/
+def odoValue (o : OdoB) : Nat := binVal o.bits
+
+/-- The M6(K) entry register: comb `0` (all bits clear). -/
+def odoEntry (K : Nat) : OdoB := ⟨toBits K 0⟩
+
+/-- The M1(K+1) final register: the full doubled cascade (all K bits set). -/
+def odoFinal (K : Nat) : OdoB := ⟨toBits K (2 ^ K - 1)⟩
+
+/-- **THE `+1` LAW on the register.** -/
+theorem odoValue_odoNext (o : OdoB) : odoValue (odoNext o) = odoValue o + 1 :=
+  binInc_val o.bits
+
+/-- Iterating `odoNext` `n` times adds `n` to the value (clean measure iterate).
+NB: zero-mathlib Lean 4.31 has no `f^[n]` notation; we use core `Nat.repeat`
+(`Nat.repeat f n a` = the design's `odoNext^[n] a`). -/
+theorem odoValue_iterate (o : OdoB) : ∀ n, odoValue (Nat.repeat odoNext n o) = odoValue o + n := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    show odoValue (odoNext (Nat.repeat odoNext n o)) = odoValue o + (n + 1)
+    rw [odoValue_odoNext, ih]; omega
+
+theorem odoValue_odoEntry (K : Nat) : odoValue (odoEntry K) = 0 := by
+  show binVal (toBits K 0) = 0
+  rw [toBits_zero, binVal_replicate_false]
+
+theorem odoValue_odoFinal (K : Nat) : odoValue (odoFinal K) = 2 ^ K - 1 := by
+  show binVal (toBits K (2 ^ K - 1)) = 2 ^ K - 1
+  rw [toBits_max, binVal_replicate_true]
+
+/-- `Nat.repeat odoNext n (odoEntry K) = toBits K n` while below overflow. -/
+theorem odo_iterate (K : Nat) : ∀ n, n < 2 ^ K →
+    Nat.repeat odoNext n (odoEntry K) = ⟨toBits K n⟩ := by
+  intro n
+  induction n with
+  | zero => intro _; rfl
+  | succ n ih =>
+    intro h
+    have hn : n < 2 ^ K := by omega
+    show odoNext (Nat.repeat odoNext n (odoEntry K)) = ⟨toBits K (n + 1)⟩
+    rw [ih hn]
+    show (⟨binInc (toBits K n)⟩ : OdoB) = ⟨toBits K (n + 1)⟩
+    rw [binInc_toBits K n h]
+
+/-- **TERMINATION (clean WF).**  From the M6(K) entry, `odoNext` reaches the M1(K+1)
+final register after exactly `T = 2^K − 1` steps (`Nat.repeat` = the design's
+`odoNext^[T]`).  `μ = odoValue (odoFinal K) − odoValue o` is a textbook `Nat`
+measure decreasing by exactly `1` each tick (`odo_mu_step`), so this is a
+well-founded terminating recursion. -/
+theorem odo_terminates (K : Nat) : ∃ T, Nat.repeat odoNext T (odoEntry K) = odoFinal K := by
+  refine ⟨2 ^ K - 1, ?_⟩
+  have h : 2 ^ K - 1 < 2 ^ K := by have := two_pow_pos K; omega
+  rw [odo_iterate K (2 ^ K - 1) h]; rfl
+
+/-- **THE CLEAN MEASURE.**  `μ o = odoValue (odoFinal K) − odoValue o` strictly
+decreases by `1` each `odoNext` (until `μ = 0` at `odoFinal K`). -/
+theorem odo_mu_step (K : Nat) (o : OdoB) (h : odoValue o < odoValue (odoFinal K)) :
+    (odoValue (odoFinal K) - odoValue (odoNext o)) + 1 = odoValue (odoFinal K) - odoValue o := by
+  rw [odoValue_odoNext]; omega
+
+/-- The value gap `= T = 2^K − 1` (the number of ticks entry→final). -/
+theorem odo_gap (K : Nat) : odoValue (odoFinal K) - odoValue (odoEntry K) = 2 ^ K - 1 := by
+  rw [odoValue_odoFinal, odoValue_odoEntry]; omega
+
+end LayerB
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1873,6 +2136,34 @@ object.  No `sorry`, no axiom added; no machine decided by this section. -/
 #eval decide (List.map (fun n => 2 ^ (n + 2) - 3) [0,1,2,3,4] = [1, 5, 13, 29, 61]) -- true
 
 #print axioms sanity100
+
+-- §5n LAYER B (PURE ODOMETER, well-founded counter) axiom audits + cross-checks:
+#print axioms LayerB.binInc_val
+#print axioms LayerB.binInc_ripple
+#print axioms LayerB.odoValue_odoNext
+#print axioms LayerB.odo_terminates
+#print axioms LayerB.odo_mu_step
+#print axioms LayerB.rippleDepth_le
+-- the +1 law realized: binInc increments the value by exactly 1 (incl. across ripple):
+#eval decide (List.map (fun v => LayerB.binVal (LayerB.binInc (LayerB.toBits 6 v)))
+      [0,1,2,3,6,7,14,30] = [1,2,3,4,7,8,15,31])                                  -- true
+-- the level-j overflow threshold = 2^j−1 (comb full): 1,3,7,15,31 at j=1..5:
+#eval decide (List.map (fun j => LayerB.binVal (List.replicate j true)) [1,2,3,4,5]
+      = [1,3,7,15,31])                                                            -- true
+-- a level-3 carry ripples through 3 ones and sets bit 3 (0^3 1 …), depth = 3:
+#eval decide (LayerB.binInc (List.replicate 3 true ++ [false, false, true])
+      = List.replicate 3 false ++ [true, false, true])                           -- true
+#eval decide (LayerB.rippleDepth (List.replicate 3 true ++ [false]) = 3)         -- true
+-- T = 2^K − 1 ticks entry→final (the value gap = the clean measure μ at entry):
+#eval decide (LayerB.odoValue (LayerB.odoFinal 10) - LayerB.odoValue (LayerB.odoEntry 10)
+      = 2 ^ 10 - 1)                                                              -- true (=1023)
+-- STRUCTURAL faithfulness: the carry doubles the cascade digit (carryDigit chain),
+-- and each level-j carry HALVES in count (binary-counter bit profile) — matches
+-- x2wf_counter.py.  NOTE: the pure-counter tick-count 2^K−1 is NOT the raw tape
+-- round-trip count 3852/9729/19470 (x2wf_measure.py): one carry ↔ a Θ(2^j) tape
+-- block-chew, so the tape count is a FINER (Layer-C) quantity.  See §5n HONEST GAP.
+#eval decide (List.map LayerB.rippleDepth
+      [[false], [true, false], [true, true, false]] = [0, 1, 2])                 -- true
 
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
 
