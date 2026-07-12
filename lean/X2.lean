@@ -1323,6 +1323,229 @@ theorem carry_threshold_align (k : Nat) :
     (2 ^ (k + 2) - 1) - (2 ^ (k + 2) - 3) = 2 := by
   have h := four_le_two_pow k; omega
 
+/-! ## §5l (LAYER A, ON-PATH, 2026-07-12) THE NON-CARRY OUTER TICK — extracted
+CELL-FOR-CELL from the RAW g=2 orbit and proven BOTH as a concrete instance AND as
+a LENGTH-PARAMETRIC transport (the no-carry analogue of `carry_event_5to13`), by
+composing the E/C leftward block→comb fold (`ecfold`, a new ∀-length sweep) with
+the proven `sweepEF` repack.
+
+**Provenance (raw g=2 doubling-phase orbit, exact-bigint `step`-sim, `x2la_*.py`).**
+Deep in the doubling phase the outer odometer runs its COMMON (no-carry) tick: a
+shrinking-comb round-trip that (i) eats two `1`s off the leading cascade working
+block, (ii) sweeps the left solid block `1^b` into a comb (leftward `E/C` fold),
+(iii) repacks the comb one pair longer (rightward `sweepEF`), netting `+1` on the
+odometer.  ONE concrete such tick was extracted at raw steps **n = 6717 → 6731**
+(14 steps): head `E` on the boundary `0` with the left solid block `1^3`, working
+block `1^{13}` to the right; the bounded head window is the real pos `[2061,2067]`
+(= rel `[-4,+2]`, cf. `carry_event_5to13`'s `[2061,2089]`), so the far tails ride
+untouched — tail-independence kernel-`rfl`-proven below (arbitrary `L R`) AND
+cross-checked over 3 paddings by `x2la_extract.py`.
+
+**KEY EMPIRICAL FINDING (`x2la_param.py`), driving the parametric result.**  The
+tick transform `⟨E,0, 1^b 0 M, [0] 1 1 R⟩ → ⟨E,2, 1^{b+3} M, [0] R⟩` in `2b+8`
+steps is CLEAN and fully tail-independent for EVERY **ODD** `b` (3,5,7,9,11,15,…),
+but FAILS for even `b` (the head over-runs the bottom `0` into the comb `M`, and
+the outcome then depends on `M`'s contents — DATA-dependent).  The on-path orbit
+keeps `b` ODD at every tick (`b = 3,7,11,…`), so the tick IS a genuine
+LENGTH-parametric transport over `b = 2t+1`: its "connector" is BLOCK-parametric
+(like `sweepEF`/`dSweepTurn`), **NOT** constant-size and **NOT** data-dependent —
+gated only by the parity invariant `b` odd.  It factors exactly as
+`entry(2) ∘ ecfold(t+1) ∘ sweepEF(t+2)`, all ∀-length-proven, composed by
+`steps_add`, so the whole no-carry tick is proved ∀t below.  (This is STRONGER than
+the design's guess of a fixed-size connector; the connector is the `b`-length
+round-trip, which is clean precisely because `b` stays odd.) -/
+
+/-- **The E/C leftward block→comb tile** (2 steps `E:1→0LC · C:1→1LE`): head `E` on
+a `1`, two `1`s nearest on the left; consumes them, emits `1 0` (one `(10)` comb
+pair) to the right, marches `−2`, stays `E` on the next `1`.  The leftward mirror of
+`sweepEF_tile` (block→comb instead of comb→block).  Kernel `rfl`. -/
+theorem ecfold_tile (p : Int) (L R : List Bool) :
+    steps 2 ⟨.E, p, ⟨true :: true :: L, true, R⟩⟩
+      = some ⟨.E, p - 2, ⟨L, true, true :: false :: R⟩⟩ := by
+  have h : steps 2 (⟨.E, p, ⟨true :: true :: L, true, R⟩⟩ : Cfg)
+      = some ⟨.E, p - 1 - 1, ⟨L, true, true :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE E/C BLOCK→COMB FOLD, ARBITRARY length.**  `t + 1` tiles = `2(t+1)` steps
+sweep the solid `1`-block `1^{2t+2}` (head `E` on the topmost `1`, `ones (2t+1)`
+more on the left, then the boundary `0` and the parametric tail `M`) leftward into
+the comb `pow10 (t+1)` deposited to the right, landing `E` on the boundary `0`,
+shifting `−2(t+1)`; `M`/`R` untouched.  Proven ∀`t` by `ecfold_tile` + length
+induction (the exact leftward mirror of `sweepEF`).  `some` ⇒ HALT-FREE. -/
+theorem ecfold : ∀ (t : Nat) (p : Int) (M R : List Bool),
+    steps (2 * (t + 1)) ⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: M), true, R⟩⟩
+      = some ⟨.E, p - 2 * ((t : Int) + 1), ⟨M, false, pow10 (t + 1) ++ R⟩⟩ := by
+  intro t
+  induction t with
+  | zero =>
+    intro p M R
+    have h : steps (2 * (0 + 1)) (⟨.E, p, ⟨ones (2 * 0 + 1) ++ (false :: M), true, R⟩⟩ : Cfg)
+        = some ⟨.E, p - 1 - 1, ⟨M, false, true :: false :: R⟩⟩ := rfl
+    rw [h]
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ t ih =>
+    intro p M R
+    have hn : 2 * (t + 1 + 1) = 2 + 2 * (t + 1) := by omega
+    rw [hn, steps_add]
+    have hb : ones (2 * (t + 1) + 1) = true :: true :: ones (2 * t + 1) := by
+      rw [show 2 * (t + 1) + 1 = 2 + (2 * t + 1) from by omega, ones_add]; rfl
+    rw [hb]
+    show (steps 2 ⟨.E, p, ⟨true :: true :: (ones (2 * t + 1) ++ (false :: M)), true, R⟩⟩).bind
+        (steps (2 * (t + 1))) = _
+    rw [ecfold_tile, someBind, ih (p - 2) M (true :: false :: R)]
+    have hp : pow10 (t + 1) ++ (true :: false :: R) = pow10 (t + 1 + 1) ++ R := by
+      rw [show (true :: false :: R) = pow10 1 ++ R from rfl, ← List.append_assoc, ← pow10_add]
+    rw [hp]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **The 2-step no-carry ENTRY tile** (`E:0→1RF · F:1→1RE`): head `E` on the
+boundary `0` (left solid block `1^{2t+1}`, working block `1 1 R` to the right); eats
+the two leading `1`s of the working block onto the solid block (`1^{2t+1} → 1^{2t+3}`)
+and lands `E` on the working block's next `1` at `+2`.  Proven ∀`t`. -/
+theorem noCarry_entry (t : Nat) (M R : List Bool) :
+    steps 2 ⟨.E, 0, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩
+      = some ⟨.E, 2, ⟨ones (2 * t + 3) ++ (false :: M), true, R⟩⟩ := by
+  have hones3 : ones (2 * t + 3) = true :: true :: ones (2 * t + 1) := by
+    rw [show 2 * t + 3 = 2 + (2 * t + 1) from by omega, ones_add]; rfl
+  have h : steps 2 (⟨.E, 0, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E, 0 + 1 + 1, ⟨true :: true :: (ones (2 * t + 1) ++ (false :: M)), true, R⟩⟩ := rfl
+  rw [h, hones3]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE NON-CARRY OUTER TICK, LENGTH-PARAMETRIC (∀`t`), tail-parametric.**  For the
+left solid block `1^{2t+1}` (odd — the on-path parity invariant) and working block
+`1 1 R` to the right, `4t + 10` steps realize ONE odometer `+1`: the solid block
+grows `1^{2t+1} → 1^{2t+4}` (absorbing the boundary `0` and two working-block `1`s),
+head re-anchors `E` on the new boundary `0` at `+2`, the comb tail `M` and the
+cascade `R` are untouched.  Proven ∀`t` by `noCarry_entry ∘ ecfold(t+1) ∘
+sweepEF(t+2)` composed with `steps_add` — every factor is an ∀-length kernel lemma,
+so the whole tick is HALT-FREE ∀`t`.  Instantiated at `t = 1` it is EXACTLY the
+concrete raw-orbit tick n = 6717 → 6731 (`outer_tick_noCarry_anchor` below cross-
+checks that instance by a direct 14-step `rfl`).  This is Layer A's guaranteed
+on-path no-carry step. -/
+theorem outer_tick_noCarry (t : Nat) (M R : List Bool) :
+    steps (4 * t + 10) ⟨.E, 0, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩
+      = some ⟨.E, 2, ⟨ones (2 * t + 4) ++ M, false, R⟩⟩ := by
+  have hsplit : 4 * t + 10 = 2 + (2 * (t + 1 + 1) + 2 * (t + 2)) := by omega
+  rw [hsplit, steps_add, noCarry_entry, someBind, steps_add]
+  have hone : ones (2 * t + 3) = ones (2 * (t + 1) + 1) := by
+    rw [show 2 * (t + 1) + 1 = 2 * t + 3 from by omega]
+  rw [hone, ecfold (t + 1) 2 M R, someBind]
+  have hm : pow10 (t + 1 + 1) = pow10 (t + 2) := rfl
+  rw [hm, sweepEF (t + 2)]
+  have hlen : 2 * (t + 2) = 2 * t + 4 := by omega
+  rw [hlen]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+set_option maxRecDepth 8000 in
+/-- **The concrete on-path anchor** (raw g=2, n = 6717 → 6731, 14 steps),
+tail-parametric, by direct kernel `rfl` — the cell-for-cell extract of ONE non-carry
+tick (left block `1^3`, working block `1^{13}`, comb tail `L`, cascade `R`).  This
+is `outer_tick_noCarry 1 L R` verified INDEPENDENTLY of the induction (the
+`carry_event_5to13`-style provenance anchor for the no-carry branch), window
+`[−4,+2]`. -/
+theorem outer_tick_noCarry_anchor (L R : List Bool) :
+    steps 14 ⟨.E, 0, ⟨true :: true :: true :: false :: L, false, true :: true :: R⟩⟩
+      = some ⟨.E, 2, ⟨true :: true :: true :: true :: true :: true :: L, false, R⟩⟩ :=
+  rfl
+
+/-! ### Layer A: grounding `toCfg` in the REAL extracted config.
+
+The pure odometer register at a no-carry chew-boundary is `Odo`; its `toCfg` decode
+is DEFINED to reproduce the anchor's on-path shape (`1^built 0 comb` on the left,
+`1^work 0^2 cascade` on the right, head `E` on the boundary `0`).  `odoNext` is the
+no-carry increment `built ↦ built+4`, `work ↦ work−2` (the shrinking-comb `+1`).  The
+grounding lemma `outer_tick_grounds` proves the extracted tick carries `o.toCfg` to
+`(odoNext o).toCfg` for an on-path (comb-shaped `1 0 …`) left tail — i.e. `toCfg` is
+faithful to the REAL config, not an invented shape.  (Built on `outer_tick_noCarry`,
+so it inherits `[propext, Quot.sound]`-only.) -/
+
+/-- The pure no-carry odometer register (Layer B skeleton): the odd left solid-block
+length `built = 2t+1`, and the leading cascade working-block length `work`. -/
+structure Odo where
+  t    : Nat        -- left solid block = 1^{2t+1} (parity invariant: ODD)
+  work : Nat        -- leading cascade working block 1^{work}
+
+/-- The faithful tape decode of the register (translation to head `pos`), grounded in
+the extracted anchor: `E` on the boundary `0`, `1^{2t+1} 0 M` on the left (`M` the
+comb + far tail), `1^{work} 0^2 R` on the right. -/
+def Odo.toCfg (o : Odo) (pos : Int) (M R : List Bool) : Cfg :=
+  ⟨.E, pos, ⟨ones (2 * o.t + 1) ++ (false :: M), false,
+      ones o.work ++ (false :: false :: R)⟩⟩
+
+/-- The no-carry odometer increment: solid block `+4` (parity preserved: `2t+1 →
+2(t+2)+1`), working block `−2`.  Realized physically by `outer_tick_noCarry`. -/
+def odoNext (o : Odo) : Odo := ⟨o.t + 2, o.work - 2⟩
+
+/-- **`toCfg` is FAITHFUL to the real tick.**  For an on-path comb-shaped left tail
+(`1 0 M'`, i.e. the deposited `(10)` comb) and a working block of length `work+2 ≥ 2`,
+the extracted `4t+10`-step non-carry tick carries `o.toCfg` to `(odoNext o).toCfg`
+exactly — grounding the abstract register in the REAL orbit config.  Kernel proof via
+`outer_tick_noCarry` (so HALT-FREE, `[propext, Quot.sound]`-only). -/
+theorem outer_tick_grounds (t work : Nat) (M' R : List Bool) :
+    steps (4 * t + 10)
+        ((⟨t, work + 2⟩ : Odo).toCfg 0 (true :: false :: M') R)
+      = some ((odoNext ⟨t, work + 2⟩).toCfg 2 M' R) := by
+  show steps (4 * t + 10) ⟨.E, 0, ⟨ones (2 * t + 1) ++ (false :: true :: false :: M'), false,
+      ones (work + 2) ++ (false :: false :: R)⟩⟩ = _
+  have hw : ones (work + 2) = true :: true :: ones work := by
+    rw [show work + 2 = 2 + work from by omega, ones_add]; rfl
+  rw [hw]
+  show steps (4 * t + 10) ⟨.E, 0, ⟨ones (2 * t + 1) ++ (false :: true :: false :: M'), false,
+      true :: true :: (ones work ++ (false :: false :: R))⟩⟩ = _
+  rw [outer_tick_noCarry t (true :: false :: M') (ones work ++ (false :: false :: R))]
+  show some (⟨.E, 2, ⟨ones (2 * t + 4) ++ (true :: false :: M'), false,
+      ones work ++ (false :: false :: R)⟩⟩ : Cfg) = _
+  have hL : ones (2 * t + 4) ++ (true :: false :: M')
+      = ones (2 * (t + 2) + 1) ++ (false :: M') := by
+    rw [show (true :: false :: M') = ones 1 ++ (false :: M') from rfl,
+        ← List.append_assoc, ← ones_add,
+        show 2 * t + 4 + 1 = 2 * (t + 2) + 1 from by omega]
+  show some (⟨.E, 2, ⟨ones (2 * t + 4) ++ (true :: false :: M'), false,
+      ones work ++ (false :: false :: R)⟩⟩ : Cfg)
+      = some ((odoNext ⟨t, work + 2⟩).toCfg 2 M' R)
+  rw [hL]
+  show some (⟨.E, 2, ⟨ones (2 * (t + 2) + 1) ++ (false :: M'), false,
+      ones work ++ (false :: false :: R)⟩⟩ : Cfg)
+      = some ((⟨t + 2, work⟩ : Odo).toCfg 2 M' R)
+  rfl
+
+/-! ### Layer A: the remaining scaffold — `outer_step` and the hard `carry_step`
+[DESIGN ONLY — stated as the honest gap, NOT proven; no `sorry`, no axiom added].
+
+`outer_tick_noCarry` + `outer_tick_grounds` CLOSE the no-carry branch of Layer A on
+the real orbit.  The full `outer_step` and the `carry_step` remain OPEN; we state
+their design signatures (as comments — deliberately NOT as `theorem … := sorry`,
+which would inject `sorryAx`) so the scaffold is explicit and honest:
+
+```lean
+-- [DESIGN] outer_step : one odometer tick, either branch.
+--   theorem outer_step (o : Odo) (M R) : ∃ N pos',
+--       steps N (o.toCfg 0 M R) = some ((odoNext o).toCfg pos' M R)
+--   -- no-carry branch: N = 4*o.t+10, pos' = 2, PROVEN (outer_tick_noCarry/grounds).
+--   -- carry branch (o.work exhausted, comb = 2^j−1): the block-doubling repack —
+--   -- see carry_step; the concrete j=3 instance is carry_event_5to13 (117 steps).
+
+-- [DESIGN] carry_step : the general-j carry (the SINGLE HARDEST sub-lemma).
+--   theorem carry_step (o : Odo) (M R) (h : comb-count o = 2^j − 1) : ∃ N pos',
+--       steps N (o.toCfg 0 M R) = some ((odoCarry o).toCfg pos' M R)
+--   -- doubles the digit d_j ↦ 2·d_j+3 = d_{j+1} (doubling_id) and regenerates a
+--   -- fresh 1^{2^2−3}=1^1 below; a BOUNDED inner ripple recursion (depth ≤ K), each
+--   -- "bit flip" an unbounded sweepEF (m → 2m).  Window & step-count GROW with j
+--   -- (NOT the fixed 117-step carry_event_5to13; that survives only as the j=3
+--   -- #eval anchor the general shape reduces to).  See design §4 difficulty 1+2.
+```
+
+**HONEST GAP (the exact obstruction).**  The no-carry branch is DONE and on-path.
+`carry_step` is not: it is a data-dependent RIPPLE whose tape window grows with the
+carried level `j`, so it is NOT the concrete `carry_event_5to13` re-used, but a fresh
+`sweepEF`-composite ripple recursion — the project's `Suffix.lean`-scale object
+(design §4).  The other genuine gap is left-deposit SUMMARIZATION over the whole
+phase (proving the left stays `pow01 comb ++ bounded residue` every tick); here we
+grounded it ONLY at the single tick (`outer_tick_grounds`, comb-shaped tail), not by
+the phase-wide preserved-shape induction.  No machine is decided by this section. -/
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1488,6 +1711,28 @@ theorem carry_threshold_align (k : Nat) :
 #print axioms carryDigit_closed
 #print axioms carry_5to13_arith
 #print axioms carry_threshold_align
+
+-- §5l LAYER A (non-carry outer tick) axiom audits + kernel cross-checks:
+#print axioms ecfold_tile
+#print axioms ecfold
+#print axioms noCarry_entry
+#print axioms outer_tick_noCarry
+#print axioms outer_tick_noCarry_anchor
+#print axioms outer_tick_grounds
+-- the concrete on-path tick n=6717→6731 (t=1, built=3, work=13), tail-parametric:
+#eval decide (steps 14 ⟨.E, 0, ⟨ones 3 ++ (false :: pow10 3), false,
+        ones 13 ++ (false :: false :: [])⟩⟩
+      = some ⟨.E, 2, ⟨ones 6 ++ pow10 3, false, ones 11 ++ (false :: false :: [])⟩⟩) -- true
+-- the next tick (t=3, built=7, work=11) is 4·3+10 = 22 steps — the connector GROWS
+-- with the block (block-parametric, NOT constant-size), confirming §5l's finding:
+#eval decide (steps 22 ⟨.E, 0, ⟨ones 7 ++ (false :: pow10 3), false,
+        ones 11 ++ (false :: false :: [])⟩⟩
+      = some ⟨.E, 2, ⟨ones 10 ++ pow10 3, false, ones 9 ++ (false :: false :: [])⟩⟩) -- true
+-- ecfold really folds `1^{2t+2}` → `pow10 (t+1)` leftward (t=2: 1^6 → (10)^3, 6 steps):
+#eval decide (steps 6 ⟨.E, 0, ⟨ones 5 ++ (false :: pow01 2), true, []⟩⟩
+      = some ⟨.E, -6, ⟨pow01 2, false, pow10 3⟩⟩)                                   -- true
+-- odoNext parity invariant: 2t+1 stays ODD (2t+1 → 2(t+2)+1); e.g. 3 → 7 → 11:
+#eval decide (List.map (fun t => 2 * (odoNext ⟨t, 13⟩).t + 1) [1, 3, 5] = [7, 11, 15]) -- true
 -- the carried digit chain 1,5,13,29,61 = 2^{n+2}−3 (odoNext):
 #eval decide (List.map carryDigit [0,1,2,3,4] = [1, 5, 13, 29, 61])               -- true
 #eval decide (List.map (fun n => 2 ^ (n + 2) - 3) [0,1,2,3,4] = [1, 5, 13, 29, 61]) -- true
