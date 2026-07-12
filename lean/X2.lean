@@ -1546,6 +1546,122 @@ phase (proving the left stays `pow01 comb ++ bounded residue` every tick); here 
 grounded it ONLY at the single tick (`outer_tick_grounds`, comb-shaped tail), not by
 the phase-wide preserved-shape induction.  No machine is decided by this section. -/
 
+/-! ## §5m (LAYER A, ON-PATH, 2026-07-12) THE GENERAL-`j` CARRY — extracted at
+`j = 4, 5` (bigger than `carry_event_5to13`'s `j=3`), CORE proven `∀j`, RIPPLE
+recursion precisely located as the honest wall.
+
+**Provenance (raw g=2 doubling-phase orbit, exact-bigint `step`-sim, `x2ca_*.py`).**
+We extracted the CELL-FOR-CELL window of the culminating block-doubling repack at
+levels `j = 3, 4, 5` (blocks `5→13`, `13→29`, `29→61`) forward from the faithful
+`build(2)`, and scanned the whole phase for every maximal `E/F` rightward sweep:
+
+* **The carry's CORE is EXACTLY `sweepEF (2^j − 2)`** — proven `∀m` (§4).  The
+  culminating repack at level `j` is the window `⟨E,0,⟨L, false, pow10 (2^j−2) ++ R⟩⟩
+  → ⟨E, 2(2^j−2), ⟨ones (2^{j+1}−4) ++ L, false, R⟩⟩`, verified on the real orbit at
+  `j=3` (m=6, raw n=6626→6638), `j=4` (m=14, raw n=6895→6923), `j=5` (m=30, raw
+  n=8016→8076), each TAIL-INDEPENDENT (CONSISTENT over 3 paddings, `x2ca_repack.py`).
+  A phase-wide scan (`x2ca_repack.py`) confirms EVERY even length `m = 2^j−2`
+  (6,14,30,62,126,…) occurs, so the core is `sweepEF` at the `j`-parametric length,
+  NOT the fixed 117-step `carry_event_5to13`.  `carry_repack` (below) IS this, `∀j`.
+
+* **The doubling arithmetic** `carry_repack_doubles`: the repack deposits
+  `2·(2^j−2) = 2^{j+1}−4` ones, exactly ONE below the doubled cascade digit
+  `d_{j+1} = 2·d_j+3 = 2^{j+1}−3` (`doubling_id`); the `+1` is the bounded exit
+  connector that closes the block.
+
+**THE WALL (the honest obstruction, now precisely measured).**  The general-`j`
+carry is **NOT** `bounded-connector ∘ sweepEF ∘ bounded-connector`.  A trace of the
+`j=4` block-doubling macro-event (raw n=6484→7141, **657 steps**, 120 sub-anchors,
+vs `j=3`'s 117-185 steps — a ~4× growth per level, i.e. `Θ(4^j)`, `x2ca_trace.py`)
+shows the `sweepEF` runs inside a single level-`j` carry are a NESTED SEQUENCE
+`m = 2,4,6,…,2^j−2` (the comb built up one pair per lower tick), interleaved with
+whole lower-level carries `carry(j−1), carry(j−2), …` — the `{2,4,6}` sub-groups
+inside the `j=4` carry ARE `j=3` carries.  So the carry ENTRY (building the comb to
+`(10)^{2^j−2}`) and EXIT (regenerating the fresh block `1^{2^j−3}` below) are each a
+recursive odometer sub-phase of `Θ(2^j)` length — a run of the ALREADY-PROVEN
+`outer_tick_noCarry` (§5l) plus nested lower carries — **NOT** bounded connectors.
+`outer_tick_noCarry`'s own anchor n=6717→6731 sits INSIDE the `j=4` carry window,
+confirming the build-up is that proven tick iterated.  Hence `carry_step` is the
+design's WELL-FOUNDED RIPPLE recursion (depth ≤ K, measure = digits-left), NOT a
+straight-line composite; its core is closed (`carry_repack`, `∀j`) but its
+recursion is the open Layer-B iteration.  We state it `[DESIGN]` (comment only,
+no `sorry`), with the recursion structure now fully specified and evidenced. -/
+
+/-- **THE GENERAL-`j` CARRY CORE, `∀j`, tail-parametric.**  The culminating
+block-doubling repack of the level-`(j+2)` carry: `2·(2^{j+2}−2)` steps sweep the
+built comb `(10)^{2^{j+2}−2}` (head `E` on its leading `0`) into the doubled block
+`1^{2·(2^{j+2}−2)} = 1^{2^{j+3}−4}` deposited on the left, `R` untouched.  This IS
+`sweepEF (2^{j+2}−2)` at the carry's `j`-parametric length — the design's
+"`sweepEF`-repack `(01)^m → 1^{2m}`" core, verified on the real orbit at `j=1,2,3`
+(design levels 3,4,5) by the extracted windows below.  `some` ⇒ HALT-FREE `∀j`. -/
+theorem carry_repack (j : Nat) (L R : List Bool) :
+    steps (2 * (2 ^ (j + 2) - 2)) ⟨.E, 0, ⟨L, false, pow10 (2 ^ (j + 2) - 2) ++ R⟩⟩
+      = some ⟨.E, 2 * ((2 ^ (j + 2) - 2 : Nat) : Int),
+          ⟨ones (2 * (2 ^ (j + 2) - 2)) ++ L, false, R⟩⟩ := by
+  rw [sweepEF (2 ^ (j + 2) - 2) 0 L R]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The carry's doubling arithmetic, `∀j`.**  The repack deposits `2·(2^{j+2}−2)
+= 2^{j+3}−4` ones, and `+1` gives the doubled cascade digit `2·(2^{j+2}−3)+3` (which
+`doubling_id` closes to `2^{j+3}−3 = d_{j+3}`).  Pure `Nat`, separated from the tape:
+the block produced by `carry_repack` is exactly one below the doubled digit, the `+1`
+being the bounded exit connector.  Uses `four_le_two_pow`. -/
+theorem carry_repack_doubles (j : Nat) :
+    2 * (2 ^ (j + 2) - 2) = 2 ^ (j + 3) - 4 ∧
+    (2 ^ (j + 3) - 4) + 1 = 2 * (2 ^ (j + 2) - 3) + 3 := by
+  have h := four_le_two_pow j
+  have e : 2 ^ (j + 3) = 2 ^ (j + 2) * 2 := by
+    rw [show j + 3 = (j + 2) + 1 from rfl]; exact Nat.pow_succ 2 (j + 2)
+  exact ⟨by omega, by omega⟩
+
+/-- **On-path anchor, design `j=4`** (raw g=2, n = 6895→6923, 28 steps): the
+extracted culminating repack `(10)^{14} → 1^{28}` (block `13→29`), tail-parametric.
+This is `carry_repack 2 L R` (`2^{2+2}−2 = 14`), the newly-extracted window bigger
+than `carry_event_5to13`.  Proven via `sweepEF 14` (so `[propext, Quot.sound]`-only). -/
+theorem carry_repack_anchor_j4 (L R : List Bool) :
+    steps 28 ⟨.E, 0, ⟨L, false, pow10 14 ++ R⟩⟩
+      = some ⟨.E, 28, ⟨ones 28 ++ L, false, R⟩⟩ := by
+  rw [show (28 : Nat) = 2 * 14 from rfl, sweepEF 14 0 L R]
+  exact congrArg some (cfgPos (by push_cast))
+
+/-- **On-path anchor, design `j=5`** (raw g=2, n = 8016→8076, 60 steps): the
+extracted culminating repack `(10)^{30} → 1^{60}` (block `29→61`), tail-parametric —
+the largest single carry repack extracted, showing the window GROWS with `j` (12,28,60
+steps at j=3,4,5 = `2·(2^j−2)`).  This is `carry_repack 3 L R` (`2^{3+2}−2 = 30`). -/
+theorem carry_repack_anchor_j5 (L R : List Bool) :
+    steps 60 ⟨.E, 0, ⟨L, false, pow10 30 ++ R⟩⟩
+      = some ⟨.E, 60, ⟨ones 60 ++ L, false, R⟩⟩ := by
+  rw [show (60 : Nat) = 2 * 30 from rfl, sweepEF 30 0 L R]
+  exact congrArg some (cfgPos (by push_cast))
+
+/-! ### §5m: the full `carry_step` scaffold [DESIGN ONLY — no `sorry`, no axiom].
+
+`carry_repack` CLOSES the carry's `sweepEF`-core `∀j` and grounds it on the real
+orbit at `j = 3,4,5`.  The FULL `carry_step` (with the ripple) stays OPEN; its now
+fully-measured structure (a WELL-FOUNDED ripple recursion, NOT a bounded composite):
+
+```lean
+-- [DESIGN] carry_step : the general-j carry = a WF ripple recursion (depth ≤ K).
+--   theorem carry_step (o : Odo) (M R) (h : comb-count o = 2^j − 1) : ∃ N pos',
+--       steps N (o.toCfg 0 M R) = some ((odoCarry o).toCfg pos' M R)
+--   STRUCTURE (measured, x2ca_trace.py, g=2 j=4 = 657 steps / 120 sub-anchors):
+--     carry(j) = [ENTRY: build comb to (10)^{2^j−2} via a run of outer_tick_noCarry
+--                        (§5l, PROVEN ∀t) INTERLEAVED with carry(j−1), …, carry(2)]
+--              ∘ [CORE:  carry_repack (2^j−2)   -- PROVEN ∀j, THIS SECTION]
+--              ∘ [EXIT:  regenerate fresh 1^{2^j−3} below + re-anchor E-on-0
+--                        (another Θ(2^j) recursive sub-phase)]
+--     Measure = digits-left-to-carry (≤ K), the inner WF of the Layer-B recursion.
+--   The ENTRY/EXIT are NOT bounded connectors: window & step-count grow Θ(4^j).
+```
+
+**HONEST GAP.**  The carry's `sweepEF`-core is now PROVEN `∀j` and grounded on the
+real orbit at three levels (`carry_repack` + the `j=4,5` anchors) — a genuine advance
+over `carry_event_5to13` (the single fixed `j=3` window).  What does NOT close: the
+ENTRY/EXIT are recursive `Θ(2^j)` sub-phases (nested lower carries + proven
+`outer_tick_noCarry` runs), so `carry_step` is the design's WF ripple recursion, whose
+closure is the open Layer-B odometer iteration — the project's `Suffix.lean`-scale
+object.  No `sorry`, no axiom added; no machine decided by this section. -/
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1719,6 +1835,25 @@ the phase-wide preserved-shape induction.  No machine is decided by this section
 #print axioms outer_tick_noCarry
 #print axioms outer_tick_noCarry_anchor
 #print axioms outer_tick_grounds
+
+-- §5m GENERAL-`j` CARRY CORE axiom audits + kernel cross-checks:
+#print axioms carry_repack
+#print axioms carry_repack_doubles
+#print axioms carry_repack_anchor_j4
+#print axioms carry_repack_anchor_j5
+-- the culminating repack at design j=3 (m=6) — the CORE of carry_event_5to13, on-path
+-- (raw n=6626): (10)^6 → 1^{12} in 12 steps, = carry_repack 1:
+#eval decide (steps (2 * (2 ^ (1 + 2) - 2)) ⟨.E, 0, ⟨[], false, pow10 6⟩⟩
+      = some ⟨.E, 12, ⟨ones 12, false, []⟩⟩)                                        -- true
+-- j=4 (m=14, raw n=6895) and j=5 (m=30, raw n=8016): window GROWS 12,28,60 = 2·(2^j−2):
+#eval decide (steps 28 ⟨.E, 0, ⟨[], false, pow10 14⟩⟩
+      = some ⟨.E, 28, ⟨ones 28, false, []⟩⟩)                                        -- true
+#eval decide (steps 60 ⟨.E, 0, ⟨[], false, pow10 30⟩⟩
+      = some ⟨.E, 60, ⟨ones 60, false, []⟩⟩)                                        -- true
+-- the doubling: repack block 2·(2^j−2) = 2^{j+1}−4, one below the doubled digit
+-- 2·(2^j−3)+3; e.g. j-design 3,4,5: 12,28,60 = 13−1,29−1,61−1:
+#eval decide (List.map (fun j => 2 * (2 ^ (j + 2) - 2)) [1,2,3] = [12, 28, 60])    -- true
+#eval decide (List.map (fun j => 2 * (2 ^ (j + 2) - 3) + 3) [1,2,3] = [13, 29, 61]) -- true
 -- the concrete on-path tick n=6717→6731 (t=1, built=3, work=13), tail-parametric:
 #eval decide (steps 14 ⟨.E, 0, ⟨ones 3 ++ (false :: pow10 3), false,
         ones 13 ++ (false :: false :: [])⟩⟩
