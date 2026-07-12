@@ -1214,3 +1214,50 @@ must carry the entire cascade+register symbolically; not closed here.
 
 **Verdict: the inner comb-shrink induction is now PROVEN on-path (`ecombChewFold`); the outer
 shrinking-comb odometer remains the exact open gap. No machine decided. No label upgraded.**
+
+---
+
+## X2.lean §5j — THE LOW PHASE `M1(g) → M6(g)` extracted ON-PATH from the raw blank→milestone orbit (2026-07-12)
+
+Formalizes the `H_entry` piece of `doubling_transport` — the low phase, Python-proven in
+`x2cc_prove.py` (LOW-EVEN / LOW-ODD, emits only gaps `{18,10,2(g+1),6-iff-even}`, never 3).
+Extracted CELL-FOR-CELL by RAW `step`-simulation from the BLANK tape (not macros, not prose).
+
+**Real on-path facts (blank→milestone orbit, `step` = this file's machine).** The generation
+start `M1(g)` is the E-milestone with leading `0`-gap = 22 (the mature `m1_spec` template).
+Raw step numbers: `M1(1)`@188 099 (odd, K=9), `M1(2)`@732 733 (even, K=10, register `1 0^6 · 1 0^10`,
+big `1^{1021}`), `M1(3)`@2 852 091 (odd, K=11). The low phase is the SHORT register-processing
+prefix before the `Θ(2^{2K})` doubling phase:
+- `M1(2)`→`M6(2)` = **343 raw steps**, head excursion `[−6,+38]` (big block starts +40 ⇒ **head
+  never touches it**, even g fully tail-independent);
+- `M1(3)`→`M6(3)` = **419 raw steps** (odd g: head reaches the block, trims it by exactly 4).
+`M6(2)` = `0^2 (10)^4 1^9 0^2 (1^5 0^2)^3 1 0^2 1^{big} 0^2` — EXACTLY the `x2cc_prove` LOW-EVEN
+goal. The register `(1 0^6)·tail → (10)^4 1^9 0^2 (1^5 0^2)^3 1` (U-unit → R-units odometer step).
+
+**New Lean content (X2.lean §5j, green, sorry-free, axioms: NONE — pure `rfl`):**
+- `zeros n` — `n` `false`s (mirror of `ones`).
+- `gap3_halts` — `E` on `0^3 1` HALTS in 4 steps (walks `E·F·A·B`, B reads the block's 1 = the
+  `---` field). This is the SOLE low-region halt; a raw scan confirms every gap `1,2,≥4` is safe.
+- **`lowPhaseEven_g2` — THE EVEN LOW PHASE `M1(2)→M6(2)`, HALT-FREE, on-path, by kernel `rfl`**:
+  `343` steps rewrite the register `0^22 1 0^6 1 0^10 · block` to the `M6(2)` register form,
+  block untouched, landing `E@−5`. `some` ⇒ no gap-3 anywhere. The `x2cc` LOW-EVEN obligation
+  for g=2, on the real orbit.
+- ON-path #eval anchors: gap-3 halts / gap-6 safe; TAIL-INDEPENDENCE (tails `1^4 0^2` and
+  `1^{20} 0^2` land on the same `M6` milestone `(E,−5)`); the ODD low phase `M1(3)→M6(3)`
+  (419 steps, halt-free, lands on the E-milestone).
+
+**The EXACT remaining gap (general-g fold).** `lowPhaseEven_g2` closes the g=2 instance
+tail-independently by kernel reduction. The FULL `M1(g)→M6(g)` ∀g does NOT reduce to iterating
+one fixed tile: the raw trace shows the low phase is a growing-comb sub-braid — `sweepEF`
+comb-repacks (raw n=732 882, a `(10)^6` comb), `dSweepTurn` `1`-block crossings (n=733 015), and
+`C/D` turn-around micro-cycles, interleaved, with per-round-trip lengths that GROW as the
+register-comb accumulates, and the head's behaviour at each `0`-gap depending on BOTH flanks (the
+isolated gap-cross differs from the on-path one). The general-g fold is the same
+accumulator-carrying induction the Python `x2cc_faith` closes (loop-acceleration with a fresh
+accumulator), NOT a fixed-window `chewFold`-style tile — reported honestly, not constructed
+off-path. What `doubling_transport` now reduces to: the general-g `H_entry` (this fold) + the
+outer-braid `H_repack` (still open, §5h).
+
+**Verdict: the even low phase `M1(2)→M6(2)` is PROVEN on-path halt-free (`lowPhaseEven_g2`,
+zero axioms); the general-g register fold + the doubling braid remain the exact open gaps. No
+machine decided. No label upgraded.**

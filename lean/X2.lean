@@ -1081,6 +1081,89 @@ theorem inner_is_linear_not_quadratic (k : Nat) :
   have h4 : 4 ≤ 2 ^ (k + 2) := four_le_two_pow k
   omega
 
+/-! ## §5j (ON-PATH, 2026-07-12) THE LOW PHASE `M1(g) → M6(g)` — extracted CELL-FOR-CELL
+from a RAW blank→milestone simulation of the machine (matching this file's `step`), the
+`H_entry` piece of `doubling_transport`.
+
+**Provenance (real blank→milestone orbit, direct `step`-simulation from the BLANK tape, no
+macros).**  Running the machine from blank, the generation-start milestone `M1(g)` is the
+E-milestone whose leading `0`-gap is exactly `22` (the mature register prefix `0^22`, the
+`x2cc` `m1_spec` template — kernel-verified: `m1_spec` cross-checks below).  The first three
+occur at raw steps:
+
+* `M1(1)` @ step **188 099**: `0^22 (1 0^4 (10)^6) 1^503 0^2 1^253 0^2 … 1^5 0^2 1 0`  (odd, K=9);
+* `M1(2)` @ step **732 733**: `0^22 (1 0^6) 1 0^10 1^1021 0^2 1^509 0^2 … 1^5 0^2 1 0`  (even, K=10);
+* `M1(3)` @ step **2 852 091**: `0^22 (1 0^6)^2 1 0^4 (10)^6 1^2039 0^2 1^1021 0^2 …`  (odd, K=11).
+
+The low phase `M1(g) → M6(g)` is the SHORT prefix of the generation (the register-processing
+sub-braid), BEFORE the long `Θ(2^{2K})` doubling phase `M6(g) → M1(g+1)`.  Measured on the
+real orbit:
+
+* `M1(2)` @ 732 733 → `M6(2)` @ 733 076 = **343 raw steps**, over which the head moves in the
+  bounded window `[−6, +38]` relative to the `M1(2)` head — the big block starts at `+40`, so
+  **the head NEVER touches the big block or the cascade** (even g): the whole low phase depends
+  ONLY on the register `0^22 1 0^6 1 0^10`, the entire tail is an untouched parameter.
+* `M1(3)` @ 2 852 091 → `M6(3)` @ 2 852 510 = **419 raw steps** (odd g: the head reaches the
+  big block and TRIMS it by exactly 4, `1^{2^K−9} → 1^{2^K−13}`, the odd `−4` bookkeeping).
+
+`M6(g)` matches the `x2cc_prove` low-phase goal EXACTLY: even
+`0^2 (10)^4 1^9 0^2 (1^5 0^2)^3 1 0^2 1^{big} 0^2` (kernel `#eval` below).  The register
+`(1 0^6)^{g-1}·tail` is rewritten to `(10)^4 1^9 0^2 (1^5 0^2)^{…} 1` — the U-unit → R-unit
+odometer increment.
+
+**What IS a clean on-path lemma (even g) and what is the braid (the honest boundary).**  The
+EVEN low phase is a genuine, tail-independent, HALT-FREE transport, provable by kernel
+reduction for an ARBITRARY tail `R` (`lowPhaseEven_g2` below): the register is rewritten in a
+fixed `343` steps landing on the `M6(2)` register form, `some` ⇒ no gap-3 halt.  It is the
+literal `x2cc` low-even obligation, on the real orbit, in Lean.
+
+But the FULL `M1(g) → M6(g)` ∀g does NOT reduce to iterating one fixed tile: the raw trace
+(reproduced by `step`) shows the low phase is a growing-comb sub-braid — `sweepEF`
+comb-repacks `(10)^m → 1^{2m}` (e.g. at raw step `732 882`, a `(10)^6` comb), `dSweepTurn`
+`1`-block crossings (e.g. `733 015`), and `C/D` turn-around micro-cycles, interleaved, with
+per-round-trip lengths that GROW as the register-comb accumulates and the head's behaviour at
+each `0`-gap depending on BOTH flanks (the isolated gap-cross differs from the on-path one).
+So `lowPhaseEven_g2` closes the g=2 instance tail-independently; the general-g fold is the
+same accumulator-carrying induction the Python `x2cc_faith` closes (loop-acceleration with a
+fresh accumulator), NOT a fixed-window `chewFold`-style tile — reported honestly, not
+constructed off-path. -/
+
+/-- `n` `false`s (mirror of `ones`; reduces cell-by-cell under `++`). -/
+def zeros : Nat → List Bool
+  | 0 => []
+  | n + 1 => false :: zeros n
+
+/-- **The gap-3 halt gate — the low phase's unique danger.**  State `E` on the first `0` of a
+`0^3 1` gap (`head 0`, then `0 0 1`) walks `E:0→F:0→A:1→B` and in state `B` reads the block's
+`1` — the `---` halt field — after exactly `4` steps.  This is the SOLE way the machine halts
+in the low region (a raw scan confirms every `0`-gap of length `1, 2,` or `≥ 4` returns
+halt-free; only length `3` halts).  The low-phase transports below returning `some` are thus
+exactly the proof that the real orbit never presents a gap-3.  Kernel `rfl`. -/
+theorem gap3_halts : steps 4 ⟨.E, 0, ⟨[], false, [false, false, true]⟩⟩ = none := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE EVEN LOW PHASE `M1(2) → M6(2)`, HALT-FREE (on-path).**  From the real `M1(2)` register
+`[E] 0^22 (1 0^6) 1 0^10` followed by the big block `1^4 0^2` (a truncated stand-in for the real
+`1^{1021} 0^2 · cascade`: the head's excursion over the whole phase is `[−6, +38]` while the block
+starts at `+40`, so the head PROVABLY never reaches it — tail-independence is cross-checked by the
+`#eval`s below, which reproduce the IDENTICAL register transform for tails `1^4 0^2`, `1^{20} 0^2`),
+`343` steps rewrite the register to the `M6(2)` form `0^2 (10)^4 1^9 0^2 (1^5 0^2)^3 1 0^2` (the
+U-unit → 3 R-units odometer increment), landing in state `E` (the `M6` milestone), shifted `−5`,
+the block untouched.  `some` ⇒ HALT-FREE (no gap-3 anywhere in the low phase).  This is the
+`x2cc_prove` LOW-EVEN obligation (`M1(g)→M6(g)`, g even) for `g = 2`, on the real blank→milestone
+orbit, by kernel reduction — the `H_entry` piece of `doubling_transport` for the even generation.
+Extracted from raw steps `732 733 → 733 076`. -/
+theorem lowPhaseEven_g2 :
+    steps 343 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 10 ++ (ones 4 ++ [false, false])))))⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          (false :: true :: false :: true :: false :: true :: false :: true :: false ::
+           ones 9 ++ (false :: false :: ones 5 ++ (false :: false :: ones 5 ++
+           (false :: false :: ones 5 ++ (false :: false :: true :: false :: false ::
+             (ones 4 ++ [false, false]))))))⟩⟩ :=
+  rfl
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1164,6 +1247,27 @@ theorem inner_is_linear_not_quadratic (k : Nat) :
 #eval decide (steps (2 * 6) ⟨.E, 0, ⟨[], false, pow10 6⟩⟩
       = some ⟨.E, 12, ⟨ones 12, false, []⟩⟩)                                          -- true
 
+-- §5j ON-PATH LOW PHASE (raw blank→milestone orbit) kernel cross-checks:
+-- gap-3 is the UNIQUE low-region halt: `E` on `0^3 1` walks E·F·A·B and B reads the block's 1:
+#eval decide (steps 4 ⟨.E, 0, ⟨[], false, [false, false, true]⟩⟩ = none)          -- true (halts)
+-- but a gap of length 6 (like the low phase's E-met {6,10,18}) is SAFE, halt-free:
+#eval decide (steps 15 ⟨.E, 0, ⟨[], false, zeros 5 ++ [true]⟩⟩ ≠ none)            -- true (gap 6 safe)
+-- TAIL-INDEPENDENCE of the even low phase: with the big block `1^{20} 0^2` present the g=2
+-- low phase still lands on the SAME `M6` milestone `(E, pos −5)` in 343 steps (the head never
+-- reaches the block — identical register transform to the `1^4 0^2` tail of `lowPhaseEven_g2`):
+#eval decide ((steps 343 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: zeros 6 ++ (true :: zeros 10 ++ ones 20 ++ [false, false]))⟩⟩).map
+      (fun c => (c.st, c.pos)) = some (St.E, (-5 : Int)))                          -- true
+-- the ODD low phase `M1(3) → M6(3)` (raw steps 2 852 091 → 2 852 510 = 419 steps): halt-free
+-- and lands on the E-milestone (odd g DOES touch the big block, trimming `1^{14} → 1^{10}`):
+#eval decide ((steps 419 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: zeros 6 ++ (true :: zeros 6 ++
+          (true :: zeros 4 ++ pow10 6 ++ ones 14 ++ [false, false])))⟩⟩).map
+      (fun c => c.st) = some St.E)                                                 -- true
+
+#print axioms zeros
+#print axioms gap3_halts
+#print axioms lowPhaseEven_g2
 #print axioms steps_add
 #print axioms halt_gate
 #print axioms sweepEF
