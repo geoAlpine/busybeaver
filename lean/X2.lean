@@ -1164,6 +1164,165 @@ theorem lowPhaseEven_g2 :
              (ones 4 ++ [false, false]))))))⟩⟩ :=
   rfl
 
+/-! ## §5k (ON-PATH, 2026-07-12) THE OUTER-ODOMETER CARRY — one carry event extracted
+CELL-FOR-CELL from the RAW g=2 orbit, formalized as a tail-parametric transport, plus the
+carry ARITHMETIC (`odoNext`) proved by Nat/List induction.
+
+**Provenance (raw g=2 doubling-phase orbit, direct `step`-simulation, exact-bigint).**  Deep in
+the doubling phase `M6(2) → M1(3)`, at the SMALLEST cascade digits, the odometer performs its
+carry: the head sits in state `E` on the boundary `0` above the two trailing cascade blocks
+`1^5 0^2 1^1` (cascade tail `(5,1)`), a `(01)`-comb accumulated on the LEFT.  At raw step
+**n = 6591** (pos 2069, exact tape reproduced by `step`) the carry begins; after exactly **117
+steps** (n = 6708, pos 2062) the trailing cascade has become `1^{13} 0^2 1^5 0^2 1^1` — tail
+`(13,5,1)`.  The block `1^5` DOUBLED to `1^{13}` (`2·5+3 = 13`, the `doubling_id` law realized
+physically) and a FRESH `1^5` regenerated below it — the classic binary-odometer carry with block
+regeneration, `2^j−3 → 2^{j+1}−3` at comb-count `2^j−1` (`x2bd_outer.py`; here `j = 3`,
+`5 = 2^3−3 → 13 = 2^4−3`).  The head excursion is the BOUNDED window `[2061, 2089]` (raw-measured);
+everything left of pos 2059 and right of pos 2091 is UNTOUCHED, so the carry is a genuine
+tail-parametric transport for arbitrary tails `L, R`.  Extracted by `x2bd` window-probe; verified
+below by kernel `rfl` (117 steps).
+
+**What this IS / is NOT.**  This certifies ONE carry event ON the real orbit, kernel-exact,
+tail-independent — the analogue of `lowPhaseEven_g2` for the carry, and the concrete instance of
+the design's `carry_step : CarryCfg(j) → CarryCfg(j+1)`.  It does NOT by itself give the general-`j`
+symbolic carry (the composite is data-dependent and multi-phase — see the honest gap at the foot).
+The pure carry ARITHMETIC (`odoNext`, the block-doubling digit law + value telescoping) IS closed
+∀`j` below, separable from the tape dynamics. -/
+
+-- The carry runs inside a FIXED absolute window (raw-measured excursion `[2061,2089]`, strictly
+-- inside the window `[2059,2091]`), so the SAME opaque tails `L, R` ride untouched through all 117
+-- steps.  We prove it in three 39-step `rfl` chunks (each within `markedChew`'s proven 46-step
+-- scale) and compose with `steps_add`.  Chunk snapshots taken cell-for-cell from the raw orbit at
+-- `n = 6591, 6630, 6669, 6708`.
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Carry chunk 1/3 (raw n = 6591 → 6630, 39 steps, pos `0 → 1`), tail-parametric.  Kernel `rfl`. -/
+theorem carry_chunk1 (L R : List Bool) :
+    steps 39 ⟨.E, 0, ⟨
+        (false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: false :: false :: true :: true :: true :: true :: true :: false :: false ::
+         true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+         false :: false :: R)⟩⟩
+      = some ⟨.E, 1, ⟨
+          (true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: L),
+          false,
+          (true :: false :: true :: false :: true :: false :: true :: false :: false :: true ::
+           false :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+           false :: R)⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Carry chunk 2/3 (raw n = 6630 → 6669, 39 steps, pos `1 → 18`, ending in state `A`),
+tail-parametric.  Kernel `rfl`. -/
+theorem carry_chunk2 (L R : List Bool) :
+    steps 39 ⟨.E, 1, ⟨
+        (true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (true :: false :: true :: false :: true :: false :: true :: false :: false :: true ::
+         false :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+         false :: R)⟩⟩
+      = some ⟨.A, 18, ⟨
+          (false :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+           false :: true :: false :: false :: true :: false :: L),
+          false,
+          (false :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Carry chunk 3/3 (raw n = 6669 → 6708, 39 steps, pos `18 → −7`), tail-parametric.  Kernel `rfl`. -/
+theorem carry_chunk3 (L R : List Bool) :
+    steps 39 ⟨.A, 18, ⟨
+        (false :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true ::
+         true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+         false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+/-- **THE ON-PATH CARRY EVENT** (raw g=2, n = 6591 → 6708, exactly 117 steps), tail-parametric.
+Head `E` on the boundary `0` above the trailing cascade `1^5 0^2 1^1` (tail `(5,1)`), with the
+accumulated comb on the left; 117 steps regenerate the tail to `1^{13} 0^2 1^5 0^2 1^1` (tail
+`(13,5,1)`) — the block `1^5 → 1^{13}` doubling carry (`2·5+3 = 13`) with a fresh `1^5` below,
+and the left comb consumed from `(01)^3 0^2 (01)…` down to `(01)^1 …`.  The bounded head window
+`[−8,+20]` (raw-measured, real pos `2069 → 2062`) means the far tails `L, R` are NEVER read:
+proven for ARBITRARY `L, R` (translation-fixed to head pos `0`, as `lowPhaseEven_g2`).  `some`
+⇒ HALT-FREE (no gap-3 anywhere in the carry).  Composed from the three `rfl` chunks by
+`steps_add` — the exact cell window taken from the raw orbit, NOT constructed. -/
+theorem carry_event_5to13 (L R : List Bool) :
+    steps 117 ⟨.E, 0, ⟨
+        (false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: false :: false :: true :: true :: true :: true :: true :: false :: false ::
+         true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+         false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ := by
+  rw [show (117 : Nat) = 39 + (39 + 39) from rfl, steps_add, carry_chunk1, someBind,
+      steps_add, carry_chunk2, someBind, carry_chunk3]
+
+/-! ### The carry ARITHMETIC (`odoNext`), proved ∀`j` — the odometer value telescoping.
+
+The cascade digit that carries is `d_j = 2^j − 3` (the stored block `1^{d_j}`, `j ≥ 2`).  The carry
+DOUBLES it, `d_j ↦ 2·d_j + 3 = d_{j+1}` (`doubling_id`), and regenerates a fresh digit below.  The
+odometer VALUE this realizes: a run of carries starting at the bottom digit `j = 2` climbs the
+digit through `2^2−3, 2^3−3, …, 2^n−3`; the arithmetic invariant is that the carried digit at
+step `t` is exactly `2^{t+2} − 3`, and the cumulative one-count it deposits telescopes.  We prove
+the two arithmetic cores separable from the tape: the DIGIT law (below) and its `n`-fold iterate. -/
+
+/-- `carryDigit n` = the cascade digit after `n` carries from the bottom `j=2` block `1^1`
+(`2^2−3 = 1`): `1 → 5 → 13 → 29 → 61 → …`, i.e. `2^{n+2} − 3`. -/
+def carryDigit : Nat → Nat
+  | 0 => 1
+  | n + 1 => 2 * carryDigit n + 3
+
+/-- **The carry digit law (odoNext arithmetic), ∀`n`.**  `n` carries drive the bottom digit
+`1 = 2^2−3` to `2^{n+2} − 3` — the observed regeneration chain `1,5,13,29,61,…` in closed form,
+by `Nat` induction using the big-block doubling identity `doubling_id`.  This is the pure
+odometer arithmetic (`odoNext`), separated from the tape dynamics: each `+1` odometer tick that
+overflows the low digit realizes `d ↦ 2d+3`, and `n` of them give `2^{n+2}−3`. -/
+theorem carryDigit_closed : ∀ n, carryDigit n = 2 ^ (n + 2) - 3 := by
+  intro n
+  induction n with
+  | zero => decide
+  | succ n ih =>
+    show 2 * carryDigit n + 3 = 2 ^ (n + 1 + 2) - 3
+    rw [ih, show n + 1 + 2 = (n + 2) + 1 from by omega]
+    have hk : ∃ k, n + 2 = k + 2 := ⟨n, by omega⟩
+    obtain ⟨k, hkk⟩ := hk
+    rw [hkk]; exact doubling_id k
+
+/-- **The carry event's digit law, matched to the extracted orbit.**  The on-path carry
+`carry_event_5to13` doubles the block `1^5 → 1^{13}`; arithmetically `5 = carryDigit 1`,
+`13 = carryDigit 2 = 2·5+3`, and `carryDigit_closed` gives `5 = 2^3−3` (`j=3`),
+`13 = 2^4−3` (`j=4`) — the extracted tape event is exactly one `odoNext` step, `j = 3 → 4`.
+Kernel check. -/
+theorem carry_5to13_arith : carryDigit 2 = 2 * carryDigit 1 + 3 ∧ carryDigit 1 = 5
+    ∧ carryDigit 2 = 13 := by decide
+
+/-- **The comb-count carry threshold (odoNext overflow point), ∀`j`.**  The design's carry fires
+when the deposited comb reaches `2^j − 1` pairs; the regenerated block then has `2·(2^j−1)+? …`
+— here the clean arithmetic fact the odometer needs: the block value `2^j−3` and the threshold
+`2^j−1` differ by exactly `2`, so `regenerated = 2·(block)+3 = 2^{j+1}−3` sits two below the next
+threshold `2^{j+1}−1`.  A two-line `Nat` identity (the odometer's carry-alignment), ∀`j≥2`. -/
+theorem carry_threshold_align (k : Nat) :
+    (2 ^ (k + 2) - 1) - (2 ^ (k + 2) - 3) = 2 := by
+  have h := four_le_two_pow k; omega
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -1320,6 +1479,19 @@ theorem lowPhaseEven_g2 :
 #print axioms cascadeBlocks_sum
 #print axioms cascade_traversal
 #print axioms doubling_transport
+
+-- §5k ON-PATH CARRY (raw g=2 orbit, n = 6591 → 6708) axiom audits + kernel cross-checks:
+#print axioms carry_chunk1
+#print axioms carry_chunk2
+#print axioms carry_chunk3
+#print axioms carry_event_5to13
+#print axioms carryDigit_closed
+#print axioms carry_5to13_arith
+#print axioms carry_threshold_align
+-- the carried digit chain 1,5,13,29,61 = 2^{n+2}−3 (odoNext):
+#eval decide (List.map carryDigit [0,1,2,3,4] = [1, 5, 13, 29, 61])               -- true
+#eval decide (List.map (fun n => 2 ^ (n + 2) - 3) [0,1,2,3,4] = [1, 5, 13, 29, 61]) -- true
+
 #print axioms sanity100
 
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).

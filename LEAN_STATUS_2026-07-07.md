@@ -1261,3 +1261,61 @@ outer-braid `H_repack` (still open, §5h).
 **Verdict: the even low phase `M1(2)→M6(2)` is PROVEN on-path halt-free (`lowPhaseEven_g2`,
 zero axioms); the general-g register fold + the doubling braid remain the exact open gaps. No
 machine decided. No label upgraded.**
+
+---
+
+## §5k (2026-07-12) THE OUTER-ODOMETER CARRY — on-path event + odoNext arithmetic
+
+Attacking the hardest sub-lemma: the CARRY RECURSION of the outer odometer braid (the wall of
+`outer_step = ecombChewFold ∘ sweepEF ∘ carry`). ON-PATH ONLY, verified by RAW simulation with
+real step numbers (`x2bd_sim` matching `X2.step`), NOT constructed; off-path lemmas
+(markedChew/bigCascade/cascadeFold/doubling_transport) NOT used.
+
+**The extracted carry event (raw g=2 doubling phase, exact-bigint).** Deep at the SMALLEST
+cascade digits, at raw step **n = 6591** (pos 2069) the head is `E` on the boundary `0` above the
+trailing cascade `1^5 0^2 1^1` (tail `(5,1)`), a `(01)`-comb accumulated on the LEFT. After
+exactly **117 steps** (n = 6708, pos 2062) the tail is `1^{13} 0^2 1^5 0^2 1^1` (tail `(13,5,1)`):
+the block `1^5 → 1^{13}` DOUBLED (`2·5+3 = 13`, the `doubling_id` law physically) and a FRESH `1^5`
+regenerated below it — the binary-odometer carry with block regeneration `2^j−3 → 2^{j+1}−3` at
+comb-count `2^j−1` (here `j=3→4`; `x2bd_outer.py`). Head excursion is the BOUNDED window
+`[2061,2089]` (raw-measured); tails outside are UNTOUCHED, so the carry is genuinely
+tail-parametric.
+
+**New Lean content (X2.lean §5k, green, sorry-free):**
+- **`carry_event_5to13 (L R)` — THE ON-PATH CARRY EVENT, tail-parametric, HALT-FREE**: for
+  ARBITRARY tails, `steps 117` maps the `(5,1)`-tail carry-start config to the `(13,5,1)`-tail
+  config. Proved by three 39-step `rfl` chunks (`carry_chunk1/2/3`, each within `markedChew`'s
+  proven 46-step scale, zero axioms) composed by `steps_add`. The exact cell windows were taken
+  cell-for-cell from a faithful windowed forward-sim (= what Lean's `rfl` computes); the middle
+  boundary n=6669 is state `A` (not `E`). Axioms `[propext, Quot.sound]`.
+- **`carryDigit` + `carryDigit_closed` — THE odoNext ARITHMETIC, ∀n**: the carried digit after
+  `n` carries from the bottom `j=2` block is `carryDigit n = 2^{n+2}−3` (the regeneration chain
+  `1,5,13,29,61,…`), proved by Nat induction USING `doubling_id` for the `d ↦ 2d+3` step. The
+  pure odometer arithmetic, separated from the tape dynamics.
+- `carry_5to13_arith` (the extracted event = one `odoNext` step, `5 = carryDigit 1 = 2^3−3`,
+  `13 = carryDigit 2 = 2^4−3`), `carry_threshold_align` (block sits 2 below the `2^{j}−1` carry
+  threshold). #eval cross-checks of the digit chain.
+
+**The shape-preservation invariant (design difficulty (1)), OBSERVED + partially formalized.**
+Raw dump of the FULL left deposit at n=6591 (2075 cells) confirms it is a clean `pow01` comb
+(`(01)^N`) punctuated by a BOUNDED vocabulary of `0^2` separators — the design's
+`pow01 comb ++ bounded-residue` shape. Across the carry the left comb is CONSUMED
+`(01)^3 0^2 … → (01)^1 …` (the repack feeding the regenerated blocks). The shape is preserved
+by the extracted `carry_event_5to13` for this instance; the ∀-tick preserved-shape invariant
+lemma is NOT yet formalized (it needs an induction over the whole odometer — the open piece).
+
+**The EXACT remaining gap (general-j symbolic carry_step).** `carry_event_5to13` certifies ONE
+carry ON the real orbit, kernel-exact, tail-independent (the analogue of `lowPhaseEven_g2` for the
+carry). It does NOT give the general-`j` symbolic `carry_step : CarryCfg(j) → CarryCfg(j+1)`: the
+117-step composite is DATA-DEPENDENT and multi-phase (interleaved `ecombChewFold` chews, `sweepEF`
+repacks, `dSweepTurn` crossings, and `C/D` turn micro-cycles; the middle passes through state `A`,
+not a clean `E`-anchor), and the step count / window GROW with `j` (`5→13` is 117 steps; `13→29`,
+`29→61` are longer). Closing it ∀`j` requires decomposing the composite into the proven inner
+sweep lemmas with a `WellFounded` carry recursion on the register — the design's estimated
+1.5–2× `generation_odometer` effort. What IS closed here: the carry OCCURS on-path (kernel-exact,
+tail-parametric) and the odoNext DIGIT arithmetic (`carryDigit_closed`, ∀n, via `doubling_id`).
+
+**Verdict: the carry event `(5,1)→(13,5,1)` is PROVEN on-path halt-free (tail-parametric, 117
+steps, `[propext,Quot.sound]`), and the odoNext digit arithmetic is closed ∀n; the general-j
+symbolic carry_step composite + the ∀-tick shape-preservation invariant remain the exact open
+gaps. No machine decided. No label upgraded.**
