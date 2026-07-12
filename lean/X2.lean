@@ -1662,6 +1662,185 @@ ENTRY/EXIT are recursive `Θ(2^j)` sub-phases (nested lower carries + proven
 closure is the open Layer-B odometer iteration — the project's `Suffix.lean`-scale
 object.  No `sorry`, no axiom added; no machine decided by this section. -/
 
+/-! ## §5p (LAYER A, ON-PATH, 2026-07-13) THE NO-CARRY OUTER *RUN* — the phase-wide
+steady no-carry sweep, as ONE clean length induction over the proven per-tick
+primitive `outer_tick_grounds` (§5l).
+
+**What this closes.**  §5l proved ONE no-carry odometer tick (`outer_tick_grounds`,
+`∀t`).  Between two carries the outer odometer runs a STRETCH of `n` consecutive
+no-carry ticks (each `t ↦ t+2`, `work ↦ work−2`, consuming one comb pair `(10)`
+from the left tail).  This section iterates the single tick `n` times by induction
+on `n`, composing with `steps_add`, into ONE parametric transport — the real,
+on-path, closable core of the phase induction (the machine's steady no-carry sweep
+between carries).  The step-count is arithmetic and given in CLOSED FORM
+(`runSteps_closed`): `Σ_{i<n}(4(t+2i)+10) = 4nt + 4n² + 6n`.
+
+**Provenance / on-path grounding.**  Every factor is a proven on-path kernel lemma
+(`outer_tick_grounds` is grounded cell-for-cell at the real orbit tick n=6717→6731,
+`outer_tick_noCarry_anchor`).  The `n=1` run IS `outer_tick_grounds`; the `n=2` run
+is cross-checked against two REAL consecutive no-carry ticks forward from the
+faithful `x2bd_sim.build(2)` orbit (`x2gp_run.py`).  This is Layer A's guaranteed
+on-path no-carry RUN; it does NOT close the carry (§5m) — see the honest scope note
+at the end of this section.
+
+To iterate the tick we first lift the two pos-`0` per-tick lemmas of §5l to an
+arbitrary head position `p` (the machine is translation-invariant in `pos`; the
+kernel `step` carries `pos` symbolically, so the tile `rfl`s go through with `p`). -/
+
+/-- **Position-general no-carry ENTRY tile** (`noCarry_entry` at head `p`). -/
+theorem noCarry_entry_at (p : Int) (t : Nat) (M R : List Bool) :
+    steps 2 ⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩
+      = some ⟨.E, p + 2, ⟨ones (2 * t + 3) ++ (false :: M), true, R⟩⟩ := by
+  have hones3 : ones (2 * t + 3) = true :: true :: ones (2 * t + 1) := by
+    rw [show 2 * t + 3 = 2 + (2 * t + 1) from by omega, ones_add]; rfl
+  have h : steps 2 (⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1, ⟨true :: true :: (ones (2 * t + 1) ++ (false :: M)), true, R⟩⟩ := rfl
+  rw [h, hones3]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **Position-general NON-CARRY OUTER TICK** (`outer_tick_noCarry` at head `p`).
+`4t+10` steps, `p ↦ p+2`, block `1^{2t+1} → 1^{2t+4}`, working block `−2`, comb tail
+`M` / cascade `R` untouched.  Same `noCarry_entry ∘ ecfold(t+1) ∘ sweepEF(t+2)`
+composite as §5l, now translation-general so it can be chained into a run. -/
+theorem outer_tick_noCarry_at (p : Int) (t : Nat) (M R : List Bool) :
+    steps (4 * t + 10) ⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: M), false, true :: true :: R⟩⟩
+      = some ⟨.E, p + 2, ⟨ones (2 * t + 4) ++ M, false, R⟩⟩ := by
+  have hsplit : 4 * t + 10 = 2 + (2 * (t + 1 + 1) + 2 * (t + 2)) := by omega
+  rw [hsplit, steps_add, noCarry_entry_at, someBind, steps_add]
+  have hone : ones (2 * t + 3) = ones (2 * (t + 1) + 1) := by
+    rw [show 2 * (t + 1) + 1 = 2 * t + 3 from by omega]
+  rw [hone, ecfold (t + 1) (p + 2) M R, someBind]
+  have hm : pow10 (t + 1 + 1) = pow10 (t + 2) := rfl
+  rw [hm, sweepEF (t + 2)]
+  have hlen : 2 * (t + 2) = 2 * t + 4 := by omega
+  rw [hlen]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **Position-general grounding** (`outer_tick_grounds` at head `p`).  For an
+on-path comb-shaped left tail (`1 0 M'`) and working block `work+2`, the `4t+10`-step
+tick carries `o.toCfg p` to `(odoNext o).toCfg (p+2)`.  This is the per-tick building
+block the run iterates.  Built on `outer_tick_noCarry_at` (so `[propext, Quot.sound]`
+-only). -/
+theorem outer_tick_grounds_at (p : Int) (t work : Nat) (M' R : List Bool) :
+    steps (4 * t + 10)
+        ((⟨t, work + 2⟩ : Odo).toCfg p (true :: false :: M') R)
+      = some ((odoNext ⟨t, work + 2⟩).toCfg (p + 2) M' R) := by
+  show steps (4 * t + 10) ⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: true :: false :: M'), false,
+      ones (work + 2) ++ (false :: false :: R)⟩⟩ = _
+  have hw : ones (work + 2) = true :: true :: ones work := by
+    rw [show work + 2 = 2 + work from by omega, ones_add]; rfl
+  rw [hw]
+  show steps (4 * t + 10) ⟨.E, p, ⟨ones (2 * t + 1) ++ (false :: true :: false :: M'), false,
+      true :: true :: (ones work ++ (false :: false :: R))⟩⟩ = _
+  rw [outer_tick_noCarry_at p t (true :: false :: M') (ones work ++ (false :: false :: R))]
+  show some (⟨.E, p + 2, ⟨ones (2 * t + 4) ++ (true :: false :: M'), false,
+      ones work ++ (false :: false :: R)⟩⟩ : Cfg) = _
+  have hL : ones (2 * t + 4) ++ (true :: false :: M')
+      = ones (2 * (t + 2) + 1) ++ (false :: M') := by
+    rw [show (true :: false :: M') = ones 1 ++ (false :: M') from rfl,
+        ← List.append_assoc, ← ones_add,
+        show 2 * t + 4 + 1 = 2 * (t + 2) + 1 from by omega]
+  rw [hL]
+  rfl
+
+/-- **The run's step-count** `Σ_{i<n}(4(t+2i)+10)`, recursively (peel the first tick,
+then `t ↦ t+2`). -/
+def runSteps (t : Nat) : Nat → Nat
+  | 0 => 0
+  | n + 1 => (4 * t + 10) + runSteps (t + 2) n
+
+/-- **The step-count CLOSED FORM.**  `Σ_{i<n}(4(t+2i)+10) = 4nt + 4n² + 6n` — pure
+`Nat`, proved by induction on `n`.  (E.g. `runSteps 1 2 = 14 + 22 = 36 = 8+16+12`.) -/
+theorem runSteps_closed : ∀ (n t : Nat), runSteps t n = 4 * n * t + 4 * n * n + 6 * n := by
+  intro n
+  induction n with
+  | zero => intro t; simp [runSteps]
+  | succ n ih =>
+    intro t
+    show (4 * t + 10) + runSteps (t + 2) n = _
+    rw [ih (t + 2)]
+    -- reassociate every product so the only nonlinear atoms are `n*t` and `n*n`
+    rw [Nat.mul_assoc 4 n (t + 2), Nat.mul_assoc 4 n n,
+        Nat.mul_assoc 4 (n + 1) t, Nat.mul_assoc 4 (n + 1) (n + 1),
+        Nat.mul_add n t 2, Nat.succ_mul n t, Nat.succ_mul n (n + 1), Nat.mul_succ n n]
+    omega
+
+/-- **THE NO-CARRY OUTER RUN, `∀n`, translation-general.**  `n` consecutive no-carry
+odometer ticks as ONE transport: from register `⟨t, work + 2n⟩` (working block long
+enough for `n` ticks) with `n` comb pairs `(10)^n = pow10 n` pending on the left,
+`runSteps t n = 4nt+4n²+6n` steps realize `n` odometer `+1`s — block `t ↦ t+2n`,
+working block `−2n`, the `n` comb pairs consumed, head `p ↦ p+2n`, the far comb tail
+`M'` and cascade `R` untouched.  Proved by induction on `n`: each step peels the
+first tick (`outer_tick_grounds_at`) and recurses on the remaining `n` (the IH at
+head `p+2`), composed by `steps_add`.  This is the steady no-carry sweep BETWEEN
+carries — the closable core of the phase induction.  `some` ⇒ HALT-FREE `∀n`. -/
+theorem outer_tick_noCarry_run : ∀ (n : Nat) (p : Int) (t work : Nat) (M' R : List Bool),
+    steps (runSteps t n) ((⟨t, work + 2 * n⟩ : Odo).toCfg p (pow10 n ++ M') R)
+      = some ((⟨t + 2 * n, work⟩ : Odo).toCfg (p + 2 * (n : Int)) M' R) := by
+  intro n
+  induction n with
+  | zero =>
+    intro p t work M' R
+    show some ((⟨t, work⟩ : Odo).toCfg p M' R)
+        = some ((⟨t, work⟩ : Odo).toCfg (p + 2 * ((0 : Nat) : Int)) M' R)
+    exact congrArg some (by unfold Odo.toCfg; exact cfgPos (by push_cast; omega))
+  | succ n ih =>
+    intro p t work M' R
+    show steps ((4 * t + 10) + runSteps (t + 2) n)
+        ((⟨t, work + 2 * (n + 1)⟩ : Odo).toCfg p (pow10 (n + 1) ++ M') R) = _
+    have hwork : work + 2 * (n + 1) = (work + 2 * n) + 2 := by omega
+    have hpow : pow10 (n + 1) ++ M' = true :: false :: (pow10 n ++ M') := rfl
+    rw [hwork, hpow, steps_add,
+        outer_tick_grounds_at p t (work + 2 * n) (pow10 n ++ M') R, someBind]
+    show steps (runSteps (t + 2) n)
+        ((⟨t + 2, work + 2 * n⟩ : Odo).toCfg (p + 2) (pow10 n ++ M') R) = _
+    rw [ih (p + 2) (t + 2) work M' R]
+    have ht : (t + 2) + 2 * n = t + 2 * (n + 1) := by omega
+    have hp : (p + 2) + 2 * ((n : Nat) : Int) = p + 2 * (((n + 1 : Nat)) : Int) := by
+      push_cast; omega
+    rw [ht, hp]
+
+/-! ### §5p: honest scope + how the run slots into the phase skeleton.
+
+`outer_tick_noCarry_run` CLOSES, `∀n`, the phase's steady no-carry stretch (the
+ENTRY of a carry in §5m's `carry(j) = ENTRY ∘ CORE ∘ EXIT`, insofar as the ENTRY is
+a plain no-carry run — it is NOT, in general: the ENTRY interleaves lower carries,
+see §5m).  Combined with `carry_repack` (§5m, the CORE `∀j`) this gives TWO of the
+three carry pieces as PROVEN, on-path, ∀-parametric transports.  What remains OPEN
+is the carry EXIT/ripple and the phase assembly — the design's WF odometer iteration.
+
+```lean
+-- [DESIGN, NOT PROVEN] doubling_phase : one full M6(K) → M1(K+1) doubling phase.
+--   theorem doubling_phase (K) (p) (M R) : ∃ N pos',
+--       steps N ((M6-entry register K).toCfg p M R)
+--         = some ((M1-entry register (K+1)).toCfg pos' M R)
+--   ASSEMBLY (Tfaithful K ticks, §5o):  alternate
+--     • no-carry RUN   — outer_tick_noCarry_run   [PROVEN ∀n, THIS SECTION]
+--     • carry(j)       — ENTRY(run ∘ nested carries) ∘ CORE(carry_repack, PROVEN ∀j)
+--                         ∘ EXIT(regenerate 1^{2^j−3} below + re-anchor, OPEN)
+--   along the Layer-B odometer odoNext (§5n, WF, PROVEN terminates).
+--   NAMED REMAINING LEMMA:  `carry_step` (§5m) — the general-j carry WITH ripple,
+--     i.e. the EXIT sub-phase + the ripple recursion.  This is the honest wall.
+```
+
+**Sub-piece ledger (this file).**  PROVEN, on-path, ∀-parametric:
+  • no-carry tick        `outer_tick_grounds`      (§5l)
+  • no-carry RUN         `outer_tick_noCarry_run`  (§5p, THIS SECTION) ← new
+  • carry CORE (repack)  `carry_repack`            (§5m)
+  • Layer-B termination  `odo_terminates`          (§5n)
+  • faithful tick count  `Tfaithful`/`Cfaithful`   (§5o)
+OPEN (the wall):
+  • carry EXIT/ripple    `carry_step`              (§5m, WF ripple recursion)
+  • phase assembly       `doubling_phase`          (glue along Tfaithful K ticks)
+
+**THE HONEST WALL.**  The run does NOT let us skip the carry: at the boundary
+`work` is exhausted and the comb has reached `2^j−1`, at which point the dynamics is
+the general-`j` carry (§5m), whose EXIT regenerates a fresh `1^{2^j−3}` below and
+re-anchors — a Θ(2^j) recursive sub-phase, NOT a bounded connector, and it can
+ripple through ≤K digits.  That recursion (`carry_step`) is the project's
+`Suffix.lean`-scale object and remains open.  No `sorry`, no axiom added; no machine
+decided by this section. -/
+
 /-! ## §5n (LAYER B, PURE ODOMETER, 2026-07-12) THE WELL-FOUNDED COUNTER RECURSION.
 
 This is the design's **Layer B**: the PURE (no-tape) model of the doubling-phase
@@ -2203,6 +2382,24 @@ end LayerBFaithful
 #print axioms outer_tick_noCarry
 #print axioms outer_tick_noCarry_anchor
 #print axioms outer_tick_grounds
+
+-- §5p NO-CARRY RUN axiom audits (all `[propext, Quot.sound]`-only):
+#print axioms outer_tick_noCarry_at
+#print axioms outer_tick_grounds_at
+#print axioms runSteps_closed
+#print axioms outer_tick_noCarry_run
+-- the run's step-count closed form: runSteps 1 n = 4n+4n²+6n (= 0,14,36,66,104 for n=0..4):
+#eval decide (List.map (runSteps 1) [0,1,2,3,4] = [0, 14, 36, 66, 104])                 -- true
+#eval decide (List.map (fun n => 4*n*1 + 4*n*n + 6*n) [0,1,2,3,4] = [0, 14, 36, 66, 104]) -- true
+-- the n=2 run (t=1, work=9, M'=(10), R=[]) is EXACTLY the two-tick stretch from the real
+-- orbit config at n=6717 (register ⟨1,13⟩, left comb (10)^3): 36 steps, ⟨1,13⟩→⟨5,9⟩,
+-- head 0→4, two comb pairs consumed — kernel cross-check of `outer_tick_noCarry_run 2`:
+#eval decide (steps (runSteps 1 2)
+        ((⟨1, 9 + 2 * 2⟩ : Odo).toCfg 0 (pow10 2 ++ pow10 1) [])
+      = some ((⟨1 + 2 * 2, 9⟩ : Odo).toCfg (0 + 2 * (2 : Int)) (pow10 1) []))            -- true
+-- the same run written on the raw tape (the real n=6717 config `1^3 0 (10)^3 · 1^13 0^2`):
+#eval decide (steps 36 ⟨.E, 0, ⟨ones 3 ++ (false :: pow10 3), false, ones 13 ++ [false, false]⟩⟩
+      = some ⟨.E, 4, ⟨ones 11 ++ (false :: pow10 1), false, ones 9 ++ [false, false]⟩⟩)   -- true
 
 -- §5m GENERAL-`j` CARRY CORE axiom audits + kernel cross-checks:
 #print axioms carry_repack
