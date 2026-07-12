@@ -1925,6 +1925,111 @@ theorem odo_gap (K : Nat) : odoValue (odoFinal K) - odoValue (odoEntry K) = 2 ^ 
 
 end LayerB
 
+/-! ## §5o (LAYER B′, FAITHFUL ODOMETER COUNT, 2026-07-13) THE EXACT tick / carry
+CLOSED FORM — the decisive experiment's positive verdict.
+
+§5n's flat counter has tick-count `2^K − 1` (1023/2047/4095), which is NOT the real
+doubling-phase round-trip count.  Instrumenting the VERIFIED-FAITHFUL raw orbit
+`x2bd_sim.build(g)` (probes `x2fr_*.py`) gives chew-starts **3852/9729/19470/47107**
+and carries **192/386/768/1538** at K=10,11,12,13.  These are NOT tape-determined:
+the comb-at-carry profile is a clean power-of-2 ladder (carry at `comb=2^m−1` fires
+exactly `2^(K−1−m)` times) and each block-value in band `j` is chewed exactly
+`2^(K−j+1)−1` times (band law).  Summing the band law gives the EXACT closed form
+below — a binary ODOMETER whose deep carries do Θ(K) descent work per step, i.e. a
+RICHER pure register than §5n's flat counter, with the (linear-in-K)×(exponential)
+shape `(2K−5)·2^(K−2)`.
+
+  [OBSERVED, EXACT at K=10,11,12,13]  (parity = K mod 2, K = g+8):
+    Tfaithful K = (2K−5)·2^(K−2) + (K+2                if K even)
+                                 + (2^(K−1) + (K−10)   if K odd)
+    Cfaithful K = 3·2^(K−4)      + (0 if K even) (2 if K odd)
+
+The leading term `(2K−5)·2^(K−2)` is EXACT for all four measured K; the odd parity
+carries one extra `2^(K−1)` descent (the `bigCascade_not_doubling` odd-g `−6`
+correction: leading digit `2039 = 2^(K+1)−9`, not `2045`), and the O(K) boundary
+edge is the only other correction.  This UPGRADES §5n's caveat "the tape count is a
+finer Layer-C quantity": it is finer than `2^K−1`, but STILL a clean pure register.
+
+VERDICT: the doubling-phase tick-count is a CLEAN pure-register quantity, NOT
+irreducibly tape-determined.  The load-bearing evidence is the comb-at-carry LADDER
+(main-loop independently inspected, g=2 K=10): carries fire at `comb = 2^m−1` with
+multiplicities `128,64,32,16,8,4,2,1 = 2^(K−1−m)` across 8 levels — a clean binary
+structure, not a 4-point fit.
+
+**HONEST SCOPE of THIS Lean section.**  `OdoF = ⟨tick⟩` below is a TRIVIAL counter:
+`faithful_terminates` is tautological (counting 0→`Tfaithful K` by `+1`).  The real
+content here is the DEFINITION `Tfaithful`/`Cfaithful` (the closed forms) + the
+`#eval` cross-checks against the raw orbit.  The RICHER dynamical register described
+in prose (cascade + comb + built, the band-law dynamics) is NOT itself formalized —
+that is the `outer_step`/Layer-C work.  The closed form is `[OBSERVED]` exact at 4
+points (K=10,11,12,13; only 2 per parity, so the O(K) parity-EDGE terms `K+2` /
+`2^(K−1)+(K−10)` are the weakest-fit part — the LADDER structure and leading
+`(2K−5)·2^(K−2)` are the firm part).  [DESIGN] the tape↔register faithfulness proof
+(that the raw orbit realizes exactly `Tfaithful K` ticks for ALL K) is the §5n
+`outer_step` multi-session lemma; here `odoValueF = tick index` counts BY DEFINITION. -/
+namespace LayerBFaithful
+
+/-- The FAITHFUL chew-start (round-trip) count of the doubling phase M6(K)→M1(K+1).
+[OBSERVED, exact at K=10,11,12,13]. -/
+def Tfaithful (K : Nat) : Nat :=
+  (2 * K - 5) * 2 ^ (K - 2) + (if K % 2 = 0 then K + 2 else 2 ^ (K - 1) + (K - 10))
+
+/-- The FAITHFUL carry count of the doubling phase. [OBSERVED, exact at K=10..13]. -/
+def Cfaithful (K : Nat) : Nat :=
+  3 * 2 ^ (K - 4) + (if K % 2 = 0 then 0 else 2)
+
+/-- Faithful pure register: the state is the tick index, so `odoValueF` counts
+faithfully by definition (value = number of ticks so far). -/
+structure OdoF where
+  tick : Nat
+
+/-- One faithful outer tick = one chew-start. -/
+def odoNextF (o : OdoF) : OdoF := ⟨o.tick + 1⟩
+
+/-- `odoValueF` DEFINED so `odoNextF` increments it by exactly `1` (clean measure). -/
+def odoValueF (o : OdoF) : Nat := o.tick
+
+/-- Entry register M6(K): tick 0. -/
+def odoEntryF : OdoF := ⟨0⟩
+
+/-- Final register M1(K+1): reached after exactly `Tfaithful K` ticks. -/
+def odoFinalF (K : Nat) : OdoF := ⟨Tfaithful K⟩
+
+/-- The `+1` law: each faithful tick increments the value by exactly `1`. -/
+theorem odoValueF_odoNextF (o : OdoF) : odoValueF (odoNextF o) = odoValueF o + 1 := rfl
+
+/-- Iterating `odoNextF` `n` times adds `n` to the tick index. -/
+theorem odoF_iterate : ∀ (n : Nat) (o : OdoF), Nat.repeat odoNextF n o = ⟨o.tick + n⟩ := by
+  intro n
+  induction n with
+  | zero => intro o; rfl
+  | succ n ih =>
+    intro o
+    show odoNextF (Nat.repeat odoNextF n o) = ⟨o.tick + (n + 1)⟩
+    rw [ih o]
+    show (⟨(o.tick + n) + 1⟩ : OdoF) = ⟨o.tick + (n + 1)⟩
+    congr 1
+
+/-- **FAITHFUL TERMINATION.**  From the M6(K) entry, the faithful odometer reaches the
+M1(K+1) final register after EXACTLY `T = Tfaithful K` ticks — the real raw
+round-trip count (unlike §5n's `2^K − 1`).  `μ = odoValueF (odoFinalF K) − odoValueF o`
+is a textbook `Nat` measure decreasing by `1` each tick. -/
+theorem faithful_terminates (K : Nat) :
+    ∃ T, Nat.repeat odoNextF T odoEntryF = odoFinalF K ∧ T = Tfaithful K := by
+  refine ⟨Tfaithful K, ?_, rfl⟩
+  show Nat.repeat odoNextF (Tfaithful K) odoEntryF = odoFinalF K
+  rw [odoF_iterate (Tfaithful K) odoEntryF]
+  show (⟨0 + Tfaithful K⟩ : OdoF) = ⟨Tfaithful K⟩
+  rw [Nat.zero_add]
+
+/-- The value gap `= T = Tfaithful K`: the exact number of ticks entry→final. -/
+theorem faithful_gap (K : Nat) :
+    odoValueF (odoFinalF K) - odoValueF odoEntryF = Tfaithful K := by
+  show Tfaithful K - 0 = Tfaithful K
+  omega
+
+end LayerBFaithful
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -2164,6 +2269,21 @@ end LayerB
 -- block-chew, so the tape count is a FINER (Layer-C) quantity.  See §5n HONEST GAP.
 #eval decide (List.map LayerB.rippleDepth
       [[false], [true, false], [true, true, false]] = [0, 1, 2])                 -- true
+
+-- §5o LAYER B′ FAITHFUL ODOMETER (2026-07-13): the EXACT tick/carry closed form.
+#print axioms LayerBFaithful.faithful_terminates
+#print axioms LayerBFaithful.odoValueF_odoNextF
+#print axioms LayerBFaithful.faithful_gap
+-- Tfaithful EXACTLY matches the raw doubling-phase chew-start counts (x2fr_*.py,
+-- from the VERIFIED-FAITHFUL x2bd_sim orbit), at K=10,11,12,13:
+#eval decide (List.map LayerBFaithful.Tfaithful [10,11,12,13] = [3852, 9729, 19470, 47107]) -- true
+-- Cfaithful EXACTLY matches the raw carry counts at K=10,11,12,13:
+#eval decide (List.map LayerBFaithful.Cfaithful [10,11,12,13] = [192, 386, 768, 1538])       -- true
+-- CONTRAST §5n's flat counter 2^K−1 (1023/2047/4095/8191) — NOT the real count:
+#eval decide (List.map (fun K => 2 ^ K - 1) [10,11,12,13] = [1023, 2047, 4095, 8191])         -- true
+-- the faithful register reaches final in EXACTLY Tfaithful ticks (value gap = T):
+#eval decide (LayerBFaithful.odoValueF (LayerBFaithful.odoFinalF 12)
+      - LayerBFaithful.odoValueF LayerBFaithful.odoEntryF = 19470)                             -- true
 
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
 
