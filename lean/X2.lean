@@ -2209,6 +2209,240 @@ theorem faithful_gap (K : Nat) :
 
 end LayerBFaithful
 
+
+/-! ## §5q (ON-PATH, 2026-07-13) THE LOW PHASE TOWARD ∀g — instrumented structure, the
+g-INDEPENDENT ENTRY (∀g, PROVEN), a second even anchor, and the honest boundary.
+
+**Instrumentation (probes `x2lo_probe.py` / `x2lo_trace.py` / `x2lo_div.py` / `x2lo_verify.py`,
+forward from the VERIFIED-FAITHFUL `x2bd_sim.build(g)` milestone tape, g = 2..6).**  The low
+phase `M1(g) → M6(g)` is NOT a fixed-length parametric transport: its length GROWS with `g`,
+
+    g       = 2     3     4     5     6
+    length  = 343   419   419   495   495        (≈ +38 steps per generation)
+
+because `M1(g) = 0^22 (1 0^6)^{g-1} · parityTail_g · 1^{2^K−3} 0^2 · cascade` carries a run of
+`g−1` register U-units `(1 0^6)` and the low phase rewrites them to R-units.  Measured, the
+phase splits into three parts:
+
+* a FIXED, g-INDEPENDENT ENTRY  `M1(g) → (step 250)`:  the first `250` steps read ONLY the
+  leading `0^22 1 0^6 1 0^6` (head excursion `≤ 35`, raw-measured; the trace `(st,pos,head)` is
+  IDENTICAL for every g = 2..5) and land in state `A` at pos `36` — the boundary cell that FIRST
+  differs across g (`0` for even g's parity tail `1 0^{10}`, `1` for the next U-unit when g≥3).
+  This is a genuine ∀g tail-parametric transport (`lowPhase_entry`, PROVEN below);
+* a GROWING MIDDLE (`M3 → M4`, raw-measured `261/337/337/413/413` steps): each extra U-unit
+  adds one longer LEFT-comb round-trip — the per-round-trip length GROWS as the comb accumulates,
+  so it is NOT a fixed translation-invariant tile;
+* a FIXED EXIT  `M4 → M6`  (`36` steps: `M5 @ +17`, `M6 @ +19`, g-independent) landing on the
+  g-independent `M6` register form `0^2 (10)^4 1^9 0^2 (1^5 0^2)^… 1 0^2`.
+
+Even g NEVER touches the big block (head window `[−6, 2g+40]` < block start), so the even low
+phase is a tail-independent register transport (`lowPhaseEven_g2` §5j, `lowPhaseEven_g4` below).
+Odd g reaches the block and TRIMS it by 4 (`1^{2^K−9} → 1^{2^K−13}`; §5j `#eval`).
+
+**What CLOSES here (PROVEN, on-path).**
+  1. `lowPhase_entry` — the ∀g g-INDEPENDENT `250`-step ENTRY, tail-parametric (any `b`, `R`),
+     proved as five `50`-step kernel `rfl` chunks (`lp_c0…lp_c4`) composed by `steps_add`.
+     `some` ⇒ HALT-FREE, uniformly for every generation.
+  2. `lowPhaseEven_g4` — a SECOND full even instance `M1(4) → M6(4)` (`419` steps, block
+     untouched, kernel `rfl`), extracted cell-for-cell from the real orbit, confirming the
+     g-independent `M6` register form.
+
+**The honest boundary [DESIGN] — the ∀g low phase does NOT reduce to a fixed tile.**  The
+growing middle is an accumulator-carrying braid (the same loop-acceleration the Python
+`x2cc_faith` closes with a fresh accumulator per U-unit), not a bounded-window `chewFold`-style
+tile: the left comb grows one round-trip per generation, so no single translation-invariant tile
+iterates to the whole phase.  A full `∀g, steps (Llen g) (M1 g) = some (M6 g)` therefore needs
+the accumulator induction (per-U-unit repack + carry bookkeeping + the odd `−4` block trim), NOT
+constructed here.  Reported as measured structure, not fabricated off-path.  Neither piece here
+decides the machine. -/
+
+-- The g-independent entry, in five 50-step kernel-`rfl` chunks (each tail-parametric: the head
+-- excursion stays `≤ 35`, so the pos-36 tail `b :: R` rides untouched).  Chunk snapshots taken
+-- cell-for-cell under the EXACT Lean zipper (`x2lo_verify.py`, self-consistency cross-checked).
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Entry chunk 0/5 (steps 0→50, pos 0→0). -/
+theorem lp_c0 (b : Bool) (R : List Bool) :
+    steps 50 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++ (b :: R)))))⟩⟩
+      = some ⟨.C, 0, ⟨[false, true, false], false, ([false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Entry chunk 1/5 (steps 50→100, pos 0→12). -/
+theorem lp_c1 (b : Bool) (R : List Bool) :
+    steps 50 ⟨.C, 0, ⟨[false, true, false], false, ([false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩
+      = some ⟨.D, 12, ⟨[true, true, true, true, true, false, true, false, false, true, false, true, false, true, false], true, ([false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Entry chunk 2/5 (steps 100→150, pos 12→2). -/
+theorem lp_c2 (b : Bool) (R : List Bool) :
+    steps 50 ⟨.D, 12, ⟨[true, true, true, true, true, false, true, false, false, true, false, true, false, true, false], true, ([false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩
+      = some ⟨.F, 2, ⟨[true, true, false, true, false], true, ([false, true, false, true, false, true, false, true, false, true, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Entry chunk 3/5 (steps 150→200, pos 2→24). -/
+theorem lp_c3 (b : Bool) (R : List Bool) :
+    steps 50 ⟨.F, 2, ⟨[true, true, false, true, false], true, ([false, true, false, true, false, true, false, true, false, true, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩
+      = some ⟨.D, 24, ⟨[true, false, false, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false], false, ([true, true, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- Entry chunk 4/5 (steps 200→250, pos 24→36; the final `mvR` lands the head on the pos-36
+tail cell `b`, which is peeled untouched from `b :: R`). -/
+theorem lp_c4 (b : Bool) (R : List Bool) :
+    steps 50 ⟨.D, 24, ⟨[true, false, false, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false], false, ([true, true, false, false, true, false, false, false, false, false, false] ++ (b :: R))⟩⟩
+      = some ⟨.A, 36, ⟨[false, true, true, true, true, true, true, false, true, true, true, true, true, true, false, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false], b, R⟩⟩ := rfl
+
+/-- **THE g-INDEPENDENT LOW-PHASE ENTRY, ∀g, HALT-FREE, tail-parametric.**  For EVERY generation
+`g ≥ 2` and arbitrary tail `b :: R` (the register tail from pos 36 on), the first `250` steps of
+the low phase `M1(g) → M6(g)` are IDENTICAL: from `[E] 0^22 1 0^6 1 0^6 · (b :: R)` they land in
+state `A` at pos `36` on the (untouched) tail cell `b`, having rewritten only the leading
+`0^22 1 0^6 1 0^6` (head excursion `≤ 35`).  `some` ⇒ HALT-FREE.  This is the maximal
+generation-independent prefix of the low phase: pos 36 is exactly where the orbits first diverge
+by `g` (`x2lo_div.py`).  Composed from the five `50`-step chunks by `steps_add`. -/
+theorem lowPhase_entry (b : Bool) (R : List Bool) :
+    steps 250 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++ (b :: R)))))⟩⟩
+      = some ⟨.A, 36, ⟨[false, true, true, true, true, true, true, false, true, true, true, true, true, true, false, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false], b, R⟩⟩ := by
+  have e : (250 : Nat) = 50 + (50 + (50 + (50 + 50))) := by rfl
+  rw [e, steps_add, lp_c0, someBind, steps_add, lp_c1, someBind, steps_add, lp_c2,
+      someBind, steps_add, lp_c3, someBind, lp_c4]
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE EVEN LOW PHASE `M1(4) → M6(4)`, HALT-FREE (on-path, a SECOND even instance).**  From the
+real `M1(4)` register `0^22 (1 0^6)^3 1 0^10` followed by a truncated stand-in big block `1^4 0^2`
+(the head's excursion over the whole phase is `[−6, +52]`, block starts at `+54`, so it PROVABLY
+never reaches the block — tail-independence `#eval`-cross-checked for tails `1^4 0^2` and `1^{20}
+0^2`, identical register transform), `419` steps rewrite the register to the g-independent `M6`
+register form `0^2 (10)^4 1^9 0^2 (1^5 0^2)^…`, landing in state `E` (the `M6` milestone), shifted
+`−5`, block untouched.  `some` ⇒ HALT-FREE.  The `x2cc_prove` LOW-EVEN obligation (`M1(g)→M6(g)`,
+g even) for `g = 4`, on the real blank→milestone orbit, by kernel reduction.  Extracted from raw
+steps `8 477 210 − 419 → 8 477 210` (`x2lo_g4.py`). -/
+theorem lowPhaseEven_g4 :
+    steps 419 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++
+          (true :: (zeros 10 ++ (ones 4 ++ [false, false])))))))))⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          [false, true, false, true, false, true, false, true, false, true, true, true, true,
+           true, true, true, true, true, false, false, true, true, true, true, true, false,
+           false, true, true, true, true, true, false, false, true, true, true, true, true,
+           false, false, true, true, true, true, true, false, false, true, true, true, true,
+           true, false, false, true, false, false, true, true, true, true, false, false]⟩⟩ :=
+  rfl
+
+/-! ## §5r (LOGICAL FRAME, 2026-07-13) THE TOP-LEVEL NON-HALT ASSEMBLY — a clean CONDITIONAL
+theorem (`x2_nonhalt`) on the two OPEN phase transports.
+
+This section builds the honest logical bridge "the phases never halt ⟹ the machine never halts",
+in the style of `Completion.lean`'s `BB6_eq_championSteps (h : AllHoldoutsNonHalt)`.
+
+* Part (a), `nonhalt_of_segments`, is PURE and UNCONDITIONAL (does NOT touch `carry_step`): from
+  an infinite chain of nonempty halt-free segments starting at a config `c 0`, the machine never
+  halts from `c 0`.  Clean induction on `N` via `steps_add` + prefix-safety.
+* Part (b), `x2_nonhalt`, takes the two milestone-to-milestone transports (the OPEN low phase
+  §5q/§5j and the OPEN doubling phase §5g–§5p) as EXPLICIT HYPOTHESES `h_low`, `h_doub`, plus the
+  `blank → M1(1)` initial segment `h_init` (188 099 raw steps — far beyond kernel `rfl`, so
+  hypothesized, honestly).  It concludes `∀ N, steps N init ≠ none`.  It is a REAL
+  hypotheses ⟹ conclusion theorem — NOT an axiom, NOT a `sorry` — and DECIDES NOTHING on its own.
+
+**Tail-threading (honest).**  The hypotheses posit `Cfg`-valued milestone families
+`M1, M6 : Nat → Cfg` with `steps _ (M1 g) = some (M6 g)` (low) and `steps _ (M6 g) =
+some (M1 (g+1))` (doubling).  Because both transports are stated on the SAME family, the output
+config of each phase is LITERALLY the input config of the next — the tail-threading is discharged
+BY CONSTRUCTION (`x2_cycle` composes them with `steps_add`).  The remaining content — which is
+exactly the OPEN part — is that such full-tape `Cfg` families actually EXIST on the real orbit:
+the §5j/§5q concrete lemmas use truncated / tail-parametric stand-ins (`lowPhaseEven_g2/_g4`,
+`lowPhase_entry`) and do not yet assemble into total-milestone `Cfg`s, and the doubling transport
+(`carry_step`, §5m) is open.  So `x2_nonhalt` is CONDITIONAL on precisely those. -/
+
+/-- **Prefix-safety.**  If an `N`-step run from `c` succeeds (`some`), then every shorter prefix
+also succeeds — in particular is halt-free (`≠ none`). -/
+theorem steps_prefix_ne_none {N k : Nat} {c c' : Cfg}
+    (h : steps N c = some c') (hk : k ≤ N) : steps k c ≠ none := by
+  intro hnone
+  have hz : steps N c = none := by
+    have e : N = k + (N - k) := by omega
+    rw [e, steps_add, hnone]; rfl
+  rw [hz] at h; exact absurd h (by simp)
+
+/-- **Reachability along a segment chain.**  If every segment `c i → c (i+1)` is nonempty and
+halt-free, then `c i` is reached from `c 0` in `≥ i` halt-free steps. -/
+theorem reach_of_segments (c : Nat → Cfg)
+    (hseg : ∀ i, ∃ n, 1 ≤ n ∧ steps n (c i) = some (c (i+1))) :
+    ∀ i, ∃ m, i ≤ m ∧ steps m (c 0) = some (c i) := by
+  intro i
+  induction i with
+  | zero => exact ⟨0, Nat.le_refl 0, rfl⟩
+  | succ k ih =>
+    obtain ⟨m, hm, hstep⟩ := ih
+    obtain ⟨n, hn, hn2⟩ := hseg k
+    refine ⟨m + n, by omega, ?_⟩
+    rw [steps_add, hstep, someBind, hn2]
+
+/-- **The abstract non-halt lemma (PURE, unconditional).**  Given an infinite chain `c : Nat → Cfg`
+in which every segment `c i → c (i+1)` is nonempty (`n ≥ 1`) and halt-free (`steps n (c i) =
+some (c (i+1))`), the machine NEVER halts from `c 0`: `∀ N, steps N (c 0) ≠ none`.  Because each
+segment advances `≥ 1` step, the cumulative reach `≥ i` exceeds any `N` (take `i = N`), and a
+prefix of a halt-free run is halt-free.  Independent of `carry_step`. -/
+theorem nonhalt_of_segments (c : Nat → Cfg)
+    (hseg : ∀ i, ∃ n, 1 ≤ n ∧ steps n (c i) = some (c (i+1))) :
+    ∀ N, steps N (c 0) ≠ none := by
+  intro N
+  obtain ⟨m, hm, hstep⟩ := reach_of_segments c hseg N
+  exact steps_prefix_ne_none hstep hm
+
+/-- The milestone chain `init, M1 1, M1 2, M1 3, …` (index `0 ↦ init`, `k+1 ↦ M1 (k+1)`). -/
+def x2Chain (M1 : Nat → Cfg) : Nat → Cfg
+  | 0 => init
+  | (n+1) => M1 (n+1)
+
+/-- **The per-generation cycle `M1(g) → M1(g+1)`, halt-free**, obtained by composing the low phase
+`h_low g` and the doubling phase `h_doub g` with `steps_add` (the shared `M6 g` config threads the
+two exactly). -/
+theorem x2_cycle (M1 M6 : Nat → Cfg)
+    (h_low  : ∀ g, ∃ n, 1 ≤ n ∧ steps n (M1 g) = some (M6 g))
+    (h_doub : ∀ g, ∃ n, 1 ≤ n ∧ steps n (M6 g) = some (M1 (g+1))) :
+    ∀ g, ∃ n, 1 ≤ n ∧ steps n (M1 g) = some (M1 (g+1)) := by
+  intro g
+  obtain ⟨nl, hnl, hlow⟩ := h_low g
+  obtain ⟨nd, hnd, hdoub⟩ := h_doub g
+  refine ⟨nl + nd, by omega, ?_⟩
+  rw [steps_add, hlow, someBind, hdoub]
+
+/-- The `x2Chain` segments are the initial segment (`h_init`) and the per-generation cycles. -/
+theorem x2Chain_segments (M1 : Nat → Cfg)
+    (h_init  : ∃ n, 1 ≤ n ∧ steps n init = some (M1 1))
+    (h_cycle : ∀ g, ∃ n, 1 ≤ n ∧ steps n (M1 g) = some (M1 (g+1))) :
+    ∀ i, ∃ n, 1 ≤ n ∧ steps n (x2Chain M1 i) = some (x2Chain M1 (i+1)) := by
+  intro i
+  cases i with
+  | zero => exact h_init
+  | succ k => exact h_cycle (k+1)
+
+/-- **THE CONDITIONAL TOP-LEVEL NON-HALT THEOREM (`x2_nonhalt`).**  Suppose there exist milestone
+families `M1, M6 : Nat → Cfg` such that
+
+* `h_init` — `blank → M1 1` is a nonempty halt-free segment;
+* `h_low`  — every LOW phase `M1 g → M6 g` is a nonempty halt-free segment (§5q/§5j, OPEN);
+* `h_doub` — every DOUBLING phase `M6 g → M1 (g+1)` is a nonempty halt-free segment (§5g–§5p,
+  OPEN — hinges on `carry_step`).
+
+Then the machine NEVER halts from the blank tape: `∀ N, steps N init ≠ none`.  A REAL conditional
+theorem (no `sorry`, no new axiom): the two OPEN phase transports are HYPOTHESES, not assumed
+facts.  It DECIDES NOTHING — it only reduces non-halting to the two phase transports, with the
+tail-threading discharged by the shared `Cfg` families (see the §5r note). -/
+theorem x2_nonhalt (M1 M6 : Nat → Cfg)
+    (h_init : ∃ n, 1 ≤ n ∧ steps n init = some (M1 1))
+    (h_low  : ∀ g, ∃ n, 1 ≤ n ∧ steps n (M1 g) = some (M6 g))
+    (h_doub : ∀ g, ∃ n, 1 ≤ n ∧ steps n (M6 g) = some (M1 (g+1))) :
+    ∀ N, steps N init ≠ none :=
+  fun N => nonhalt_of_segments (x2Chain M1)
+    (x2Chain_segments M1 h_init (x2_cycle M1 M6 h_low h_doub)) N
+
 /-! ## §6 Sanity `#eval` (kernel-executed at every build) + axiom audit. -/
 
 -- the repack really does `(01)^3 → 1^6` (E at +6), halt-free:
@@ -2482,6 +2716,29 @@ end LayerBFaithful
 #eval decide (LayerBFaithful.odoValueF (LayerBFaithful.odoFinalF 12)
       - LayerBFaithful.odoValueF LayerBFaithful.odoEntryF = 19470)                             -- true
 
+-- §5q LOW PHASE TOWARD ∀g (g-independent entry + 2nd even anchor) axiom audits + cross-checks:
+#print axioms lp_c0
+#print axioms lp_c4
+#print axioms lowPhase_entry
+#print axioms lowPhaseEven_g4
+-- the g-independent ENTRY fires for BOTH parities of the pos-36 tail cell (b = false → even g's
+-- `0^10` tail, b = true → odd g / next U-unit), landing state A at pos 36 — the divergence
+-- boundary (`x2lo_div.py`), halt-free either way (`some`):
+#eval decide (((steps 250 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++ (false :: [])))))⟩⟩).map
+      (fun c => (c.st, c.pos))) = some (St.A, (36 : Int)))                                     -- true (b=false)
+#eval decide (((steps 250 ⟨.E, 0, ⟨[], false,
+        zeros 21 ++ (true :: (zeros 6 ++ (true :: (zeros 6 ++ (true :: [])))))⟩⟩).map
+      (fun c => (c.st, c.pos))) = some (St.A, (36 : Int)))                                     -- true (b=true)
+-- LOW phase length GROWS with g (NOT a fixed transport): 343,419,419,495,495 for g=2..6
+-- (raw-measured `x2lo_probe.py`); the even `M6` register form is g-independent (`lowPhaseEven_g4`
+-- lands the SAME leading `0^2 (10)^4 1^9 0^2 …` as `lowPhaseEven_g2`).
+
+-- §5r TOP-LEVEL NON-HALT FRAME axiom audits:
+#print axioms nonhalt_of_segments
+#print axioms x2_cycle
+#print axioms x2_nonhalt
+
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
 
 FORMALIZED here (`lake build` green, no `sorry`, no `native_decide`, axioms
@@ -2550,6 +2807,15 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
    emits only gaps `{18,10,2(g+1),6-iff-even}`, never 3 (Python-`x2cc_prove`
    PROVEN, not yet ported; it is the analogue of the entire `Template`+`Suffix`
    generation-map, ~1k lines).  Supplies `doubling_transport`'s `H_entry`.
+   **§5q UPDATE (2026-07-13, instrumented).**  The low phase is a GROWING braid, NOT
+   a fixed transport: length `343/419/419/495/495` for g=2..6 (`≈+38`/gen, one extra
+   `(1 0^6)` U-unit per generation).  What CLOSED here: `lowPhase_entry` — the FIXED,
+   g-INDEPENDENT first `250` steps (∀g, tail-parametric, HALT-FREE, kernel `rfl` in
+   5 chunks), the maximal generation-independent prefix (pos 36 is the divergence
+   boundary `x2lo_div.py`); and `lowPhaseEven_g4` — a SECOND full even instance
+   `M1(4)→M6(4)` (419 steps).  The GROWING MIDDLE (register comb-processing, per-round-
+   trip length grows with the accumulating left comb) is NOT a fixed tile — it needs
+   the accumulator induction (`x2cc_faith`-style), which remains OPEN.
 2. **G2 — the ×2 DOUBLING itself is a COMPOUND, NOT the marked sweep** (the exact
    obstruction found this session, the framing scrutinised).  §5f DOES lift the
    `10^10`-marked big-block R/L sweep to a parametric ∀-length halt-free lemma
@@ -2596,8 +2862,16 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
        corrections = 2^{K+1}−3` (with the `−4K+8` correction the fold's `Σ` carries)
        remains OPEN — it needs the G2 big-block sweep, not further fold work.
 4. **The milestone form M(g) and the composed `x2_nonhalt`** — the nested cascade
-   as a concrete `Cfg`, the transport `M1(g)→M1(g+1)` ∀g, and the prefix-closed
-   non-halt (`∀n, steps n init ≠ none`) — NONE assembled.
+   as a concrete `Cfg`, and the transport `M1(g)→M1(g+1)` ∀g on FULL-tape configs.
+   **§5r UPDATE (2026-07-13).**  The LOGICAL frame is now CLOSED: `nonhalt_of_segments`
+   (PURE, unconditional — an infinite chain of nonempty halt-free segments ⟹
+   `∀N, steps N (c 0) ≠ none`) and the CONDITIONAL `x2_nonhalt` (given `Cfg`-valued
+   milestone families with the low + doubling transports as EXPLICIT HYPOTHESES, the
+   machine never halts).  Tail-threading is discharged by the shared `Cfg` families
+   (`x2_cycle`).  What remains OPEN is the ANTECEDENT: exhibiting the full-tape
+   milestone `Cfg` families and PROVING the two transports (items 1–3 above) — the
+   §5j/§5q concrete lemmas use truncated / tail-parametric stand-ins.  `x2_nonhalt`
+   DECIDES NOTHING; it only reduces non-halting to those open transports.
 
 **Verdict: NO decision.**  This file advances the formalization by closing G1
 (the fold engine), G3's arithmetic core, the G3-wiring STRUCTURAL part (concrete
