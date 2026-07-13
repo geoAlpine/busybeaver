@@ -2247,14 +2247,21 @@ Odd g reaches the block and TRIMS it by 4 (`1^{2^K−9} → 1^{2^K−13}`; §5j 
      untouched, kernel `rfl`), extracted cell-for-cell from the real orbit, confirming the
      g-independent `M6` register form.
 
-**The honest boundary [DESIGN] — the ∀g low phase does NOT reduce to a fixed tile.**  The
-growing middle is an accumulator-carrying braid (the same loop-acceleration the Python
-`x2cc_faith` closes with a fresh accumulator per U-unit), not a bounded-window `chewFold`-style
-tile: the left comb grows one round-trip per generation, so no single translation-invariant tile
-iterates to the whole phase.  A full `∀g, steps (Llen g) (M1 g) = some (M6 g)` therefore needs
-the accumulator induction (per-U-unit repack + carry bookkeeping + the odd `−4` block trim), NOT
-constructed here.  Reported as measured structure, not fabricated off-path.  Neither piece here
-decides the machine. -/
+**The middle's FORWARD pass IS a clean fixed tile [PROVEN, §5t] — the earlier "accumulator"
+pessimism is REFINED.**  Re-instrumented cell-for-cell (`x2lm_*.py`), the register-processing
+FORWARD pass of the growing middle is NOT a growing accumulator: it is a bounded, translation-
+invariant `29`-step tile (`lowMiddle_tile`, frame-independent, `+7`/U-unit) run once per U-unit
+over a period-7 comb `[1 0 1 0 0 1] ++ (0^6 1)^m`, closed `∀m` by length induction
+(`lowMiddle_fwd`, §5t) — the `sweepEF` pattern.  The per-round-trip length is CONSTANT (14/4/3/8),
+not growing; only the tile COUNT and POSITION grow.
+
+**What REMAINS [DESIGN] for the whole `∀g` middle.**  A full `∀g, steps (Llen g) (M1 g) =
+some (M6 g)` still needs, beyond `lowMiddle_fwd`: (i) the FIXED `M3 → chain-start` entry connector
+and the turnaround; (ii) the RETURN pass (a second uniform run, one `dSweepTurn`-shape `len-9`
+crossing per U-unit — clean-shaped but not assembled); (iii) the ODD-`g` big-block `−4` trim (the
+`mid(3)=mid(4)`, `mid(5)=mid(6)` parity collapse; growth law `mid(g)=261+76·⌊(g−1)/2⌋`, `+38`/unit
+for even `g` = `+29` forward `+9` return).  Reported as measured structure, not fabricated
+off-path.  Neither piece here decides the machine. -/
 
 -- The g-independent entry, in five 50-step kernel-`rfl` chunks (each tail-parametric: the head
 -- excursion stays `≤ 35`, so the pos-36 tail `b :: R` rides untouched).  Chunk snapshots taken
@@ -2333,6 +2340,122 @@ theorem lowPhaseEven_g4 :
            false, false, true, true, true, true, true, false, false, true, true, true, true,
            true, false, false, true, false, false, true, true, true, true, false, false]⟩⟩ :=
   rfl
+
+/-! ## §5t (ON-PATH, 2026-07-13) THE LOW-PHASE MIDDLE'S FORWARD PASS — a CLEAN fixed-shape
+per-U-unit TILE + its ∀-U-unit RUN INDUCTION (the §5q middle, resolved for the forward pass).
+
+**The crux question answered (probes `x2lm_middle.py` / `x2lm_tile.py` / `x2lm_extract.py` /
+`x2lm_lean.py` / `x2lm_chain.py` / `x2lm_run.py`, forward from the VERIFIED-FAITHFUL
+`x2bd_sim.build(g)`, g = 2..6).**  §5q flagged the growing MIDDLE `M3 → M4`
+(`261/337/337/413/413` steps) as "an accumulator-carrying braid, per-round-trip length GROWS,
+NOT a fixed translation-invariant tile."  Instrumented cell-for-cell, the FORWARD (register-
+processing) pass of the middle is in fact a CLEAN FIXED TILE — **not** a growing accumulator:
+
+* Splitting the middle into left-comb round-trips, the forward pass is a run of the SAME
+  compound round-trip `[len 14,4,3,8] = 29` steps, TRANSLATED by exactly `+7` per U-unit, with
+  CONSTANT length and reach (`x2lm_middle.py`: g=4 tiles at pos 23,30,37, reach ≡ 11).
+* The local window at each tile start is BYTE-IDENTICAL up to the `+7` shift (`x2lm_tile.py`),
+  and the transport is FRAME-INDEPENDENT: verified against arbitrary far-left `L` / far-right
+  `R` frames (`x2lm_lean.py`), so it is a bounded translation-invariant tile — the exact
+  `sweepEF`/`chew_tile` pattern, one register-period wider.
+* Viewed from the head, the register is a **period-7 comb** `[1 0 1 0 0 1] ++ (0^6 1)^m ++ tail`
+  (`x2lm_chain.py`, 1-positions `1,3,6,13,20,27,34,…`); each tile consumes one `0^6 1` unit,
+  regenerates the `[1 0 1 0 0 1]` prefix, deposits `[1 0 1 1 1 1 1]` on the left, moves `+7`.
+  The consecutive-tile chain has length `g+1` = one tile per U-unit (`x2lm_chain.py`: g=2→3,
+  g=4→5, g=6→7); the run consumes `m` units in `29 m` steps (`x2lm_run.py`, verified m=0..8).
+
+So the FORWARD pass is a length induction, closed GREEN below (`lowMiddle_tile` ∘ `lowMiddle_fwd`).
+
+**What is STILL [DESIGN] (the honest remaining boundary of the whole middle).**  A full
+`∀g, steps (mid g) (M3 g) = some (M4 g)` needs, beyond the forward run: (i) the FIXED entry
+connector `M3 → chain-start` and the turnaround; (ii) the RETURN pass — a second uniform run
+(`x2lm_middle.py`: one extra `len-9` left round-trip per U-unit, a `dSweepTurn`-shape crossing),
+not assembled here; (iii) the ODD-`g` block-trim (odd generations reach the big block and trim it
+by `−4`, the source of the `mid(3)=mid(4)`, `mid(5)=mid(6)` parity collapse).  Growth law
+[OBSERVED, exact g=2..6]: `mid(g) = 261 + 76·⌊(g−1)/2⌋`; for even `g` this is `+38` per U-unit =
+`+29` (this forward tile) `+9` (the return leg).  None of this decides the machine.
+
+-/
+
+/-- The register period-7 comb unit `0^6 1`, repeated `m` times (the U-unit → R-unit form the
+forward pass consumes).  `x2lm_chain.py`. -/
+def rcomb : Nat → List Bool
+  | 0 => []
+  | m + 1 => false :: false :: false :: false :: false :: false :: true :: rcomb m
+
+/-- The per-tile left deposit `1 0 1 1 1 1 1` (nearest-first), `m` copies. -/
+def rdepo : Nat → List Bool
+  | 0 => []
+  | m + 1 => true :: false :: true :: true :: true :: true :: true :: rdepo m
+
+/-- Merging the deposit into the accumulated comb (the `ones_append_true` analogue for the
+per-tile deposit): pushing one more `[1 0 1 1 1 1 1]` under `rdepo m` gives `rdepo (m+1)`. -/
+theorem rdepo_append_dep : ∀ (m : Nat) (L : List Bool),
+    rdepo m ++ (true :: false :: true :: true :: true :: true :: true :: L)
+      = rdepo (m + 1) ++ L := by
+  intro m
+  induction m with
+  | zero => intro L; rfl
+  | succ m ih =>
+    intro L
+    show true :: false :: true :: true :: true :: true :: true ::
+        (rdepo m ++ (true :: false :: true :: true :: true :: true :: true :: L))
+      = true :: false :: true :: true :: true :: true :: true :: (rdepo (m + 1) ++ L)
+    rw [ih]
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE FORWARD PER-U-UNIT TILE** (29 steps, `E` on a `0`, net `+7`), FRAME-INDEPENDENT (any
+`L`, `Y`).  Reads the bounded window `[1 0 1 0 0 1] ++ 0^6 1` (prefix ++ one comb unit), consumes
+the unit, regenerates the prefix (`= [1 0 1 0 0 1] ++ Y`), deposits `[1 0 1 1 1 1 1]` on the left,
+marches `+7`.  Kernel `rfl` (pos folded, `cfgPos`-normalised).  `some` ⇒ HALT-FREE.  This is the
+low-phase analogue of `sweepEF_tile`, one register-period wider (`x2lm_lean.py`, verified against
+arbitrary frames). -/
+theorem lowMiddle_tile (p : Int) (L Y : List Bool) :
+    steps 29 ⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true ::
+        false :: false :: false :: false :: false :: false :: true :: Y⟩⟩
+      = some ⟨.E, p + 7, ⟨true :: false :: true :: true :: true :: true :: true :: L, false,
+          true :: false :: true :: false :: false :: true :: Y⟩⟩ := by
+  have h : steps 29 (⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true ::
+        false :: false :: false :: false :: false :: false :: true :: Y⟩⟩ : Cfg)
+      = some ⟨.E,
+          p+1+1+1+1+1+1+1+1+1+1+1-1-1-1+1-1-1-1+1-1-1+1+1+1+1+1-1-1-1,
+          ⟨true :: false :: true :: true :: true :: true :: true :: L, false,
+           true :: false :: true :: false :: false :: true :: Y⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE FORWARD RUN, ARBITRARY U-UNIT COUNT `m` (the clean length induction).**  `m` tiles =
+`29 m` steps take the period-7 comb `[1 0 1 0 0 1] ++ (0^6 1)^m ++ Y` to `[1 0 1 0 0 1] ++ Y`,
+depositing `rdepo m` on the left and shifting `+7 m`, for EVERY `m` and arbitrary far tail `Y`.
+Proven by tile + length induction (the `sweepEF` pattern).  This is the forward, register-
+processing half of the §5q growing middle — CLEAN, `∀`-U-unit, on-path.  `some` ⇒ HALT-FREE.
+`x2lm_run.py` cross-checks the real orbit realizes exactly this comb encoding. -/
+theorem lowMiddle_fwd : ∀ (m : Nat) (p : Int) (L Y : List Bool),
+    steps (29 * m) ⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true :: (rcomb m ++ Y)⟩⟩
+      = some ⟨.E, p + 7 * (m : Int), ⟨rdepo m ++ L, false,
+          true :: false :: true :: false :: false :: true :: Y⟩⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro p L Y
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ m ih =>
+    intro p L Y
+    have hn : 29 * (m + 1) = 29 + 29 * m := by omega
+    rw [hn, steps_add]
+    show (steps 29 ⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true ::
+        false :: false :: false :: false :: false :: false :: true :: (rcomb m ++ Y)⟩⟩).bind
+        (steps (29 * m)) = _
+    rw [lowMiddle_tile, someBind,
+        ih (p + 7) (true :: false :: true :: true :: true :: true :: true :: L) Y,
+        rdepo_append_dep]
+    exact congrArg some (cfgPos (by push_cast; omega))
 
 /-! ## §5r (LOGICAL FRAME, 2026-07-13) THE TOP-LEVEL NON-HALT ASSEMBLY — a clean CONDITIONAL
 theorem (`x2_nonhalt`) on the two OPEN phase transports.
@@ -2734,6 +2857,28 @@ theorem x2_nonhalt (M1 M6 : Nat → Cfg)
 -- (raw-measured `x2lo_probe.py`); the even `M6` register form is g-independent (`lowPhaseEven_g4`
 -- lands the SAME leading `0^2 (10)^4 1^9 0^2 …` as `lowPhaseEven_g2`).
 
+-- §5t LOW-PHASE MIDDLE FORWARD PASS (the fixed per-U-unit tile + its ∀m run) axiom audits:
+#print axioms lowMiddle_tile
+#print axioms lowMiddle_fwd
+-- ONE tile: 29 steps consume one comb unit `0^6 1`, regenerate the `[1 0 1 0 0 1]` prefix,
+-- deposit `[1 0 1 1 1 1 1]` left, march +7 (frame-independent, here `L=[], Y=[]`):
+#eval decide (steps 29 ⟨.E, 0, ⟨[], false,
+        true :: false :: true :: false :: false :: true ::
+        false :: false :: false :: false :: false :: false :: true :: []⟩⟩
+      = some ⟨.E, 7, ⟨rdepo 1, false, true :: false :: true :: false :: false :: true :: []⟩⟩) -- true
+-- the RUN over m=5 U-units (43 tiles' worth in the real g=6 middle): 145 steps, +35, deposit
+-- rdepo 5, comb fully consumed to the bare prefix (self-contained instance of `lowMiddle_fwd`):
+#eval decide (steps (29 * 5) ⟨.E, 0, ⟨[], false,
+        true :: false :: true :: false :: false :: true :: (rcomb 5 ++ [])⟩⟩
+      = some ⟨.E, 35, ⟨rdepo 5 ++ [], false,
+          true :: false :: true :: false :: false :: true :: []⟩⟩)                              -- true
+-- ON-PATH GROUNDING: the period-7 comb the run consumes is exactly the U-unit → R-unit form of
+-- the REAL blank→build(6) orbit at the chain start (raw step 157): register right-of-head =
+-- `[1 0 1 0 0 1] ++ (0^6 1)^m` (`x2lm_chain.py`, 1-positions 1,3,6,13,20,27,34,… ; extracted
+-- cell-for-cell from `x2bd_sim.build(6)`).  `rcomb 2` is the concrete two-unit comb `0^6 1 0^6 1`:
+#eval decide (rcomb 2 = [false, false, false, false, false, false, true,
+                         false, false, false, false, false, false, true])                       -- true
+
 -- §5r TOP-LEVEL NON-HALT FRAME axiom audits:
 #print axioms nonhalt_of_segments
 #print axioms x2_cycle
@@ -2813,9 +2958,15 @@ STILL OPEN (NOT in this file — the exact remaining Lean gaps to a decision):
    g-INDEPENDENT first `250` steps (∀g, tail-parametric, HALT-FREE, kernel `rfl` in
    5 chunks), the maximal generation-independent prefix (pos 36 is the divergence
    boundary `x2lo_div.py`); and `lowPhaseEven_g4` — a SECOND full even instance
-   `M1(4)→M6(4)` (419 steps).  The GROWING MIDDLE (register comb-processing, per-round-
-   trip length grows with the accumulating left comb) is NOT a fixed tile — it needs
-   the accumulator induction (`x2cc_faith`-style), which remains OPEN.
+   `M1(4)→M6(4)` (419 steps).
+   **§5t UPDATE (2026-07-13, re-instrumented `x2lm_*.py`).**  The growing MIDDLE's
+   FORWARD (register-processing) pass is NOW CLOSED `∀m`: it is a CLEAN fixed 29-step
+   tile (`lowMiddle_tile`, frame-independent, `+7`/U-unit) run once per U-unit over a
+   period-7 comb, `lowMiddle_fwd` by length induction — the per-round-trip length is
+   CONSTANT (14/4/3/8), the earlier "grows with the accumulating comb" reading was the
+   ODD-`g` block-trim, not the forward tile.  STILL OPEN for the full `∀g` middle: the
+   fixed entry/turnaround connectors, the RETURN pass (uniform `dSweepTurn`-shape run),
+   and the odd-`g` `−4` block trim (growth law `mid(g)=261+76·⌊(g−1)/2⌋`).
 2. **G2 — the ×2 DOUBLING itself is a COMPOUND, NOT the marked sweep** (the exact
    obstruction found this session, the framing scrutinised).  §5f DOES lift the
    `10^10`-marked big-block R/L sweep to a parametric ∀-length halt-free lemma
