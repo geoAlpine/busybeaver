@@ -1841,6 +1841,205 @@ ripple through ≤K digits.  That recursion (`carry_step`) is the project's
 `Suffix.lean`-scale object and remains open.  No `sorry`, no axiom added; no machine
 decided by this section. -/
 
+/-! ## §5s (LAYER A, ON-PATH, 2026-07-13) THE DEPTH-1 CARRY FACTORED — the concrete
+`j=3` carry exhibited as `ENTRY ∘ CORE ∘ EXIT`, with the CORE the *parametric*
+`sweepEF` and the EXIT proved as its OWN tail-parametric transport; plus the honest
+finding that the EXIT is RECURSIVE for `j ≥ 4` (the ripple wall, measured).
+
+**What this section adds over §5k/§5m.**  §5k proved `carry_event_5to13` as ONE
+opaque 117-step `rfl`-chunk transport; §5m proved the isolated CORE `carry_repack`
+`∀j`.  Here we EXHIBIT the internal factorization of the real depth-1 carry, the
+analogue of how `outer_tick_noCarry = noCarry_entry ∘ ecfold ∘ sweepEF` (§5l):
+
+  `carry_event_5to13  =  carry_entry_j3  ∘  carry_core_j3  ∘  carry_exit_j3`
+                          (35 steps, rfl)  (12 = sweepEF 6)  (70 steps, 2 chunks)
+
+each piece extracted CELL-FOR-CELL from the raw g=2 orbit (forward from the faithful
+`build(2)`, `x2ce_*.py`), TAIL-parametric (arbitrary `L R`, cross-checked over 3
+paddings), composed by `steps_add`.  The middle factor is the **parametric**
+`sweepEF 6` (`= carry_repack 1` in this frame), so the "the carry's core is the
+`(01)^m→1^{2m}` repack" claim is now grounded at the TRANSPORT level inside the real
+carry, not only as an isolated window.  `carry_exit_j3` is the first proof of a carry
+EXIT as a reusable transport.
+
+**Provenance (raw g=2, exact-bigint `step`-sim, `x2ce_frame.py`/`x2ce_gen.py`).**  The
+depth-1 carry runs raw `n = 6591 → 6708`, head `E` on the boundary `0` above trailing
+cascade `1^5 0^2 1^1`.  Sub-boundaries (all inside the bounded window rel `[-8,20]`,
+so `L R` ride untouched): ENTRY `6591→6626` builds the left comb up to `(10)^6`
+(ascending repacks `m=2,4,6`, head rel `0→-3`); CORE `6626→6638` is EXACTLY
+`sweepEF 6` — right `= pow10 6 ++ R''`, output `ones 12` on the left (`(01)^6→1^{12}`),
+head rel `-3→+9`; EXIT `6638→6708` regenerates the fresh `1^5` below and re-anchors
+`E` on the new boundary `0`, head rel `+9→-7`.
+
+**THE EXIT IS RECURSIVE FOR `j ≥ 4` [OBSERVED, `x2ce_exit.py`/`x2ca_trace.py`].**  The
+EXIT regenerates a fresh block `1^{d_j}` (`d_j = 2^j−3`) below the doubled block.  At
+`j=3` (`d_3=5`) this is small: EXIT `= 70` steps with a SINGLE `sweepEF (m=2)`.  At
+`j=4` (`d_4=13`) the EXIT `= 218` steps and CONTAINS A NESTED ASCENDING CHAIN
+`m=2,4,6` — i.e. a full `j=3`-scale doubling sub-cascade — to rebuild `1^{13}`.  So
+the EXIT is NOT a clean length-parametric run-chain: `EXIT(j)` re-runs the doubling
+one level down, `EXIT(j) ⊇ CORE(j−1) ∘ EXIT(j−1) ∘ …`.  Only the BASE case
+(`carry_exit_j3`) is a bounded transport; the general EXIT is the recursive
+`Θ(2^j)` sub-phase of §5m's `carry_step`.  Hence `carry_exit_j3` closes GREEN, but a
+`∀j` `carry_exit` does NOT exist as a straight-line transport — precisely the wall. -/
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **CARRY ENTRY (depth-1, `j=3`), tail-parametric.**  Raw `n = 6591 → 6626`
+(35 steps): head `E` on the boundary `0` above `1^5 0^2 1^1` (left comb `(01)^3 …`);
+the ascending repacks `m=2,4` fold the working block and grow the left comb to
+`(10)^6`, landing `E` on the boundary at rel `−3`, ready for the CORE.  Cell-for-cell
+from the raw orbit, arbitrary `L R` (head window rel `[−3,7]` ⊂ the carry window).
+`some` ⇒ HALT-FREE.  Kernel `rfl`. -/
+theorem carry_entry_j3 (L R : List Bool) :
+    steps 35 ⟨.E, 0, ⟨
+        (false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: false :: false :: true :: true :: true :: true :: true :: false :: false ::
+         true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+         false :: false :: R)⟩⟩
+      = some ⟨.E, -3, ⟨
+          (true :: false :: true :: false :: false :: true :: false :: L),
+          false,
+          pow10 6 ++ (false :: true :: false :: false :: false :: false :: false :: false ::
+            false :: false :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+/-- **CARRY CORE (depth-1, `j=3`) = the PARAMETRIC `sweepEF 6`.**  Raw `n = 6626 →
+6638` (12 steps): the culminating repack `(10)^6 → 1^{12}` (`(01)^6` comb doubled), head
+rel `−3 → +9`, `R''` untouched.  Proved by the ∀-length `sweepEF 6` (so
+`[propext, Quot.sound]`-only): this IS `carry_repack 1` translated to head rel `−3`,
+demonstrating the carry's core is the length-parametric doubling repack ON the real
+orbit.  `some` ⇒ HALT-FREE. -/
+theorem carry_core_j3 (L R : List Bool) :
+    steps 12 ⟨.E, -3, ⟨
+        (true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        pow10 6 ++ (false :: true :: false :: false :: false :: false :: false :: false ::
+          false :: false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, 9, ⟨
+          ones 12 ++ (true :: false :: true :: false :: false :: true :: false :: L),
+          false,
+          (false :: true :: false :: false :: false :: false :: false :: false ::
+           false :: false :: false :: false :: false :: R)⟩⟩ := by
+  rw [show (12 : Nat) = 2 * 6 from rfl,
+      sweepEF 6 (-3) (true :: false :: true :: false :: false :: true :: false :: L)
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: R)]
+  exact congrArg some (cfgPos (by decide))
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **CARRY EXIT chunk 1/2** (raw `n = 6638 → 6673`, 35 steps, head rel `+9 → +18`,
+ending in state `D` mid-regeneration), tail-parametric.  Kernel `rfl`. -/
+theorem carry_exit_chunk1 (L R : List Bool) :
+    steps 35 ⟨.E, 9, ⟨
+        ones 12 ++ (true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.D, 18, ⟨
+          (false :: true :: true :: true :: true :: true :: true :: false :: true :: true ::
+           true :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: false :: true :: false :: false :: true :: false :: L),
+          true,
+          (true :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **CARRY EXIT chunk 2/2** (raw `n = 6673 → 6708`, 35 steps, head rel `+18 → −7`,
+re-anchoring `E` on the new boundary `0`), tail-parametric.  Kernel `rfl`. -/
+theorem carry_exit_chunk2 (L R : List Bool) :
+    steps 35 ⟨.D, 18, ⟨
+        (false :: true :: true :: true :: true :: true :: true :: false :: true :: true ::
+         true :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+         true :: true :: false :: true :: false :: false :: true :: false :: L),
+        true,
+        (true :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+/-- **THE CARRY EXIT (depth-1, `j=3`), tail-parametric.**  Raw `n = 6638 → 6708`
+(70 steps): from the CORE's just-deposited `1^{12}` on the left (head `E` rel `+9`), the
+EXIT regenerates the fresh `1^5` cascade block below the doubled `1^{13}` and re-anchors
+`E` on the new boundary `0` at rel `−7`, `L R` untouched (head window rel `[−8,20]`).
+The FIRST carry-EXIT proved as a reusable transport.  Composed from the two 35-step
+`rfl` chunks by `steps_add`.  `some` ⇒ HALT-FREE.  [BASE case only: the general
+`EXIT(j)` is recursive, see the section note.] -/
+theorem carry_exit_j3 (L R : List Bool) :
+    steps 70 ⟨.E, 9, ⟨
+        ones 12 ++ (true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ := by
+  rw [show (70 : Nat) = 35 + 35 from rfl, steps_add, carry_exit_chunk1, someBind,
+      carry_exit_chunk2]
+
+/-- **THE DEPTH-1 CARRY, FACTORED (`carry_event_5to13` re-derived structurally).**
+The SAME 117-step tail-parametric transport as `carry_event_5to13` (§5k), but proved
+as `carry_entry_j3 ∘ carry_core_j3 ∘ carry_exit_j3` — ENTRY connector, PARAMETRIC
+`sweepEF` core, EXIT regeneration — composed by `steps_add`.  This is deliverable (C):
+the single-level (depth-1) carry assembled from its three phases with the core a
+genuine ∀-length lemma, cross-checked to reproduce the extracted `carry_event_5to13`
+endpoints exactly.  `[propext, Quot.sound]`-only. -/
+theorem carry_event_5to13_ECE (L R : List Bool) :
+    steps 117 ⟨.E, 0, ⟨
+        (false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: false :: false :: true :: true :: true :: true :: true :: false :: false ::
+         true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+         false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ := by
+  rw [show (117 : Nat) = 35 + (12 + 70) from rfl, steps_add, carry_entry_j3, someBind,
+      steps_add, carry_core_j3, someBind, carry_exit_j3]
+
+/-- **Cross-check: the factored carry agrees with the monolithic `carry_event_5to13`.**
+Both are the same `∀ L R` transport; this ties the new factorization to the extracted
+anchor (`rfl` on the shared statement).  Kernel check. -/
+theorem carry_ECE_eq_anchor (L R : List Bool) :
+    carry_event_5to13_ECE L R = carry_event_5to13 L R := rfl
+
+/-! ### §5s: honest scope + the ripple, precisely located.
+
+**(A) EXIT structure.**  `carry_exit_j3` is the depth-1 (base) EXIT, a clean 70-step
+tail-parametric transport.  The GENERAL EXIT is NOT a clean run-chain: `EXIT(j)`
+regenerates `1^{2^j−3}` by re-running a `j−1`-scale doubling cascade (measured: `j=3`
+EXIT has one `sweepEF m=2`; `j=4` EXIT has a nested `m=2,4,6` chain, `70→218` steps),
+so it is the recursive `Θ(2^j)` sub-phase of §5m — NOT provable as a single transport.
+
+**(B/C) What closed GREEN, on-path.**  ENTRY (`rfl`), CORE (`= sweepEF 6`, parametric),
+EXIT (base, `rfl` chunks), and their composition `carry_event_5to13_ECE` reproducing
+the real `carry_event_5to13` — the depth-1 carry exhibited as `ENTRY ∘ CORE ∘ EXIT`.
+
+**(D) THE RIPPLE (depth ≥ 2) — [DESIGN, precisely evidenced].**  The general carry
+`carry_step` invokes lower carries.  This is CONCRETE on the orbit: the `j=4` carry
+window `[6484,7141]` (657 steps) literally CONTAINS the `j=3` carry `[6591,6708]`
+(`= carry_event_5to13`) as a contiguous sub-run — the `m=2,4,6` sub-groups inside the
+`j=4` ENTRY ARE the embedded `j=3` carry, and the `j=4` EXIT embeds a `j=3`-scale
+regeneration.  So `carry_step(j) = ENTRY[run + carry(j−1) + … + carry(2)] ∘
+carry_repack(j) ∘ EXIT[regenerate = carry_repack(j−1) ∘ EXIT(j−1) ∘ …]`, a
+WELL-FOUNDED ripple recursion with measure = digits-left-to-carry `≤ K` (the §5n
+`odo_terminates` WF).  It is NOT a bounded composite: the window and step-count grow
+`Θ(2^j)` (`x2ca_trace.py`), and both ENTRY and EXIT nest strictly-lower carries.  This
+recursion — the project's `Suffix.lean`-scale object — remains OPEN; no `sorry`, no
+axiom, no machine decided by this section. -/
+
 /-! ## §5n (LAYER B, PURE ODOMETER, 2026-07-12) THE WELL-FOUNDED COUNTER RECURSION.
 
 This is the design's **Layer B**: the PURE (no-tape) model of the doubling-phase
@@ -2763,6 +2962,12 @@ theorem x2_nonhalt (M1 M6 : Nat → Cfg)
 #print axioms carry_repack_doubles
 #print axioms carry_repack_anchor_j4
 #print axioms carry_repack_anchor_j5
+-- §5s: the depth-1 carry factored (ENTRY ∘ CORE=sweepEF ∘ EXIT), on-path:
+#print axioms carry_entry_j3
+#print axioms carry_core_j3
+#print axioms carry_exit_j3
+#print axioms carry_event_5to13_ECE
+#print axioms carry_ECE_eq_anchor
 -- the culminating repack at design j=3 (m=6) — the CORE of carry_event_5to13, on-path
 -- (raw n=6626): (10)^6 → 1^{12} in 12 steps, = carry_repack 1:
 #eval decide (steps (2 * (2 ^ (1 + 2) - 2)) ⟨.E, 0, ⟨[], false, pow10 6⟩⟩
