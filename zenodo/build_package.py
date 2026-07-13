@@ -13,7 +13,7 @@ VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
           "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md", "PAPER_RIGIDITY_LIMITS.md",
-          "MINIMAL_OPEN_KERNEL.md"]
+          "MINIMAL_OPEN_KERNEL.md", "PAPER_X2_INTEGER_DOUBLER.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [
@@ -30,6 +30,7 @@ VERIFICATION = [
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
         "lean/O3.lean", "lean/O18.lean", "lean/O2.lean", "lean/O17.lean", "lean/Completion.lean",
+        "lean/X2.lean",
         "lean/crosscheck.py", "lean/template_crosscheck.py",
         "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py", "lean/o18_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
@@ -72,6 +73,9 @@ NOTES = [
     "O7_DECISION_ATTEMPT_2026-07-10.md", "SPACENEEDLE_DECISION_ATTEMPT_2026-07-10.md",
     "O17_GATE_DECISION_ATTEMPT_2026-07-10.md", "O7_TRANSCENDENCE_ATTEMPT_2026-07-10.md",
     "SPACENEEDLE_TRANSCENDENCE_ATTEMPT_2026-07-10.md", "HOLDOUT_SWEEP_FEASIBILITY_2026-07-10.md",
+    # --- the integer-doubler (x2) machine: the carry-transparent decision candidate (2026-07-11..13) ---
+    "X2_FRONTIER_MAP_2026-07-11.md", "X2_STATUS_2026-07-12.md",
+    "X2_WELLFOUNDED_DESIGN_2026-07-12.md",
 ]
 
 META = ["zenodo/README_ZENODO.md", "zenodo/CITATION.cff",

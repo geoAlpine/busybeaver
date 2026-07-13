@@ -22,13 +22,16 @@ cd lean && lake build                                # green, zero sorry, axiom 
 - **~10 min** — this README + `papers/PAPER_CENSUS.md` §0–6 (what every cryptid is, what's proven, what's open).
 - **~30 min** — add `papers/PAPER_MIRROR_LADDER.md` (the uniform fixed-point theorem) and
   `papers/PAPER_RIGIDITY_LIMITS.md` (the (K)-independent limits-of-rigidity theorem).
-- **~2 hours** — add `lean/Mirror.lean` + `lean/Completion.lean` (the machine-checked core and the conditional
-  completion frame), run `verify_all.py`, and skim the `notes/` corrections trail.
+- **~30 min (decision track)** — `papers/PAPER_X2_INTEGER_DOUBLER.md` (the integer-doubler machine: how the
+  frontier's carry-transparent candidate's non-halting is reduced, in Lean, to a single recursive lemma).
+- **~2 hours** — add `lean/Mirror.lean` + `lean/Completion.lean` + `lean/X2.lean` (the machine-checked core, the
+  conditional completion frame, and the integer-doubler architecture), run `verify_all.py`, and skim the
+  `notes/` corrections trail.
 
 ## What this is
 
 A self-contained research artifact on the **BB(6) frontier** — the halting problems of the hardest 6-state Turing
-machines ("cryptids"), each of which encodes an open arithmetic problem. It contains a ~2-page specialist entry point (MINIMAL_OPEN_KERNEL) plus six paper-style documents,
+machines ("cryptids"), each of which encodes an open arithmetic problem. It contains a ~2-page specialist entry point (MINIMAL_OPEN_KERNEL) plus seven paper-style documents,
 the machine-verification battery that re-checks every proof-path certificate in one command, a Lean 4 formalization
 of the core arithmetic theorems, and the supporting lab notes.
 
@@ -57,17 +60,30 @@ of the core arithmetic theorems, and the supporting lab notes.
    configurations for the template machines (including a-priori predicted halting configurations later confirmed
    by simulation) and a ledger-memory dichotomy (cumulative vs resetting) that exactly tracks the annealed
    halt/non-halt lean.
+5. **The integer-doubler machine — a machine-checked non-halting *architecture* reduced to one recursive
+   lemma.** The machine `1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE` is a base-2 doubling odometer, `×2` with
+   integer multiplier `q=1` — it sits *outside* the (K)/normality wall (carry-transparent, not carry-opaque),
+   the frontier's best-mapped candidate for a decidable-in-principle machine. In Lean 4 (`X2.lean`) we build the
+   entire non-halting proof architecture: a conditional theorem `x2_nonhalt` reducing non-halting to three
+   explicit halt-free phase transports; the doubling phase resolved as a **clean binary odometer** (exact
+   closed-form tick count `Tfaithful`, a verified power-of-2 comb-at-carry ladder, a terminating well-founded
+   recursion — refuting an "irreducibly tape-determined" reading); and a library of ∀-parametric on-path
+   primitives (the tick, the steady run, the carry's `sweepEF`-core, the factored depth-1 carry, the low-phase
+   forward tile). The remaining open content is isolated to a **single** named lemma — `carry_step`, a
+   well-founded ripple recursion whose exact structure is measured. **The machine is not decided;** this is a
+   reduction, not a decision. (`papers/PAPER_X2_INTEGER_DOUBLER.md`.)
 
 ## Contents
 
 - `papers/` — `MINIMAL_OPEN_KERNEL.md` (the ~2-page specialist entry point: the single open problem + obstruction map)
-  and the six paper-style documents (theorem–proof style): `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`,
-  `PAPER_SPECIES_SURVEY.md`, `PAPER_MIRROR_LADDER.md`, `PAPER_CENSUS.md`, `PAPER_RIGIDITY_LIMITS.md`
+  and the seven paper-style documents (theorem–proof style): `PAPER_RUN_STRUCTURE.md`, `PAPER_TEMPLATE_METHOD.md`,
+  `PAPER_SPECIES_SURVEY.md`, `PAPER_MIRROR_LADDER.md`, `PAPER_CENSUS.md`, `PAPER_RIGIDITY_LIMITS.md`,
+  `PAPER_X2_INTEGER_DOUBLER.md` (the integer-doubler machine's machine-checked non-halting architecture)
 - `verification/` — `verify_all.py` (one-command re-verification; `--quick` ≈ 30 s, full ≈ minutes) and all
   scripts it invokes, self-contained
 - `lean/` — Lean 4 project (v4.31.0, no mathlib): run-structure theorems, the abstract uniform fixed-point
   theorem (`Mirror.lean`, 8 machines as Lean corollaries), and the o4 AND o3 template cores (both machines,
-  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 11 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison) — 280 theorem/lemma declarations across the 9 shipped Lean files, zero `sorry`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
+  sweep lemmas, body lemmas — o4's full generation map, o3's body AND generation map (odometer), o18 machine+all-sweeps, o2 machine+phase-1, o17 machine+gate, and **Completion.lean** — the conditional completion theorem `BB6_eq_championSteps` (the complete BB(6) proof's machine-checked logical frame, hard content isolated into 17 named conjectures = 11 explicit axioms); plus the abstract uniform fixed-point theorem and the criticality comparison; and **X2.lean** — the integer-doubler machine's non-halting *architecture* (the conditional theorem `x2_nonhalt`, the clean binary-odometer of its doubling phase, and the ∀-parametric phase primitives, reducing the machine to a single open recursive lemma `carry_step`; see `papers/PAPER_X2_INTEGER_DOUBLER.md`)) — 387 theorem/lemma declarations across the 10 shipped Lean files, zero `sorry`, zero `native_decide`, axiom audit `[propext, Quot.sound]` only; build with `lake build`
 - `notes/` — the supporting lab notes referenced by the papers ("References to the record"), including the
   novelty audit, the o15/o18 identity correction, and the retraction/correction trail
 - `LICENSE-DOCS` (CC-BY 4.0, applies to `papers/`, `notes/`, this README),
@@ -78,7 +94,11 @@ of the core arithmetic theorems, and the supporting lab notes.
 Claims live at two assurance tiers. **Machine-checked (Lean 4):** the arithmetic run-structure theorems and the FULL o4
 template reduction — the machine itself, the sweep lemmas, the body lemma (all k), the suffix lemmas, and the
 composed generation map (odometer + ledger law as theorems) — proven in the proof assistant with axiom audit
-`[propext, Quot.sound]` only. **Grid-certified:** the remaining template reductions (o3/o15/o18/o2/o11) are
+`[propext, Quot.sound]` only. For the **integer-doubler machine (`X2.lean`)**, what is machine-checked is the
+non-halting *architecture*: the conditional theorem `x2_nonhalt` (non-halting *given* the phase transports), the
+doubling phase's clean binary-odometer structure, and the ∀-parametric on-path phase primitives — **not** a
+decision; its `carry_step` ripple recursion is an explicit open lemma, and `x2_nonhalt`'s hypotheses are the
+still-unproven phase transports. **Grid-certified:** the remaining template reductions (o3/o15/o18/o2/o11) are
 exhaustively grid-verified with an explicitly stated composition argument (episode-landmark pinning),
 adversarially red-team-audited, and independently re-verified — but not yet formalized. The
 corrections/retraction trail (~46 self-caught over-claims, all logged in place in `notes/`) is part of the record.
