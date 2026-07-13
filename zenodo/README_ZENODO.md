@@ -1,6 +1,6 @@
 # The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic Return Problem
 
-**Yosuke Aoki (GeoAlpine LLC)** — research artifact, version 1.0 (2026-07-08)
+**Yosuke Aoki (GeoAlpine LLC)** — research artifact, version 1.0 (2026-07-14)
 
 ## Quick start
 

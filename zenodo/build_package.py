@@ -95,7 +95,12 @@ def main():
         readme = re.sub(r"version \d+\.\d+(\.\d+)? \(", f"version {VERSION} (", readme)
         readme = re.sub(r"\(Version \d+\.\d+(\.\d+)?\)", f"(Version {VERSION})", readme)
         z.writestr("README.md", readme)
-        for f in ["zenodo/CITATION.cff", "zenodo/LICENSE-DOCS", "zenodo/LICENSE-CODE", "zenodo/metadata.json"]:
+        # CITATION.cff: rewrite the version field so the shipped citation matches this release
+        # (the Zenodo record's version is set separately by zenodo_release.py from --version).
+        citation = open(os.path.join(ROOT, "zenodo/CITATION.cff")).read()
+        citation = re.sub(r'(?m)^version:\s*"[^"]*"', f'version: "{VERSION}"', citation)
+        z.writestr("CITATION.cff", citation)
+        for f in ["zenodo/LICENSE-DOCS", "zenodo/LICENSE-CODE", "zenodo/metadata.json"]:
             z.write(os.path.join(ROOT, f), os.path.basename(f))
         for f in PAPERS:        z.write(os.path.join(ROOT, f), f"papers/{f}")
         for f in VERIFICATION:  z.write(os.path.join(ROOT, f), f"verification/{f}")

@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this artifact, please cite it as below."
 type: dataset
 title: "The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic Return Problem"
-version: "1.0"
-date-released: "2026-07-08"
+version: "1.9"
+date-released: "2026-07-14"
 authors:
   - family-names: "Aoki"
     given-names: "Yosuke"
