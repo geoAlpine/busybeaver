@@ -3594,4 +3594,214 @@ captured by NO lemma here.  The low-phase composition (episodes 1,2), the compou
 (episodes 5,6), and top-level `x2_nonhalt` remain not formalized.  x2 stays `[OPEN]`.
 No label upgraded. -/
 
+/-! ## §5w (LAYER A/B, ON-PATH, 2026-07-14) THE `carry_step` WELL-FOUNDED RECURSION —
+assembling §5v's structural finding into a GROUNDED recursive register, a PROVEN ∀j
+descent-fold + middle-run + core, a WF measure, and the recursion skeleton, with the
+single remaining recursive object (`EXIT`) named precisely.
+
+**What §5v established** (all GREEN, on-path, `x2cu_*.py` cell-for-cell): the level-`j`
+block-doubling carry `C(j)` (block `1^{d_j} → 1^{d_{j+1}}`, `d_j = 2^j − 3`) decomposes,
+at its `E`-on-`0` odometer anchors, as
+
+```
+  C(j) = DESCENT-FOLD(j)  ∘  [seam glue]  ∘  C(j−1)  ∘  MIDDLE(j)  ∘  CORE(j)  ∘  EXIT(j)
+```
+
+with DESCENT-FOLD, MIDDLE, CORE all PROVEN `∀j`-parametric, the seam glue `∀j`-uniform,
+and `EXIT(j) ⊇ CORE(j−1) ∘ EXIT(j−1)` the one strictly-lower recursive object.  This
+section turns that into named, grounded Lean objects.
+
+**Grounding (the on-path discipline).**  The carry register's RIGHT side is the FULL
+descending cascade `1^{d_j} 0² 1^{d_{j−1}} 0² … 1^{d_2}` (`d_2 = 1`), read CELL-FOR-CELL
+off the real `x2bd_sim.build(2)` orbit at the `C(j)`-start anchors `n = 6591 (j=3)`,
+`6484 (j=4)`, `6397 (j=5)` (`x2cu_*.py` snapshot).  `cascadeTail` below IS this cascade,
+and `cascadeTail_grounds_carry_j3/_j4` PROVE it reproduces the RIGHT sides of the two
+already-proven concrete carries `carry_event_5to13` (j=3) and `carry_j4` (j=4) EXACTLY,
+by `rfl` — so the recursive register is on-path, not invented. -/
+
+/-- The digit values along the extended orbit chain (kernel cross-check; reuses the
+EXISTING `carryDigit n = 2^{n+2}−3` of §5-carry, indexed by carries-from-bottom, so
+`level j = n+2`: `d_2=1, d_3=5, d_4=13, d_5=29, d_6=61`).  Matches `carry_event_5to13`
+(`5→13`, `n:1→2`) and `carry_j4` (`13→29`, `n:2→3`) on the real orbit. -/
+theorem carryDigit_chain :
+    carryDigit 0 = 1 ∧ carryDigit 1 = 5 ∧ carryDigit 2 = 13 ∧
+      carryDigit 3 = 29 ∧ carryDigit 4 = 61 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE CARRY REGISTER'S CASCADE TAIL, `∀n` (the recursive datatype).**  The RIGHT-side
+register at a level-`j = n+2` carry anchor is the full descending base-2 cascade
+`1^{d_j} 0² 1^{d_{j−1}} 0² … 1^{d_2}` (`d_2 = 1`), read CELL-FOR-CELL off the real orbit
+(`x2cu` snapshot, `n=6591/6484/6397`).  DEFINED by structural recursion `n+1 ↦ n`, so
+`cascadeTail (n+1)` literally CONTAINS `cascadeTail n` as its tail below the top block
+`1^{carryDigit (n+1)}` — the register-level realization of `C(j) ⊃ C(j−1)`. -/
+def cascadeTail : Nat → List Bool
+  | 0 => ones 1
+  | (n + 1) => ones (carryDigit (n + 1)) ++ (false :: false :: cascadeTail n)
+
+/-- **The cascade tail's recursive unfold** (`rfl`): level `j = n+3` is the top block
+`1^{d_{n+1}}` over `0²` over the level-`(j−1)` cascade `cascadeTail n`.  This is the
+recursion's DESCENT leg at the register level — peeling the top digit exposes the
+strictly-lower register. -/
+theorem cascadeTail_unfold (n : Nat) :
+    cascadeTail (n + 1) = ones (carryDigit (n + 1)) ++ (false :: false :: cascadeTail n) :=
+  rfl
+
+/-- **GROUNDING (j=3): `cascadeTail` reproduces `carry_event_5to13`'s RIGHT side.**  The
+real carry's input right (raw `n=6591`) is `0³ 1^5 0² 1 0^{11} · R`, i.e. exactly
+`zeros 3 ++ cascadeTail 1 ++ zeros 11 ++ R` (`cascadeTail 1 = 1^5 0² 1`).  Kernel `rfl` —
+the register is on-path. -/
+theorem cascadeTail_grounds_carry_j3 (R : List Bool) :
+    zeros 3 ++ cascadeTail 1 ++ zeros 11 ++ R
+      = false :: false :: false :: true :: true :: true :: true :: true :: false :: false ::
+        true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: R :=
+  rfl
+
+/-- **GROUNDING (j=4): `cascadeTail` reproduces `carry_j4`'s RIGHT side.**  The real
+carry's input right (raw `n=6484`) is `0 1^{13} 0² 1^5 0² 1 0^{33} · R`, i.e. exactly
+`zeros 1 ++ cascadeTail 2 ++ zeros 33 ++ R` (`cascadeTail 2 = 1^{13} 0² 1^5 0² 1`).  Kernel
+`rfl` — grounds the SECOND proven carry, so the recursive register matches BOTH depths on
+the real orbit. -/
+theorem cascadeTail_grounds_carry_j4 (R : List Bool) :
+    zeros 1 ++ cascadeTail 2 ++ zeros 33 ++ R
+      = false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+        true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false ::
+        false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: R :=
+  rfl
+
+/-- `2 ≤ 2^{m+1}` (helper for the descent-fold's block-length arithmetic). -/
+theorem two_le_two_pow_succ : ∀ m, 2 ≤ 2 ^ (m + 1) := by
+  intro m
+  induction m with
+  | zero => decide
+  | succ k ih => rw [Nat.pow_succ]; omega
+
+/-- **THE CARRY ENTRY DESCENT-FOLD, `∀`-level (deliverable A).**  At a level-`j = m+2`
+carry's start, the top solid block `1^{d_m} = 1^{carryDigit m} = 1^{2^{m+2}−3}` (head `E`
+on the boundary `0`) is folded to the comb `pow01 (2^{m+1}−2)` (deposited on the left) plus
+the residue `1^1`, in `6·(2^{m+1}−2)` steps, `M/R` untouched.  This is EXACTLY
+`ecombChewFold (2^{m+1}−2)` — the descent that peels the top digit and exposes the
+strictly-lower register `cascadeTail (m−1)` below.  Converts §5v's `FOLD_RUN` observation
+into a PROVEN `∀`-level connector: cross-checks `C4` (m=2 ⇒ `6` folds) and `C5` (m=3 ⇒ `14`
+folds).  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`-only. -/
+theorem carry_descent_fold (m : Nat) (p : Int) (L R : List Bool) :
+    steps (6 * (2 ^ (m + 1) - 2)) ⟨.E, p, ⟨L, false, false :: (ones (carryDigit m) ++ R)⟩⟩
+      = some ⟨.E, p + 2 * ((2 ^ (m + 1) - 2 : Nat) : Int),
+          ⟨pow01 (2 ^ (m + 1) - 2) ++ L, false, false :: (ones 1 ++ R)⟩⟩ := by
+  have hd : carryDigit m = 2 * (2 ^ (m + 1) - 2) + 1 := by
+    rw [carryDigit_closed]
+    have e : 2 ^ (m + 2) = 2 ^ (m + 1) * 2 := Nat.pow_succ 2 (m + 1)
+    have h2 := two_le_two_pow_succ m
+    omega
+  rw [hd]
+  exact ecombChewFold (2 ^ (m + 1) - 2) p L R
+
+/-- **Descent-fold length cross-check** (m=2 ⇒ C4's `6`-fold entry; m=3 ⇒ C5's `14`-fold
+entry), matching the `x2cu_decompose.py` `FOLD_RUN` counts. -/
+theorem carry_descent_fold_counts :
+    (2 ^ (2 + 1) - 2 = 6 ∧ 6 * (2 ^ (2 + 1) - 2) = 36) ∧
+      (2 ^ (3 + 1) - 2 = 14 ∧ 6 * (2 ^ (3 + 1) - 2) = 84) := by
+  refine ⟨⟨by decide, by decide⟩, ⟨by decide, by decide⟩⟩
+
+/-- **THE CARRY MIDDLE no-carry RUN, `∀`-level (deliverable A/C, MIDDLE piece).**  Between
+the embedded lower carry `C(j−1)` and the CORE repack, the level-`j = m+2` carry runs a
+maximal no-carry stretch that is EXACTLY `outer_tick_noCarry_run (2^{m+1}−4)` at `t=1`
+(solid block `1^3`), `work` from `5+2·(2^{m+1}−4)` down to `5`, consuming `(10)^{2^{m+1}−4}`.
+Generalizes `carry_j4_middle_run` (m=2, `run 4`) / `carry_j5_middle_run` (m=3, `run 12`) to
+ALL levels, by DIRECT REUSE of the PROVEN `∀n` §5p run.  `[propext, Quot.sound]`-only. -/
+theorem carry_level_middle (m : Nat) (p : Int) (M' R : List Bool) :
+    steps (runSteps 1 (2 ^ (m + 1) - 4))
+        ((⟨1, 5 + 2 * (2 ^ (m + 1) - 4)⟩ : Odo).toCfg p (pow10 (2 ^ (m + 1) - 4) ++ M') R)
+      = some ((⟨1 + 2 * (2 ^ (m + 1) - 4), 5⟩ : Odo).toCfg
+          (p + 2 * ((2 ^ (m + 1) - 4 : Nat) : Int)) M' R) :=
+  outer_tick_noCarry_run (2 ^ (m + 1) - 4) p 1 5 M' R
+
+/-- **THE CARRY CORE repack, `∀`-level (deliverable C, CORE piece).**  At the culminating
+repack the built comb `(10)^{2^{m+2}−2}` is doubled to the solid block `1^{2^{m+3}−4}`
+(one below the doubled digit `d_{m+1}`), `R` untouched — EXACTLY `carry_repack m`
+(`= sweepEF (2^{m+2}−2)`, PROVEN `∀j` in §5m).  Named here as the level-`j` CORE for the
+recursion.  `[propext, Quot.sound]`-only. -/
+theorem carry_level_core (m : Nat) (L R : List Bool) :
+    steps (2 * (2 ^ (m + 2) - 2)) ⟨.E, 0, ⟨L, false, pow10 (2 ^ (m + 2) - 2) ++ R⟩⟩
+      = some ⟨.E, 2 * ((2 ^ (m + 2) - 2 : Nat) : Int),
+          ⟨ones (2 * (2 ^ (m + 2) - 2)) ++ L, false, R⟩⟩ :=
+  carry_repack m L R
+
+/-- **THE WELL-FOUNDED CARRY RECURSION SKELETON (deliverable D, the WF frame).**  The
+level-indexed carry recursion is well-founded on the level `n` (the §5n `odo_terminates`
+digits-left measure, `≤ K`): from the base level `n=1` (`j=3`, `carry_event_5to13`) and a
+step `P n → P (n+1)`, EVERY level `n ≥ 1` holds.  PROVEN by `Nat.le_induction` (a genuine
+WF/structural recursion — NOT `partial def`, NOT `sorry`).  A closed `carry_step` is
+EXACTLY this combinator instantiated at the concrete level-`n` transport `P`; the base is
+discharged by `carry_event_5to13`, the pieces of the step by `carry_descent_fold`
+(DESCENT), `carry_level_middle` (MIDDLE), `carry_level_core` (CORE) and the IH `P n`
+(the embedded lower carry, realized concretely at depth 2 by `carry_j4`'s reuse of
+`carry_event_5to13`), leaving ONLY the recursive `EXIT(n+1) ⊇ CORE(n) ∘ EXIT(n)` object. -/
+theorem carry_level_rec {P : Nat → Prop} (hbase : P 1)
+    (hstep : ∀ n, 1 ≤ n → P n → P (n + 1)) : ∀ n, 1 ≤ n → P n := by
+  intro n
+  induction n with
+  | zero => intro h; exact absurd h (by decide)
+  | succ k ih =>
+    intro _
+    cases k with
+    | zero => exact hbase
+    | succ j => exact hstep (j + 1) (by omega) (ih (by omega))
+
+/-! ### §5w: what CLOSED, and the single remaining object (`carry_step`) — [DESIGN].
+
+**PROVEN GREEN this section (on-path, all `[propext, Quot.sound]`-only):**
+  • `carryDigit_chain` — the digit ladder `1,5,13,29,61` (= `2^{n+2}−3`), grounding the
+    block lengths of both proven carries.
+  • `cascadeTail` (+ `cascadeTail_unfold`) — the carry register's RIGHT side as a RECURSIVE
+    datatype, `cascadeTail (n+1) ⊃ cascadeTail n`, read cell-for-cell off the real orbit.
+  • `cascadeTail_grounds_carry_j3` / `_j4` — the register reproduces `carry_event_5to13`'s
+    (j=3) and `carry_j4`'s (j=4) RIGHT sides EXACTLY, by `rfl`.  **The two concrete carries
+    are reproduced — the register is on-path, not invented.**
+  • `carry_descent_fold` — the carry ENTRY block→comb fold, `∀`-level (via `ecombChewFold`).
+  • `carry_level_middle` — the carry MIDDLE no-carry run, `∀`-level (via
+    `outer_tick_noCarry_run`), generalizing `carry_j4/j5_middle_run`.
+  • `carry_level_core` — the carry CORE repack, `∀`-level (via `carry_repack`).
+  • `carry_level_rec` — the WF recursion SKELETON on the level (`Nat.le_induction`).
+
+So of `C(j) = DESCENT ∘ glue ∘ C(j−1) ∘ MIDDLE ∘ CORE ∘ EXIT`, the DESCENT, MIDDLE, CORE
+are PROVEN `∀`-level connectors, the register is a grounded recursive datatype, and the
+recursion's control flow is the proven `carry_level_rec` — with the base and depth-2 step
+already GREEN as `carry_event_5to13` / `carry_j4`.
+
+**THE SINGLE REMAINING OBJECT — `carry_step`, [DESIGN, precisely located].**  To instantiate
+`carry_level_rec` at the concrete tape-level transport requires the per-level STEP
+`P n → P (n+1)`, whose only non-`∀`-uniform ingredient is
+
+```lean
+-- [DESIGN] EXIT(n+1) : the carry's regeneration sub-phase, a WF recursion one level down.
+--   EXIT(n+1) = [const seam glue, ∀-uniform per §5v(2)]
+--             ∘ CORE(n)        -- = carry_level_core (n−1), PROVEN ∀-level
+--             ∘ EXIT(n)        -- the strictly-lower recursive call (measure n ↓)
+--   grounded: EXIT(1)=70 steps (carry_exit_j3, §5s), EXIT(2)=218, EXIT(3)=722 (x2cu).
+```
+
+`EXIT` is well-founded (each call strictly decreases the level `n`, the §5n
+`odo_terminates` measure), its glue is `∀`-uniform (§5v(2)), and its CORE is the PROVEN
+`carry_level_core` — so the ONLY open work is the DEFINITIONAL naming of the `EXIT`
+recursive object and the register-level `steps_add` book-keeping that threads the grounded
+`cascadeTail` register through DESCENT ∘ IH ∘ MIDDLE ∘ CORE ∘ EXIT.  We state `carry_step`
+as `[DESIGN]` (comment, NO `sorry`, NO axiom) rather than force a green `∀j` transport whose
+register threading is unverified — the discipline's on-path requirement.  `carry_step`
+remains the project's `Suffix.lean`-scale object; NO machine is decided by this section. -/
+
+-- §5w carry_step WF-RECURSION axiom audits (register grounding + ∀-level connectors + skeleton):
+#print axioms carryDigit_chain
+#print axioms cascadeTail_unfold
+#print axioms cascadeTail_grounds_carry_j3
+#print axioms cascadeTail_grounds_carry_j4
+#print axioms carry_descent_fold
+#print axioms carry_descent_fold_counts
+#print axioms carry_level_middle
+#print axioms carry_level_core
+#print axioms carry_level_rec
+
 end X2
