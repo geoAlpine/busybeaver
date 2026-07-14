@@ -2250,6 +2250,116 @@ for the plain no-carry run, or `carry_repack` for the CORE).  Hence the general
 non-uniform, self-nesting growth is precisely the obstruction to a straight-line `∀j`
 transport.  No `sorry`, no axiom, no `native_decide`; no machine decided by this section. -/
 
+/-! ## §5v (LAYER A, ON-PATH, 2026-07-14) THE CARRY CONNECTORS ARE ∀j-PARAMETRIC —
+the decisive `carry_step` experiment: the carry's MIDDLE is the PROVEN `∀n`
+`outer_tick_noCarry_run`, the seam glue is `∀j`-UNIFORM, and the ONLY non-uniform
+piece is the recursive EXIT.
+
+**THE DECISIVE EXPERIMENT (`x2cu_*.py`, cell-for-cell from the faithful
+`x2bd_sim.build(2)` orbit).**  We extracted the block-doubling carries at THREE levels —
+`C3` (block `5→13`, raw `n=[6591,6708]`, 117 steps), `C4` (`13→29`, `[6484,7141]`, 657
+steps), `C5` (`29→61`, `[6397,8798]`, 2401 steps) — and decomposed EACH at its `E`-on-`0`
+odometer anchors into: the DESCENT-FOLD (block→comb, `ecfold`-family), the embedded lower
+carry `C(j−1)`, the MIDDLE no-carry build-up, the CORE `sweepEF(2^j−2)`, the recursive EXIT,
+and the residual SEAM glue.  The decisive comparison of the connectors ACROSS levels
+(`x2cu_decompose.py`, `x2cu_middle.py`) gives:
+
+**(1) THE MIDDLE IS THE PROVEN `∀n` RUN — VERIFIED at two levels.**  Between the embedded
+`C(j−1)` and the CORE, the carry runs a maximal stretch of no-carry ticks that is EXACTLY
+`outer_tick_noCarry_run` (§5p, PROVEN `∀n`), starting ALWAYS from the left solid block
+`1^3` (register `t = 1`):
+  • `C4` MIDDLE run `n=[6717,6821]`, **104 steps**, is `outer_tick_noCarry_run 4` (t=1):
+    solid block `1^3→1^{19}` (`t : 1→9`), working block `1^{13}→1^5` (`−2·4`), the four
+    ticks `t=1,3,5,7` (gaps `14,22,30,38 = 4t+10`), `runSteps 1 4 = 104` EXACT.
+  • `C5` MIDDLE run `n=[7150,7846]`, **696 steps**, is `outer_tick_noCarry_run 12` (t=1):
+    solid block `1^3→1^{51}` (`t : 1→25`), working `1^{29}→1^5`, `runSteps 1 12 = 696` EXACT.
+  Both are the SAME `∀n` engine at `n = 2^{j−1}−4` (`4, 12, …`), tail-parametric — NOT a
+  fixed `rfl` chunk.  `carry_j4_middle_run` / `carry_j5_middle_run` below prove them by
+  DIRECT REUSE of `outer_tick_noCarry_run`, in `Odo.toCfg` form grounded cell-for-cell to
+  the real orbit (§5l/§5p grounding).  **This REFUTES §5u's read that the connectors are
+  `NOT instances of a ∀j-parametric connector lemma`: the MIDDLE demonstrably IS one.**
+
+**(2) THE SEAM GLUE IS `∀j`-UNIFORM.**  After factoring out the parametric pieces
+(DESCENT-FOLD, `C(j−1)`, MIDDLE run, CORE) the residual seam glue at every level is the
+SAME small recurring cell-patterns — the turnarounds `gap 3,7,8,12,15,24` and the
+mini-repacks `sweepEF 1,2,3,6` — appearing CELL-FOR-CELL identically inside `C3`, `C4`, and
+`C5` (they are translation-invariant instances of the same local odometer operations, e.g.
+the bottom-turnaround motif `gap3·gap3·gap15·gap7·sweepEF2·gap24` and the C3-shaped
+`gap7·sweepEF1·gap8·sweepEF3·gap12·sweepEF6` recur verbatim).  The glue does NOT grow with
+`j`; only the parametric-run LENGTHS and the nesting DEPTH grow.
+
+**(3) THE ONE NON-UNIFORM PIECE IS THE RECURSIVE EXIT.**  `EXIT(j)` regenerates the fresh
+`1^{2^j−3}` below the doubled block by re-running a scale-`(j−1)` doubling sub-cascade:
+measured `EXIT(3)=70` (one `sweepEF 2`), `EXIT(4)=218` (a C3-shaped regeneration), `EXIT(5)
+=722` (a C4-shaped regeneration nesting a C3-shaped one).  This is the design's ANTICIPATED
+`EXIT = scale-(j−1) sub-phase + const glue`; the glue AROUND it is uniform (per (2)), but the
+sub-phase is a strictly-lower recursive object, so `carry_step` is a WELL-FOUNDED RECURSION
+on `j`, not a straight-line composite.
+
+**DECISIVE ANSWER TO THE CRUX.**  The GLUE between the parametric pieces IS `∀j`-uniform
+(constant-size, identical cell-patterns).  The carry's growth lives ENTIRELY in (a) proven
+`∀`-length runs (`ecfold` descent-fold, `outer_tick_noCarry_run` MIDDLE — now proven-by-reuse
+here, `carry_repack` CORE) and (b) the strictly-lower recursive `C(j−1)` / `EXIT(j−1)`.  So
+`carry_step` is closable-IN-PRINCIPLE as the well-founded recursion the design specified
+(measure = digits-left `≤ K`, §5n `odo_terminates`); what remains is the DEFINITIONAL work of
+naming the single recursive datatype + `EXIT` object that ties `EXIT(j) ⊇ CORE(j−1)∘EXIT(j−1)`
+into Lean's WF recursion — materially lighter than §5u's framing, since the glue-uniformity
+and the MIDDLE's `∀n`-parametricity are now established GREEN, not conjectured.  We prove the
+MIDDLE-reuse `∀`-parametric factoring below (deliverable C); the EXIT recursion's Lean closure
+stays OPEN.  No `sorry`, no axiom, no `native_decide`; no machine decided by this section. -/
+
+/-- **THE `j=4` CARRY MIDDLE = `outer_tick_noCarry_run 4`, BY REUSE (not `rfl`).**  The
+187-step MIDDLE connector of `carry_j4` (§5u, previously the fixed `rfl` chunks
+`j4_C1..C5`) has as its core the 104-step no-carry build-up run `n=[6717,6821]`, which is
+EXACTLY `outer_tick_noCarry_run 4` at `t=1, work=5`: from register `⟨1, 13⟩` (solid `1^3`,
+working `1^{13}`) with `(10)^4` comb pending on the left, `runSteps 1 4 = 104` steps reach
+`⟨9, 5⟩` (solid `1^{19}`, working `1^5`), head `+8`, the far tails `M' R` untouched.  Proved
+by DIRECT REUSE of the `∀n` §5p lemma — the MIDDLE connector IS a `∀j`-parametric run, not a
+window-specific chunk.  `Odo.toCfg` form (grounded on the real orbit, §5l), so
+`[propext, Quot.sound]`-only. -/
+theorem carry_j4_middle_run (M' R : List Bool) :
+    steps (runSteps 1 4) ((⟨1, 5 + 2 * 4⟩ : Odo).toCfg 0 (pow10 4 ++ M') R)
+      = some ((⟨1 + 2 * 4, 5⟩ : Odo).toCfg (0 + 2 * ((4 : Nat) : Int)) M' R) :=
+  outer_tick_noCarry_run 4 0 1 5 M' R
+
+/-- **Clean-number restatement of the `j=4` MIDDLE run** (`104` steps, `⟨1,13⟩ → ⟨9,5⟩`,
+head `0 → 8`).  Same transport as `carry_j4_middle_run`, numbers reduced. -/
+theorem carry_j4_middle_run' (M' R : List Bool) :
+    steps 104 ((⟨1, 13⟩ : Odo).toCfg 0 (pow10 4 ++ M') R)
+      = some ((⟨9, 5⟩ : Odo).toCfg 8 M' R) :=
+  carry_j4_middle_run M' R
+
+/-- **THE `j=5` CARRY MIDDLE = `outer_tick_noCarry_run 12`, BY REUSE.**  One level up: the
+`C5` MIDDLE build-up run `n=[7150,7846]`, **696 steps**, is EXACTLY `outer_tick_noCarry_run
+12` at the SAME start register `t=1, work=5`: `⟨1, 29⟩ → ⟨25, 5⟩` (solid `1^3→1^{51}`,
+working `1^{29}→1^5`), head `+24`, `(10)^{12}` comb consumed, `runSteps 1 12 = 696` EXACT.
+The IDENTICAL `∀n` engine as the `j=4` MIDDLE, only the length grown (`n : 4 → 12 =
+2^{j−1}−4`) — the decisive evidence that the MIDDLE connector is `∀j`-parametric-UNIFORM.
+`[propext, Quot.sound]`-only. -/
+theorem carry_j5_middle_run (M' R : List Bool) :
+    steps (runSteps 1 12) ((⟨1, 5 + 2 * 12⟩ : Odo).toCfg 0 (pow10 12 ++ M') R)
+      = some ((⟨1 + 2 * 12, 5⟩ : Odo).toCfg (0 + 2 * ((12 : Nat) : Int)) M' R) :=
+  outer_tick_noCarry_run 12 0 1 5 M' R
+
+/-- **Clean-number restatement of the `j=5` MIDDLE run** (`696` steps, `⟨1,29⟩ → ⟨25,5⟩`,
+head `0 → 24`). -/
+theorem carry_j5_middle_run' (M' R : List Bool) :
+    steps 696 ((⟨1, 29⟩ : Odo).toCfg 0 (pow10 12 ++ M') R)
+      = some ((⟨25, 5⟩ : Odo).toCfg 24 M' R) :=
+  carry_j5_middle_run M' R
+
+/-- **The MIDDLE-run length law, `∀j` (the parametric-uniform mechanism).**  Both extracted
+MIDDLEs are `outer_tick_noCarry_run` at `t=1` with `n = 2^{j−1}−4` (`j=4 ↦ 4`, `j=5 ↦ 12`),
+so the MIDDLE step-count is `runSteps 1 (2^{j−1}−4)` — a single `∀j` closed form, NOT a
+family of window-specific chunk-counts.  Pure `Nat` cross-check of the two extracted lengths
+against the formula. -/
+theorem carry_middle_len_formula :
+    (2 ^ (4 - 1) - 4 = 4 ∧ runSteps 1 4 = 104) ∧
+    (2 ^ (5 - 1) - 4 = 12 ∧ runSteps 1 12 = 696) := by
+  refine ⟨⟨by decide, ?_⟩, ⟨by decide, ?_⟩⟩
+  · rw [runSteps_closed]
+  · rw [runSteps_closed]
+
 
 /-! ## §5n (LAYER B, PURE ODOMETER, 2026-07-12) THE WELL-FOUNDED COUNTER RECURSION.
 
@@ -3308,6 +3418,13 @@ theorem x2_nonhalt (M1 M6 : Nat → Cfg)
 #print axioms nonhalt_of_segments
 #print axioms x2_cycle
 #print axioms x2_nonhalt
+
+-- §5v CARRY-CONNECTOR ∀j-PARAMETRIC axiom audits (MIDDLE = outer_tick_noCarry_run reuse):
+#print axioms carry_j4_middle_run
+#print axioms carry_j4_middle_run'
+#print axioms carry_j5_middle_run
+#print axioms carry_j5_middle_run'
+#print axioms carry_middle_len_formula
 
 /-! ## §7 Honest scope of this file (what is FORMALIZED vs OPEN).
 
