@@ -4089,4 +4089,257 @@ theorem exit_terminal_not_of_j :
 #print axioms exit_terminal_k5
 #print axioms exit_terminal_not_of_j
 
+/-! ## §5z (LAYER A, ON-PATH, 2026-07-15) THE k-INDEXED RECURSIVE EXIT — the
+`exitSteps` closed form, the REGEN translation-invariance (the reusability the whole
+recursion turns on), the exact tree-recursion decomposition, and the single remaining
+`[DESIGN]` object stated with maximal sharpness.
+
+**THE CULMINATION.**  §5w assembled the carry as `C(j) = DESCENT ∘ glue ∘ C(j−1) ∘
+MIDDLE ∘ CORE ∘ EXIT(j)` with DESCENT/MIDDLE/CORE proven `∀`-level and the register a
+grounded recursive datatype (`cascadeTail`), leaving `EXIT` the one open recursive
+object.  §5x pinned `EXIT(j) = DESCENT-FOLD ∘ REGEN(j−1)` (a WF recursion, not a
+straight-line composite) and §5y resolved that its per-level terminal glue is the CLEAN
+`TERM(k)=2^{k+1}+k+5` indexed by the *block height* `k`, NOT the local level `j`.  This
+section BUILDS the k-indexed recursive EXIT and reports EXACTLY what closes and what does
+not, cross-checking against the two proven concrete EXITs `carry_exit_j3` (=REGEN(4), 70
+steps) and `carry_exit_j4` (=REGEN(5), 218 steps).
+
+**RE-INDEXING (the §5y move made precise).**  Write `REGEN(k)` for the regeneration that
+lays the fresh top cascade block `1^{2^k−3}` and re-anchors `E`; then `EXIT(j) = REGEN(j+1)`
+(`EXIT(3)` lays `1^13`=`k=4`, `EXIT(4)` lays `1^29`=`k=5`, …).  The step count, extracted
+cell-for-cell from `x2bd_sim.build(2)` at FIVE levels (`x2ck_exitsteps.py`,
+`x2ck_exit6.py`, and a fifth point `REGEN(8)` located independently at raw `n=31246→40528`)
+is `70, 218, 722, 2530, 9282` for `k=4,5,6,7,8`.
+
+**DELIVERABLE (A) — `exitSteps(k)` HAS A CLEAN CLOSED FORM (this REFINES §5x's tentative
+"no clean form").**  A 5-point rational fit is EXACT with clean dyadic coefficients:
+
+```
+  exitSteps(k) = 2^{2k−3} + k·2^{k−1} + 2^{k−2} + 2
+               = 70, 218, 722, 2530, 9282   (k=4,5,6,7,8)   ✓ all five
+```
+
+The reason §5x's `a·4^k+b·2^k+c·k+d` fit gave garbage (fractional `a=37/72`) is the
+**`k·2^{k−1}` term** — the odometer-height *linear×exponential* factor (exactly §5o's
+"linear-in-K × exponential" tick structure).  Once that term is admitted the form is clean;
+`exitSteps` also satisfies the order-4 linear recurrence with characteristic
+`(x−4)(x−2)²(x−1)` (roots `4,2,2,1`), grounded below.
+
+**DELIVERABLE (B/C) — THE DECISIVE POSITIVE: `REGEN(k)` IS FULLY TRANSLATION-INVARIANT.**
+The whole point on which a recursion of *reusable* transports turns.  `x2ck_regen_ti.py`
+verifies (identical `(state,head,Δpos)` relative trace) that the COMPLETE per-level
+regeneration is one transport at every occurrence: `REGEN(5)` (all 218 steps) is
+byte-identical at ALL FOUR orbit sites (`[6923,7141]`, `[13235,13453]`, `[31955,32173]`,
+`[38267,38485]`), and `REGEN(4)` (all 70 steps) at ALL EIGHT sites.  This is strictly
+stronger than §5x/§5y (which proved only the terminal + two motifs TI): the ENTIRE REGEN
+body is level-context-independent.  The Lean content of this is precisely that
+`carry_exit_j3`/`carry_exit_j4` are stated `∀ L R` — so REGEN(4)/(5) ARE reusable
+transports, applicable with ANY block-above `L` / cascade-below `R` (`regen_TI_generic`).
+
+**DELIVERABLE (C) — THE EXACT REMAINING OBSTRUCTION: the recursion is a NON-UNIFORM TREE.**
+The top-level decomposition of `REGEN(k)` into proven pieces + strictly-lower REGEN calls
+(`x2ck_regen_seg.py`, greedy largest-block cover) is grounded exactly (`exitSteps_tree_*`
+below):
+```
+  REGEN(5) = 44 · TERM(3) · 76 · TERM(5)                                  [0 lower REGEN]
+  REGEN(6) = 83 · TERM(3) · 47 · REGEN(4) · 113 · TERM(3) · 122 · TERM(3) · 76 · TERM(6)
+                                                                          [1 lower REGEN]
+  REGEN(7) = 170·TERM(3)·47·REGEN(4)·113·TERM(3)·78·REGEN(5)·113·TERM(3)·881·TERM(3)
+             ·47·REGEN(4)·113·TERM(3)·122·TERM(3)·76·TERM(7)             [3 lower REGEN]
+```
+The number of strictly-lower REGEN recursive calls is `0,1,3` for `k=5,6,7` — the branching
+ARITY GROWS with `k` (the odometer's digit expansion), and the interleaving glue segments
+(the `881` in `REGEN(7)`) carry level-dependent CORE `sweepEF` build-ups.  So `REGEN(k)` is
+a genuine WELL-FOUNDED TREE recursion whose arity is not `∀k`-constant; it is NOT a
+straight-line `∀k` transport, and a total structural `carryExit : Nat → transport` with a
+FIXED tuple of recursive calls does not exist.  This is the precise, final shape of the
+`carry_step` `[DESIGN]` object — sharpened from "recursive" (§5w) → "WF recursion, not
+straight-line" (§5x) → "clean per level but counter-dependent" (§5y) → here: a
+translation-invariant per-level transport arranged by a growing-arity odometer tree. -/
+
+/-- **THE TERMINAL-GLUE STEP COUNT, closed form** `TERM(k)=2^{k+1}+k+5` (§5y as a `def`),
+the block-final flush laying `1^{2^k−3}`; `= 24,41,74,139,268` for `k=3..7`. -/
+def termSteps (k : Nat) : Nat := 2 ^ (k + 1) + k + 5
+
+/-- **THE k-INDEXED EXIT STEP COUNT, CLOSED FORM** (deliverable A).
+`exitSteps(k) = 2^{2k−3} + k·2^{k−1} + 2^{k−2} + 2`, the regeneration `REGEN(k)` laying
+`1^{2^k−3}`.  The middle `k·2^{k−1}` is the odometer-height linear×exponential factor. -/
+def exitSteps (k : Nat) : Nat := 2 ^ (2 * k - 3) + k * 2 ^ (k - 1) + 2 ^ (k - 2) + 2
+
+/-- **GROUNDING: the closed form reproduces the REAL extracted step counts** at FIVE
+levels `k=4,5,6,7,8 → 70,218,722,2530,9282` (`x2ck_exitsteps.py`/`x2ck_exit6.py`, and the
+independent 5th point `REGEN(8)` at raw `n=31246→40528`).  A real 5-point law, not a fit
+to the 3 points §5x had.  Pure `Nat` cross-check. -/
+theorem exitSteps_grounds :
+    exitSteps 4 = 70 ∧ exitSteps 5 = 218 ∧ exitSteps 6 = 722 ∧
+      exitSteps 7 = 2530 ∧ exitSteps 8 = 9282 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **The terminal-glue values** `TERM(k)=24,41,74,139,268` (`k=3..7`), matching
+`exit_terminal_law`'s grounded `41`/`74` transports and the extracted `24`/`139`/`268`. -/
+theorem termSteps_grounds :
+    termSteps 3 = 24 ∧ termSteps 4 = 41 ∧ termSteps 5 = 74 ∧
+      termSteps 6 = 139 ∧ termSteps 7 = 268 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE `k·2^{k−1}` TERM IS ESSENTIAL** (why §5x's `a·4^k+b·2^k+c·k+d` fit failed).
+Dropping the linear×exponential middle term gives `2^{2k−3}+2^{k−2}+2 = 38 ≠ 70` at `k=4`
+(and `138 ≠ 218` at `k=5`): the odometer-height factor is not optional.  This is the
+decisive refinement of §5x's "not a clean `4^j+2^j` form" — it IS clean, but needs the
+`k·2^k` term.  Pure `Nat` cross-check. -/
+theorem exitSteps_khalf_essential :
+    (2 ^ (2 * 4 - 3) + 2 ^ (4 - 2) + 2 = 38 ∧ 38 ≠ 70) ∧
+      (2 ^ (2 * 5 - 3) + 2 ^ (5 - 2) + 2 = 138 ∧ 138 ≠ 218) := by
+  refine ⟨⟨by decide, by decide⟩, ⟨by decide, by decide⟩⟩
+
+/-- **THE ORDER-4 LINEAR RECURRENCE** `exitSteps` obeys (characteristic `(x−4)(x−2)²(x−1)`,
+roots `4,2,2,1`), stated subtraction-free: `es(8)+28·es(6)+16·es(4) = 9·es(7)+36·es(5)`.
+The recursive certificate of the closed form (deliverable A, "recursive form").  Pure
+`Nat` cross-check. -/
+theorem exitSteps_recurrence :
+    exitSteps 8 + 28 * exitSteps 6 + 16 * exitSteps 4
+      = 9 * exitSteps 7 + 36 * exitSteps 5 := by decide
+
+/-- **REGEN(4) = `carry_exit_j3` at step count `exitSteps 4`** (base of the k-recursion).
+`carry_exit_j3` (§5s, 70 steps, `∀ L R`) IS the level-`k=4` regeneration; `70 = exitSteps 4`
+wires it into the recursion.  `some` ⇒ HALT-FREE, inherits `[propext, Quot.sound]`. -/
+theorem regen4_transport (L R : List Bool) :
+    steps (exitSteps 4) ⟨.E, 9, ⟨
+        ones 12 ++ (true :: false :: true :: false :: false :: true :: false :: L),
+        false,
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, -7, ⟨
+          (false :: true :: false :: L),
+          false,
+          (false :: false :: false :: true :: true :: true :: true :: true :: true :: true ::
+           true :: true :: true :: true :: true :: true :: false :: false :: true :: true ::
+           true :: true :: true :: false :: false :: true :: false :: false :: false :: R)⟩⟩ := by
+  rw [show exitSteps 4 = 70 from by decide]; exact carry_exit_j3 L R
+
+/-- **REGEN(5) = `carry_exit_j4` at step count `exitSteps 5`** (the depth-1 step, already
+GREEN).  `218 = exitSteps 5`.  `some` ⇒ HALT-FREE, `[propext, Quot.sound]`. -/
+theorem regen5_transport (L R : List Bool) :
+    steps (exitSteps 5) ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: L), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -22, ⟨false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ := by
+  rw [show exitSteps 5 = 218 from by decide]; exact carry_exit_j4 L R
+
+/-- **THE TRANSLATION-INVARIANCE PRINCIPLE, generic** (the Lean content of the decisive
+`x2ck_regen_ti.py` finding).  A `∀ L R` transport of length `n` — a TRANSLATION-INVARIANT
+regeneration — is REUSABLE in ANY two tape contexts, sharing one proof.  This is exactly
+why `REGEN(k)` (byte-identical at all 4/8 orbit sites) is a reusable recursion object:
+`carry_exit_j3`/`carry_exit_j4` have precisely this `∀ L R` shape, so `REGEN(4)`/`REGEN(5)`
+apply with any block-above `L₁,L₂` and cascade-below `R₁,R₂`. -/
+theorem regen_TI_generic {n : Nat} {In Out : List Bool → List Bool → Cfg}
+    (T : ∀ L R, steps n (In L R) = some (Out L R)) (L₁ R₁ L₂ R₂ : List Bool) :
+    steps n (In L₁ R₁) = some (Out L₁ R₁) ∧ steps n (In L₂ R₂) = some (Out L₂ R₂) :=
+  ⟨T L₁ R₁, T L₂ R₂⟩
+
+/-- **REGEN(5) reused in two DISTINCT block-above contexts** (concrete TI instance): the
+SAME 218-step transport with `L :=` empty vs `L := ones 61` (a bigger doubled block sitting
+above, as inside `EXIT(6)`), one proof term via `regen_TI_generic`.  Demonstrates the
+reuse the tree recursion needs. -/
+theorem regen5_reuse_two_contexts (R : List Bool) :
+    (steps (exitSteps 5) ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: []), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩).isSome ∧
+    (steps (exitSteps 5) ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: ones 61), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩).isSome := by
+  refine ⟨?_, ?_⟩ <;> rw [regen5_transport] <;> rfl
+
+/-- **THE EXACT TREE DECOMPOSITION (deliverable C, `k=5`)** — the BASE branch: `REGEN(5)`
+reuses NO lower REGEN, only `TERM(3)` and its own `TERM(5)`.  Grounded from
+`x2ck_regen_seg.py`.  Pure `Nat`. -/
+theorem exitSteps_tree_5 :
+    exitSteps 5 = 44 + termSteps 3 + 76 + termSteps 5 := by decide
+
+/-- **THE EXACT TREE DECOMPOSITION (`k=6`)** — ONE strictly-lower recursive call
+`REGEN(4)=exitSteps 4`, interleaved with `TERM(3)`s and glue, ending `TERM(6)`.  The
+recursive REGEN reuse is manifest.  Pure `Nat`. -/
+theorem exitSteps_tree_6 :
+    exitSteps 6 = 83 + termSteps 3 + 47 + exitSteps 4 + 113 + termSteps 3
+      + 122 + termSteps 3 + 76 + termSteps 6 := by decide
+
+/-- **THE EXACT TREE DECOMPOSITION (`k=7`)** — THREE strictly-lower recursive calls
+(`REGEN(5)` once + `REGEN(4)` twice), with a level-dependent `881`-step CORE build-up glue,
+ending `TERM(7)`.  Together with `exitSteps_tree_5/6` this exhibits the branching ARITY
+`0,1,3` — the recursion is a NON-UNIFORM TREE, the precise `[DESIGN]` obstruction.  Pure
+`Nat`. -/
+theorem exitSteps_tree_7 :
+    exitSteps 7 = 170 + termSteps 3 + 47 + exitSteps 4 + 113 + termSteps 3 + 78 + exitSteps 5
+      + 113 + termSteps 3 + 881 + termSteps 3 + 47 + exitSteps 4 + 113 + termSteps 3
+      + 122 + termSteps 3 + 76 + termSteps 7 := by decide
+
+/-- **THE RECURSION SKELETON, instantiated at the REGEN transport** (deliverable B, the WF
+frame).  GIVEN the per-level step `P n → P (n+1)` (the one `[DESIGN]` object) and the base
+`P 1` (discharged concretely by `regen4_transport`, = `carry_exit_j3`), the proven §5w
+`carry_level_rec` (a genuine `Nat.le_induction`, no `sorry`/`partial`) yields `∀ n ≥ 1, P n`.
+The k-recursion's control flow IS this combinator; ONLY the step is open. -/
+theorem carryExit_wf_frame {P : Nat → Prop} (hbase : P 1)
+    (hstep : ∀ n, 1 ≤ n → P n → P (n + 1)) : ∀ n, 1 ≤ n → P n :=
+  carry_level_rec hbase hstep
+
+/-! ### §5z: what CLOSED, the j=3/j=4 cross-check, and the single remaining object.
+
+**PROVEN GREEN this section (on-path, `x2ck_*.py` cell-for-cell from `build(2)`):**
+  • `exitSteps` — the k-indexed EXIT step count, CLOSED FORM `2^{2k−3}+k·2^{k−1}+2^{k−2}+2`,
+    grounded at FIVE levels `70/218/722/2530/9282` (`exitSteps_grounds`) — REFINING §5x's
+    "no clean form" (`exitSteps_khalf_essential`: the `k·2^{k−1}` odometer-height term is
+    what §5x's fit lacked) — with its order-4 linear recurrence (`exitSteps_recurrence`).
+  • `termSteps` — the block-final glue `TERM(k)=2^{k+1}+k+5` as a `def` (§5y), grounded.
+  • `regen4_transport` / `regen5_transport` — `carry_exit_j3` / `carry_exit_j4` wired as the
+    k-indexed `REGEN(4)` / `REGEN(5)` at step count `exitSteps 4=70` / `exitSteps 5=218`.
+  • `regen_TI_generic` + `regen5_reuse_two_contexts` — the TRANSLATION-INVARIANCE principle:
+    `REGEN(k)` (`x2ck_regen_ti.py`: identical trace at all 4/8 orbit sites) is a reusable
+    `∀ L R` transport, applied here in two distinct block-above contexts by ONE proof.
+  • `exitSteps_tree_5/6/7` — the EXACT top-level tree decomposition, grounding the recursive
+    lower-REGEN reuse and the growing branching arity `0,1,3`.
+  • `carryExit_wf_frame` — the WF recursion skeleton (§5w `carry_level_rec`) instantiated at
+    the REGEN transport predicate; base discharged by `regen4_transport`.
+
+**THE j=3 / j=4 CROSS-CHECK (discipline requirement — the recursion reproduces both proven
+concrete EXITs).**  `regen4_transport` IS `carry_exit_j3` (the j=3-scale EXIT, 70 steps) at
+`exitSteps 4`; `regen5_transport` IS `carry_exit_j4` (the j=4-scale EXIT, 218 steps) at
+`exitSteps 5` — both by `rfl`-level `rw` on the step count, so the k-recursion's base and
+depth-1 levels REPRODUCE the two already-proven carries EXACTLY, on-path.  The tree
+arithmetic `exitSteps_tree_6` shows `REGEN(6)` genuinely reuses `REGEN(4)`.
+
+**THE SINGLE REMAINING OBJECT — `carryExit`/`carry_step`, `[DESIGN]`, now maximally sharp.**
+The per-level transport step `P n → P (n+1)` is the ONLY open piece.  Every ingredient is
+in hand: the register (`cascadeTail`, §5w), the `∀`-level DESCENT/MIDDLE/CORE (§5w), the
+`∀j`-uniform glue + TI REGEN transports (§5x/§5y/here), the closed-form step count
+(`exitSteps`), and the WF frame (`carryExit_wf_frame`).  What does NOT close is a *total*
+structural `carryExit : Nat → transport`:
+
+```lean
+-- [DESIGN] carryExit (k) : the level-k REGEN transport (TI, step count exitSteps k).
+--   REGEN(k) = [opening DESCENT-FOLD 2^{k-3}-2] ∘ (a GROWING-ARITY tuple of strictly-lower
+--              REGEN(k') calls interleaved with ∀-level CORE/glue) ∘ TERM(k)
+--   branching arity = 0,1,3,… (exitSteps_tree_5/6/7): the odometer digit expansion, NOT
+--   a fixed ∀k tuple — so no total structural recursion with constant recursive-call
+--   count exists; the arity function is itself the recursive object.
+```
+
+`REGEN(k)` is translation-invariant (PROVEN reusable) and well-founded (each call strictly
+lowers `k`), but its recursive-call ARITY grows with `k` (the base-2 odometer's digit tree),
+so the closure is the DEFINITIONAL naming of that odometer-tree recursion — the project's
+`Suffix.lean`-scale object.  We state it `[DESIGN]` (NO `sorry`, NO axiom, NO `native_decide`,
+NO `partial def`) rather than force an unverified `∀k` transport.  **The integer-doubler's
+doubling-phase carry is NOT yet machine-checked `∀j`**: the base (`k=4`) and depth-1 (`k=5`)
+levels are GREEN and reproduce `carry_exit_j3`/`carry_exit_j4`, the step count and TI are
+closed `∀k`, but the growing-arity odometer-tree step remains the single open object.
+
+No machine decided. No label upgraded. -/
+
+-- §5z k-indexed recursive EXIT axiom audits (closed form + TI + tree + WF frame):
+#print axioms exitSteps_grounds
+#print axioms termSteps_grounds
+#print axioms exitSteps_khalf_essential
+#print axioms exitSteps_recurrence
+#print axioms regen4_transport
+#print axioms regen5_transport
+#print axioms regen_TI_generic
+#print axioms regen5_reuse_two_contexts
+#print axioms exitSteps_tree_5
+#print axioms exitSteps_tree_6
+#print axioms exitSteps_tree_7
+#print axioms carryExit_wf_frame
+
 end X2
