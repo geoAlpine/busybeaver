@@ -33,9 +33,11 @@ recursive lemma:
 - **[PROVEN, ∀-parametric, on-path]** A library of the phase's building blocks: the odometer tick, the
   steady no-carry run, the carry's `sweepEF`-core, the fully-factored depth-1 carry, and the low
   phase's forward tile (§4).
-- **[OPEN]** The one remaining deep wall is `carry_step`: the general-`j` carry is a well-founded
-  **ripple recursion** (its block-regeneration EXIT re-runs a lower-scale doubling cascade; its ENTRY
-  nests strictly-lower carries), not a bounded composite (§5).
+- **[OPEN]** The one remaining deep wall is `carry_step`: the general-`j` carry is a genuine **nested
+  well-founded recursion** (`EXIT(j) = fold ∘ REGEN(j−1)`, nesting to depth `j−3`). It is realized and
+  proven at two depths (`carry_j4` reuses `carry_event_5to13`), its building blocks are ∀j-uniform and
+  its recursive register is grounded and proven — but it is provably **not** closable as a straight-line
+  parametric transport (§5); the recursive `REGEN`/`EXIT` closure is the open object.
 
 The honest bottom line: **the machine is not decided**, but its non-halting is now a single, precisely
 characterized, `Suffix.lean`-scale recursive lemma away from a machine-checked proof, with everything
@@ -142,19 +144,41 @@ remaining obstruction.
   growth was only the odd-`g` big-block trim. The low-phase wall is therefore small: only a fixed entry
   connector, a uniform return pass, and the odd-`g` trim remain [DESIGN].
 
-- **Doubling phase — the carry ripple is the deep wall [OPEN].** The general-`j` carry is **not** a
-  bounded `connector ∘ sweepEF ∘ connector`. Measured cell-for-cell: its **EXIT** regenerates the
-  fresh block `1^{2^j−3}` by *re-running a `(j−1)`-scale doubling cascade* (`j=3` EXIT: one `sweepEF`;
-  `j=4` EXIT: a nested `m=2,4,6` chain; `70 → 218` steps), and its **ENTRY** nests strictly-lower
-  carries (the `j=4` carry window literally contains the whole `j=3` carry). So
-  `carry_step(j) = ENTRY[run ⋈ carry(j−1)…] ∘ carry_repack(j) ∘ EXIT[carry_repack(j−1) ∘ EXIT(j−1)…]`
-  is a **well-founded ripple recursion** (measure = cascade digits left, `≤ K`; termination is
-  `odo_terminates`, already proven), a `Θ(4^j)`-length object — the project's `Suffix.lean`-scale
-  lemma. Its `sweepEF`-core and its depth-1 base case are proven (§4); the recursion around them is
-  open.
+- **Doubling phase — `carry_step` is a genuine nested well-founded recursion [OPEN, deeply characterized].**
+  The general-`j` carry is **not** a bounded `connector ∘ sweepEF ∘ connector`, and — this is the honest
+  result of a sustained attack — it is **not** closable ∀j as any *straight-line parametric* transport
+  either. What is now machine-checked (this deepens §4):
+  - **The recursion realized at two depths.** `carry_event_5to13` (j=3) and `carry_j4` (j=4, 657 steps)
+    are proven; `carry_j4` is assembled by `steps_add` and **literally reuses `carry_event_5to13`** as its
+    embedded j=3 sub-carry (`carry(4) ⊃ carry(3)`), with `sweepEF 14` as its CORE.
+  - **The connectors' building blocks are ∀j-uniform (PROVEN).** The MIDDLE run is exactly
+    `outer_tick_noCarry_run` at length `2^{j−1}−4` (`carry_j4_middle_run` = run 4, `carry_j5_middle_run`
+    = run 12); the seam glue is fixed cell-motifs (`exit_anchor_motif`, `exit_c3body_motif`) that recur
+    byte-identically across the j=3,4,5 carries; the opening descent-fold count is `2^{j−2}−2`. Only the
+    *arrangement* of these uniform blocks recurses.
+  - **A grounded recursive register (PROVEN).** `cascadeTail (n+1) = 1^{d_{n+1}} 0² cascadeTail n` is a
+    clean recursive datatype whose decode reproduces the RIGHT side of **both** proven carries
+    (`cascadeTail_grounds_carry_j3/j4`, kernel `rfl`) — the register is on-path, not invented — together
+    with the well-founded measure (digits-left `≤ K`, `odo_terminates`) and the `Nat`-recursion skeleton.
+  - **The EXIT is the genuine remaining recursion.** Cell-for-cell over j=3,4,5, `EXIT(j) = DESCENT-FOLD(2^{j−2}−2) ∘ REGEN(j−1)`
+    where `REGEN(j−1)` is a scale-`(j−1)` carry-shaped regeneration nesting to depth `j−3`. Two natural
+    closure hypotheses were **refuted** with evidence: EXIT(j) is *not* a verbatim self-embedding of
+    EXIT(j−1) (the step-trace of EXIT(3) occurs 0× in EXIT(4)/EXIT(5) — the regeneration runs against a
+    larger block background each level, so the terminal glue differs), and it is *not* a fixed piece-type
+    sequence at parametric lengths (token counts grow 5→18→52 with no common prefix; step counts
+    70→218→722). So `carry_step` is genuinely the `Suffix.lean`-scale **nested** well-founded recursion,
+    with uniform building blocks but a per-level context-dependent arrangement.
 
-**`carry_step` is the single lemma whose closure would complete `h_doub`** — and, with the (smaller)
-low-phase pieces, reduce the whole machine's non-halting to a finished machine-checked proof.
+  What remains open is the recursive `REGEN`/`EXIT` closure: a recursive Lean transport in which the
+  per-level varying terminal-glue/background is itself parametrized. Its tractability is not settled — the
+  building blocks are all proven and the recursion is well-founded, but whether the varying glue admits a
+  clean ∀j parametrization is the precise open question. No forced closure was produced.
+
+**`carry_step` is the single lemma whose closure would complete `h_doub`.** The doubling phase's control
+structure, arithmetic, uniform building blocks, and recursion frame are all machine-checked; the one
+open object is this nested recursion. With the (smaller) remaining low-phase pieces, closing it would
+reduce the machine's non-halting to a finished machine-checked proof — deciding **one** frontier machine
+(not the complete BB(6) proof, which is gated on the (K)-wall Normality Conjecture; see §1).
 
 ---
 
@@ -177,7 +201,7 @@ record and includes corrections the discipline caught, e.g.:
 - **Inflated numbers, corrected.** Declaration/axiom counts were re-derived by byte-level Lean audit
   whenever quoted.
 
-`lean/X2.lean` contains **144 declarations** (107 theorems/lemmas, 37 definitions), **zero `sorry`,
+`lean/X2.lean` contains **182 declarations** (144 theorems/lemmas, 38 definitions), **zero `sorry`,
 zero `native_decide`**, axiom audit `[propext, Quot.sound]`.
 
 ---
