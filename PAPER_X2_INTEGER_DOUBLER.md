@@ -169,10 +169,21 @@ remaining obstruction.
     70→218→722). So `carry_step` is genuinely the `Suffix.lean`-scale **nested** well-founded recursion,
     with uniform building blocks but a per-level context-dependent arrangement.
 
-  What remains open is the recursive `REGEN`/`EXIT` closure: a recursive Lean transport in which the
-  per-level varying terminal-glue/background is itself parametrized. Its tractability is not settled — the
-  building blocks are all proven and the recursion is well-founded, but whether the varying glue admits a
-  clean ∀j parametrization is the precise open question. No forced closure was produced.
+  - **The terminal glue is a CLEAN closed form — but counter-indexed.** The last unresolved worry (whether
+    the per-level varying terminal glue is irregular) is now settled: the block-final terminal flush is
+    `TERM(k) = 2^{k+1} + k + 5` steps, laying the fresh block `1^{2^k−3}`, verified at four levels
+    `k = 4,5,6,7 → 41,74,139,268` (grounded green as reusable transports at `k=4,5`: `exit_terminal_k4/k5`).
+    So there is **no glue irregularity**. But the clean parameter is `k`, the **global cascade/odometer
+    height**, not the local EXIT level `j`: inside a *single* `EXIT(5)`, two regeneration sub-blocks share a
+    byte-identical 144-step prefix and then diverge only at the terminal (`g41` for `k=4` vs `g139` for
+    `k=6`). The EXIT emits terminals of many `k`, nested — a genuine recursion over the odometer height.
+
+  What remains open is therefore narrowed to a single object: the closure of the `REGEN`/`EXIT` recursion
+  **indexed by the global odometer height `k`**. Every ingredient is proven clean — the descent-fold count,
+  the anchor/body motifs, the MIDDLE run, the CORE, the grounded register, and now the terminal glue
+  `TERM(k)` — and the recursion is well-founded; what is not yet built is the `k`-indexed recursive datatype
+  that composes them, whose `k` tracks a global cascade quantity. Its tractability is not settled. No forced
+  closure was produced (three over-optimistic "closable" framings were caught by the discipline en route).
 
 **`carry_step` is the single lemma whose closure would complete `h_doub`.** The doubling phase's control
 structure, arithmetic, uniform building blocks, and recursion frame are all machine-checked; the one
@@ -201,7 +212,7 @@ record and includes corrections the discipline caught, e.g.:
 - **Inflated numbers, corrected.** Declaration/axiom counts were re-derived by byte-level Lean audit
   whenever quoted.
 
-`lean/X2.lean` contains **182 declarations** (144 theorems/lemmas, 38 definitions), **zero `sorry`,
+`lean/X2.lean` contains **186 declarations** (148 theorems/lemmas, 38 definitions), **zero `sorry`,
 zero `native_decide`**, axiom audit `[propext, Quot.sound]`.
 
 ---
