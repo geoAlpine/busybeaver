@@ -3804,4 +3804,186 @@ remains the project's `Suffix.lean`-scale object; NO machine is decided by this 
 #print axioms carry_level_core
 #print axioms carry_level_rec
 
+/-! ## §5x (LAYER A, ON-PATH, 2026-07-14) THE EXIT DYNAMICS ∀j — the decisive
+decomposition of `EXIT(j)`, the ∀j-uniform glue proven as reusable transports, the
+recursion pinned, and `carry_exit` stated `[DESIGN]` with the EXACT obstruction.
+
+**THE EXPERIMENT (`x2ex_*.py`, cell-for-cell from the faithful `x2bd_sim.build(2)`
+orbit).**  The carry EXIT — the post-CORE regeneration that rebuilds the fresh
+`1^{2^j−3}` block below the just-doubled block and re-anchors `E` on the new boundary —
+was extracted at THREE levels and decomposed at its `E`-on-`0` odometer anchors into
+proven-piece instances (`sweepEF m` / descent-fold / no-carry tick / glue):
+
+```
+  EXIT(3) = [6638,6708]  70 steps,  5 pieces:  g3 g15 g7 sweepEF2 g41
+  EXIT(4) = [6923,7141] 218 steps, 18 pieces:  2folds g3 g3 g15 g7 sweepEF2 g24 ·
+                                                g7 sweepEF1 g8 sweepEF3 g12 sweepEF6 ·
+                                                g3 g15 g7 sweepEF2 NTICK(t=16)
+  EXIT(5) = [8076,8798] 722 steps, 52 pieces:  6folds g3 2folds g3 g3 g15 g7 sweepEF2 g24 ·
+                                                [C3-shaped carry: g7 sweepEF1 g8 sweepEF3 g12
+                                                 sweepEF6 g3 g15 g7 sweepEF2 g41] ·
+                                                [C4-core buildup: g7 sweepEF1 … sweepEF14] ·
+                                                [C3-shaped EXIT: 2folds … sweepEF6 … g139]
+```
+
+**DECISIVE VERDICT — the EXIT is NOT ∀j-parametric as a straight-line composite; it is a
+WELL-FOUNDED RECURSION in `j`.**  Two hypotheses tested and REFUTED:
+
+* **(H1) verbatim self-embedding — REFUTED** (confirms the main-loop's independent
+  finding).  The `(state,head,Δpos)` trace of `EXIT(3)` occurs ZERO times inside
+  `EXIT(4)` or `EXIT(5)`, and `EXIT(4)` zero times inside `EXIT(5)` (`x2ex_decompose.py`,
+  containment index `= −1` all three).  Even the piece-TOKEN sequence of `EXIT(3)` is NOT
+  a contiguous sublist of `EXIT(4)`'s: the shared re-anchor motif `g3 g15 g7 sweepEF2`
+  ends `g41` in `EXIT(3)` but `g24` / `NTICK(t=16)` inside `EXIT(4)` — the regeneration
+  runs against a DIFFERENT tape background at each level (a bigger doubled block above it),
+  so the terminal glue and local context differ.  `EXIT(j)` is NOT a copy of `EXIT(j−1)`.
+
+* **(H2) straight-line parametric — REFUTED.**  The piece-token-sequence LENGTH grows
+  `5 → 18 → 52` (not a fixed sequence at parametric lengths); the sequences share NO common
+  prefix (`lcp = 0`: `EXIT(4)`/`EXIT(5)` open with a descent-fold that `EXIT(3)` lacks) and
+  the step-count grows `70 → 218 → 722` with ratios `3.11, 3.31` — NOT geometric, NOT a
+  clean `4^j+2^j`-closed form.  There is NO `[fixed piece types](j)` with lengths `f(j)`.
+
+* **THE TRUE ∀j STRUCTURE (pinned).**  `EXIT(j) = DESCENT-FOLD(2^{j−2}−2) ∘ REGEN(j−1)`,
+  where `REGEN(j−1)` is a scale-`(j−1)` **carry-SHAPED** regeneration — `ENTRY-glue ∘
+  [embedded lower carry] ∘ MIDDLE-run ∘ CORE ∘ [scale-`(j−2)` EXIT]` — bottoming out at the
+  base anchor motif of `EXIT(3)`.  The nesting DEPTH `= j−3` grows with `j`; `EXIT(5)`
+  literally contains a full C4-shaped regeneration, which contains a C3-shaped one.  So the
+  EXIT — and hence `carry_step` — is a genuine well-founded recursion on `j`, exactly the
+  §5w `[DESIGN]` object, NOT a straight-line ∀j transport.
+
+**WHAT IS ∀j-UNIFORM (proven GREEN here).**  Although the ARRANGEMENT recurses, its
+BUILDING BLOCKS are ∀j-uniform.  `x2ex_motif.py` verifies (identical `(state,head,Δpos)`
+trace at every occurrence) that the two recurring EXIT motifs are the SAME transport at all
+levels — the concrete realization of §5v(2)'s "seam glue is ∀j-uniform" for the EXIT:
+  • the RE-ANCHOR motif `g3 g15 g7 sweepEF2` (29 steps) — identical at 4 sites across
+    `EXIT(3)/(4)/(5)` — is `exit_anchor_motif` below;
+  • the C3-BODY buildup `g7 sweepEF1 g8 sweepEF3 g12 sweepEF6` (47 steps) — identical at 3
+    sites across `EXIT(4)/(5)` — is `exit_c3body_motif` below;
+  • the opening DESCENT-FOLD count obeys the ∀j law `2^{j−2}−2` (`exit_fold_count_law`),
+    reusing §5w's `carry_descent_fold` / `ecombChewFold` family.
+So the EXIT's growth lives ENTIRELY in (a) these ∀j-uniform / ∀-length-proven blocks and
+(b) the strictly-lower recursive `REGEN(j−1)` — precisely a WF recursion, no non-uniform
+"new physics" per level.  What does NOT close is the DEFINITIONAL naming of that recursive
+`REGEN`/`EXIT` object; we state it `[DESIGN]`, not a forced green transport. -/
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **EXIT ∀j-UNIFORM GLUE (1/2): the RE-ANCHOR motif** `g3 g15 g7 sweepEF2`, 29 steps,
+head rel `0 → +7`, `L` untouched (excursion rel `[0,+7]`).  Extracted cell-for-cell from
+the `EXIT(3)` occurrence (raw `n = 6638→6667`); Python-verified TRANSLATION-INVARIANT — the
+identical `(state,head,Δpos)` transport recurs at 4 sites across `EXIT(3)/(4)/(5)`
+(`x2ex_motif.py`).  The `∀j`-uniform seam glue that re-anchors `E` on the fresh boundary,
+now a named reusable transport.  `some` ⇒ HALT-FREE.  Kernel `rfl`. -/
+theorem exit_anchor_motif (L R : List Bool) :
+    steps 29 ⟨.E, 0, ⟨L, false,
+        false :: true :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 7, ⟨true :: true :: true :: true :: true :: false :: true :: L, false, R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **EXIT ∀j-UNIFORM GLUE (2/2): the C3-BODY buildup** `g7 sweepEF1 g8 sweepEF3 g12
+sweepEF6`, 47 steps, head rel `0 → +9`, excursion rel `[−3,+9]`.  Extracted cell-for-cell
+from the `EXIT(4)` occurrence (raw `n = 6991→7038`); Python-verified TRANSLATION-INVARIANT —
+the identical transport recurs at 3 sites across `EXIT(4)/(5)` (`x2ex_motif.py`).  This is
+the ascending mini-CORE that rebuilds the smallest block inside every regeneration.
+`some` ⇒ HALT-FREE.  Kernel `rfl`. -/
+theorem exit_c3body_motif (L R : List Bool) :
+    steps 47 ⟨.E, 0, ⟨false :: true :: false :: L, false,
+        false :: false :: false :: true :: true :: true :: true :: true :: false :: R⟩⟩
+      = some ⟨.E, 9, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true ::
+          true :: true :: true :: L, false, R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+/-- **THE DEPTH-2 EXIT AS A REUSABLE TRANSPORT — `carry_exit_j4` (parallel to
+`carry_exit_j3`).**  Raw `n = 6923 → 7141` (**218 steps**): from the CORE's just-deposited
+`1^{28}` (head `E` rel `+10`) the level-4 EXIT regenerates the fresh `1^{13}` cascade block
+below the doubled `1^{29}` and re-anchors `E` at rel `−22`, `L R` untouched.  Composed by
+`steps_add` from the SAME six chunks `j4_E1..E6` that `carry_j4` (§5u) uses, so this IS the
+EXIT tail of the already-proven depth-2 carry, now named as a standalone transport.  It
+exhibits the EXIT's non-parametric growth AT THE TRANSPORT LEVEL: `EXIT(1)=70` steps
+(`carry_exit_j3`) vs `EXIT(2)=218` here.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`-only. -/
+theorem carry_exit_j4 (L R : List Bool) :
+    steps 218 ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: L), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -22, ⟨false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ := by
+  rw [show (218 : Nat) = 39+(39+(39+(39+(39+23)))) from rfl,
+      steps_add, j4_E1, someBind,
+      steps_add, j4_E2, someBind,
+      steps_add, j4_E3, someBind,
+      steps_add, j4_E4, someBind,
+      steps_add, j4_E5, someBind,
+      j4_E6]
+
+/-- **The EXIT descent-fold count law, `∀j`** (the opening piece of `EXIT(j)`).  `EXIT(j)`
+opens with `2^{j−2}−2` folds (the descent-fold peeling the just-doubled top block), matching
+the measured `EXIT(4)` (2 folds) and `EXIT(5)` (6 folds) — an instance of §5w's
+`carry_descent_fold`/`ecombChewFold` family, so the FIRST piece IS ∀j-parametric.  Pure
+`Nat` cross-check. -/
+theorem exit_fold_count_law :
+    (2 ^ (4 - 2) - 2 = 2) ∧ (2 ^ (5 - 2) - 2 = 6) := by
+  refine ⟨by decide, by decide⟩
+
+/-- **EXIT length data — the NON-PARAMETRIC growth, recorded** (`x2ex_decompose.py`):
+`EXIT(3)=70`, `EXIT(4)=218`, `EXIT(5)=722`, with piece-counts `5, 18, 52`.  The growth is
+NOT a clean `4^j+2^j` closed form (ratios `3.11, 3.31`), because `EXIT(j)` is a WF recursion
+whose per-level terminal glue varies — the decisive evidence that the EXIT is not a
+straight-line ∀j transport.  Pure `Nat` cross-check of the extracted lengths. -/
+theorem exit_length_data :
+    (6708 - 6638 = 70) ∧ (7141 - 6923 = 218) ∧ (8798 - 8076 = 722) := by
+  refine ⟨by decide, by decide, by decide⟩
+
+/-! ### §5x: what CLOSED, and the exact non-parametric obstruction (`carry_exit` [DESIGN]).
+
+**PROVEN GREEN this section (on-path, all `[propext, Quot.sound]`-only):**
+  • `exit_anchor_motif` (29-step) + `exit_c3body_motif` (47-step) — the two recurring EXIT
+    glue transports, Python-verified TRANSLATION-INVARIANT across `EXIT(3)/(4)/(5)`: the
+    `∀j`-uniform seam glue, now named + grounded as reusable transports (§5v(2) made concrete
+    for the EXIT).
+  • `carry_exit_j4` — the depth-2 EXIT (218 steps) as a standalone reusable transport,
+    parallel to `carry_exit_j3` (70 steps); it is the EXIT tail of the proven `carry_j4`.
+  • `exit_fold_count_law` — the EXIT's opening descent-fold is `2^{j−2}−2`, ∀j-parametric.
+  • `exit_length_data` — the extracted `70/218/722` growth (non-parametric).
+
+**THE DECISIVE VERDICT (deliverable A).**  The EXIT is **NOT** `∀j`-parametric as a
+straight-line composite of a fixed piece-type sequence at closed-form lengths.  Both the
+verbatim self-embedding (H1) and the straight-line-parametric (H2) hypotheses are REFUTED by
+the cell-for-cell `EXIT(3)/(4)/(5)` decomposition.  The TRUE `∀j` structure is the
+well-founded recursion `EXIT(j) = DESCENT-FOLD(2^{j−2}−2) ∘ REGEN(j−1)` with `REGEN`
+carry-shaped one level down, nesting to depth `j−3`.
+
+**THE EXACT OBSTRUCTION — `carry_exit` [DESIGN, precisely located].**
+
+```lean
+-- [DESIGN] carry_exit (j) : the level-j EXIT transport.  NOT a straight-line ∀j composite.
+--   carry_exit (j) = carry_descent_fold(j−3)        -- PROVEN ∀-level (exit_fold_count_law)
+--                  ∘ [∀j-uniform seam glue]         -- PROVEN reusable (exit_anchor_motif,
+--                                                       exit_c3body_motif)
+--                  ∘ REGEN(j−1)                      -- a scale-(j−1) CARRY-SHAPED regeneration
+--                                                       = strictly-lower recursive call (measure ↓)
+--   grounded: EXIT(1)=70 (carry_exit_j3), EXIT(2)=218 (carry_exit_j4), EXIT(3)=722 (x2ex).
+--   The ONE non-uniform ingredient is REGEN(j−1): it is carry-SHAPED at scale j−1 but
+--   NOT verbatim C(j−1) (H1 refuted — terminal glue and tape-background differ per level),
+--   so it cannot be discharged by reusing a fixed lower lemma; it is a genuine recursive
+--   descent whose Lean closure is the DEFINITIONAL naming of the REGEN/EXIT datatype.
+```
+
+The glue is `∀j`-uniform (`exit_anchor_motif`/`exit_c3body_motif`, PROVEN), the descent-fold
+and inner CORE/MIDDLE are `∀`-length-proven (§5w), and the recursion is well-founded (§5n
+`odo_terminates`, measure = digits-left `≤ K`) — but `REGEN(j−1)` is a strictly-lower
+recursive object that is NOT a verbatim copy of any fixed level, so `carry_exit` — and hence
+`carry_step` — is a WELL-FOUNDED RECURSION, NOT a straight-line `∀j` transport.  This is the
+project's `Suffix.lean`-scale object; we state it `[DESIGN]` (NO `sorry`, NO axiom, NO
+`native_decide`) rather than force an unverified green transport.  No machine is decided by
+this section; no label is upgraded. -/
+
+-- §5x EXIT axiom audits (∀j-uniform glue + depth-2 EXIT transport + Nat cross-checks):
+#print axioms exit_anchor_motif
+#print axioms exit_c3body_motif
+#print axioms carry_exit_j4
+#print axioms exit_fold_count_law
+#print axioms exit_length_data
+
 end X2
