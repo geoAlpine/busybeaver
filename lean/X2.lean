@@ -2040,6 +2040,217 @@ WELL-FOUNDED ripple recursion with measure = digits-left-to-carry `≤ K` (the �
 recursion — the project's `Suffix.lean`-scale object — remains OPEN; no `sorry`, no
 axiom, no machine decided by this section. -/
 
+/-! ## §5u (LAYER A, ON-PATH, DEPTH-2, 2026-07-14) THE CARRY RECURSION MADE
+CONCRETE — the j=4 carry BUILT FROM the j=3 carry.
+
+This section realizes the inductive STEP of the ripple recursion (§5s/§5m) at
+depth 2: the level-4 block-doubling carry (`carry_j4`, raw g=2 orbit
+n=6484→7141, **657 steps**) is assembled `steps_add`-wise as
+
+```
+carry(4) = ENTRY(rfl) ∘ carry_event_5to13 ∘ MIDDLE(rfl) ∘ sweepEF 14 ∘ EXIT(rfl)
+```
+
+where the two ARITHMETICALLY-MEANINGFUL sub-factors are **REUSED, not re-proved**:
+
+* **the embedded j=3 carry** `carry_event_5to13` (§5k) is a CONTIGUOUS SUB-RUN of the
+  j=4 carry (raw n=6591→6708, block `5→13`) — `j4_carry_B` discharges 117 of the 657
+  steps by that single already-proven lemma, instantiating its tails.  This is the
+  recursion `carry(j) ⊃ carry(j−1)` observed physically and proved by reuse.
+* **the CORE culminating repack** `sweepEF 14` (= `carry_repack 2` translated to head
+  rel −18; §4/§5m) doubles the built comb `(10)^14 → 1^28` (block `13→29`), `j4_core_D` —
+  the SAME ∀-length doubling engine as the j=3 CORE (`carry_core_j3 = sweepEF 6`), one
+  level up.
+
+The remaining 512 steps are genuine CONNECTORS (comb build-up before/after the nested
+carry, block re-anchoring), proved as cell-for-cell `rfl` chunks (≤39 steps each, taken
+directly from the faithful `x2bd_sim.build(2)` orbit).  Every config is on-path; the
+head excursion stays in the bounded window rel `[−23,+36]`, so all tails `L R` ride
+untouched (tail-parametric).  `some` ⇒ HALT-FREE throughout.  `[propext, Quot.sound]`-only.
+
+**What this ESTABLISHES.**  The ripple recursion's inductive step is no longer a
+`[DESIGN]` sketch: at depth 2 it is a GREEN, on-path, kernel-checked composition that
+literally reuses the depth-1 carry as a sub-factor.  The mechanism of §5s ("demonstrate
+the recursion by REUSE, not brute `rfl`") is realized end-to-end.  See the scope note at
+the foot for the exact ∀j obstruction (the connectors' non-uniform growth). -/
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_A1 (L R : List Bool) :
+    steps 39 ⟨.E, -21, ⟨false :: false :: L, false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -6, ⟨false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_A2 (L R : List Bool) :
+    steps 39 ⟨.E, -6, ⟨false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 5, ⟨false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_A3 (L R : List Bool) :
+    steps 29 ⟨.C, 5, ⟨false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 0, ⟨false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+/-- **B: the embedded j=3 carry -- REUSE of `carry_event_5to13`.**  Inside the
+j=4 carry, raw n=6591->6708 IS the j=3 carry (block 5->13); we discharge it by the
+already-proven `carry_event_5to13`, instantiating its tails.  This is the WF
+recursion's inductive step made concrete: carry(4) reuses carry(3). -/
+theorem j4_carry_B (L R : List Bool) :
+    steps 117 ⟨.E, 0, ⟨false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -7, ⟨false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  carry_event_5to13 (true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L) (false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R)
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_C1 (L R : List Bool) :
+    steps 39 ⟨.E, -7, ⟨false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -6, ⟨true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_C2 (L R : List Bool) :
+    steps 39 ⟨.E, -6, ⟨true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, false, true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 3, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_C3 (L R : List Bool) :
+    steps 39 ⟨.C, 3, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 4, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_C4 (L R : List Bool) :
+    steps 39 ⟨.E, 4, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: false :: L, true, true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.F, 3, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_C5 (L R : List Bool) :
+    steps 31 ⟨.F, 3, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -18, ⟨true :: false :: true :: false :: false :: L, false, pow10 14 ++ (false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R)⟩⟩ :=
+  rfl
+
+/-- **D: the CORE culminating repack -- REUSE of the parametric `sweepEF`.**  Raw
+n=6895->6923 (28 steps): the block-doubling repack `(10)^14 -> 1^28` (block 13->29).
+This IS `carry_repack 2` (`sweepEF 14`) translated to head rel -18 -- the SAME
+∀-length doubling engine as the j=3 CORE (`carry_core_j3` = `sweepEF 6`), one level
+up.  `some` ⇒ HALT-FREE. -/
+theorem j4_core_D (L R : List Bool) :
+    steps 28 ⟨.E, -18, ⟨true :: false :: true :: false :: false :: L, false, pow10 14 ++ (false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R)⟩⟩
+      = some ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: L), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ := by
+  rw [sweepEF 14 (-18) (true :: false :: true :: false :: false :: L) (false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R)]
+  exact congrArg some (cfgPos (by decide))
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E1 (L R : List Bool) :
+    steps 39 ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false :: L), false, false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 21, ⟨false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E2 (L R : List Bool) :
+    steps 39 ⟨.C, 21, ⟨false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.F, 20, ⟨true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E3 (L R : List Bool) :
+    steps 39 ⟨.F, 20, ⟨true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.A, 27, ⟨false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E4 (L R : List Bool) :
+    steps 39 ⟨.A, 27, ⟨false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.D, 30, ⟨true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: false :: false :: true :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E5 (L R : List Bool) :
+    steps 39 ⟨.D, 30, ⟨true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: false :: false :: true :: false :: R⟩⟩
+      = some ⟨.D, -5, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ :=
+  rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+theorem j4_E6 (L R : List Bool) :
+    steps 23 ⟨.D, -5, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩
+      = some ⟨.E, -22, ⟨false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ :=
+  rfl
+
+/-- **THE DEPTH-2 (j=4) ON-PATH CARRY, FACTORED THROUGH THE j=3 CARRY.**  Raw g=2
+orbit n=6484->7141 (657 steps): the level-4 block-doubling carry (block 13->29 with a
+fresh 1^13 regenerated below), tail-parametric.  Assembled by `steps_add` from:
+ENTRY (rfl) ∘ **carry_event_5to13** (the embedded j=3 carry, REUSED) ∘ MIDDLE (rfl)
+∘ **sweepEF 14** (the CORE repack = carry_repack 2, REUSED) ∘ EXIT (rfl).  The
+recursion's inductive step realized concretely: carry(4) is BUILT from carry(3) and
+the ∀-length repack engine.  Cross-checked cell-for-cell against the raw orbit.
+`some` ⇒ HALT-FREE.  `[propext, Quot.sound]`-only. -/
+theorem carry_j4 (L R : List Bool) :
+    steps 657 ⟨.E, -21, ⟨false :: false :: L, false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -22, ⟨false :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ := by
+  rw [show (657 : Nat) = 39+(39+(29+(117+(39+(39+(39+(39+(31+(28+(39+(39+(39+(39+(39+23)))))))))))))) from rfl,
+      steps_add, j4_A1, someBind,
+      steps_add, j4_A2, someBind,
+      steps_add, j4_A3, someBind,
+      steps_add, j4_carry_B, someBind,
+      steps_add, j4_C1, someBind,
+      steps_add, j4_C2, someBind,
+      steps_add, j4_C3, someBind,
+      steps_add, j4_C4, someBind,
+      steps_add, j4_C5, someBind,
+      steps_add, j4_core_D, someBind,
+      steps_add, j4_E1, someBind,
+      steps_add, j4_E2, someBind,
+      steps_add, j4_E3, someBind,
+      steps_add, j4_E4, someBind,
+      steps_add, j4_E5, someBind,
+      j4_E6]
+
+/-! ### §5u: honest scope — depth-2 CLOSED, but the ∀j connectors are NOT uniform.
+
+**PROVEN GREEN (this section), on-path, tail-parametric:**
+  • `carry_j4` — the whole 657-step level-4 carry, ONE transport ∀ L R.
+  • `j4_carry_B` — the embedded j=3 carry, discharged by REUSE of `carry_event_5to13`.
+  • `j4_core_D` — the CORE repack `(10)^14→1^28`, REUSE of `sweepEF 14` (= `carry_repack 2`).
+  • 14 `rfl` connectors (`j4_A*`,`j4_C*`,`j4_E*`), cell-for-cell from the raw orbit.
+So carry(4) IS built from carry(3) + the ∀-length engine: the recursion's inductive
+step is concrete at depth 2, exactly as §5s/§5m specified.
+
+**THE ∀j WALL (why this does NOT close `carry_step` ∀j), now sharply located.**  Compare
+the two depths as ENTRY ∘ [j−1 carry] ∘ MIDDLE ∘ CORE ∘ EXIT:
+  • depth-1 (`carry_event_5to13_ECE`): ENTRY 35 ∘ CORE `sweepEF 6` 12 ∘ EXIT 70   (no nested carry).
+  • depth-2 (`carry_j4`):               ENTRY 107 ∘ [carry(3) 117] ∘ MIDDLE 187 ∘ CORE `sweepEF 14` 28 ∘ EXIT 218.
+The CORE is `∀j`-parametric (`sweepEF (2^{j+2}−2)`, `carry_repack`) — that piece closes.
+But the CONNECTORS do **not** stabilize:
+  (i) their step-counts GROW (`Θ(2^j)`/`Θ(4^j)`): ENTRY 35→107, EXIT 70→218, and a whole
+      new MIDDLE (187) appears at depth 2 that has NO depth-1 analogue;
+  (ii) the connectors themselves NEST strictly-lower carries (the j=4 ENTRY/MIDDLE embed
+       the j=3 carry, which at j=5 would embed the j=4 carry `carry_j4`, and so on) — so a
+       single `carry_step (j)` is NOT `bounded-connector ∘ CORE ∘ bounded-connector`.
+Concretely: `carry_j4`'s connectors are FIXED 39-step `rfl` chunks tied to THIS window;
+they are NOT instances of a ∀j-parametric connector lemma (unlike `outer_tick_noCarry_run`
+for the plain no-carry run, or `carry_repack` for the CORE).  Hence the general
+`carry_step` remains the OPEN well-founded ripple recursion (measure = digits-left ≤ K,
+§5n `odo_terminates`): depth-2 is the inductive step exhibited by REUSE, but the connectors'
+non-uniform, self-nesting growth is precisely the obstruction to a straight-line `∀j`
+transport.  No `sorry`, no axiom, no `native_decide`; no machine decided by this section. -/
+
+
 /-! ## §5n (LAYER B, PURE ODOMETER, 2026-07-12) THE WELL-FOUNDED COUNTER RECURSION.
 
 This is the design's **Layer B**: the PURE (no-tape) model of the doubling-phase
@@ -2968,6 +3179,15 @@ theorem x2_nonhalt (M1 M6 : Nat → Cfg)
 #print axioms carry_exit_j3
 #print axioms carry_event_5to13_ECE
 #print axioms carry_ECE_eq_anchor
+-- §5u: the DEPTH-2 (j=4) carry, BUILT from the j=3 carry (REUSE) + the sweepEF CORE:
+#print axioms carry_j4          -- the whole 657-step level-4 carry, ∀ L R
+#print axioms j4_carry_B        -- the embedded j=3 carry, discharged by carry_event_5to13
+#print axioms j4_core_D         -- the CORE repack (10)^14→1^28, discharged by sweepEF 14
+-- cross-check: carry_j4 reproduces the raw-orbit endpoints with EMPTY tails (kernel):
+#eval decide ((steps 657 ⟨.E, -21, ⟨false :: false :: [], false,
+        false :: true :: true :: true :: true :: true :: true :: true :: true :: true ::
+        true :: true :: true :: true :: false :: false :: true :: true :: true :: true ::
+        true :: false :: false :: true :: []⟩⟩).isSome)                                -- true
 -- the culminating repack at design j=3 (m=6) — the CORE of carry_event_5to13, on-path
 -- (raw n=6626): (10)^6 → 1^{12} in 12 steps, = carry_repack 1:
 #eval decide (steps (2 * (2 ^ (1 + 2) - 2)) ⟨.E, 0, ⟨[], false, pow10 6⟩⟩
