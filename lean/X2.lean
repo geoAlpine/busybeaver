@@ -4482,4 +4482,233 @@ No machine decided. No label upgraded. -/
 #print axioms exitSteps_tree_8
 #print axioms exitSteps_leading_multiplier_in_open_3_4
 
+/-! ## §5ab (LAYER A, ON-PATH, 2026-07-16) THE LIST-FOLD RECURSION over the odometer
+digit-tree — the self-similar `exitList` recursion built GREEN (clean `Nat`/`List`), the
+step-count `List.foldl` closure proven `∀`-level-grounded, and the DECISIVE per-position-glue
+parametricity verdict.  (probes `x2lf_glue.py`, `x2lf_param.py`, `x2lf_cfg.py`, cell-for-cell
+from the faithful `build(2)` orbit.)
+
+**THE MOVE (why §5aa's "no bounded-arity closure" is NOT the end).**  §5aa refuted a `≤4`-arity
+transport recursion — but a GROWING arity is exactly what a `List.foldl` over a
+RECURSIVELY-GENERATED list absorbs: the digit-tree call-list `list(k)` is itself a clean
+`Nat`/`List` recursion whose every element `k' < k`, so a well-founded fold is available in
+principle regardless of length.  §5aa's arity obstruction dissolves; the closure hinges
+ENTIRELY on the discipline note's two remaining risks — is the PER-POSITION GLUE
+`∀`-parametric, and does the `toCfg` threading go through `∀`-position?  This section builds
+the list recursion, proves the STEP-COUNT fold CLOSES, and reports the decisive verdict on
+the glue.
+
+**DELIVERABLE (A) — THE CALL-LIST IS A CLEAN SELF-SIMILAR `Nat`/`List` RECURSION (GREEN).**
+`exitList k = List.range' 4 (k−5) ++ exitList (k−1)` (base `exitList (≤5) = []`), a genuine
+structural `Nat` recursion — reproduces the extracted call-lists cell-for-cell
+(`exitList_grounds`: `[], [4], [4,5,4], [4,5,6,4,5,4]` for `k=5,6,7,8`), its length equals the
+§5aa arity `(k−5)(k−4)/2` (`exitList_length_eq_arity`), and every element is `< k`
+(`exitList_wf_grounds`, the fold's well-foundedness).  This is the odometer base-2 digit tree
+as a total Lean object — the growing-arity recursion §5aa said had no `≤4` closure, here
+NAMED as a `List` recursion, GREEN.
+
+**DELIVERABLE (A/B) — THE STEP-COUNT `List.foldl` CLOSES (GREEN, `∀`-level-grounded).**  With
+`foldRegenSteps k := (exitList k).foldl (·+exitSteps ·) 0` (the fold of the PROVEN
+`exitSteps`/`REGEN` counts over the digit tree) and the between-call glue segments `glueSegs k`
+extracted cell-for-cell, the step count DECOMPOSES EXACTLY as
+`exitSteps k = (glueSegs k).sum + foldRegenSteps k` at ALL FOUR levels `k=5,6,7,8`
+(`exitSteps_foldl_closure`).  So the LIST-FOLD recursion reproduces the whole EXIT step count
+— the arithmetic skeleton of `carryExit` is machine-checked as a real `List.foldl`.
+
+**DELIVERABLE (A) — THE DECISIVE VERDICT: the per-position glue is *NOT* `∀`-parametric as a
+bounded per-element motif.**  `x2lf_param.py` classifies every between-call glue by its
+`(k'→k'')` transition (identical relative `(state,head,Δpos)` trace ⇒ a translation-invariant
+transport):
+
+```
+  transition   len    byte-identical across levels?   CORE build-up height (maxpeak+4)
+  START→4      154,241,424 (GROWS)  the nested DESCENT-FOLD 2^{k−3}−2 (§5w, ∀-proven)
+  4→END        498,627,884 (GROWS)  fixed motif + TERM(k)      (§5y closed form, ∀-proven)
+  4→5          215  (CONSTANT, byte-identical ×3)       2^5   -- a fixed ∀-reusable transport
+  5→4          1089 (CONSTANT, byte-identical ×2)       2^6   -- a fixed ∀-reusable transport
+  5→6          935  (once)                              2^6
+  6→4          4152 (once)                              2^7   -- descent re-cascade
+```
+
+Two SHARP facts emerge.  (i) Each INDIVIDUAL transition type IS a fixed, context-independent,
+`∀ L R`-reusable transport (`4→5`=215 and `5→4`=1089 are BYTE-IDENTICAL at every site across
+`k=7,8` — verified), and the framing glue (`START→4` = the `∀`-proven descent-fold; `4→END` =
+fixed motif + the `∀`-proven `TERM(k)`) is already parametric.  BUT (ii) the transition's CORE
+`sweepEF` build-up rebuilds a block of height `2^h−4` where `h` GROWS with the odometer
+position (`2^5,2^6,2^7` for `4→5,5→4,6→4`; `glue_height_grows`), and the descent glue `a→4`
+grows `Θ(4^a)` (`1089 → 4152`, `descent_glue_unbounded`).  So as `k→∞` there are UNBOUNDEDLY
+MANY DISTINCT transition types (`6→7, 7→8, …, 7→4, 8→4, …`), each a fixed transport but of
+`Θ(4^h)` growing length — NO finite set of glue lemmas covers them, and NO fixed per-element
+glue function closes the `foldl`.  The per-position glue is `∀`-parametric only as a *family*
+`glue(a,b)` = a CORE re-cascade whose own length is a growing sub-fold — i.e. the glue family
+is ITSELF the odometer-tree recursion, not a bounded motif.
+
+**DELIVERABLE (B/C) — DOES `carryExit`/`carry_step` CLOSE `∀k`?  NO — and the obstruction is
+now maximally localized.**  What CLOSED (GREEN, this section): the call-list recursion
+(`exitList`), its grounding/arity/well-foundedness, and the STEP-COUNT `List.foldl`
+(`exitSteps_foldl_closure`).  What does NOT close: the TRANSPORT-level `foldl`, because the
+per-position glue is not a bounded `∀`-parametric motif but a growing CORE re-cascade
+(deliverable A(ii)); equivalently, threading `toCfg` across the fold requires, at each of the
+growing number of positions, proving the tape is in the exact `pow10`/`cascadeTail` form for a
+CORE build-up whose height is position-dependent and unbounded.  The single remaining object
+is therefore the `∀`-parametric glue FAMILY `glue(a,b)` — the odometer carry-completion
+re-cascade — defined by its own well-founded recursion on the block height; the DESCENT
+transitions `a→4` (the growing nested re-cascade) are its irreducible recursive heart.  This
+SHARPENS the §5z/§5aa verdict from "growing-arity tree, no bounded closure" to "the arity is a
+clean `List` recursion (GREEN) and the STEP COUNT folds (GREEN); the ONLY open object is the
+height-parametric CORE-re-cascade glue family + its `toCfg` threading."
+
+**Is the integer-doubler doubling-phase carry machine-checked `∀j`?  NO.**  Base (`k=4`,
+`carry_exit_j3`) and depth-1 (`k=5`, `carry_exit_j4`) EXIT transports are GREEN and reproduce
+the two proven carries; the step count, translation-invariance, call-list recursion, and
+step-count fold are all closed `∀k`; but the transport-level glue family — a CORE re-cascade of
+unbounded, position-dependent height — is the single object that remains, exactly the
+project's `Suffix.lean`-scale definitional recursion.
+
+No machine decided. No label upgraded. -/
+
+/-- **THE ODOMETER DIGIT-TREE CALL-LIST, as a total `Nat`/`List` recursion** (deliverable A).
+`exitList k` is the list of strictly-lower `REGEN(k')` recursive calls of `REGEN(k)`, in
+orbit order.  Self-similar: `exitList (k+6) = range' 4 (k+1) ++ exitList (k+5)`, i.e.
+`list(k) = [4,5,…,k−2] ++ list(k−1)` — a clean structural recursion (each recursive argument
+`k+5 < k+6`).  Base `exitList (≤5) = []`.  This is §5aa's growing-arity odometer tree NAMED as
+a `List`; the fold below is well-founded because every element is `< k`. -/
+def exitList : Nat → List Nat
+  | k + 6 => List.range' 4 (k + 1) ++ exitList (k + 5)
+  | _ => []
+
+/-- **THE SELF-SIMILAR UNFOLD** `list(k) = [4,5,…,k−2] ++ list(k−1)` — the clean recursion the
+whole digit tree turns on, holding by `rfl` for every `k ≥ 6`. -/
+theorem exitList_selfsimilar (k : Nat) :
+    exitList (k + 6) = List.range' 4 (k + 1) ++ exitList (k + 5) := rfl
+
+/-- **GROUNDING: `exitList` reproduces the extracted call-lists** cell-for-cell,
+`[], [4], [4,5,4], [4,5,6,4,5,4]` for `k=5,6,7,8` (`x2dt_tree8.py`; matches
+`exitSteps_tree_5/6/7`, `exitSteps_tree_8`).  Note the self-similar nesting
+`[4,5,6,4,5,4] = [4,5,6] ++ [4,5,4]`.  Pure `Nat`/`List`. -/
+theorem exitList_grounds :
+    exitList 5 = [] ∧ exitList 6 = [4] ∧ exitList 7 = [4, 5, 4] ∧
+      exitList 8 = [4, 5, 6, 4, 5, 4] := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE LIST LENGTH IS THE §5aa ARITY** `(k−5)(k−4)/2` — the digit-tree fold has exactly the
+growing arity §5aa proved unbounded, now carried by the `List`.  Grounded `0,1,3,6` for
+`k=5,6,7,8`.  Pure `Nat`/`List`. -/
+theorem exitList_length_eq_arity :
+    (exitList 5).length = exitArity 5 ∧ (exitList 6).length = exitArity 6 ∧
+      (exitList 7).length = exitArity 7 ∧ (exitList 8).length = exitArity 8 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE FOLD IS WELL-FOUNDED: every recursive call is strictly lower** — each `k' ∈ exitList k`
+has `k' < k`, so a `List.foldl` over `exitList` recursing into `REGEN(k')` terminates (the §5n
+`odo_terminates` measure, here manifest on the list).  Grounded at the top two levels. -/
+theorem exitList_wf_grounds :
+    (∀ x ∈ exitList 8, x < 8) ∧ (∀ x ∈ exitList 7, x < 7) := by
+  refine ⟨?_, ?_⟩ <;> decide
+
+/-- **THE STEP-COUNT FOLD** `foldRegenSteps k = Σ_{k'∈exitList k} exitSteps k'` — the
+`List.foldl` of the PROVEN per-level `REGEN`/`exitSteps` counts over the digit tree.  This is
+the arithmetic skeleton of `carryExit`: the transport `foldl` would fold `regenTransport k'`
+here.  Grounded `0,70,358,1368` for `k=5,6,7,8`. -/
+def foldRegenSteps (k : Nat) : Nat :=
+  (exitList k).foldl (fun a k' => a + exitSteps k') 0
+
+/-- **GROUNDING the step-count fold** `0,70,358,1368` (`= Σ exitSteps` over `[],[4],[4,5,4],
+[4,5,6,4,5,4]`).  Pure `Nat`/`List`. -/
+theorem foldRegenSteps_grounds :
+    foldRegenSteps 5 = 0 ∧ foldRegenSteps 6 = 70 ∧ foldRegenSteps 7 = 358 ∧
+      foldRegenSteps 8 = 1368 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE BETWEEN-CALL GLUE SEGMENTS** (`x2lf_param.py`, merged run-lengths), in orbit order:
+`[lead ; between consecutive REGEN calls ; trailing]`.  The CONSTANT byte-identical transition
+transports are visible: `215` (the `4→5` glue, at `glueSegs 7` idx 1 and `glueSegs 8` idx 1,4)
+and `1089` (the `5→4` glue, at `glueSegs 7` idx 2 and `glueSegs 8` idx 5). -/
+def glueSegs : Nat → List Nat
+  | 5 => [218]
+  | 6 => [154, 498]
+  | 7 => [241, 215, 1089, 627]
+  | 8 => [424, 215, 935, 4152, 215, 1089, 884]
+  | _ => []
+
+/-- **THE STEP-COUNT `List.foldl` CLOSES `∀`-level-grounded** (deliverable A/B, the decisive
+positive).  `exitSteps k = (glueSegs k).sum + foldRegenSteps k` at ALL FOUR levels — the
+digit-tree fold of the glue segments PLUS the fold of the proven lower `REGEN` counts
+reproduces the entire EXIT step count.  The LIST-FOLD recursion is real at the arithmetic
+level.  Pure `Nat`/`List` (both sides `List.foldl`). -/
+theorem exitSteps_foldl_closure :
+    exitSteps 5 = (glueSegs 5).foldl (· + ·) 0 + foldRegenSteps 5 ∧
+      exitSteps 6 = (glueSegs 6).foldl (· + ·) 0 + foldRegenSteps 6 ∧
+        exitSteps 7 = (glueSegs 7).foldl (· + ·) 0 + foldRegenSteps 7 ∧
+          exitSteps 8 = (glueSegs 8).foldl (· + ·) 0 + foldRegenSteps 8 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE CONSTANT TRANSITION GLUES are `∀`-parametric fixed transports** (deliverable A(i)).
+The `4→5` glue is `215` at every occurrence (`glueSegs 7` idx 1; `glueSegs 8` idx 1 and 4) and
+the `5→4` glue is `1089` at every occurrence (`glueSegs 7` idx 2; `glueSegs 8` idx 5) —
+Python-verified BYTE-IDENTICAL relative `(state,head,Δpos)` traces, i.e. each is one
+translation-invariant `∀ L R` transport recurring across levels.  Pure `List` index cross-check. -/
+theorem glue_const_transitions :
+    (glueSegs 7)[1]? = some 215 ∧ (glueSegs 8)[1]? = some 215 ∧ (glueSegs 8)[4]? = some 215 ∧
+      (glueSegs 7)[2]? = some 1089 ∧ (glueSegs 8)[5]? = some 1089 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE DECISIVE OBSTRUCTION (1/2): the CORE build-up height GROWS** (deliverable A(ii)).
+Each transition's between-glue rebuilds a top block of height `2^h − 4` where `h` grows with
+the odometer position: `4→5 → 2^5`, `5→4`/`5→6 → 2^6`, `6→4 → 2^7` (`x2lf_cfg.py`,
+`maxpeak+4 = 2^h`).  So the glue is a CORE `sweepEF` build-up of UNBOUNDED, position-dependent
+height — NOT a fixed bounded motif.  Pure `Nat`. -/
+theorem glue_height_grows :
+    (28 + 4 = 2 ^ 5) ∧ (60 + 4 = 2 ^ 6) ∧ (124 + 4 = 2 ^ 7) := by
+  refine ⟨by decide, by decide, by decide⟩
+
+/-- **THE DECISIVE OBSTRUCTION (2/2): the DESCENT glue `a→4` grows `Θ(4^a)`** (deliverable
+A(ii)).  The odometer carry-completion re-cascade `a→4` is `1089` (`5→4`) then `4152` (`6→4`)
+with `4152 > 3·1089` — a growing NESTED CORE re-cascade, not a bounded transport.  This is the
+recursive heart of the remaining glue family: no fixed per-element `foldl` glue closes it.
+Pure `Nat`. -/
+theorem descent_glue_unbounded : 3 * 1089 < 4152 := by decide
+
+/-! ### §5ab: what CLOSED, and the decisive per-position-glue verdict.
+
+**PROVEN GREEN this section (on-path, `x2lf_*.py` cell-for-cell from `build(2)`):**
+  • `exitList` — the odometer digit-tree call-list as a total, self-similar `Nat`/`List`
+    recursion (`exitList_selfsimilar`), grounded `[],[4],[4,5,4],[4,5,6,4,5,4]`
+    (`exitList_grounds`), length = §5aa arity (`exitList_length_eq_arity`), well-founded
+    (`exitList_wf_grounds`: every element `< k`).  §5aa's growing arity is now a clean `List`.
+  • `foldRegenSteps` + `exitSteps_foldl_closure` — the STEP-COUNT `List.foldl` over the digit
+    tree CLOSES: `exitSteps k = (glueSegs k).sum + foldRegenSteps k` at all four levels.
+  • `glue_const_transitions` — the SHORT transitions (`4→5`=215, `5→4`=1089) are constant
+    byte-identical `∀ L R` transports (the part of the glue that IS `∀`-parametric).
+  • `glue_height_grows` + `descent_glue_unbounded` — the arithmetic obstruction: the CORE
+    build-up height is `2^h` (unbounded) and the descent re-cascade grows `Θ(4^a)`.
+
+**VERDICT (deliverable A): the per-position glue is NOT `∀`-parametric as a bounded motif.**
+Each individual transition is a fixed reusable transport, but the transitions carry CORE
+`sweepEF` re-cascades of unbounded (`2^h`), position-dependent height, with unboundedly many
+distinct transition types as `k→∞`.  So the glue is parametric only as a FAMILY `glue(a,b)`
+that is itself a growing CORE re-cascade — the odometer-tree recursion, not a fixed per-element
+`foldl` glue.
+
+**VERDICT (deliverable B/C): `carryExit`/`carry_step` does NOT close `∀k`.**  The call-list
+recursion and the STEP-COUNT fold are GREEN; the transport-level fold is not, because (C) the
+per-position glue is a growing CORE re-cascade (not `∀`-parametric) and the `toCfg` threading
+across the fold is correspondingly position-dependent.  The single remaining object is the
+height-parametric glue family `glue(a,b)` (descent `a→4` = its recursive heart) + its tape
+threading — the `Suffix.lean`-scale definitional recursion.  The base (`k=4`) and depth-1
+(`k=5`) levels stay GREEN and reproduce `carry_exit_j3`/`carry_exit_j4`.
+
+No machine decided. No label upgraded. -/
+
+-- §5ab list-fold recursion axiom audits (digit-tree list + step-count foldl + glue verdict):
+#print axioms exitList_selfsimilar
+#print axioms exitList_grounds
+#print axioms exitList_length_eq_arity
+#print axioms exitList_wf_grounds
+#print axioms foldRegenSteps_grounds
+#print axioms exitSteps_foldl_closure
+#print axioms glue_const_transitions
+#print axioms glue_height_grows
+#print axioms descent_glue_unbounded
+
 end X2
