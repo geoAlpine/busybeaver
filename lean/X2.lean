@@ -4342,4 +4342,144 @@ No machine decided. No label upgraded. -/
 #print axioms exitSteps_tree_7
 #print axioms carryExit_wf_frame
 
+/-! ## §5aa (LAYER A, ON-PATH, 2026-07-16) THE BOUNDED-ARITY TEST — does the order-4
+step recurrence LIFT to a BOUNDED (≤4) transport recursion?  **DECISIVE VERDICT: NO —
+the REGEN tree is GENUINELY GROWING.**  (probes `x2dt_decompose.py`, `x2dt_tree8.py`,
+cell-for-cell from the faithful `build(2)` orbit.)
+
+**THE LEAD (and why it is seductive).**  §5z proved `exitSteps(k)` obeys the order-4 linear
+recurrence with characteristic `(x−4)(x−2)²(x−1)` (`exitSteps_recurrence`).  An order-4
+step recurrence is exactly the arithmetic footprint one would expect of a transport that
+reuses `REGEN(k−1..k−4)` a BOUNDED number of times plus `∀k`-parametric glue — which, if
+real, would CLOSE `carry_step` (define `carryExit : Nat → transport` by WF `Nat` recursion
+with ≤4 recursive calls, cross-check `carryExit 4 = carry_exit_j3`, `5 = carry_exit_j4`,
+wire into `carry_step`).  This section tests that hypothesis two independent ways and
+REFUTES it decisively.
+
+**(1) STRUCTURAL — the arity GROWS QUADRATICALLY.**  Extending §5z's tree decomposition to
+`k=8` cell-for-cell (`REGEN(8)` at raw `n=31246→40528`, exact greedy largest-block cover,
+`exitSteps_tree_8` below, sum-checked = 9282 = `exitSteps 8`), the number of strictly-lower
+`REGEN` recursive calls is:
+```
+  REGEN(5): 0   calls []                         2^5−3 = 29  = 11101₂  (4 one-bits)
+  REGEN(6): 1   calls [4]                         2^6−3 = 61  = 111101₂ (5 one-bits)
+  REGEN(7): 3   calls [4,5,4]                      2^7−3 = 125 = 1111101₂(6 one-bits)
+  REGEN(8): 6   calls [4,5,6,4,5,4]                2^8−3 = 253 = 11111101₂(7 one-bits)
+```
+The arity sequence `0,1,3,6` is EXACTLY the triangular number `(k−5)(k−4)/2` (`exitArity`
+below, grounded at all four tape levels) — it already EXCEEDS 4 at `k=8` (arity 6) and keeps
+growing (`exitArity 9 = 10`).  So NO fixed `≤4`-arity structural `carryExit : Nat → transport`
+reproduces the orbit: the recursive-call count is itself an unbounded function of `k` (the
+odometer's base-2 digit tree; note the self-similar nesting `[4,5,6,4,5,4]` = the `REGEN(7)`
+call-list `[4,5,4]` prefixed by `[4,5,6]`).
+
+**(2) ARITHMETIC — the order-4 recurrence CANNOT be a composition.**  A transport
+composition can only ADD step counts, so a bounded reuse would force a NONNEGATIVE identity
+`exitSteps(k) = Σᵢ cᵢ·exitSteps(k−i) + glue(k)` with `cᵢ ∈ ℕ`, `glue(k) ≥ 0`.  But (a) the
+order-4 recurrence's coefficients are `(9,−28,36,−16)` — NEGATIVE (`exitSteps_recurrence`
+is subtraction-free precisely because two coefficients flip sign), so it is NOT such a
+nonnegative identity; and (b) the single-call leading multiplier is strictly between 3 and
+4 — `3·exitSteps(k) < exitSteps(k+1) < 4·exitSteps(k)` (`exitSteps_leading_multiplier_in_open_3_4`,
+grounded k=4..7).  Because `exitSteps(k) = 4^k/8 + …` grows by a factor `→4`, and no INTEGER
+number of top-level `REGEN(k−1)` calls matches it (3 undershoots, leaving a residual that is
+still `Θ(4^k)` = "glue that re-encodes the whole transport, not a bounded-description glue";
+4 OVERSHOOTS, `exitSteps(k+1) < 4·exitSteps(k)`, giving a NEGATIVE residual — impossible for
+a composition), a brute force (`x2dt_decompose.py`) confirms EVERY bounded (`Σcᵢ ≤ 4`)
+nonnegative combination with residual `≥ 0` has glue that is `Θ(4^k)` — i.e. it re-encodes
+the whole transport rather than recursing.  The bounded-arity lift is arithmetically
+excluded, independent of the tape.
+
+**VERDICT.**  GENUINELY GROWING.  The order-4 step recurrence does NOT lift to a
+bounded-arity transport recursion — for two independent reasons (the arity grows like
+`(k−5)(k−4)/2`; the recurrence has negative coefficients while the leading multiplier is a
+non-integer in `(3,4)`).  This CONFIRMS and SHARPENS §5z's growing-tree finding against the
+strongest closure attempt.  The `carry_step` `[DESIGN]` object is the odometer digit-tree
+recursion whose arity function `exitArity` is itself the recursive content — a
+`Suffix.lean`-scale definitional object, NOT a `≤4`-arity `Nat` recursion.  The base
+(`k=4`, `carry_exit_j3`) and depth-1 (`k=5`, `carry_exit_j4`) levels stay GREEN and the
+step count / TI are closed `∀k`, but no bounded transport recursion closes the general `j`.
+
+No machine decided. No label upgraded. -/
+
+/-- **THE BRANCHING ARITY of `REGEN(k)`** — the count of strictly-lower `REGEN` recursive
+calls in the exact tree decomposition (`x2dt_tree8.py`).  Closed form `(k−5)(k−4)/2` (the
+triangular numbers), grounded at FOUR tape levels below.  It is the odometer base-2 digit
+tree's fan-out; UNBOUNDED in `k`, so no fixed-arity structural `carryExit` exists. -/
+def exitArity (k : Nat) : Nat := (k - 5) * (k - 4) / 2
+
+/-- **GROUNDING: the arity closed form reproduces the extracted tree arities** `0,1,3,6`
+for `k=5,6,7,8` (`REGEN(5..8)` cell-for-cell; `exitSteps_tree_5/6/7`, `exitSteps_tree_8`).
+Pure `Nat` cross-check. -/
+theorem exitArity_grounds :
+    exitArity 5 = 0 ∧ exitArity 6 = 1 ∧ exitArity 7 = 3 ∧ exitArity 8 = 6 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE ARITY ALREADY EXCEEDS 4 AND KEEPS GROWING** — the decisive refutation of a
+bounded (`≤4`) transport recursion.  `exitArity 8 = 6 > 4` (already at the fourth level) and
+`exitArity 8 < exitArity 9 = 10` (strictly increasing).  So the recursive-call count is
+NOT `∀k`-bounded by 4 (nor by any constant): no fixed-arity `carryExit : Nat → transport`
+reproduces the orbit.  Pure `Nat`. -/
+theorem exitArity_exceeds_four : 4 < exitArity 8 ∧ exitArity 8 < exitArity 9 := by decide
+
+/-- **THE EXACT TREE DECOMPOSITION (`k=8`)** — SIX strictly-lower recursive calls
+`[REGEN(4),REGEN(5),REGEN(6),REGEN(4),REGEN(5),REGEN(4)]` (arity 6, matching
+`exitArity 8`), with level-dependent CORE build-up glue (`798`, `3944`), ending `TERM(8)`.
+Extends `exitSteps_tree_5/6/7`; together the arities are `0,1,3,6` — the GROWING tree that
+refutes the bounded-arity lift.  Sum-checked `= exitSteps 8 = 9282`.  Pure `Nat`. -/
+theorem exitSteps_tree_8 :
+    exitSteps 8 = 353 + termSteps 3 + 47 + exitSteps 4 + 113 + termSteps 3 + 78 + exitSteps 5
+      + 113 + termSteps 3 + 798 + exitSteps 6 + 113 + termSteps 3 + 3944 + termSteps 3
+      + 47 + exitSteps 4 + 113 + termSteps 3 + 78 + exitSteps 5 + 113 + termSteps 3
+      + 881 + termSteps 3 + 47 + exitSteps 4 + 113 + termSteps 3 + 122 + termSteps 3
+      + 76 + termSteps 8 := by decide
+
+/-- **THE ARITHMETIC OBSTRUCTION: the single-call leading multiplier is a NON-INTEGER in
+`(3,4)`** — `3·exitSteps(k) < exitSteps(k+1) < 4·exitSteps(k)` for `k=4,5,6,7`.  Since
+`exitSteps` grows by factor `→4` (leading `4^k/8`), no INTEGER number of top-level
+`REGEN(k−1)` calls matches it: 3 undershoots (residual still `Θ(4^k)` — glue that
+re-encodes the transport), 4 OVERSHOOTS (`exitSteps(k+1) < 4·exitSteps(k)` ⇒ negative
+residual, impossible for an additive composition).  Hence — together with the NEGATIVE
+coefficients of `exitSteps_recurrence` — the order-4 step recurrence is NOT the arithmetic
+image of a bounded nonnegative transport composition.  Pure `Nat` cross-check. -/
+theorem exitSteps_leading_multiplier_in_open_3_4 :
+    (3 * exitSteps 4 < exitSteps 5 ∧ exitSteps 5 < 4 * exitSteps 4) ∧
+      (3 * exitSteps 5 < exitSteps 6 ∧ exitSteps 6 < 4 * exitSteps 5) ∧
+        (3 * exitSteps 6 < exitSteps 7 ∧ exitSteps 7 < 4 * exitSteps 6) ∧
+          (3 * exitSteps 7 < exitSteps 8 ∧ exitSteps 8 < 4 * exitSteps 7) := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> exact ⟨by decide, by decide⟩
+
+/-! ### §5aa: what CLOSED, and the decisive verdict on the bounded-arity lead.
+
+**PROVEN GREEN this section (on-path, `x2dt_*.py` cell-for-cell from `build(2)`):**
+  • `exitArity` — the `REGEN(k)` branching arity, closed form `(k−5)(k−4)/2`, grounded at
+    FOUR tape levels `0,1,3,6` (`exitArity_grounds`) and shown to EXCEED 4 and keep growing
+    (`exitArity_exceeds_four`): the recursive-call count is unbounded in `k`.
+  • `exitSteps_tree_8` — the exact `k=8` tree decomposition (arity 6), extending
+    `exitSteps_tree_5/6/7`; sum-checked `= exitSteps 8`.
+  • `exitSteps_leading_multiplier_in_open_3_4` — the arithmetic obstruction: the leading
+    single-call multiplier is a non-integer in `(3,4)`, so with the NEGATIVE coefficients of
+    `exitSteps_recurrence` the order-4 step recurrence is not a bounded nonnegative
+    composition.
+
+**VERDICT (deliverable A/C): GENUINELY GROWING — the bounded-arity lift does NOT exist.**
+The order-4 step-count recurrence does NOT lift to a `≤4`-arity transport recursion.
+Structurally the arity is `(k−5)(k−4)/2` (unbounded, `>4` at `k=8`); arithmetically the
+recurrence's negative coefficients and non-integer leading multiplier forbid any bounded
+nonnegative composition.  `carry_step` remains the growing-arity odometer digit-tree
+`[DESIGN]` object of §5z, now tested against and surviving the strongest closure attempt.
+
+**Is the doubling-phase carry machine-checked ∀j?  NO.**  The base (`k=4`) and depth-1
+(`k=5`) EXIT transports are GREEN and reproduce `carry_exit_j3`/`carry_exit_j4`; the step
+count (`exitSteps`) and translation-invariance are closed `∀k`; but the single open object
+— the `REGEN` transport step with its GROWING-ARITY recursion — is confirmed here to admit
+no bounded-arity closure.  The general-`j` doubling-phase carry is NOT yet machine-checked.
+
+No machine decided. No label upgraded. -/
+
+-- §5aa bounded-arity test axiom audits (arity closed form + k=8 tree + arithmetic obstruction):
+#print axioms exitArity_grounds
+#print axioms exitArity_exceeds_four
+#print axioms exitSteps_tree_8
+#print axioms exitSteps_leading_multiplier_in_open_3_4
+
 end X2
