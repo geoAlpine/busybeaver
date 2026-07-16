@@ -4711,4 +4711,153 @@ No machine decided. No label upgraded. -/
 #print axioms glue_height_grows
 #print axioms descent_glue_unbounded
 
+/-! ## §5ac (LAYER A, ON-PATH, 2026-07-16) THE UNIFIED NESTED RECURSION — feasibility design
+study of the doubly-nested EXIT `carry_step` object.  Delivers: the DESCENT-GLUE closed form
+(the odometer carry-completion re-cascade, the `[DESIGN]` object of §5ab), its tie-in to the
+already-grounded §5ab `glueSegs`, and the UNIFIED well-founded MEASURE `uMeasure` that closes
+BOTH the outer `REGEN` list-fold and the inner descent re-cascade.  (probes `x2ur_descent.py`,
+`x2ur_sweep.py`, cell-for-cell from the faithful `build(2)` orbit; full design in
+`X2_UNIFIED_RECURSION_DESIGN_2026-07-16.md`.)
+
+**THE DECISIVE Q1 FINDING (why a unified finite recursion is CONSTRUCTIBLE).**  §5ab localized
+the open object to the per-position glue FAMILY — the DESCENT transitions `a→4` (the odometer
+carry-completion re-cascade), growing `Θ(4^a)`.  Extracting `a→4` cell-for-cell at a=5,6,7
+(inside REGEN(7)/(8)/(9), raw windows `[13453,14542]`, `[33830,37982]`, `[114703,131134]`) and
+decomposing with the greedy REGEN/TERM cover (`x2ur_descent.py`) gives the decisive fact:
+
+```
+  descent 5→4  len 1089   REGEN sub-calls = []   TERM sub-calls = [3,3]
+  descent 6→4  len 4152   REGEN sub-calls = []   TERM sub-calls = [3,3]
+  descent 7→4  len 16431  REGEN sub-calls = []   TERM sub-calls = [3,3]
+```
+
+The descent glue contains ZERO `REGEN` calls — it is a genuinely DIFFERENT function from
+`REGEN` (a pure cascade DESCENT-FOLD, `x2ur_sweep.py`: arithmetic-progression staircase
+`8,12,…,2^{a+1}−4`, register = descending cascade `1^{2^a−3} 0² … 0² 1^1` consumed to empty).
+So the coupling is ONE-DIRECTIONAL — `REGEN → {lower REGEN, descentGlue}` but
+`descentGlue → {ticks/sweepEF/TERM, NO REGEN}` — hence the pair STRATIFIES into a FINITE WF
+recursion (Q2: both bottom out; Q3: one `cascadeReg(a)` invariant; Q4: one measure `k²+a`).
+
+**FEASIBILITY VERDICT: the unified finite WF recursion IS CONSTRUCTIBLE.**  The single
+remaining proof obligation is the transport-assembly of `descentGlue` (the `sweepEF`-composite
+cascade induction) — bounded, composed of the ∀-proven `outer_tick_noCarry_at`/`sweepEF`/`TERM`
+pieces, with the type/measure/invariant here specified.  `[DESIGN]`-labeled for that transport;
+NO `sorry`/axiom/`native_decide`/`partial def`.  Base (k=4) and depth-1 (k=5) stay GREEN and
+reproduce `carry_exit_j3`/`carry_exit_j4` (`regen4_transport`/`regen5_transport`, §5z). -/
+
+/-- **THE DESCENT-GLUE STEP COUNT, CLOSED FORM** `descentSteps(a) = 4^a − 9a + 110` — the
+odometer carry-completion re-cascade `a→4` (the §5ab `[DESIGN]` glue family), REGEN-free,
+`Θ(4^a)`.  Grounded a=5,6,7 → `1089,4152,16431` below.  (Written `2^{2a}+110−9a`; well-defined
+`Nat` sub since `2^{2a}+110 > 9a` for all `a`.) -/
+def descentSteps (a : Nat) : Nat := 2 ^ (2 * a) + 110 - 9 * a
+
+/-- **GROUNDING: the descent closed form reproduces the extracted `a→4` lengths** `1089,4152,
+16431` for a=5,6,7 (`x2ur_descent.py`/`x2ur_sweep.py`, cell-for-cell), with UNIT leading
+coefficient (a real law, not a fit artifact).  Pure `Nat` cross-check. -/
+theorem descentSteps_grounds :
+    descentSteps 5 = 1089 ∧ descentSteps 6 = 4152 ∧ descentSteps 7 = 16431 := by
+  refine ⟨?_, ?_, ?_⟩ <;> decide
+
+/-- **THE DESCENT GLUE IS THE §5ab `glueSegs` `a→4` ENTRIES** — tying the closed form to the
+already-grounded step-count fold.  `descentSteps 5 = 1089` is the `5→4` glue (`glueSegs 7` idx 2,
+`glueSegs 8` idx 5); `descentSteps 6 = 4152` is the `6→4` glue (`glueSegs 8` idx 3).  So the
+descent family is exactly the growing glue that blocks the §5ab transport fold.  Pure `List`. -/
+theorem descentSteps_is_glueSeg :
+    (glueSegs 7)[2]? = some (descentSteps 5) ∧ (glueSegs 8)[5]? = some (descentSteps 5) ∧
+      (glueSegs 8)[3]? = some (descentSteps 6) := by
+  refine ⟨?_, ?_, ?_⟩ <;> decide
+
+/-- **THE DESCENT GLUE IS NOT A SUB-`REGEN`** (the Q1 arithmetic witness).  `descentSteps(a)`
+grows `Θ(4^a)` with UNIT leading coefficient while `exitSteps(a) = 4^a/8 + …`; the ratio
+`descentSteps/exitSteps` STRICTLY INCREASES (`4 < ratio`, and increasing 4.99→5.75→6.49), so the
+descent is `≈8× REGEN(a)` and is not any lower `REGEN` — consistent with the cell-for-cell
+finding of ZERO REGEN sub-calls.  Stated subtraction-free.  Pure `Nat`. -/
+theorem descentSteps_exceeds_regen :
+    4 * exitSteps 5 < descentSteps 5 ∧ 4 * exitSteps 6 < descentSteps 6 ∧
+      4 * exitSteps 7 < descentSteps 7 ∧
+      -- ratio strictly increasing: descentSteps a · exitSteps(a+1) < descentSteps(a+1) · exitSteps a
+      descentSteps 5 * exitSteps 6 < descentSteps 6 * exitSteps 5 ∧
+      descentSteps 6 * exitSteps 7 < descentSteps 7 * exitSteps 6 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE UNIFIED WELL-FOUNDED MEASURE** `uMeasure k a = k² + a`, the lexicographic `(k,a)`
+encoded as a single `Nat` (valid since the descent depth `a < k` always — the descended cascade
+sits below the current block).  `k` = OUTER block height (each `REGEN(k')` call has `k'<k`);
+`a` = INNER cascade depth (each descent step drops one rung).  Decreases through BOTH nestings
+(`uMeasure_outer`/`uMeasure_inner`), tied to §5n `odo_terminates`. -/
+def uMeasure (k a : Nat) : Nat := k * k + a
+
+/-- **THE OUTER STEP STRICTLY DECREASES `uMeasure`** — a `REGEN(k)` calling `REGEN(k')` with
+`k' < k` (any well-founded descent depth `a' < k'`): `uMeasure k' a' < uMeasure k a`.  The
+STRATUM-2 list-fold over `exitList` (`exitList_wf_grounds`: every `k' < k`) descends the
+measure.  Proven `∀`-level (core `Nat.mul_le_mul` + `omega`; no Mathlib). -/
+theorem uMeasure_outer {k k' a a' : Nat} (hk : k' < k) (ha' : a' < k') :
+    uMeasure k' a' < uMeasure k a := by
+  unfold uMeasure
+  -- k'*k'+a' < k'*k'+k' = k'*(k'+1) ≤ k*k ≤ k*k+a  (core Nat lemmas only, no Mathlib `ring`)
+  have h1 : k' * k' + a' < k' * k' + k' := Nat.add_lt_add_left ha' _
+  have h2 : k' * k' + k' = k' * (k' + 1) := (Nat.mul_succ k' k').symm
+  have h3 : k' * (k' + 1) ≤ k * k := Nat.mul_le_mul (Nat.le_of_lt hk) hk
+  calc k' * k' + a' < k' * k' + k' := h1
+    _ = k' * (k' + 1) := h2
+    _ ≤ k * k := h3
+    _ ≤ k * k + a := Nat.le_add_right _ _
+
+/-- **THE INNER STEP STRICTLY DECREASES `uMeasure`** — one descent rung `a+1 → a` at fixed
+block height `k`: `uMeasure k a < uMeasure k (a+1)`.  The STRATUM-1 cascade descent-fold
+(measure = cascade depth) descends the measure.  Pure `Nat`. -/
+theorem uMeasure_inner (k a : Nat) : uMeasure k a < uMeasure k (a + 1) := by
+  unfold uMeasure; omega
+
+/-- **GROUNDING the unified measure on the REAL orbit levels** — the STRATUM-2 outer call
+`REGEN(9) → REGEN(7)` (that call's descent depth 7): `uMeasure 7 7 < uMeasure 9 7`; and the
+STRATUM-1 inner descent `7→4` rung step at k=9: `uMeasure 9 6 < uMeasure 9 7`.  Both nestings
+descend one measure.  Pure `Nat` cross-check. -/
+theorem uMeasure_grounds :
+    uMeasure 7 7 < uMeasure 9 7 ∧ uMeasure 9 6 < uMeasure 9 7 := by
+  refine ⟨?_, ?_⟩ <;> decide
+
+/-! ### §5ac: what CLOSED, and the FEASIBILITY VERDICT on the unified nested recursion.
+
+**PROVEN GREEN this section (on-path, `x2ur_*.py` cell-for-cell from `build(2)`):**
+  • `descentSteps` — the DESCENT-GLUE `a→4` closed form `4^a−9a+110`, grounded `1089,4152,16431`
+    (`descentSteps_grounds`), tied to the §5ab `glueSegs` (`descentSteps_is_glueSeg`) and shown
+    `≈8×`-bigger-than and ratio-increasing-vs `REGEN` (`descentSteps_exceeds_regen`, the Q1
+    witness that the descent is a REGEN-FREE different function).
+  • `uMeasure` + `uMeasure_outer` + `uMeasure_inner` + `uMeasure_grounds` — the UNIFIED
+    lexicographic measure `k²+a` that STRICTLY DECREASES through BOTH the outer `REGEN`
+    list-fold (`k'<k`) and the inner cascade descent (`a→a−1`), proven `∀`-level and grounded
+    on the real orbit levels.  (Q4: one WF measure closes both nestings.)
+
+**THE 4 FEASIBILITY ANSWERS (full evidence in the design doc):**
+  Q1  Glue reducible to REGEN?  NO — the descent `a→4` is REGEN-FREE (0 sub-calls, a=5,6,7),
+      a pure cascade descent-fold; coupling is one-directional ⇒ STRATIFIABLE.
+  Q2  Bottoms out finitely?  YES — OUTER at `REGEN(4)`, INNER at cascade depth 0; two function
+      types, both terminating; no new type per layer.
+  Q3  Single `toCfg` invariant?  YES — the descending-cascade register `cascadeReg(a)`
+      (an `Odo.toCfg`/`cascadeTail` instance), preserved every position, reproducing
+      `carry_exit_j3/j4`.
+  Q4  Unified measure?  YES — `uMeasure k a = k²+a`, strict on both nestings (here, GREEN).
+
+**FEASIBILITY VERDICT: a unified finite well-founded recursion IS CONSTRUCTIBLE.**  The
+self-similarity does NOT resist a finite Lean recursion: it stratifies into (1) `descentGlue`
+(a self-contained WF cascade descent-fold, REGEN-free) and (2) `regen` (a WF list-fold over
+`exitList` using `descentGlue` + lower `regen`), sharing one invariant (Q3) and one measure
+(Q4, GREEN here).  **The single remaining proof obligation** is the transport-assembly of
+`descentGlue` — the `sweepEF`-composite cascade induction threading `cascadeReg(a)` from depth
+`a` to `0` at length `descentSteps(a)` — bounded, composed of the ∀-proven
+`outer_tick_noCarry_at`/`sweepEF`/`TERM(3)` pieces; `Suffix.lean`-scale DEFINITIONAL work, NOT a
+new obstruction.  Base (k=4) and depth-1 (k=5) EXITs stay GREEN and reproduce
+`carry_exit_j3`/`carry_exit_j4`.
+
+No machine decided. No label upgraded. -/
+
+-- §5ac unified nested recursion axiom audits (descent closed form + glueSeg tie + WF measure):
+#print axioms descentSteps_grounds
+#print axioms descentSteps_is_glueSeg
+#print axioms descentSteps_exceeds_regen
+#print axioms uMeasure_outer
+#print axioms uMeasure_inner
+#print axioms uMeasure_grounds
+
 end X2
