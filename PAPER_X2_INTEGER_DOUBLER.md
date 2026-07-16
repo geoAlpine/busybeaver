@@ -33,11 +33,12 @@ recursive lemma:
 - **[PROVEN, ∀-parametric, on-path]** A library of the phase's building blocks: the odometer tick, the
   steady no-carry run, the carry's `sweepEF`-core, the fully-factored depth-1 carry, and the low
   phase's forward tile (§4).
-- **[OPEN]** The one remaining deep wall is `carry_step`: the general-`j` carry is a genuine **nested
-  well-founded recursion** (`EXIT(j) = fold ∘ REGEN(j−1)`, nesting to depth `j−3`). It is realized and
-  proven at two depths (`carry_j4` reuses `carry_event_5to13`), its building blocks are ∀j-uniform and
-  its recursive register is grounded and proven — but it is provably **not** closable as a straight-line
-  parametric transport (§5); the recursive `REGEN`/`EXIT` closure is the open object.
+- **[OPEN]** The one remaining deep wall is `carry_step`: the general-`j` carry is a genuine **growing-arity
+  digit-tree recursion**. Its building blocks are all machine-checked — a clean closed-form step count
+  `exitSteps(k)` with an order-4 recurrence, a grounded recursive register, fully translation-invariant
+  per-level transports, and `k=4,5` base levels that reproduce the concrete carries — but we **prove** it
+  admits **no bounded-arity closure**: the recursive fan-out is the triangular `(k−5)(k−4)/2` of the
+  odometer's base-2 digit tree (§5). The open object is the well-founded list-fold recursion over that tree.
 
 The honest bottom line: **the machine is not decided**, but its non-halting is now a single, precisely
 characterized, `Suffix.lean`-scale recursive lemma away from a machine-checked proof, with everything
@@ -178,12 +179,28 @@ remaining obstruction.
     byte-identical 144-step prefix and then diverge only at the terminal (`g41` for `k=4` vs `g139` for
     `k=6`). The EXIT emits terminals of many `k`, nested — a genuine recursion over the odometer height.
 
-  What remains open is therefore narrowed to a single object: the closure of the `REGEN`/`EXIT` recursion
-  **indexed by the global odometer height `k`**. Every ingredient is proven clean — the descent-fold count,
-  the anchor/body motifs, the MIDDLE run, the CORE, the grounded register, and now the terminal glue
-  `TERM(k)` — and the recursion is well-founded; what is not yet built is the `k`-indexed recursive datatype
-  that composes them, whose `k` tracks a global cascade quantity. Its tractability is not settled. No forced
-  closure was produced (three over-optimistic "closable" framings were caught by the discipline en route).
+  - **The EXIT is a genuine GROWING-ARITY digit-tree recursion [PROVEN structure].** Re-indexed by block
+    height `k`, the EXIT step count is `exitSteps(k) = 2^{2k−3} + k·2^{k−1} + 2^{k−2} + 2` (clean closed
+    form, grounded at five levels `k=4…8 → 70,218,722,2530,9282`, satisfying an order-4 linear recurrence
+    with roots `4,2,2,1`), and each per-level regeneration `REGEN(k)` is *fully* translation-invariant
+    (`regen_TI_generic`). Its `k=4`/`k=5` transports **are** the proven `carry_exit_j3`/`carry_exit_j4`
+    (`regen4_transport`/`regen5_transport`). But the number of recursive sub-calls is
+    `exitArity(k) = (k−5)(k−4)/2` — the **triangular, unbounded** fan-out of the odometer's base-2 digit
+    tree (call-lists `[], [4], [4,5,4], [4,5,6,4,5,4]`). We **prove** no bounded-arity recursion can close
+    it: a transport composition only *adds* step counts, but the order-4 recurrence has negative
+    coefficients and the growth ratio `exitSteps(k+1)/exitSteps(k) ∈ (3,4)` is non-integer, so no fixed
+    `≤4`-call nonnegative composition matches (`exitSteps_leading_multiplier_in_open_3_4`,
+    `exitArity_exceeds_four`). The order-4 recurrence governs the *magnitude*; the digit-tree fan-out is
+    the *branching* — they decouple.
+
+  What remains open is therefore a single, precisely-typed object: a **well-founded recursion that folds a
+  digit-tree-indexed list of the lower `REGEN` transports** (arity `(k−5)(k−4)/2`). Every ingredient is
+  proven — the register, the closed-form count and its recurrence, the translation-invariance, the
+  descent-fold/MIDDLE/CORE, the ∀j-uniform glue, the terminal law `TERM(k)`, and the `k=4,5` base levels
+  reproducing the concrete carries. What is not built is that list-fold recursion. Its tractability is not
+  settled; it is proven to require *unbounded* reuse (no fixed-arity closure exists). No forced closure was
+  produced — five over-optimistic "closable" framings were caught by the discipline en route, each
+  narrowing the object to this final list-fold recursion.
 
 **`carry_step` is the single lemma whose closure would complete `h_doub`.** The doubling phase's control
 structure, arithmetic, uniform building blocks, and recursion frame are all machine-checked; the one
@@ -212,7 +229,7 @@ record and includes corrections the discipline caught, e.g.:
 - **Inflated numbers, corrected.** Declaration/axiom counts were re-derived by byte-level Lean audit
   whenever quoted.
 
-`lean/X2.lean` contains **186 declarations** (148 theorems/lemmas, 38 definitions), **zero `sorry`,
+`lean/X2.lean` contains **205 declarations** (164 theorems/lemmas, 41 definitions), **zero `sorry`,
 zero `native_decide`**, axiom audit `[propext, Quot.sound]`.
 
 ---
