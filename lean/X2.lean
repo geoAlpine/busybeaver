@@ -4860,4 +4860,270 @@ No machine decided. No label upgraded. -/
 #print axioms uMeasure_inner
 #print axioms uMeasure_grounds
 
+/-! ## §5ad (LAYER A, ON-PATH, 2026-07-16) THE DESCENT-GLUE TRANSPORT — the odometer
+carry-completion cascade descent-fold `descentGlue` (§5ac's single `[DESIGN]` object), BUILT
+cell-for-cell from the faithful `build(2)` descent windows (`x2ur`/`x2dg_*.py`: a=5
+`[13453,14542]`/1089, a=6 `[33830,37982]`/4152, a=7 `[114703,131134]`/16431).
+
+**THE DECISIVE STRUCTURAL FINDING (cell-for-cell, `x2dg_boundary.py`, ALL of a=5,6,7).**
+`descentGlue(a)` does NOT decompose as the §5ac-conjectured uniform per-depth sweep
+`[rung 2^a−3] ∘ descentGlue(a−1)`.  Extracting the E-boundary crossing times of the
+descending-cascade register `[2^a−3, …, 5, 1]` reveals THREE distinct pieces:
+
+```
+  descentGlue(a) = TOPGRIND(a)            consume the ORIGINAL top block 1^{2^a−3}
+                       [4^a − 3·2^a + 7 steps — QUADRATIC in the block size]
+                 ∘ STD(a−1) ∘ … ∘ STD(3)  consume each LOWER block 1^{2^m−3}
+                       [3·2^m − 9 steps each — LINEAR, uniform, ∀m]
+                 ∘ FINAL                  the residue 1^1 → base (two TERM(3))
+                       [100 steps, fixed]
+  grounded:  a=5: 935 + (39+15) + 100 = 1089    a=6: 3911 + (87+39+15) + 100 = 4152
+             a=7: 16007 + (183+87+39+15) + 100 = 16431   (= descentSteps, ALL THREE) ✓
+```
+
+The SAME block `1^{2^m−3}` costs `3·2^m−9` as a LOWER block but a QUADRATIC `4^m−3·2^m+7` as
+the ORIGINAL top (block 29: 87 vs 935; block 61: 183 vs 3911).  So the descent's DOMINANT
+term is the TOP grind, and the TOP grind is `Θ(4^a)` — a NESTED doubling odometer of the SAME
+character as the open doubling-phase core (§5p wall), NOT a composition of the ∀-proven linear
+pieces.  **This REFUTES the §5ac framing that `descentGlue` is "a run of the ∀-proven odometer
+sweep"**: the closed form `4^a−9a+110`'s leading `4^a` term IS this quadratic top grind, not
+the sweep-probe's "exponentially-many length-2 fillers".
+
+**WHAT CLOSES GREEN HERE (∀-level, on-path):** the LINEAR SKELETON — the clean per-depth STD
+descent TILE `descent_std_tile` (∀v), the descending-cascade LOWER FOLD `descent_lower_fold`
+(∀d — the descent BELOW the top block, a WF fold of STD tiles), and the exact step-count
+DECOMPOSITION `descentSteps_decomp`.  **WHAT REMAINS `[DESIGN]`:** the TOPGRIND quadratic term
+`topGrindSteps a = 4^a−3·2^a+7` — the nested doubling, the project's core wall, now LOCALIZED
+as the single obstruction inside `descentGlue`.  No `sorry`/axiom/`native_decide`/`partial def`;
+base/depth-1 EXITs stay GREEN.  No machine decided; no label upgraded. -/
+
+/-- **The 3-step STD-tile EXIT** (`E:0→1RF · F:0→0RA · A:1→0RE`): from `E` on the residue
+`0 · 1 · 0² · R` (head on the boundary `0`, then the residue `1^1`, then the `0²` marker),
+`3` steps deposit the comb-cap `0² 1` on the left and re-anchor `E` on the fresh boundary `0`
+before `R`, `+3`.  Kernel `rfl` (the base of the STD tile). -/
+theorem descent_exit_tile (q : Int) (L R : List Bool) :
+    steps 3 ⟨.E, q, ⟨L, false, false :: true :: false :: false :: R⟩⟩
+      = some ⟨.E, q + 3, ⟨false :: false :: true :: L, false, false :: R⟩⟩ := by
+  have h : steps 3 (⟨.E, q, ⟨L, false, false :: true :: false :: false :: R⟩⟩ : Cfg)
+      = some ⟨.E, q + 1 + 1 + 1, ⟨false :: false :: true :: L, false, false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **THE STD DESCENT TILE, `∀v` (the clean per-depth descent tile, deliverable A).**
+Consume ONE fully-flanked descending-cascade block `1^{2v+1}` together with its trailing `0²`
+marker: from `E` on the boundary `0` before `0² 1^{2v+1} 0² R` (right = `0 1^{2v+1} 0² R`,
+reading `0² 1^{2v+1} 0² R`), `6v+3` steps chew the block into the comb `(01)^v`, deposit the
+comb-cap `0² 1 (01)^v` on the left, and re-anchor `E` on the boundary `0` before the LOWER
+register `R` (reading `0² R`), advancing `+2v+3`; the tail `R` is untouched.  Proven `∀v` by
+`ecombChewFold v` (§5i, the block→comb chew) then `descent_exit_tile` (the 3-step re-anchor),
+composed by `steps_add`.  `some` ⇒ HALT-FREE `∀v`.  Reproduces the real descent's LOWER tiles
+cell-for-cell: v=2 (block `1^5`) = 15 steps, v=6 (`1^13`) = 39, v=14 (`1^29`) = 87
+(`descent_std_tile_grounds`).  `[propext, Quot.sound]`-only (inherits `ecombChewFold`). -/
+theorem descent_std_tile (v : Nat) (p : Int) (L R : List Bool) :
+    steps (6 * v + 3)
+        ⟨.E, p, ⟨L, false, false :: (ones (2 * v + 1) ++ (false :: false :: R))⟩⟩
+      = some ⟨.E, p + (2 * (v : Int) + 3),
+          ⟨false :: false :: true :: (pow01 v ++ L), false, false :: R⟩⟩ := by
+  rw [steps_add, ecombChewFold v p L (false :: false :: R), someBind]
+  show steps 3 ⟨.E, p + 2 * (v : Int),
+      ⟨pow01 v ++ L, false, false :: true :: false :: false :: R⟩⟩ = _
+  rw [descent_exit_tile]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **STD tile step-count grounding** — the descent's LOWER-block costs `3·2^m−9`
+(m=3,4,5,6 → `1^5,1^13,1^29,1^61`) are exactly the STD tile lengths `6v+3` at
+`v = 2^{m−1}−2` (`= 2,6,14,30`): `15,39,87,183`.  Matches `x2dg_boundary.py` cell-for-cell.
+Pure `Nat`. -/
+theorem descent_std_tile_grounds :
+    6 * 2 + 3 = 15 ∧ 6 * 6 + 3 = 39 ∧ 6 * 14 + 3 = 87 ∧ 6 * 30 + 3 = 183 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **The descending-cascade register BELOW the top block** (the LINEAR part of the descent).
+`descCascade d` is the depth-`d` cascade `1^{2^{d+2}−3} 0² 1^{2^{d+1}−3} 0² … 0² 1^5 0² 1^1`
+(base `descCascade 0 = 1^1`, the residue).  Instance of the §5w `cascadeTail`/`Odo` vocabulary;
+it is what remains AFTER the quadratic top grind (`cascadeReg(a−1)` downward). -/
+def descCascade : Nat → List Bool
+  | 0 => ones 1
+  | (d + 1) => ones (2 ^ (d + 3) - 3) ++ (false :: false :: descCascade d)
+
+/-- Step count of the lower fold: `Σ` of the STD tile costs `6·(2^{m−1}−2)+3` for the `d`
+blocks above the residue.  Grounds `54,141,324` (= a=5,6,7 lower parts, `descent_lower_grounds`). -/
+def lowerFoldSteps : Nat → Nat
+  | 0 => 0
+  | (d + 1) => (6 * (2 ^ (d + 2) - 2) + 3) + lowerFoldSteps d
+
+/-- Head shift of the lower fold (`Σ` of `2·(2^{m−1}−2)+3`). -/
+def lowerFoldShiftN : Nat → Nat
+  | 0 => 0
+  | (d + 1) => (2 * (2 ^ (d + 2) - 2) + 3) + lowerFoldShiftN d
+
+/-- **THE DESCENDING-CASCADE LOWER FOLD, `∀d` (the descent BELOW the top block).**  From `E`
+on the boundary `0` before the depth-`d` cascade `descCascade d 0² R`, `lowerFoldSteps d` steps
+consume ALL `d` blocks (top to residue) by folding the STD tile `descent_std_tile` down one rung
+at a time, depositing the accumulated comb on the left and landing `E` on the boundary `0` before
+the residue `1^1 0² R`, advancing `+lowerFoldShiftN d`; the tail `R` is untouched.  Proven `∀d`
+by induction — each rung is `descent_std_tile (2^{d+2}−2)`, composed by `steps_add` — so the
+descent's WHOLE LINEAR skeleton (everything strictly below the top block) is a HALT-FREE WF fold
+of the ∀-proven per-depth tile.  `[propext, Quot.sound]`-only. -/
+theorem descent_lower_fold : ∀ (d : Nat) (p : Int) (L R : List Bool),
+    ∃ dep : List Bool,
+      steps (lowerFoldSteps d)
+          ⟨.E, p, ⟨L, false, false :: (descCascade d ++ (false :: false :: R))⟩⟩
+        = some ⟨.E, p + (lowerFoldShiftN d : Int),
+            ⟨dep ++ L, false, false :: (ones 1 ++ (false :: false :: R))⟩⟩ := by
+  intro d
+  induction d with
+  | zero =>
+    intro p L R
+    refine ⟨[], ?_⟩
+    show steps 0 _ = _
+    refine congrArg some ?_
+    show (⟨.E, p, ⟨L, false, false :: (ones 1 ++ (false :: false :: R))⟩⟩ : Cfg) = _
+    exact cfgPos (by show p = p + ((lowerFoldShiftN 0 : Nat) : Int); simp [lowerFoldShiftN])
+  | succ d ih =>
+    intro p L R
+    have e : 2 ^ (d + 3) = 2 ^ (d + 2) * 2 := Nat.pow_succ 2 (d + 2)
+    have hx : 2 ≤ 2 ^ (d + 2) := by
+      have h := two_le_two_pow_succ (d + 1)
+      rwa [show (d + 1) + 1 = d + 2 from rfl] at h
+    have hv : 2 * (2 ^ (d + 2) - 2) + 1 = 2 ^ (d + 3) - 3 := by omega
+    have hright : ones (2 ^ (d + 3) - 3) ++ (false :: false :: descCascade d)
+          ++ (false :: false :: R)
+        = ones (2 * (2 ^ (d + 2) - 2) + 1)
+          ++ (false :: false :: (descCascade d ++ (false :: false :: R))) := by
+      rw [← hv]
+      exact List.append_assoc (ones (2 * (2 ^ (d + 2) - 2) + 1))
+        (false :: false :: descCascade d) (false :: false :: R)
+    show ∃ dep, steps ((6 * (2 ^ (d + 2) - 2) + 3) + lowerFoldSteps d)
+        ⟨.E, p, ⟨L, false, false ::
+          (ones (2 ^ (d + 3) - 3) ++ (false :: false :: descCascade d)
+            ++ (false :: false :: R))⟩⟩ = _
+    rw [hright, steps_add,
+        descent_std_tile (2 ^ (d + 2) - 2) p L (descCascade d ++ (false :: false :: R)),
+        someBind]
+    obtain ⟨dep, hdep⟩ := ih (p + (2 * ((2 ^ (d + 2) - 2 : Nat) : Int) + 3))
+        (false :: false :: true :: (pow01 (2 ^ (d + 2) - 2) ++ L)) R
+    refine ⟨dep ++ (false :: false :: true :: pow01 (2 ^ (d + 2) - 2)), ?_⟩
+    rw [hdep]
+    refine congrArg some ?_
+    have hpos : (p + (2 * ((2 ^ (d + 2) - 2 : Nat) : Int) + 3)) + (lowerFoldShiftN d : Int)
+        = p + ((lowerFoldShiftN (d + 1) : Nat) : Int) := by
+      show _ = p + (((2 * (2 ^ (d + 2) - 2) + 3) + lowerFoldShiftN d : Nat) : Int)
+      push_cast; omega
+    have hleft : dep ++ (false :: false :: true :: (pow01 (2 ^ (d + 2) - 2) ++ L))
+        = (dep ++ (false :: false :: true :: pow01 (2 ^ (d + 2) - 2))) ++ L :=
+      (List.append_assoc dep (false :: false :: true :: pow01 (2 ^ (d + 2) - 2)) L).symm
+    rw [hpos, hleft]
+
+/-- **Lower-fold step-count grounding** (`x2dg_boundary.py`, cell-for-cell): the a=5,6,7
+descents have LOWER parts of `54, 141, 324` steps (a=5 blocks `13,5` → `39+15`; a=6 `29,13,5`
+→ `87+39+15`; a=7 `61,29,13,5` → `183+87+39+15`), i.e. `lowerFoldSteps (a−3)`.  Pure `Nat`. -/
+theorem descent_lower_grounds :
+    lowerFoldSteps 2 = 54 ∧ lowerFoldSteps 3 = 141 ∧ lowerFoldSteps 4 = 324 := by
+  refine ⟨?_, ?_, ?_⟩ <;> decide
+
+/-- **THE TOPGRIND step count** `topGrindSteps a = 4^a − 3·2^a + 7` — the QUADRATIC cost of
+consuming the descent's ORIGINAL top block `1^{2^a−3}` (`x2dg_boundary.py`: `935,3911,16007`
+for a=5,6,7).  This is `Θ(4^a)` — a NESTED doubling odometer (the §5p core wall), NOT one of
+the linear STD tiles (block `1^29` costs 87 as a lower block but 935 as the top).  `[DESIGN]`:
+its TRANSPORT is the single remaining obstruction inside `descentGlue`. -/
+def topGrindSteps (a : Nat) : Nat := 2 ^ (2 * a) + 7 - 3 * 2 ^ a
+
+/-- **The STD-tile SUM** `stdSumSteps a = 3·2^a − 9a + 3` — the total of the LINEAR lower-tile
+costs `Σ_{m=3}^{a−1}(3·2^m−9)`, i.e. `lowerFoldSteps (a−3)` in closed form. -/
+def stdSumSteps (a : Nat) : Nat := 3 * 2 ^ a + 3 - 9 * a
+
+/-- **TOPGRIND grounding** `935,3911,16007` (a=5,6,7), cell-for-cell.  Pure `Nat`. -/
+theorem topGrindSteps_grounds :
+    topGrindSteps 5 = 935 ∧ topGrindSteps 6 = 3911 ∧ topGrindSteps 7 = 16007 := by
+  refine ⟨?_, ?_, ?_⟩ <;> decide
+
+/-- Growth helper: `3a ≤ 2^a + 1` for `a ≥ 3` (for the decomposition's `Nat`-subtraction
+bounds).  Proven by induction (base a=3: `9 ≤ 9`; step uses `8 ≤ 2^n`). -/
+theorem three_mul_le_pow : ∀ a, 3 ≤ a → 3 * a ≤ 2 ^ a + 1 := by
+  intro a
+  induction a with
+  | zero => intro h; omega
+  | succ n ih =>
+    intro hb
+    by_cases h : 3 ≤ n
+    · have hih := ih h
+      have h8 : (8 : Nat) ≤ 2 ^ n := by
+        calc (8 : Nat) = 2 ^ 3 := by decide
+          _ ≤ 2 ^ n := Nat.pow_le_pow_right (by decide) h
+      have hp : 2 ^ (n + 1) = 2 ^ n * 2 := Nat.pow_succ 2 n
+      omega
+    · have hn : n + 1 = 3 := by omega
+      rw [hn]; decide
+
+/-- **THE DESCENT STEP-COUNT DECOMPOSITION, `∀a ≥ 3`.**  `descentSteps a = topGrindSteps a +
+stdSumSteps a + 100` — the closed form `4^a−9a+110` splits EXACTLY into the QUADRATIC top grind
+`4^a−3·2^a+7`, the LINEAR lower-tile sum `3·2^a−9a+3` (`= lowerFoldSteps (a−3)`), and the fixed
+`100`-step finalization (the two `TERM(3)`).  This is the honest refinement of §5ac's
+`descentSteps`: it exposes that the leading `4^a` is the ONE quadratic top-grind term, localizing
+the wall.  Proven `∀a≥3` (`three_mul_le_pow` + `omega` over the `Nat` subtractions). -/
+theorem descentSteps_decomp (a : Nat) (ha : 3 ≤ a) :
+    descentSteps a = topGrindSteps a + stdSumSteps a + 100 := by
+  unfold descentSteps topGrindSteps stdSumSteps
+  have hx : 2 ^ (2 * a) = 2 ^ a * 2 ^ a := by
+    rw [show 2 * a = a + a from by omega, Nat.pow_add]
+  have h8 : (8 : Nat) ≤ 2 ^ a := by
+    calc (8 : Nat) = 2 ^ 3 := by decide
+      _ ≤ 2 ^ a := Nat.pow_le_pow_right (by decide) ha
+  have b1 : 3 * 2 ^ a ≤ 2 ^ a * 2 ^ a :=
+    Nat.mul_le_mul (show 3 ≤ 2 ^ a by omega) (Nat.le_refl (2 ^ a))
+  have b2 : 9 * a ≤ 3 * 2 ^ a + 3 := by
+    have := three_mul_le_pow a ha; omega
+  omega
+
+/-- **DECOMPOSITION grounding on the on-path descents** (a=5,6,7): `descentSteps` splits into
+`topGrind + stdSum + 100` = `935+54+100=1089`, `3911+141+100=4152`, `16007+324+100=16431` —
+reproducing the real windows `[13453,14542]`, `[33830,37982]`, `[114703,131134]` cell-for-cell,
+AND `stdSumSteps a = lowerFoldSteps (a−3)` (the closed form ties to the proven fold).  Pure
+`Nat`. -/
+theorem descentSteps_decomp_grounds :
+    (descentSteps 5 = topGrindSteps 5 + stdSumSteps 5 + 100 ∧
+      descentSteps 6 = topGrindSteps 6 + stdSumSteps 6 + 100 ∧
+      descentSteps 7 = topGrindSteps 7 + stdSumSteps 7 + 100) ∧
+    (stdSumSteps 5 = lowerFoldSteps 2 ∧ stdSumSteps 6 = lowerFoldSteps 3 ∧
+      stdSumSteps 7 = lowerFoldSteps 4) := by
+  refine ⟨⟨?_, ?_, ?_⟩, ⟨?_, ?_, ?_⟩⟩ <;> decide
+
+/-! ### §5ad: what CLOSED, and the HONEST verdict on `descentGlue`.
+
+**PROVEN GREEN this section (∀-level, on-path, `x2dg_*.py` cell-for-cell from `build(2)`):**
+  • `descent_std_tile` — the clean per-depth descent TILE `∀v`: consume one flanked cascade
+    block `1^{2v+1}` (+ its `0²`) into a comb in `6v+3` steps (`ecombChewFold ∘ descent_exit_tile`).
+    Reproduces the real LOWER tiles `15,39,87,183` (`descent_std_tile_grounds`).
+  • `descent_lower_fold` — the descending-cascade LOWER FOLD `∀d`: the descent's WHOLE LINEAR
+    skeleton (every rung BELOW the top block) as a HALT-FREE WF fold of `descent_std_tile`,
+    grounded `54,141,324` (`descent_lower_grounds`).
+  • `descentSteps_decomp` — the `∀a≥3` split `descentSteps a = topGrindSteps a + stdSumSteps a +
+    100`, grounded on all three on-path windows (`descentSteps_decomp_grounds`).
+
+**THE HONEST VERDICT (a REFUTATION of the §5ac over-optimistic framing).**  `descentGlue` does
+NOT reduce to "a run of the ∀-proven odometer sweep."  Cell-for-cell (`x2dg_boundary.py`, a=5,6,7)
+the descent splits into THREE pieces, and the DOMINANT one — `topGrindSteps a = 4^a−3·2^a+7,
+Θ(4^a)` — is a NESTED doubling odometer of the SAME character as the open doubling-phase core
+(§5p): the same block `1^{2^m−3}` costs a LINEAR `3·2^m−9` as a lower rung but a QUADRATIC
+`4^m−3·2^m+7` as the original top.  So:
+  • the descent's LINEAR skeleton (STD tile + lower fold) is now PROVEN `∀`;
+  • the step-count DECOMPOSITION is PROVEN `∀a`, localizing the wall to the one quadratic term;
+  • the TOPGRIND transport `[DESIGN]` — the nested doubling — is the SINGLE remaining obstruction
+    inside `descentGlue`, and it is the project's core wall re-encountered, NOT a bounded
+    connector.  `descentGlue` is therefore NOT machine-checked `∀a`; only its linear skeleton is.
+
+This SHARPENS §5ac from "the transport is Suffix.lean-scale definitional work" to the precise
+finding that the descent transport CONTAINS the core quadratic-odometer wall as its top rung.
+Base (k=4) and depth-1 (k=5) EXITs stay GREEN.  No machine decided.  No label upgraded. -/
+
+-- §5ad descent-glue transport axiom audits (STD tile + lower fold + step decomposition):
+#print axioms descent_exit_tile
+#print axioms descent_std_tile
+#print axioms descent_std_tile_grounds
+#print axioms descent_lower_fold
+#print axioms descent_lower_grounds
+#print axioms topGrindSteps_grounds
+#print axioms descentSteps_decomp
+#print axioms descentSteps_decomp_grounds
+
 end X2
