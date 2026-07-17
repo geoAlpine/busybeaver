@@ -5979,4 +5979,299 @@ No machine decided.  No label upgraded. -/
 #print axioms descentGlue_steps
 #print axioms descentGlue_grounds
 
+/-! ## §5ah (LAYER A, ON-PATH, 2026-07-17) REACHABILITY — `cascadeReg(k)` NAMED, the
+descent restated at the k-index, and the DECISIVE finding: the ALREADY-PROVEN `REGEN(4)`
+/ `REGEN(5)` transports **ALREADY DELIVER** the shape, by instantiating their `∀ L R` tails.
+
+**THE OBJECT.**  §5ag reduced x2's doubling-phase carry to ONE obligation, `∀k`: *the
+REGEN(k) exit's carry-completion lands `E` on a boundary `0` with left `(01)^{Lc+N} ++
+marker` and right `0³ 1^{2^k−3} 0² descCascade(k−3) 0² 0⁷ R`* (`N = 2^{k−1}−2`) — §5ac's Q3
+`cascadeReg(k)`.  It is a TAPE-SHAPE INVARIANT: no step count, no braid, no growing
+transport (`descent_glue` already consumes it `∀N d Lc`).  This section names it, restates
+the descent on it at the k-index, and discharges it CONCRETELY at `k=4,5`.
+
+**FINDING 1 — THE REGISTER COLLAPSES.**  The IN right is not two objects (a top block plus a
+cascade) but ONE: since `descCascade (d+1) = 1^{2^{d+3}−3} 0² descCascade d` *is* the
+defining equation, at `d+1 = k−2` it reads `1^{2^k−3} 0² descCascade (k−3) = descCascade
+(k−2)`.  So `cascadeReg(k)`'s right is exactly `0³ descCascade (k−2) 0⁹ R`
+(`cascadeReg_collapse`, `∀k ≥ 4`, `rfl`-level after the `2N+1 = 2^k−3` arithmetic).  The
+invariant is therefore the single statement *"the right register is the depth-`(k−2)`
+descending cascade behind a `0³` pad"*, and REGEN(k)'s job is precisely to PREPEND ONE
+CASCADE LAYER — the recursion is self-similar in `descCascade`, not in two coupled registers.
+
+**FINDING 2 (THE DECISIVE ONE) — `regen4_transport` / `regen5_transport` ALREADY LAND IT.**
+Checked bit-for-bit as list data (`x2rc_regen_lands.py`) and then PROVEN here: `REGEN(4)`'s
+OUT (`carry_exit_j3`, §5s) is *literally* `cascadeReg 4 1 (−7)` under the instantiation
+`L := 1 :: (01)^5 ++ marker`, `R := 0^6 ++ R`; `REGEN(5)`'s OUT (`carry_exit_j4`, §5u) is
+*literally* `cascadeReg 5 1 (−22)` under `L := 1 :: (01)^14 ++ marker`, `R := 0^8 ++ R`.
+NO connector, NO new transport: both REGEN transports are stated `∀ L R` (that is §5z's
+translation-invariance, `regen_TI_generic`), and the shape match is an INSTANTIATION of those
+already-`∀`-quantified tails — exactly the move §5ag's seam 1 needed.  This is the third
+"wall" this week to dissolve on inspection rather than on new mathematics.
+
+**ON-PATH EVIDENCE (`x2rc_regen_shape.py`, SIMULATOR, `build(2)`, maximal run-length parse).**
+`cascadeReg(k)` is verified cell-for-cell at the REAL descent starts for `k=4,5,6,7` (raw
+`n = 6708, 13453, 33830, 114703`): state `E`, head on a `0`, right `0³ 1^{2^k−3} 0²
+descCascade(k−3) 0² 0⁷ …` (blanks beyond the stored tape), and left comb `(01)^m` maximal
+with `m = 7, 15, 31, 63 = 2^{k−1}−1 = N+1` — i.e. **`Lc = 1` UNIFORMLY at every measured
+level**.  That `Lc` is constant (not growing) is a genuinely new datum: the left comb's
+excess over `N` does not accumulate across the descent.
+
+**WHAT THIS DOES *NOT* SETTLE — stated sharply.**  `k=4,5` are the base and depth-1 levels;
+they were ALREADY the two proven concrete EXITs (§5z's j=3/j=4 cross-check).  What is proven
+below is that at those levels reachability is a NON-ISSUE — the shape falls out of the
+existing transports.  The `∀k` statement still needs `REGEN(k)`'s OUT `∀k`, and `REGEN(k)`
+for `k ≥ 6` is exactly §5z's growing-arity odometer tree (`exitSteps_tree_5/6/7`: branching
+arity `0,1,3`), which is NOT proven.  So reachability closes at `k=4,5` and is OPEN `∀k`;
+what §5ah adds `∀k` is the REDUCTION (`carry_descends_of_reach`): the shape invariant is the
+ONLY missing input to a halt-free `exitSteps k + descentSteps k` carry transport. -/
+
+/-- **`cascadeReg(k)` — THE REACHABILITY INVARIANT, NAMED** (§5ac Q3, §5ag's open `∀k` object).
+`E` on the descent's boundary `0`, left comb `(01)^{Lc+N} ++ marker` with `N = 2^{k−1}−2`,
+right `0³ 1^{2^k−3} 0² descCascade (k−3) 0² 0⁷ R`.  This is EXACTLY `descent_glue`'s IN at
+the `k`-index (`descent_glue_cascadeReg`); measured on-path at `k=4,5,6,7` with `Lc = 1`
+(`x2rc_regen_shape.py`, SIMULATOR evidence). -/
+def cascadeReg (k Lc : Nat) (p : Int) (marker R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨pow01 (Lc + (2 ^ (k - 1) - 2)) ++ marker, false,
+      false :: false :: false :: (ones (2 ^ k - 3) ++ (false :: false ::
+        (descCascade (k - 3) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩
+
+/-- **THE TOP-BLOCK ARITHMETIC SEAM**, `∀k ≥ 4`: `2·(2^{k−1}−2)+1 = 2^k−3`.  The `N`-form the
+`∀N` transports (`braid_topgrind`, `descent_glue`) use IS the `k`-form `cascadeReg` states.
+Pure `Nat`. -/
+theorem cascadeReg_block (k : Nat) (hk : 4 ≤ k) : 2 * (2 ^ (k - 1) - 2) + 1 = 2 ^ k - 3 := by
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have h3 : 2 ^ (m + 4 - 1) = 2 ^ m * 8 := by
+    rw [show m + 4 - 1 = m + 3 from by omega, Nat.pow_add]
+  have h4 : 2 ^ (m + 4) = 2 ^ m * 16 := by rw [Nat.pow_add]
+  have hx : 1 ≤ 2 ^ m := Nat.one_le_two_pow
+  omega
+
+/-- **FINDING 1 — THE REGISTER COLLAPSES TO ONE CASCADE**, `∀k ≥ 4`:
+`1^{2^k−3} 0² descCascade (k−3) = descCascade (k−2)`.  Immediate from `descCascade`'s
+defining equation at `d+1 = k−2` plus `2^{(k−3)+3} = 2^k`.  So `cascadeReg(k)`'s right
+register is just `0³ descCascade (k−2) 0² 0⁷ R` — the invariant is ONE self-similar object,
+and REGEN(k) prepends exactly one layer.  Pure `List`. -/
+theorem cascadeReg_collapse (k : Nat) (hk : 4 ≤ k) :
+    ones (2 ^ k - 3) ++ (false :: false :: descCascade (k - 3)) = descCascade (k - 2) := by
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  show ones (2 ^ (m + 4) - 3) ++ (false :: false :: descCascade (m + 1)) = descCascade (m + 2)
+  show _ = ones (2 ^ (m + 1 + 3) - 3) ++ (false :: false :: descCascade (m + 1))
+  rw [show m + 1 + 3 = m + 4 from by omega]
+
+/-- **THE DESCENT, RESTATED ON `cascadeReg(k)` — `∀k ≥ 4`, HALT-FREE, at `descentSteps k`.**
+`descent_glue` (§5ag) at `N := 2^{k−1}−2`, `d+1 := k−3`, with `descentGlue_steps` collapsing
+the length to the closed form `descentSteps k = 4^k − 9k + 110`.  From `cascadeReg k Lc p`
+the machine runs `descentSteps k` steps — no halt — to `E` over the accumulated deposit
+`1^12` with `R` UNTOUCHED.  This is the `∀k` CONSUMER of the reachability invariant: it is
+the whole descent `k → 4` as ONE transport indexed by `k` alone.  `some` ⇒ HALT-FREE.
+`[propext, Quot.sound]`-only. -/
+theorem descent_glue_cascadeReg (k Lc : Nat) (hk : 4 ≤ k) (p : Int) (marker R : List Bool) :
+    ∃ dep : List Bool,
+      steps (descentSteps k) (cascadeReg k Lc p marker R)
+        = some ⟨.E, p + 13 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)
+              + ((lowerFoldShiftN (k - 3) : Nat) : Int),
+            ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have hblk : ones (2 ^ (m + 4) - 3) = ones (2 * (2 ^ (m + 4 - 1) - 2) + 1) := by
+    rw [cascadeReg_block (m + 4) (by omega)]
+  have hd : descCascade (m + 4 - 3) = descCascade (m + 1) := by
+    rw [show m + 4 - 3 = m + 1 from by omega]
+  rw [← descentGlue_steps (m + 4) (by omega)]
+  show ∃ dep, steps _ (cascadeReg (m + 4) Lc p marker R) = _
+  unfold cascadeReg
+  rw [hblk, hd, show m + 4 - 1 = m + 3 from by omega]
+  obtain ⟨dep, hdep⟩ := descent_glue (2 ^ (m + 3) - 2) m Lc p marker R
+  exact ⟨dep, hdep⟩
+
+/-- **FINDING 2, `k=4` — `REGEN(4)` ALREADY LANDS `cascadeReg(4)`.**  `regen4_transport`
+(= `carry_exit_j3`, §5s, 70 = `exitSteps 4` steps, stated `∀ L R`) instantiated at
+`L := 1 :: (01)^5 ++ marker` and `R := 0^6 ++ R` has OUT *literally* `cascadeReg 4 1 (−7)`:
+the left `0 1 0 :: L` reparses as `(01)^7 ++ marker = pow01 (1 + (2^3−2)) ++ marker`, and the
+right `0³ 1^13 0² 1^5 0² 1^1 0³ ++ (0^6 ++ R)` IS `0³ 1^13 0² descCascade 1 0² 0⁷ R`.  NO
+connector — the seam is an instantiation of an already-`∀`-quantified tail (cf. `x2rc_regen_lands.py`).
+`some` ⇒ HALT-FREE.  Reachability at `k=4` is therefore a NON-ISSUE. -/
+theorem descent_reach_4 (marker R : List Bool) :
+    steps (exitSteps 4) ⟨.E, 9, ⟨
+        ones 12 ++ (true :: false :: true :: false :: false :: true :: false ::
+          (true :: (pow01 5 ++ marker))),
+        false,
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: (zeros 6 ++ R))⟩⟩
+      = some (cascadeReg 4 1 (-7) marker R) := by
+  rw [regen4_transport (true :: (pow01 5 ++ marker)) (zeros 6 ++ R)]
+  rfl
+
+/-- **FINDING 2, `k=5` — `REGEN(5)` ALREADY LANDS `cascadeReg(5)`.**  `regen5_transport`
+(= `carry_exit_j4`, §5u, 218 = `exitSteps 5` steps, `∀ L R`) at `L := 1 :: (01)^14 ++ marker`,
+`R := 0^8 ++ R` has OUT *literally* `cascadeReg 5 1 (−22)`: left `0 :: L = (01)^15 ++ marker
+= pow01 (1 + (2^4−2)) ++ marker`, right `0³ 1^29 0² 1^13 0² 1^5 0² 1^1 0 ++ (0^8 ++ R)`
+`= 0³ 1^29 0² descCascade 2 0² 0⁷ R`.  Again NO connector.  On-path: this is the REGEN(5)
+window raw `[13235,13453]` whose exit at `13453` IS the measured a=5 descent start
+(`x2rc_regen_shape.py`; cf. `braid_topgrind_a5`).  `some` ⇒ HALT-FREE. -/
+theorem descent_reach_5 (marker R : List Bool) :
+    steps (exitSteps 5) ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false ::
+        (true :: (pow01 14 ++ marker))), false,
+        false :: true :: true :: true :: true :: true :: false :: false :: true :: false ::
+        false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: false :: false :: false :: false :: false :: (zeros 8 ++ R)⟩⟩
+      = some (cascadeReg 5 1 (-22) marker R) := by
+  rw [regen5_transport (true :: (pow01 14 ++ marker)) (zeros 8 ++ R)]
+  rfl
+
+/-- **THE FULL CARRY AT `k=4`: `REGEN(4)` ∘ `descentGlue`, ONE HALT-FREE TRANSPORT.**
+`descent_reach_4` ∘ `descent_glue_cascadeReg`: `exitSteps 4 + descentSteps 4 = 70 + 330 = 400`
+steps, no halt, `R` untouched.  The FIRST end-to-end carry level assembled from a REGEN exit
+through the whole descent — reachability and descent joined with no gap.  `some` ⇒ HALT-FREE. -/
+theorem carry_level_4 (marker R : List Bool) :
+    ∃ (dep : List Bool) (p' : Int),
+      steps (exitSteps 4 + descentSteps 4) ⟨.E, 9, ⟨
+          ones 12 ++ (true :: false :: true :: false :: false :: true :: false ::
+            (true :: (pow01 5 ++ marker))),
+          false,
+          (false :: true :: false :: false :: false :: false :: false :: false ::
+           false :: false :: false :: false :: false :: (zeros 6 ++ R))⟩⟩
+        = some ⟨.E, p', ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨dep, hdep⟩ := descent_glue_cascadeReg 4 1 (by omega) (-7) marker R
+  exact ⟨dep, _, by rw [steps_add, descent_reach_4 marker R, someBind, hdep]⟩
+
+/-- **THE FULL CARRY AT `k=5`: `REGEN(5)` ∘ `descentGlue`, ONE HALT-FREE TRANSPORT.**
+`exitSteps 5 + descentSteps 5 = 218 + 1089 = 1307` steps, no halt.  On-path this is raw
+`[13235,14542]` (SIMULATOR evidence).  `some` ⇒ HALT-FREE. -/
+theorem carry_level_5 (marker R : List Bool) :
+    ∃ (dep : List Bool) (p' : Int),
+      steps (exitSteps 5 + descentSteps 5) ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true ::
+          false :: false :: (true :: (pow01 14 ++ marker))), false,
+          false :: true :: true :: true :: true :: true :: false :: false :: true :: false ::
+          false :: false :: false :: false :: false :: false :: false :: false :: false ::
+          false :: false :: false :: false :: false :: false :: false :: (zeros 8 ++ R)⟩⟩
+        = some ⟨.E, p', ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨dep, hdep⟩ := descent_glue_cascadeReg 5 1 (by omega) (-22) marker R
+  exact ⟨dep, _, by rw [steps_add, descent_reach_5 marker R, someBind, hdep]⟩
+
+/-- **THE `∀k` REACHABILITY OBLIGATION, AS A PREDICATE** (NOT an axiom — this is a `Prop` the
+theorems below take as a HYPOTHESIS, in the style of `x2_nonhalt`).  `CascadeRegReached k`
+says: SOME config family `In` has its `exitSteps k`-step run land `cascadeReg k`, uniformly in
+the untouched tails `marker`/`R`.  Discharged CONCRETELY at `k=4` and `k=5`
+(`cascadeRegReached_4/5`); OPEN for `k ≥ 6`.
+
+**READ THE QUANTIFIER — this predicate is WEAKER than the reachability obligation it is named
+after, and the gap is NOT formalized here.**  `In` is existentially quantified over ALL of
+`List Bool → List Bool → Cfg`; NOTHING in this `Prop` constrains it to be the level-`k` REGEN
+IN-family, or to lie on the real orbit.  The intended obligation — "the REGEN(k) EXIT's
+carry-completion lands this shape" — has that binding, and this `Prop` does not.  So `∀k,
+CascadeRegReached k` would NOT by itself establish reachability on-path.  What ties the `k=4`
+and `k=5` instances to the machine is that their witnesses are CONCRETE configs, on-path by
+SIMULATOR evidence only (`x2rc_*.py`) — not anything this definition demands.
+
+**AND THE LEVELS PROVEN TEST NOTHING RECURSIVE.**  `k=4` and `k=5` are arity-0 LEAVES of the
+exit tree (`exitArity_grounds`): REGEN(4) and REGEN(5) make no recursive REGEN call, so
+discharging them exercises none of the recursion.  The first level with a recursive call is
+**REGEN(6)** (`exitSteps_tree_6`), and REGEN(7) calls REGEN(5) AND REGEN(4)
+(`exitSteps_tree_7`) — i.e. the `∀k` obligation is the §5z GROWING-ARITY odometer tree
+restated, NOT a second, smaller object.  Two green leaves are not evidence about it. -/
+def CascadeRegReached (k : Nat) : Prop :=
+  ∃ (Lc : Nat) (p : Int) (In : List Bool → List Bool → Cfg),
+    ∀ marker R, steps (exitSteps k) (In marker R) = some (cascadeReg k Lc p marker R)
+
+/-- `CascadeRegReached 4` — discharged by `descent_reach_4`. -/
+theorem cascadeRegReached_4 : CascadeRegReached 4 :=
+  ⟨1, -7, fun marker R => ⟨.E, 9, ⟨
+      ones 12 ++ (true :: false :: true :: false :: false :: true :: false ::
+        (true :: (pow01 5 ++ marker))),
+      false,
+      (false :: true :: false :: false :: false :: false :: false :: false ::
+       false :: false :: false :: false :: false :: (zeros 6 ++ R))⟩⟩,
+    descent_reach_4⟩
+
+/-- `CascadeRegReached 5` — discharged by `descent_reach_5`. -/
+theorem cascadeRegReached_5 : CascadeRegReached 5 :=
+  ⟨1, -22, fun marker R => ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false :: false ::
+      (true :: (pow01 14 ++ marker))), false,
+      false :: true :: true :: true :: true :: true :: false :: false :: true :: false ::
+      false :: false :: false :: false :: false :: false :: false :: false :: false ::
+      false :: false :: false :: false :: false :: false :: false :: (zeros 8 ++ R)⟩⟩,
+    descent_reach_5⟩
+
+/-- **THE REDUCTION, `∀k ≥ 4`: REACHABILITY IS THE ONLY MISSING INPUT.**  GIVEN
+`CascadeRegReached k` — the pure tape-shape invariant — the level-`k` carry is ONE HALT-FREE
+transport of length `exitSteps k + descentSteps k`, ending on the descended register with `R`
+untouched.  Everything else is discharged from already-proven `∀`-level material:
+`descent_glue` (§5ag) for the transport, `descentGlue_steps` for the arithmetic, `uMeasure`
+(§5ac) for the well-foundedness of both nestings.
+
+This is the precise sense in which §5ag's verdict is now made formal: **the doubling-phase
+carry contains NO remaining growing transport, braid, or step-count obligation — only a shape
+invariant.**  The hypothesis is PROVEN at `k=4,5` (`cascadeRegReached_4/5`) and OPEN for
+`k ≥ 6`, where `REGEN(k)` is §5z's growing-arity odometer tree.  `[propext, Quot.sound]`. -/
+theorem carry_descends_of_reach (k : Nat) (hk : 4 ≤ k) (h : CascadeRegReached k) :
+    ∃ In : List Bool → List Bool → Cfg, ∀ marker R,
+      ∃ (dep : List Bool) (p' : Int),
+        steps (exitSteps k + descentSteps k) (In marker R)
+          = some ⟨.E, p', ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨Lc, p, In, hIn⟩ := h
+  refine ⟨In, fun marker R => ?_⟩
+  obtain ⟨dep, hdep⟩ := descent_glue_cascadeReg k Lc hk p marker R
+  exact ⟨dep, _, by rw [steps_add, hIn marker R, someBind, hdep]⟩
+
+/-- **GROUNDING: the assembled carry lengths at the two closed levels.**
+`exitSteps 4 + descentSteps 4 = 70 + 330 = 400`; `exitSteps 5 + descentSteps 5 = 218 + 1089
+= 1307` (on-path raw `[13235,14542]`, SIMULATOR evidence).  Pure `Nat`. -/
+theorem carry_level_steps_grounds :
+    exitSteps 4 + descentSteps 4 = 400 ∧ exitSteps 5 + descentSteps 5 = 1307 := by
+  refine ⟨?_, ?_⟩ <;> decide
+
+/-! ### §5ah: what CLOSED, what reachability now costs, and what is STILL open.
+
+**PROVEN GREEN this section (`[propext, Quot.sound]`-only, audited below):**
+  • `cascadeReg` — §5ac's Q3 / §5ag's open `∀k` object, NAMED as a `Cfg` family.
+  • `cascadeReg_block` — the `∀k≥4` arithmetic seam `2(2^{k−1}−2)+1 = 2^k−3`.
+  • `cascadeReg_collapse` — **FINDING 1**, `∀k≥4`: `1^{2^k−3} 0² descCascade(k−3) =
+    descCascade(k−2)`.  The invariant's right register is ONE self-similar cascade, not a
+    block plus a cascade; REGEN(k) prepends exactly one layer.
+  • `descent_glue_cascadeReg` — **the `∀k≥4` CONSUMER**: from `cascadeReg k`, `descentSteps k`
+    steps, HALT-FREE, to the descended register.  §5ag's `descent_glue` + `descentGlue_steps`
+    re-indexed by `k` alone.
+  • `descent_reach_4` / `descent_reach_5` — **FINDING 2, the decisive one**: `REGEN(4)` and
+    `REGEN(5)` (`regen4_transport`/`regen5_transport`, i.e. the already-proven `carry_exit_j3`
+    /`carry_exit_j4`) land `cascadeReg 4 1 (−7)` / `cascadeReg 5 1 (−22)` *literally*, by
+    INSTANTIATING their `∀ L R` tails.  No connector, no new transport, `rfl` after the rewrite.
+  • `carry_level_4` / `carry_level_5` — the full REGEN ∘ descentGlue carry at `k=4,5` as ONE
+    halt-free transport (`400` / `1307` steps, `carry_level_steps_grounds`).
+  • `CascadeRegReached` + `cascadeRegReached_4/5` + `carry_descends_of_reach` — the `∀k≥4`
+    REDUCTION: reachability is the ONLY missing input to the level-`k` carry.
+
+**WHAT REACHABILITY NOW COSTS — honestly.**  At `k=4,5` it costs NOTHING: the shape was
+already inside the two proven EXIT transports, hidden behind `∀`-quantified tails.  That is a
+real finding (it is why `descent_reach_4/5` are two-line proofs) but it is NOT `∀k`, and it
+must not be read as one: `k=4,5` are the base and depth-1 levels, which §5z had already
+closed as `carry_exit_j3`/`carry_exit_j4`.  The `∀k` statement requires `REGEN(k)`'s OUT for
+`k ≥ 6`, and `REGEN(k)` there is §5z's growing-arity odometer tree (`exitSteps_tree_5/6/7`:
+branching arity `0,1,3`) — NOT proven, NOT claimed.
+
+**SO THE OBSTRUCTION IS UNCHANGED IN LOCATION, SHARPENED IN SHAPE.**  It is `REGEN(k)`'s
+`∀k` OUT — and `cascadeReg_collapse` says exactly what that OUT must be: *prepend one
+`descCascade` layer*.  The `k=4→5` instance of that is now visible as data (`descCascade 1 →
+descCascade 2` between `descent_reach_4` and `descent_reach_5`), and `Lc = 1` is measured
+CONSTANT at `k=4,5,6,7` (`x2rc_regen_shape.py`) — the left comb's excess does not accumulate.
+Whether the odometer tree admits a `∀k` layer-prepend law is the open question; this section
+does not answer it and does not conjecture that it does.
+
+x2 remains `[OPEN]`.  No `sorry`/axiom/`native_decide`/`partial def`.
+No machine decided.  No label upgraded. -/
+
+-- §5ah reachability axiom audits (the invariant + collapse + k-indexed consumer + the
+-- k=4/k=5 landings + the full carry levels + the ∀k reduction):
+#print axioms cascadeReg_block
+#print axioms cascadeReg_collapse
+#print axioms descent_glue_cascadeReg
+#print axioms descent_reach_4
+#print axioms descent_reach_5
+#print axioms carry_level_4
+#print axioms carry_level_5
+#print axioms cascadeRegReached_4
+#print axioms cascadeRegReached_5
+#print axioms carry_descends_of_reach
+#print axioms carry_level_steps_grounds
+
 end X2
