@@ -2990,6 +2990,107 @@ theorem lowMiddle_fwd : ∀ (m : Nat) (p : Int) (L Y : List Bool),
         rdepo_append_dep]
     exact congrArg some (cfgPos (by push_cast; omega))
 
+/-! ### §5t-ret (LOW PHASE, ON-PATH, 2026-07-18) THE RETURN RUN + EXIT TILE — the second
+uniform half of the growing low-phase middle, and the fixed `M4 → M6` exit, both `∀`/frame.
+
+`lowMiddle_fwd` closed the FORWARD register-processing pass `∀m`.  This block adds the RETURN
+pass `lowMiddle_ret` (the `dSweepTurn`-shape crossing, `∀m` by the same length induction) and
+the fixed 36-step exit tile `lowExit_tile` (`M4 → M6`, frame-independent).  Both are extracted
+cell-for-cell from the real g=4 orbit (`lowPhaseEven_g4`; return interior steps 334→343→352 at
+pos 34→27→20, `−7`/tile in state `D`; exit steps 383→419) and re-verified frame-independently.
+
+**HONEST SCOPE.**  These are the two UNIFORM half-runs plus the exit; a full `∀g` low-phase
+transport `M1(g) → M6(g)` still needs the fixed BOUNDARY glue — the entry→forward connector
+(the raw orbit's `A`-frame does not carry the idealized comb verbatim; §5t/§5q `[DESIGN]`), the
+two sweep turnarounds joining the clean interior runs, and the odd-`g` big-block `−4` trim.
+None of these decides the machine; `h_low` stays [OPEN].  `[propext, Quot.sound]`. -/
+
+/-- Return-pass left comb: `m` U-units still to cross leftward, each a `1^6 0` block; tail `L`. -/
+def retTail : Nat → List Bool → List Bool
+  | 0,     L => L
+  | m + 1, L => true :: true :: true :: true :: true :: true :: false :: retTail m L
+
+/-- Return-pass right deposit: `m` copies of `0 0 1^5` (each crossed unit re-emitted, nearest-head
+first). -/
+def retDepo : Nat → List Bool
+  | 0     => []
+  | m + 1 => retDepo m ++ [false, false, true, true, true, true, true]
+
+/-- Deposit append fold (append-at-back analogue of `rdepo_append_dep`). -/
+theorem retDepo_append_dep : ∀ (m : Nat) (R : List Bool),
+    retDepo m ++ (false :: false :: true :: true :: true :: true :: true :: R)
+      = retDepo (m + 1) ++ R := by
+  intro m R
+  show retDepo m ++ ([false, false, true, true, true, true, true] ++ R)
+     = (retDepo m ++ [false, false, true, true, true, true, true]) ++ R
+  rw [List.append_assoc]
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE RETURN PER-U-UNIT TILE** (9 steps, `D` on a `1`, net `−7`), FRAME-INDEPENDENT (any `b`,
+`L`, `R`).  The `dSweepTurn`-shape crossing: state `D` crosses one `1^6` run leftward, turns at
+the `0` boundary, re-emitting the unit as `0 0 1^5` on the right and landing back in `D` on the
+next unit's lead cell `b`.  Kernel `rfl`.  `some` ⇒ HALT-FREE. -/
+theorem lowMiddle_ret_tile (p : Int) (b : Bool) (L R : List Bool) :
+    steps 9 ⟨.D, p, ⟨true :: true :: true :: true :: true :: false :: (b :: L), true, R⟩⟩
+      = some ⟨.D, p - 7, ⟨L, b,
+          false :: false :: true :: true :: true :: true :: true :: R⟩⟩ := by
+  have h : steps 9 (⟨.D, p, ⟨true :: true :: true :: true :: true :: false :: (b :: L), true, R⟩⟩ : Cfg)
+      = some ⟨.D, p-1-1-1-1-1-1+1-1-1, ⟨L, b,
+          false :: false :: true :: true :: true :: true :: true :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE RETURN RUN, ARBITRARY U-UNIT COUNT `m`.**  `m` tiles = `9 m` steps take the return comb
+`1^5 0 (1^6 0)^m` leftward to `1^5 0`, depositing `retDepo m = (0 0 1^5)^m` on the right and
+shifting `−7 m`, for EVERY `m` and arbitrary far tail `L`, `R`.  Tile + length induction — the
+`lowMiddle_fwd` pattern in reverse.  `some` ⇒ HALT-FREE. -/
+theorem lowMiddle_ret : ∀ (m : Nat) (p : Int) (L R : List Bool),
+    steps (9 * m) ⟨.D, p,
+        ⟨true :: true :: true :: true :: true :: false :: retTail m L, true, R⟩⟩
+      = some ⟨.D, p - 7 * (m : Int),
+          ⟨true :: true :: true :: true :: true :: false :: L, true, retDepo m ++ R⟩⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro p L R
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ m ih =>
+    intro p L R
+    have hn : 9 * (m + 1) = 9 + 9 * m := by omega
+    rw [hn, steps_add]
+    show (steps 9 ⟨.D, p, ⟨true :: true :: true :: true :: true :: false ::
+        (true :: true :: true :: true :: true :: true :: false :: retTail m L), true, R⟩⟩).bind
+        (steps (9 * m)) = _
+    rw [lowMiddle_ret_tile, someBind,
+        ih (p - 7) L (false :: false :: true :: true :: true :: true :: true :: R),
+        retDepo_append_dep]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE FIXED LOW-PHASE EXIT TILE `M4 → M6`** (36 steps, `E`, net `−2`), FRAME-INDEPENDENT (any
+far-left `Lf`, far-right `R`).  The head window is bounded `[−6,+4]`, so the whole accumulated
+register (pos `≥ 5`) rides untouched as `R`.  Reads the local M4 boundary `0 0 0 · 1 1 1 1`,
+rebuilds it into the g-independent M6 form `0 · (10)^4` on the right.  Kernel `rfl`.  `some` ⇒
+HALT-FREE. -/
+theorem lowExit_tile (p : Int) (Lf R : List Bool) :
+    steps 36 ⟨.E, p, ⟨false :: false :: false :: Lf, false,
+        false :: false :: false :: true :: true :: true :: true :: R⟩⟩
+      = some ⟨.E, p - 2, ⟨false :: Lf, false,
+          false :: true :: false :: true :: false :: true :: false :: true :: false :: R⟩⟩ := by
+  have h : steps 36 (⟨.E, p, ⟨false :: false :: false :: Lf, false,
+        false :: false :: false :: true :: true :: true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E,
+          p+1+1+1+1-1-1-1+1+1+1+1-1-1-1-1-1-1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1+1,
+          ⟨false :: Lf, false,
+           false :: true :: false :: true :: false :: true :: false :: true :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
 /-! ## §5r (LOGICAL FRAME, 2026-07-13) THE TOP-LEVEL NON-HALT ASSEMBLY — a clean CONDITIONAL
 theorem (`x2_nonhalt`) on the two OPEN phase transports.
 
@@ -7884,5 +7985,62 @@ theorem regenLaw_7 : RegenLaw 7 :=
     exact h⟩
 
 #print axioms regenLaw_7
+
+/-! ### §5an: TRAILING-GLUE grounded `∀k`, and TERM(k) in canonical form (2026-07-18).
+
+The framing-glue law (§1.3 of `ROADMAP_2026-07-18.md`) gave `trailing(k) = 2^{k+1}+k+364` as an
+[OBSERVED] step-count.  This block Lean-GROUNDS it: `trailSteps k = 359 + termSteps k` with the
+closed form proved (`trailSteps_closed`) and all six transport-measured levels k=6..11 reproduced
+(`trailSteps_grounds`).  It also lifts the two grounded TERM transports (`exit_terminal_k4/k5`) to
+the closed-form length `termSteps k` with the OUT in canonical `descCascade (k−2)` form — the same
+top layer `cascadeReg`/`cascadeReg_collapse` use — so the trailing OUT side is `∀k`-expressible.
+
+**HONEST SCOPE — the `∀k` trailing TRANSPORT does NOT close here, and cannot in isolation.**  Its
+IN is the k-indexed comb-stack `1^5 0 1^14 0 1^30 0 …` that REGEN's interior deposits; there is no
+orbit config for k ≥ 6 in this file, because that stack IS the growing-arity odometer interior —
+i.e. `∀k RegenLaw k` (T1) itself.  So trailing-`∀k` and the interior fold are ENTANGLED: neither
+lifts without the other.  What is `∀k` here is the step-count and the OUT shape; the IN is the open
+object.  `[propext, Quot.sound]` / axiom-free. -/
+def trailSteps (k : Nat) : Nat := 359 + termSteps k
+
+theorem trailSteps_closed (k : Nat) : trailSteps k = 2 ^ (k + 1) + k + 364 := by
+  show 359 + (2 ^ (k + 1) + k + 5) = 2 ^ (k + 1) + k + 364
+  omega
+
+theorem trailSteps_grounds :
+    trailSteps 6 = 498 ∧ trailSteps 7 = 627 ∧ trailSteps 8 = 884 ∧
+    trailSteps 9 = 1397 ∧ trailSteps 10 = 2422 ∧ trailSteps 11 = 4471 := by
+  refine ⟨?_,?_,?_,?_,?_,?_⟩ <;> decide
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+/-- TERM(4) lifted to length `termSteps 4 = 41`, OUT in canonical `descCascade 2` form. -/
+theorem term_transport_k4 (L R : List Bool) :
+    steps (termSteps 4) ⟨.E, 0, ⟨true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -23, ⟨false :: L, false, zeros 3 ++ descCascade 2 ++ (false :: R)⟩⟩ := by
+  have h : termSteps 4 = 41 := by decide
+  rw [h]
+  have e := exit_terminal_k4 L R
+  rw [e]; rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+/-- TERM(5) lifted to length `termSteps 5 = 74`, OUT in canonical `descCascade 3` form. -/
+theorem term_transport_k5 (L R : List Bool) :
+    steps (termSteps 5) ⟨.E, 0, ⟨true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: L, false, false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -54, ⟨false :: L, false, zeros 3 ++ descCascade 3 ++ (false :: R)⟩⟩ := by
+  have h : termSteps 5 = 74 := by decide
+  rw [h]
+  have e := exit_terminal_k5 L R
+  rw [e]; rfl
+
+#print axioms retDepo_append_dep
+#print axioms lowMiddle_ret_tile
+#print axioms lowMiddle_ret
+#print axioms lowExit_tile
+#print axioms trailSteps_closed
+#print axioms trailSteps_grounds
+#print axioms term_transport_k4
+#print axioms term_transport_k5
 
 end X2
