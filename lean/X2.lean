@@ -5126,4 +5126,192 @@ Base (k=4) and depth-1 (k=5) EXITs stay GREEN.  No machine decided.  No label up
 #print axioms descentSteps_decomp
 #print axioms descentSteps_decomp_grounds
 
+/-! ## §5ae (LAYER A, ON-PATH, 2026-07-16) THE QUADRATIC BRAID — the `TOPGRIND`'s
+mid-braid invariant + the OUTER×INNER double induction, extracted cell-for-cell from
+`x2bd_sim.build(2)`'s a=5 window `[13453,14388]` (935 steps, `x2qb_*.py`).
+
+**THE MID-BRAID INVARIANT (pinned cell-for-cell, `x2qb_measure.py`/`x2qb_left.py`).**  The
+`TOPGRIND` that consumes the descent's top block `1^{2^a−3}` is an OUTER odometer of
+`N = 2^{a−1}−2` round-trips (a=5: 14), each an INNER `sweepEF`×`ecfold` sweep of growing
+length.  At round-trip `r` (the leftmost turn) the machine is `E` on a boundary `0` with
+
+```
+  LEFT  (nearest-first):  (10)^{Lc}  … marker             comb budget Lc, shrinks −1/trip
+  HEAD:  0
+  RIGHT (head-first):     (10)^{2r+1}  1^{blk}  0^2 casc   right comb grows +2/trip, block −2
+```
+
+i.e. the `def braidCfg` below.  Grounded a=5 (`x2qb_exact.py`, bit-for-bit, NOT a Lean
+theorem — the a=5 orbit is reached by the SIMULATOR): RT r has `Lc = 15−r`, `2r+1` right-comb
+pairs, `blk = 29−2r`, verified at RT0/RT13/RT14 with the `(10)^{Lc}` split UNAMBIGUOUS (the
+marker does not itself start `1,0`, so `Lc` is maximal) and the `0^2` cascade boundary intact.
+
+**ONE ROUND-TRIP TILE `braid_tile`, `∀r`, tail-parametric (PROVEN GREEN, on-path).**  The
+round-trip `braidCfg r → braidCfg (r+1)` is EXACTLY `sweepEF (2r+1) ∘ braid_entry ∘
+ecfold (2r+2)`, `8r+10` steps: the rightward `sweepEF` packs the right comb into a solid,
+the 2-step `braid_entry` eats the boundary and crosses two block `1`s, and the leftward
+`ecfold` re-lays a comb TWO pairs longer while consuming the built solid — so ONE comb pair
+migrates left→right, the block loses `2`, the head drifts `−2`.  Composed from the
+ALREADY-PROVEN inner sweeps (`sweepEF` §4, `ecfold` §5l) — the mid-braid threads with NO
+residue.  `some` ⇒ HALT-FREE `∀r`.
+
+**THE ∀ DOUBLE INDUCTION `braid_run` (PROVEN GREEN, `∀N`).**  `N` round-trips as ONE
+transport (outer induction on `N`, composing `braid_tile`, threading `braidCfg`): from
+`braidCfg 0 (Lc+N) (blk+2N)` in `runS 0 N = 4N²+6N` steps to `braidCfg N Lc blk`.  The
+block is ground `1^{blk+2N} → 1^{blk}`, the right comb doubled `(10)^1 → (10)^{2N+1}`, the
+left comb budget spent `Lc+N → Lc`.  This is the doubling odometer's OWN core structure
+(§5p wall) as a machine-checked nested `sweepEF`×`ecfold` fold — the OUTER Θ(2^a) round-trips
+× INNER Θ(2^a) sweep = Θ(4^a).  Cross-check: `braid_run 14 0 1 1` reproduces the a=5 core
+`braidCfg 0 15 29 → braidCfg 14 1 1` in `868` steps (`= topGrindSteps 5 − (2^6+3) = 935−67`,
+`braid_core_grounds`), the on-path `[13453,14388]` transport minus its `7`-step entry and
+`60`-step doubling exit.
+
+**WHAT REMAINS `[DESIGN]` (the honest gap).**  The full `topGrindSteps a = 4^a−3·2^a+7`
+splits as `entry(7 fixed) + braid_run core(4N²+6N) + exit(2^{a+1}+3−7)`; the CORE double
+induction is now PROVEN `∀`, but the `exit` — the terminal comb→doubled-block sweep that lays
+the doubled deposit `1^{2^{a+1}−4} 0 1^{2^{a+1}−3}` (a=5: `1^126 0 1^61`, `doubling_id`
+`2·29+3=61`) and re-anchors on the residue — is a growing (`Θ(2^a)`) connector that couples the
+right comb `(10)^{2N+1}` back into the doubled block, NOT captured by `braid_tile`.  So the
+`TOPGRIND`'s quadratic OUTER×INNER braid IS machine-checked `∀a`; its `Θ(2^a)` doubling EXIT
+is the single bounded-shape object left.  No `sorry`/axiom/`native_decide`/`partial def`.  No
+machine decided.  No label upgraded. -/
+
+/-- **THE MID-BRAID CONFIG** — the `TOPGRIND`'s round-trip shape at the leftmost turn: `E` on a
+boundary `0`, left comb `(10)^{Lc}` over an untouched `marker`, right comb `(10)^{2r+1}` over
+the top block `1^{blk}` over the `0^2` cascade boundary and an untouched `casc`.  A plain
+abbreviation (`rfl`-transparent), so the `braid_*` statements below say literally what the
+§5ae prose says.  Grounded on the real a=5 orbit by `x2qb_exact.py` (simulator, not kernel). -/
+def braidCfg (r Lc blk : Nat) (p : Int) (marker casc : List Bool) : Cfg :=
+  ⟨.E, p, ⟨pow10 Lc ++ marker, false,
+      pow10 (2 * r + 1) ++ (ones blk ++ (false :: false :: casc))⟩⟩
+
+/-- **The 2-step block-ENTRY tile** (`E:0→1RF · F:1→1RE`): head `E` on the boundary `0` (any
+left `L`), the block `1 1 R` ahead; eats the boundary onto the left solid and crosses the two
+leading block `1`s, landing `E` on the block's third cell at `+2`, depositing `1 1` on the
+left.  The seam between the rightward `sweepEF` pack and the leftward `ecfold` re-lay inside
+one braid round-trip.  Kernel `rfl`. -/
+theorem braid_entry (p : Int) (L R : List Bool) :
+    steps 2 ⟨.E, p, ⟨L, false, true :: true :: R⟩⟩
+      = some ⟨.E, p + 2, ⟨true :: true :: L, true, R⟩⟩ := by
+  have h : steps 2 (⟨.E, p, ⟨L, false, true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1, ⟨true :: true :: L, true, R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **THE QUADRATIC-BRAID ROUND-TRIP TILE, `∀r`, tail-parametric (deliverable A).**  One
+outer round-trip `braidCfg r (Lc+1) (blk+2) → braidCfg r Lc blk` (right-comb `2r+1 → 2r+3`),
+`8r+10` steps, composing `sweepEF (2r+1)` (right comb → solid) ∘ `braid_entry` (cross 2 block
+`1`s) ∘ `ecfold (2r+2)` (solid → comb, TWO pairs longer).  Net: block `−2`, right comb `+2`
+pairs, left comb budget `−1`, head `−2`; the left marker and right cascade `casc` are
+UNTOUCHED.  Proven `∀r` by composing the `∀`-proven inner sweeps — the mid-braid threads with
+no residue.  `some` ⇒ HALT-FREE `∀r`.  `[propext, Quot.sound]`-only (inherits `sweepEF`/
+`ecfold`). -/
+theorem braid_tile (r Lc blk : Nat) (p : Int) (marker casc : List Bool) :
+    steps (8 * r + 10)
+        ⟨.E, p, ⟨pow10 (Lc + 1) ++ marker, false,
+            pow10 (2 * r + 1) ++ (ones (blk + 2) ++ (false :: false :: casc))⟩⟩
+      = some ⟨.E, p - 2, ⟨pow10 Lc ++ marker, false,
+            pow10 (2 * r + 3) ++ (ones blk ++ (false :: false :: casc))⟩⟩ := by
+  have hsplit : 8 * r + 10 = 2 * (2 * r + 1) + (2 + 2 * ((2 * r + 2) + 1)) := by omega
+  rw [hsplit, steps_add,
+      sweepEF (2 * r + 1) p (pow10 (Lc + 1) ++ marker)
+        (ones (blk + 2) ++ (false :: false :: casc)), someBind, steps_add]
+  -- after sweepEF: E on boundary 0, right = ones (blk+2) = 1 1 (ones blk)
+  have hblk : ones (blk + 2) ++ (false :: false :: casc)
+      = true :: true :: (ones blk ++ (false :: false :: casc)) := by
+    rw [show blk + 2 = 2 + blk from by omega, ones_add]; rfl
+  rw [hblk, braid_entry (p + 2 * ((2 * r + 1 : Nat) : Int))
+        (ones (2 * (2 * r + 1)) ++ (pow10 (Lc + 1) ++ marker))
+        (ones blk ++ (false :: false :: casc)), someBind]
+  -- rewrite the left solid into `ones (2*(2r+2)+1) ++ (false :: (pow10 Lc ++ marker))`
+  have hleft : true :: true :: (ones (2 * (2 * r + 1)) ++ (pow10 (Lc + 1) ++ marker))
+      = ones (2 * (2 * r + 2) + 1) ++ (false :: (pow10 Lc ++ marker)) := by
+    have e1 : pow10 (Lc + 1) ++ marker = true :: (false :: (pow10 Lc ++ marker)) := by
+      rw [show Lc + 1 = 1 + Lc from by omega, pow10_add]; rfl
+    have e2 : ones (2 * (2 * r + 2) + 1)
+        = true :: true :: ones (2 * (2 * r + 1) + 1) := by
+      rw [show 2 * (2 * r + 2) + 1 = 2 + (2 * (2 * r + 1) + 1) from by omega, ones_add]; rfl
+    rw [e1, ones_append_true, e2, List.cons_append, List.cons_append]
+  rw [hleft, ecfold (2 * r + 2) (p + 2 * ((2 * r + 1 : Nat) : Int) + 2)
+        (pow10 Lc ++ marker) (ones blk ++ (false :: false :: casc))]
+  have hcomb : pow10 ((2 * r + 2) + 1) = pow10 (2 * r + 3) := by
+    rw [show (2 * r + 2) + 1 = 2 * r + 3 from by omega]
+  rw [hcomb]
+  refine congrArg some (cfgPos ?_)
+  push_cast; omega
+
+/-- **The braid run's step count**, `Σ_{i<N}(8(r+i)+10)`, recursively (peel the first
+round-trip, then `r ↦ r+1`).  Grounds `braidRunSteps 0 14 = 868` (the a=5 core). -/
+def braidRunSteps (r : Nat) : Nat → Nat
+  | 0 => 0
+  | (n + 1) => (8 * r + 10) + braidRunSteps (r + 1) n
+
+/-- **THE QUADRATIC BRAID — the OUTER×INNER DOUBLE INDUCTION, `∀N` (deliverable B).**  `N`
+round-trips of the `TOPGRIND` as ONE transport: from `braidCfg 0 (Lc+N) (blk+2N)` (top block
+`1^{blk+2N}`, left comb `(10)^{Lc+N}`, right comb `(10)^1`) in `braidRunSteps r N` steps to
+`braidCfg N Lc blk` (block `1^{blk}`, left comb `(10)^{Lc}`, right comb `(10)^{2N+1}` — the
+block DOUBLED into the right comb), head drifting `−2N`; the left marker and right cascade
+`casc` are UNTOUCHED.  Proven `∀N` by induction, peeling the first `braid_tile` (the INNER
+`sweepEF`×`ecfold` round-trip) and recursing on the OUTER round-trip count — the Θ(2^a)×Θ(2^a)
+= Θ(4^a) nested odometer, machine-checked.  `some` ⇒ HALT-FREE `∀N`.  `[propext, Quot.sound]`
+-only (inherits `braid_tile`). -/
+theorem braid_run : ∀ (N r Lc blk : Nat) (p : Int) (marker casc : List Bool),
+    steps (braidRunSteps r N)
+        ⟨.E, p, ⟨pow10 (Lc + N) ++ marker, false,
+            pow10 (2 * r + 1) ++ (ones (blk + 2 * N) ++ (false :: false :: casc))⟩⟩
+      = some ⟨.E, p - 2 * (N : Int), ⟨pow10 Lc ++ marker, false,
+            pow10 (2 * (r + N) + 1) ++ (ones blk ++ (false :: false :: casc))⟩⟩ := by
+  intro N
+  induction N with
+  | zero =>
+    intro r Lc blk p marker casc
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ N ih =>
+    intro r Lc blk p marker casc
+    show steps ((8 * r + 10) + braidRunSteps (r + 1) N)
+        ⟨.E, p, ⟨pow10 ((Lc + N) + 1) ++ marker, false,
+            pow10 (2 * r + 1) ++ (ones ((blk + 2 * N) + 2) ++ (false :: false :: casc))⟩⟩ = _
+    rw [steps_add, braid_tile r (Lc + N) (blk + 2 * N) p marker casc, someBind,
+        show 2 * r + 3 = 2 * (r + 1) + 1 from by omega,
+        ih (r + 1) Lc blk (p - 2) marker casc,
+        show 2 * ((r + 1) + N) + 1 = 2 * (r + (N + 1)) + 1 from by omega]
+    refine congrArg some (cfgPos ?_)
+    push_cast; omega
+
+/-- **THE a=5 CROSS-CHECK (deliverable B, on-path).**  `braid_run 14 0 1 1` reproduces the
+real `[13453,14388]` core: `braidCfg 0 15 29 → braidCfg 14 1 1` — top block `1^29` consumed
+(down to the residue `1^1`), doubled into the right comb `(10)^29`, left comb `(10)^15 →
+(10)^1`, head `−28`, in `braidRunSteps 0 14 = 868` steps.  Tail-parametric (marker/casc), a
+DIRECT instance of the `∀N` double induction — NO `rfl`, NO re-derivation.  `[propext,
+Quot.sound]`-only.
+
+**ON-PATH, VERIFIED bit-for-bit (`x2qb_exact.py`).**  The simulator meets `braidCfg 0 15 29` at
+raw step `13460` and `braidCfg 14 1 1` at raw step `14328`, and `14328−13460 = 868` — so BOTH
+endpoints and the step count are on the real orbit.  The `N=14` endpoint is NOT an overshoot:
+RT14 leaves `blk = 1` with the `0^2` cascade boundary still INTACT, so `braid_tile 13` applies
+on-path exactly as `∀r` predicts.  (The clean regime does NOT stop at RT13/`blk = 3`; the
+`N=13` variant `braid_run 13 0 2 3` is the equally-true but SHORTER `754`-step prefix, ending
+at `braidCfg 13 2 3` = raw step `14214`.) -/
+theorem braid_core_a5 (p : Int) (marker casc : List Bool) :
+    steps (braidRunSteps 0 14) (braidCfg 0 15 29 p marker casc)
+      = some (braidCfg 14 1 1 (p - 28) marker casc) :=
+  braid_run 14 0 1 1 p marker casc
+
+/-- **CORE step-count grounding, cell-for-cell.**  `braidRunSteps 0 14 = 868` (the sum of the
+14 growing round-trips `10,18,…,114` measured in `x2qb_rt.py`), and `868 + (2^6+3) =
+topGrindSteps 5 = 935` — the core double induction accounts for ALL of the `TOPGRIND` except
+its fixed `7`-step entry and its `Θ(2^a)` doubling exit, which TOGETHER are the residual
+`2^{a+1}+3 = 67` at a=5.  Measured on the real orbit (`x2qb_exact.py`): entry `13453→13460 = 7`
+(fixed), core `13460→14328 = 868`, exit `14328→14388 = 60 = 2^{a+1}+3−7`.  Pure `Nat` (this
+theorem is arithmetic only; the orbit numbers above are simulator evidence, not kernel-checked). -/
+theorem braid_core_grounds :
+    braidRunSteps 0 14 = 868 ∧ 868 + (2 ^ 6 + 3) = topGrindSteps 5 := by
+  refine ⟨by decide, by decide⟩
+
+#print axioms braid_entry
+#print axioms braid_tile
+#print axioms braid_run
+#print axioms braid_core_a5
+#print axioms braid_core_grounds
+
 end X2
