@@ -7654,4 +7654,204 @@ No machine decided.  No label upgraded. -/
 #print axioms r7f_glue2
 #print axioms regen7_factored
 
+/-! ### §5al: THE TWO INTERIOR LEGS OF THE EXIT TREE, CLOSED `∀a` FROM `RegenLaw`.
+
+§5ai recorded the remaining wall as (1): "a TRANSPORT factorisation of `REGEN(k)` matching
+`exitSteps_tree_k` — NOT proved at ANY level".  §5aj/§5ak then produced that factorisation at
+`k=6` and `k=7`, but each was pinned to per-level explicit configs.  This section does the
+`∀a` version of the tree's INTERIOR: the two transitions the tree is made of, each stated and
+proved once, `∀a`, taking `RegenLaw a` as its only input.
+
+Nothing here is an axiom, a `sorry`, or a hypothesis about a config: `regenAscend` and
+`regenDescend` are theorems whose antecedent is `RegenLaw a`, which §5ai already proves at
+`a = 4,5,6`. -/
+
+/-- `zeros` is additive (mirrors `ones_add` / `pow01_add`). -/
+theorem zeros_add : ∀ (a b : Nat), zeros (a + b) = zeros a ++ zeros b := by
+  intro a
+  induction a with
+  | zero => intro b; rw [Nat.zero_add]; rfl
+  | succ a ih =>
+    intro b
+    have h : a + 1 + b = (a + b) + 1 := by omega
+    rw [h]
+    show false :: zeros (a + b) = false :: (zeros a ++ zeros b)
+    rw [ih]
+
+/-- **`RegenLaw` IS POSITION-FREE.**  `RegenLaw k`'s `∃ p` is decorative: `regenIn`'s and
+`cascadeReg`'s TAPES do not mention the anchor, so `steps_pos_shift` transports the law to
+EVERY anchor `q`.  This is what lets a sub-call fire at whatever absolute position the
+enclosing chain happens to have reached.  `[propext, Quot.sound]`. -/
+theorem regenLaw_pos {k : Nat} (h : RegenLaw k) (q : Int) (marker R : List Bool) :
+    steps (exitSteps k) (regenIn k q (2 ^ (k - 1) + 9) marker R)
+      = some (cascadeReg k 1 (q - 2 ^ k) marker R) := by
+  obtain ⟨p, hp⟩ := h
+  have h2 := steps_pos_shift (d := q - p) (hp marker R)
+  have e1 : p + (q - p) = q := by omega
+  have e2 : p - (2 : Int) ^ k + (q - p) = q - 2 ^ k := by
+    generalize ((2 : Int) ^ k) = c; omega
+  rw [e1, e2] at h2
+  exact h2
+
+/-- Blank-pad regrouping: the `0 0 0^7` seam of a `cascadeReg` OUT plus `2^a` further blanks
+IS the `0^{2^a+9}` pad that `regenIn (a+1)` requires.  Pure `List`. -/
+theorem zeros_pad (a : Nat) (R : List Bool) :
+    false :: false :: (zeros 7 ++ (zeros (2 ^ a) ++ R)) = zeros (2 ^ a + 9) ++ R := by
+  rw [show 2 ^ a + 9 = 2 + (7 + 2 ^ a) from by omega, zeros_add, zeros_add,
+      List.append_assoc, List.append_assoc]
+  rfl
+
+/-- **THE ASCENDING LEG, `∀a ≥ 4`: `REGEN(a) ∘ TOPGRIND(a) : regenIn a → regenIn (a+1)`.**
+
+The `a → a+1` transition of the exit tree, as ONE transport, from `RegenLaw a` alone.  In
+`exitSteps a + topGrindSteps a` steps the level-`a` IN family lands on the level-`(a+1)` IN
+family — the SAME family, one level up, with the pad `2^{(a+1)-1}+9` that `RegenLaw (a+1)`
+requires.  `REGEN(a)` is `regenLaw_pos h`; `TOPGRIND(a)` is `braid_topgrind` at `N = 2^{a-1}-2,
+Lc = 1` (§5af, already `∀N Lc`); the step count is `topGrindSteps_split`.
+
+**THE MARKER IS NOT FREE, AND THAT IS THE CONTENT.**  For the composite to BE a `regenIn (a+1)`,
+the level-`a` marker must be exactly `0 0 1 (01)^{2^a-2} ++ m` — forced, not fitted: `braid_topgrind`
+deposits `1^{4N+4} (10)^1 1` over the marker, `ones_append_true` reparses that as
+`1^{2^{a+1}-3} 0 1`, and `regenIn (a+1)`'s seam is `0 1 0 0 1 (01)^{2^a-2}`, so the three cells
+`0 0 1` and the comb `(01)^{2^a-2}` are read off `regenIn (a+1)`'s own definition.  Likewise the
+tail must carry `2^a` further blanks (`zeros_pad`).  `m` and `R` remain FREE — the leg is
+tail-parametric, so it composes.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem regenAscend (a : Nat) (ha : 4 ≤ a) (h : RegenLaw a) (q : Int) (m R : List Bool) :
+    steps (exitSteps a + topGrindSteps a)
+        (regenIn a q (2 ^ (a - 1) + 9)
+          (false :: false :: true :: (pow01 (2 ^ a - 2) ++ m))
+          (zeros (2 ^ a) ++ R))
+      = some (regenIn (a + 1) (q - 2 ^ a + 5 + 2 * ((2 ^ (a - 1) - 2 : Nat) : Int))
+          (2 ^ (a + 1 - 1) + 9) m R) := by
+  have hN : 2 * (2 ^ (a - 1) - 2) + 1 = 2 ^ a - 3 := cascadeReg_block a ha
+  have h45 : 4 * (2 ^ (a - 1) - 2) + 4 + 1 = 2 ^ (a + 1) - 3 := by
+    obtain ⟨n, rfl⟩ : ∃ n, a = n + 4 := ⟨a - 4, by omega⟩
+    have h3 : 2 ^ (n + 4 - 1) = 2 ^ n * 8 := by
+      rw [show n + 4 - 1 = n + 3 from by omega, Nat.pow_add]
+    have h4 : 2 ^ (n + 4 + 1) = 2 ^ n * 32 := by
+      rw [show n + 4 + 1 = n + 5 from by omega, Nat.pow_add]
+    have hx : 1 ≤ 2 ^ n := Nat.one_le_two_pow
+    omega
+  have hb := braid_topgrind (2 ^ (a - 1) - 2) 1 (q - 2 ^ a)
+      (false :: false :: true :: (pow01 (2 ^ a - 2) ++ m))
+      (descCascade (a - 3) ++ (false :: false :: (zeros 7 ++ (zeros (2 ^ a) ++ R))))
+  rw [hN] at hb
+  rw [steps_add, regenLaw_pos h q _ _, someBind]
+  show steps (topGrindSteps a) _ = _
+  rw [topGrindSteps_split a (by omega)]
+  show (steps (7 + braidRunSteps 0 (2 ^ (a - 1) - 2) + (4 * (2 ^ (a - 1) - 2) + 4))
+      ⟨.E, q - 2 ^ a, ⟨pow01 (1 + (2 ^ (a - 1) - 2))
+          ++ (false :: false :: true :: (pow01 (2 ^ a - 2) ++ m)), false,
+        false :: false :: false :: (ones (2 ^ a - 3) ++ (false :: false ::
+          (descCascade (a - 3) ++ (false :: false :: (zeros 7 ++ (zeros (2 ^ a) ++ R))))))⟩⟩) = _
+  rw [hb]
+  refine congrArg some ?_
+  show (⟨.E, _, ⟨ones (4 * (2 ^ (a - 1) - 2) + 4)
+      ++ (pow10 1 ++ (true :: (false :: false :: true :: (pow01 (2 ^ a - 2) ++ m)))), false,
+      false :: (descCascade (a - 3) ++ (false :: false :: (zeros 7 ++ (zeros (2 ^ a) ++ R))))⟩⟩
+        : Cfg) = _
+  show (⟨.E, _, ⟨ones (4 * (2 ^ (a - 1) - 2) + 4)
+      ++ (true :: (false :: true :: (false :: false :: true :: (pow01 (2 ^ a - 2) ++ m)))), false,
+      false :: (descCascade (a - 3) ++ (false :: false :: (zeros 7 ++ (zeros (2 ^ a) ++ R))))⟩⟩
+        : Cfg) = _
+  rw [ones_append_true, h45, zeros_pad a R]
+  rfl
+
+/-- **`foldDep`'s TAIL, NAMED** — the deposit BEYOND the head `1 0 1 0 0 1` and the comb `(01)^6`
+that `regenIn 4` reads off.  `foldDep_prefix` (§5ak) pinned only the first SEVEN cells; the
+descending leg needs the EXACT split, because everything past `regenIn 4`'s seam becomes the
+next sub-call's `marker`.  Pure structural `List`. -/
+def foldDepTail : Nat → List Bool
+  | 0 => []
+  | (d + 1) => foldDepTail d ++ (false :: false :: true :: pow01 (2 ^ (d + 4) - 2))
+
+/-- **THE EXACT `foldDep` SPLIT, `∀d`** — `foldDep (d+1) = 1 0 1 0 0 1 ++ (01)^6 ++ foldDepTail d`.
+STRENGTHENS `foldDep_prefix` from a 7-cell prefix to a TOTAL decomposition at the cut
+`regenIn 4`'s IN shape makes: `ones 12 ++ foldDep (d+1)` reparses as
+`ones 13 ++ 0 1 0 0 1 ++ (01)^6 ++ foldDepTail d`, which IS `regenIn 4`'s left with marker
+`foldDepTail d`.  Pure `List`. -/
+theorem foldDep_split : ∀ d : Nat,
+    foldDep (d + 1)
+      = true :: false :: true :: false :: false :: true :: (pow01 6 ++ foldDepTail d) := by
+  intro d
+  induction d with
+  | zero => rfl
+  | succ d ih =>
+    show foldDep (d + 1) ++ (false :: false :: true :: pow01 (2 ^ (d + 1 + 3) - 2)) = _
+    rw [ih]
+    show true :: false :: true :: false :: false :: true ::
+        ((pow01 6 ++ foldDepTail d) ++ (false :: false :: true :: pow01 (2 ^ (d + 4) - 2))) = _
+    rw [List.append_assoc]
+    rfl
+
+/-- **THE DESCENDING LEG, `∀a ≥ 5`: `REGEN(a) ∘ DESCENT(a) : regenIn a → regenIn 4`.**
+
+The `a → 4` RESET transition of the exit tree (the odometer's carry back to the base), as ONE
+transport, from `RegenLaw a` alone.  In `exitSteps a + descentSteps a` steps the level-`a` IN
+family lands on the level-`4` IN family — the odometer digit dropping to its floor.  `REGEN(a)`
+is `regenLaw_pos h`; the OUT `cascadeReg a` is EXACTLY `descent_glue_expl`'s IN at
+`N = 2^{a-1}-2, d+1 = a-3, Lc = 1` (`cascadeReg_block` supplies `2N+1 = 2^a-3`,
+`descentGlue_steps` the count `descentSteps a`); the descent's explicit OUT (§5ak) reparses, via
+`foldDep_split`, to `regenIn 4`'s left with `marker = foldDepTail (a-5) ++ 1^{4N+4} 1 0 1 :: m`.
+
+**PAD 1, NOT 17 — THE HONEST SEAM.**  The reset lands on `regenIn 4` with blank pad `z = 1`,
+whereas `RegenLaw 4` needs `z = 2^3+9 = 17`.  On-orbit `R` is blank tape, so the two agree once
+`R` supplies the 16 further zeros; this leg states the machine's ACTUAL pad and leaves that
+normalization to the assembly.  `m` and `R` remain FREE — tail-parametric, so it composes.
+`some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem regenDescend (a : Nat) (ha : 5 ≤ a) (h : RegenLaw a) (q : Int) (m R : List Bool) :
+    steps (exitSteps a + descentSteps a) (regenIn a q (2 ^ (a - 1) + 9) m R)
+      = some (regenIn 4
+          (q - 2 ^ a + 13 + 2 * ((2 ^ (a - 1) - 2 : Nat) : Int)
+            + ((lowerFoldShiftN (a - 3) : Nat) : Int))
+          1
+          (foldDepTail (a - 5)
+            ++ (ones (4 * (2 ^ (a - 1) - 2) + 4) ++ (pow10 1 ++ (true :: m))))
+          R) := by
+  obtain ⟨e, rfl⟩ : ∃ e, a = e + 5 := ⟨a - 5, by omega⟩
+  have hN : 2 * (2 ^ (e + 5 - 1) - 2) + 1 = 2 ^ (e + 5) - 3 := cascadeReg_block (e + 5) (by omega)
+  have hde := descent_glue_expl (2 ^ (e + 5 - 1) - 2) (e + 1) 1 (q - 2 ^ (e + 5)) m R
+  rw [steps_add, regenLaw_pos h q m R, someBind]
+  -- cascadeReg (e+5) 1 (q-2^(e+5)) m R  IS  descent_glue_expl's IN
+  have hstep : descentSteps (e + 5)
+      = (7 + braidRunSteps 0 (2 ^ (e + 5 - 1) - 2) + (4 * (2 ^ (e + 5 - 1) - 2) + 4))
+          + lowerFoldSteps (e + 5 - 3) + 100 :=
+    (descentGlue_steps (e + 5) (by omega)).symm
+  rw [hstep, show e + 5 - 3 = e + 1 + 1 from by omega]
+  show (steps ((7 + braidRunSteps 0 (2 ^ (e + 5 - 1) - 2) + (4 * (2 ^ (e + 5 - 1) - 2) + 4))
+        + lowerFoldSteps (e + 1 + 1) + 100)
+      ⟨.E, q - 2 ^ (e + 5), ⟨pow01 (1 + (2 ^ (e + 5 - 1) - 2)) ++ m, false,
+        false :: false :: false :: (ones (2 ^ (e + 5) - 3) ++ (false :: false ::
+          (descCascade (e + 5 - 3) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩) = _
+  rw [show (2 : Nat) ^ (e + 5) - 3 = 2 * (2 ^ (e + 5 - 1) - 2) + 1 from hN.symm,
+      show e + 5 - 3 = e + 1 + 1 from by omega, hde]
+  refine congrArg some ?_
+  -- OUT reparse: `ones 12 ++ foldDep (e+1) = regenIn 4`'s left with `marker = foldDepTail e ++ …`;
+  -- pos is DEFEQ (both `q-2^a+13+2N+lowerFoldShiftN(a-3)`), so ONE list identity closes it.
+  have hL : ∀ T : List Bool,
+      ones 12 ++ (foldDep (e + 1) ++ T)
+        = ones (2 ^ 4 - 3) ++ (false :: true :: false :: false :: true ::
+            (pow01 (2 ^ 3 - 2) ++ (foldDepTail e ++ T))) := by
+    intro T
+    rw [foldDep_split e, show (2 : Nat) ^ 4 - 3 = 12 + 1 from by decide,
+        show (2 : Nat) ^ 3 - 2 = 6 from by decide, ones_add, show ones 1 = [true] from rfl]
+    simp only [List.cons_append, List.append_assoc, List.nil_append]
+  show (⟨.E, _, ⟨ones 12 ++ (foldDep (e + 1)
+        ++ (ones (4 * (2 ^ (e + 5 - 1) - 2) + 4) ++ (pow10 1 ++ (true :: m)))), false,
+      false :: true :: false :: R⟩⟩ : Cfg)
+    = ⟨.E, _, ⟨ones (2 ^ 4 - 3) ++ (false :: true :: false :: false :: true ::
+        (pow01 (2 ^ 3 - 2) ++ (foldDepTail e
+          ++ (ones (4 * (2 ^ (e + 5 - 1) - 2) + 4) ++ (pow10 1 ++ (true :: m)))))), false,
+      false :: (descCascade (4 - 4) ++ (zeros 1 ++ R))⟩⟩
+  rw [hL]
+  rfl
+
+/- **AXIOM AUDIT — the two interior legs and their helpers.**  All `[propext, Quot.sound]`. -/
+#print axioms zeros_add
+#print axioms regenLaw_pos
+#print axioms zeros_pad
+#print axioms regenAscend
+#print axioms foldDep_split
+#print axioms regenDescend
+
 end X2
