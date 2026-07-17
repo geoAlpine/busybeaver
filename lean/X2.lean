@@ -4538,25 +4538,38 @@ fixed motif + the `∀`-proven `TERM(k)`) is already parametric.  BUT (ii) the t
 position (`2^5,2^6,2^7` for `4→5,5→4,6→4`; `glue_height_grows`), and the descent glue `a→4`
 grows `Θ(4^a)` (`1089 → 4152`, `descent_glue_unbounded`).  So as `k→∞` there are UNBOUNDEDLY
 MANY DISTINCT transition types (`6→7, 7→8, …, 7→4, 8→4, …`), each a fixed transport but of
-`Θ(4^h)` growing length — NO finite set of glue lemmas covers them, and NO fixed per-element
-glue function closes the `foldl`.  The per-position glue is `∀`-parametric only as a *family*
-`glue(a,b)` = a CORE re-cascade whose own length is a growing sub-fold — i.e. the glue family
-is ITSELF the odometer-tree recursion, not a bounded motif.
+`Θ(4^h)` growing length.
+
+**[INFERENCE RETRACTED 2026-07-17 — adversarial claim audit.]**  This paragraph originally
+continued: "*NO finite set of glue lemmas covers them, and NO fixed per-element glue function
+closes the `foldl`.  The per-position glue is `∀`-parametric only as a family … not a bounded
+motif.*"  That inference is a NON-SEQUITUR and is withdrawn.  It moves from "the glue's LENGTH
+grows" to "no `∀`-parametric lemma covers the family" — but growing length is not
+non-parametricity: `sweepEF` (`∀m`), `descent_lower_fold` (`∀d`) and `braid_topgrind` (`∀N Lc`)
+are each ONE lemma covering an unboundedly-growing family, and §5ag's `descent_glue` covers the
+`a→4` descent family — the very "irreducible recursive heart" cited here — with a single `∀N d
+Lc` transport.  The two theorems adduced below (`glue_height_grows`, `descent_glue_unbounded`)
+are hard-coded arithmetic on measured constants; they record growth and prove nothing about
+parametricity.  What remains genuinely open in the `foldl` is the `toCfg` THREADING — that each
+position's tape really is in the required form, i.e. `∀k` REACHABILITY — which is a shape
+invariant, not a length problem.  §5ab's VERDICT below may still stand on other grounds, but
+NOT on this reason.
 
 **DELIVERABLE (B/C) — DOES `carryExit`/`carry_step` CLOSE `∀k`?  NO — and the obstruction is
 now maximally localized.**  What CLOSED (GREEN, this section): the call-list recursion
 (`exitList`), its grounding/arity/well-foundedness, and the STEP-COUNT `List.foldl`
-(`exitSteps_foldl_closure`).  What does NOT close: the TRANSPORT-level `foldl`, because the
-per-position glue is not a bounded `∀`-parametric motif but a growing CORE re-cascade
-(deliverable A(ii)); equivalently, threading `toCfg` across the fold requires, at each of the
-growing number of positions, proving the tape is in the exact `pow10`/`cascadeTail` form for a
-CORE build-up whose height is position-dependent and unbounded.  The single remaining object
-is therefore the `∀`-parametric glue FAMILY `glue(a,b)` — the odometer carry-completion
-re-cascade — defined by its own well-founded recursion on the block height; the DESCENT
-transitions `a→4` (the growing nested re-cascade) are its irreducible recursive heart.  This
-SHARPENS the §5z/§5aa verdict from "growing-arity tree, no bounded closure" to "the arity is a
-clean `List` recursion (GREEN) and the STEP COUNT folds (GREEN); the ONLY open object is the
-height-parametric CORE-re-cascade glue family + its `toCfg` threading."
+(`exitSteps_foldl_closure`).  What does NOT close: the TRANSPORT-level `foldl`.
+
+**[REASON CORRECTED 2026-07-17.]**  The original reason given here — "*because the per-position
+glue is not a bounded `∀`-parametric motif but a growing CORE re-cascade*", with the DESCENT
+`a→4` as "*its irreducible recursive heart*" — is withdrawn: §5ag's `descent_glue` proves that
+heart `∀N d Lc`.  The correct reason is the SECOND half of the original sentence, which stands
+on its own: threading `toCfg` across the fold requires, at each position, proving the tape is in
+the exact `pow10`/`cascadeTail` form the glue lemmas consume.  That is `∀k` REACHABILITY of the
+`cascadeReg(k)` shape invariant — an INVARIANT obligation, not a transport or a length one.  So
+the §5z/§5aa verdict sharpens to: "the arity is a clean `List` recursion (GREEN), the STEP COUNT
+folds (GREEN), the glue transports are `∀`-proven (GREEN, §5af/§5ag); the ONLY open object is
+the `toCfg` threading / shape invariant."
 
 **Is the integer-doubler doubling-phase carry machine-checked `∀j`?  NO.**  Base (`k=4`,
 `carry_exit_j3`) and depth-1 (`k=5`, `carry_exit_j4`) EXIT transports are GREEN and reproduce
@@ -4653,20 +4666,32 @@ theorem glue_const_transitions :
       (glueSegs 7)[2]? = some 1089 ∧ (glueSegs 8)[5]? = some 1089 := by
   refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
 
-/-- **THE DECISIVE OBSTRUCTION (1/2): the CORE build-up height GROWS** (deliverable A(ii)).
-Each transition's between-glue rebuilds a top block of height `2^h − 4` where `h` grows with
-the odometer position: `4→5 → 2^5`, `5→4`/`5→6 → 2^6`, `6→4 → 2^7` (`x2lf_cfg.py`,
-`maxpeak+4 = 2^h`).  So the glue is a CORE `sweepEF` build-up of UNBOUNDED, position-dependent
-height — NOT a fixed bounded motif.  Pure `Nat`. -/
+/-- **MEASUREMENT (1/2): the CORE build-up height GROWS** (deliverable A(ii)).  Each
+transition's between-glue rebuilds a top block of height `2^h − 4` where `h` grows with the
+odometer position: `4→5 → 2^5`, `5→4`/`5→6 → 2^6`, `6→4 → 2^7` (`x2lf_cfg.py`,
+`maxpeak+4 = 2^h`).  So the glue's CORE `sweepEF` build-up has UNBOUNDED, position-dependent
+height.
+
+**[FRAMING CORRECTED 2026-07-17 — was titled "THE DECISIVE OBSTRUCTION (1/2)".]**  This
+statement is a hard-coded `Nat` identity on three MEASURED constants: it records the growth and
+nothing more.  It is NOT an obstruction theorem and never was — it says nothing about the
+machine, and unbounded height does not imply non-parametricity (`sweepEF` is ONE `∀m` lemma over
+exactly such a family).  Retained as a measurement, relabelled.  Pure `Nat`. -/
 theorem glue_height_grows :
     (28 + 4 = 2 ^ 5) ∧ (60 + 4 = 2 ^ 6) ∧ (124 + 4 = 2 ^ 7) := by
   refine ⟨by decide, by decide, by decide⟩
 
-/-- **THE DECISIVE OBSTRUCTION (2/2): the DESCENT glue `a→4` grows `Θ(4^a)`** (deliverable
-A(ii)).  The odometer carry-completion re-cascade `a→4` is `1089` (`5→4`) then `4152` (`6→4`)
-with `4152 > 3·1089` — a growing NESTED CORE re-cascade, not a bounded transport.  This is the
-recursive heart of the remaining glue family: no fixed per-element `foldl` glue closes it.
-Pure `Nat`. -/
+/-- **MEASUREMENT (2/2): the DESCENT glue `a→4` grows `Θ(4^a)`** (deliverable A(ii)).  The
+odometer carry-completion re-cascade `a→4` is `1089` (`5→4`) then `4152` (`6→4`), with
+`4152 > 3·1089` — superlinear growth.
+
+**[FRAMING CORRECTED 2026-07-17 — was titled "THE DECISIVE OBSTRUCTION (2/2)", and its claim
+"no fixed per-element `foldl` glue closes it" is now REFUTED.]**  This is a hard-coded
+inequality between two measured constants; it establishes growth, not non-parametricity.  And
+the family it measures is EXACTLY `descentSteps 5 = 1089` / `descentSteps 6 = 4152`
+(`descentSteps_grounds`) — which §5ag proves is ONE `∀N d Lc` transport (`descent_glue`).  So
+the "irreducible recursive heart" this theorem was cited for is now machine-checked `∀`.
+Retained as a measurement, relabelled.  Pure `Nat`. -/
 theorem descent_glue_unbounded : 3 * 1089 < 4152 := by decide
 
 /-! ### §5ab: what CLOSED, and the decisive per-position-glue verdict.
@@ -4680,23 +4705,26 @@ theorem descent_glue_unbounded : 3 * 1089 < 4152 := by decide
     tree CLOSES: `exitSteps k = (glueSegs k).sum + foldRegenSteps k` at all four levels.
   • `glue_const_transitions` — the SHORT transitions (`4→5`=215, `5→4`=1089) are constant
     byte-identical `∀ L R` transports (the part of the glue that IS `∀`-parametric).
-  • `glue_height_grows` + `descent_glue_unbounded` — the arithmetic obstruction: the CORE
-    build-up height is `2^h` (unbounded) and the descent re-cascade grows `Θ(4^a)`.
+  • `glue_height_grows` + `descent_glue_unbounded` — MEASUREMENTS (relabelled 2026-07-17; they
+    were mis-titled "THE DECISIVE OBSTRUCTION"): the CORE build-up height is `2^h` (unbounded)
+    and the descent re-cascade grows `Θ(4^a)`.  Growth only — NOT an obstruction argument.
 
-**VERDICT (deliverable A): the per-position glue is NOT `∀`-parametric as a bounded motif.**
-Each individual transition is a fixed reusable transport, but the transitions carry CORE
-`sweepEF` re-cascades of unbounded (`2^h`), position-dependent height, with unboundedly many
-distinct transition types as `k→∞`.  So the glue is parametric only as a FAMILY `glue(a,b)`
-that is itself a growing CORE re-cascade — the odometer-tree recursion, not a fixed per-element
-`foldl` glue.
+**VERDICT (deliverable A) — [RETRACTED 2026-07-17].**  This section originally concluded "*the
+per-position glue is NOT `∀`-parametric as a bounded motif … the glue is parametric only as a
+FAMILY that is itself a growing CORE re-cascade*".  The premise (lengths grow) is measured and
+true; the conclusion does not follow and is now REFUTED at its own recursive heart — §5ag's
+`descent_glue` is a single `∀N d Lc` lemma covering the whole descent `a→4` family, including
+the `1089`/`4152` this section adduced as unbounded.  A `∀`-parametric lemma may perfectly well
+have a `Θ(4^a)`-growing run length; that is what `sweepEF`/`braid_run` already do.
 
-**VERDICT (deliverable B/C): `carryExit`/`carry_step` does NOT close `∀k`.**  The call-list
-recursion and the STEP-COUNT fold are GREEN; the transport-level fold is not, because (C) the
-per-position glue is a growing CORE re-cascade (not `∀`-parametric) and the `toCfg` threading
-across the fold is correspondingly position-dependent.  The single remaining object is the
-height-parametric glue family `glue(a,b)` (descent `a→4` = its recursive heart) + its tape
-threading — the `Suffix.lean`-scale definitional recursion.  The base (`k=4`) and depth-1
-(`k=5`) levels stay GREEN and reproduce `carry_exit_j3`/`carry_exit_j4`.
+**VERDICT (deliverable B/C): `carryExit`/`carry_step` does NOT close `∀k`** — this SURVIVES, but
+for a CORRECTED reason.  The call-list recursion and the STEP-COUNT fold are GREEN; the
+transport-level fold is still not closed — but the residual obstacle is NOT "the glue is a
+growing re-cascade" (§5ag transports it `∀`).  It is the `toCfg` THREADING: proving that at each
+position of the fold the tape really has the shape the (now `∀`-proven) glue lemmas consume —
+i.e. `∀k` REACHABILITY of the `cascadeReg(k)` invariant across the carry.  That is a
+shape-invariant obligation, and it is OPEN.  The base (`k=4`) and depth-1 (`k=5`) levels stay
+GREEN and reproduce `carry_exit_j3`/`carry_exit_j4`.
 
 No machine decided. No label upgraded. -/
 
@@ -4788,20 +4816,29 @@ sits below the current block).  `k` = OUTER block height (each `REGEN(k')` call 
 def uMeasure (k a : Nat) : Nat := k * k + a
 
 /-- **THE OUTER STEP STRICTLY DECREASES `uMeasure`** — a `REGEN(k)` calling `REGEN(k')` with
-`k' < k` (any well-founded descent depth `a' < k'`): `uMeasure k' a' < uMeasure k a`.  The
-STRATUM-2 list-fold over `exitList` (`exitList_wf_grounds`: every `k' < k`) descends the
-measure.  Proven `∀`-level (core `Nat.mul_le_mul` + `omega`; no Mathlib). -/
-theorem uMeasure_outer {k k' a a' : Nat} (hk : k' < k) (ha' : a' < k') :
+`k' < k` (any descent depth `a' ≤ k'`): `uMeasure k' a' < uMeasure k a`.  The STRATUM-2
+list-fold over `exitList` (`exitList_wf_grounds`: every `k' < k`) descends the measure.
+Proven `∀`-level (core `Nat.mul_le_mul` + `omega`; no Mathlib).
+
+**CORRECTION (2026-07-17, adversarial claim audit `X2_CLAIM_AUDIT_2026-07-17.md`).**  This
+lemma previously required the STRICT `a' < k'`, which made it INAPPLICABLE at its own grounding
+instance: `uMeasure_grounds` exhibits the real-orbit call `uMeasure 7 7 < uMeasure 9 7`, i.e.
+`k' = a' = 7`, needing `7 < 7`.  The hypothesis is hereby weakened to `a' ≤ k'`, which covers
+that instance and is still sound: strictness now comes from `k' + 1 ≤ k`, via
+`k'*(k'+1) ≤ (k−1)*k = k*k − k < k*k`, not from `a' < k'`.  (The descent depth `a'` can equal
+the block height `k'`; the earlier `a' < k'` was an unforced over-restriction.) -/
+theorem uMeasure_outer {k k' a a' : Nat} (hk : k' < k) (ha' : a' ≤ k') :
     uMeasure k' a' < uMeasure k a := by
   unfold uMeasure
-  -- k'*k'+a' < k'*k'+k' = k'*(k'+1) ≤ k*k ≤ k*k+a  (core Nat lemmas only, no Mathlib `ring`)
-  have h1 : k' * k' + a' < k' * k' + k' := Nat.add_lt_add_left ha' _
+  -- k'*k'+a' ≤ k'*k'+k' = k'*(k'+1) ≤ (k-1)*k = k*k-k < k*k ≤ k*k+a  (core Nat lemmas only)
   have h2 : k' * k' + k' = k' * (k' + 1) := (Nat.mul_succ k' k').symm
-  have h3 : k' * (k' + 1) ≤ k * k := Nat.mul_le_mul (Nat.le_of_lt hk) hk
-  calc k' * k' + a' < k' * k' + k' := h1
-    _ = k' * (k' + 1) := h2
-    _ ≤ k * k := h3
-    _ ≤ k * k + a := Nat.le_add_right _ _
+  have h3 : k' * (k' + 1) ≤ (k - 1) * k := Nat.mul_le_mul (by omega) (by omega)
+  have h4 : (k - 1) * k + k = k * k := by
+    have : (k - 1) * k + 1 * k = ((k - 1) + 1) * k := (Nat.add_mul (k - 1) 1 k).symm
+    rw [Nat.one_mul] at this
+    rw [this, show k - 1 + 1 = k from by omega]
+  have hk0 : 0 < k := by omega
+  omega
 
 /-- **THE INNER STEP STRICTLY DECREASES `uMeasure`** — one descent rung `a+1 → a` at fixed
 block height `k`: `uMeasure k a < uMeasure k (a+1)`.  The STRATUM-1 cascade descent-fold
@@ -4816,6 +4853,14 @@ descend one measure.  Pure `Nat` cross-check. -/
 theorem uMeasure_grounds :
     uMeasure 7 7 < uMeasure 9 7 ∧ uMeasure 9 6 < uMeasure 9 7 := by
   refine ⟨?_, ?_⟩ <;> decide
+
+/-- **`uMeasure_outer` IS APPLICABLE at its own grounding instance** (the regression test for the
+2026-07-17 correction).  The real-orbit outer call `REGEN(9) → REGEN(7)` at descent depth `7` has
+`k' = a' = 7`; this DERIVES `uMeasure_grounds`'s first conjunct FROM `uMeasure_outer` rather than
+re-`decide`-ing it, which the previous `a' < k'` hypothesis made impossible (it demanded `7 < 7`).
+Had this test existed, the defect would not have shipped. -/
+theorem uMeasure_outer_applies : uMeasure 7 7 < uMeasure 9 7 :=
+  uMeasure_outer (by decide) (by decide)
 
 /-! ### §5ac: what CLOSED, and the FEASIBILITY VERDICT on the unified nested recursion.
 
@@ -4859,6 +4904,7 @@ No machine decided. No label upgraded. -/
 #print axioms uMeasure_outer
 #print axioms uMeasure_inner
 #print axioms uMeasure_grounds
+#print axioms uMeasure_outer_applies
 
 /-! ## §5ad (LAYER A, ON-PATH, 2026-07-16) THE DESCENT-GLUE TRANSPORT — the odometer
 carry-completion cascade descent-fold `descentGlue` (§5ac's single `[DESIGN]` object), BUILT
@@ -4888,6 +4934,16 @@ character as the open doubling-phase core (§5p wall), NOT a composition of the 
 pieces.  **This REFUTES the §5ac framing that `descentGlue` is "a run of the ∀-proven odometer
 sweep"**: the closed form `4^a−9a+110`'s leading `4^a` term IS this quadratic top grind, not
 the sweep-probe's "exponentially-many length-2 fillers".
+
+**[RETRACTED 2026-07-17 — see §5af and §5ag.]**  The paragraph above is sound as ARITHMETIC (the
+top block really does cost `Θ(4^a)`) but its INFERENCE — that a `Θ(4^a)` cost is therefore "NOT a
+composition of the ∀-proven linear pieces" and is a wall — is FALSE, and was refuted twice:
+§5af proves the TOPGRIND `∀N Lc` (`braid_topgrind` = `braid_seed ∘ braid_run ∘ sweepEF`), and
+§5ag composes the whole descent `∀` (`descent_glue`).  A growing STEP COUNT is not an
+obstruction to a PARAMETRIC transport: `sweepEF`, `descent_lower_fold` and `braid_topgrind` are
+each ONE `∀`-lemma covering a family of unboundedly-growing runs.  Length ≠ non-parametricity.
+What actually remains open is REACHABILITY (`∀a`, that the carry hands the descent this IN
+shape), not this transport.  See §5ag's verdict.
 
 **WHAT CLOSES GREEN HERE (∀-level, on-path):** the LINEAR SKELETON — the clean per-depth STD
 descent TILE `descent_std_tile` (∀v), the descending-cascade LOWER FOLD `descent_lower_fold`
@@ -5100,20 +5156,26 @@ theorem descentSteps_decomp_grounds :
   • `descentSteps_decomp` — the `∀a≥3` split `descentSteps a = topGrindSteps a + stdSumSteps a +
     100`, grounded on all three on-path windows (`descentSteps_decomp_grounds`).
 
-**THE HONEST VERDICT (a REFUTATION of the §5ac over-optimistic framing).**  `descentGlue` does
-NOT reduce to "a run of the ∀-proven odometer sweep."  Cell-for-cell (`x2dg_boundary.py`, a=5,6,7)
-the descent splits into THREE pieces, and the DOMINANT one — `topGrindSteps a = 4^a−3·2^a+7,
-Θ(4^a)` — is a NESTED doubling odometer of the SAME character as the open doubling-phase core
-(§5p): the same block `1^{2^m−3}` costs a LINEAR `3·2^m−9` as a lower rung but a QUADRATIC
-`4^m−3·2^m+7` as the original top.  So:
-  • the descent's LINEAR skeleton (STD tile + lower fold) is now PROVEN `∀`;
-  • the step-count DECOMPOSITION is PROVEN `∀a`, localizing the wall to the one quadratic term;
-  • the TOPGRIND transport `[DESIGN]` — the nested doubling — is the SINGLE remaining obstruction
-    inside `descentGlue`, and it is the project's core wall re-encountered, NOT a bounded
-    connector.  `descentGlue` is therefore NOT machine-checked `∀a`; only its linear skeleton is.
+**THE §5ad VERDICT — [RETRACTED 2026-07-17].**  This section originally concluded:
 
-This SHARPENS §5ac from "the transport is Suffix.lean-scale definitional work" to the precise
-finding that the descent transport CONTAINS the core quadratic-odometer wall as its top rung.
+> the TOPGRIND transport `[DESIGN]` — the nested doubling — is the SINGLE remaining obstruction
+> inside `descentGlue`, and it is the project's core wall re-encountered, NOT a bounded
+> connector.  `descentGlue` is therefore NOT machine-checked `∀a`; only its linear skeleton is.
+
+**Both sentences are now FALSE and are withdrawn.**  §5af proves the TOPGRIND `∀N Lc`
+(`braid_topgrind`, `[propext, Quot.sound]`) — the `Θ(2^a)` "growing exit connector" it posited
+was a MIS-PARSE of one `sweepEF` — and §5ag composes `descentGlue` itself `∀N d Lc`
+(`descent_glue`), with `descentGlue_steps` proving the composite's length is `descentSteps a`
+`∀a≥4`.  The §5ad reasoning erred by treating a `Θ(4^a)` STEP COUNT as evidence of
+non-parametricity; it is not (cf. `sweepEF`, `descent_lower_fold`, `braid_topgrind` — each ONE
+`∀`-lemma over an unboundedly-growing family).  What survives from §5ad is exactly its
+ARITHMETIC (`descentSteps_decomp`, the tile costs) and its `∀`-proven linear skeleton, all of
+which §5ag consumes as-is.
+
+**What is TRUE as of §5ag:** the descent's linear skeleton, its top grind, its finalization, its
+step-count decomposition and their COMPOSITION are all PROVEN `∀`.  The single remaining
+obstruction inside the descent is `∀a` REACHABILITY of the IN shape — `carry_step`'s job — which
+is a tape-shape/invariant obligation, NOT a transport or a braid.  See §5ag's verdict.
 Base (k=4) and depth-1 (k=5) EXITs stay GREEN.  No machine decided.  No label upgraded. -/
 
 -- §5ad descent-glue transport axiom audits (STD tile + lower fold + step decomposition):
@@ -5571,5 +5633,350 @@ theorem topGrind_split_grounds :
 #print axioms braid_topgrind_a5
 #print axioms topGrindSteps_split
 #print axioms topGrind_split_grounds
+
+/-! ## §5ag (LAYER A, ON-PATH, 2026-07-17) `descentGlue` ASSEMBLES — the whole descent
+`a → 4` is ONE `∀`-proven transport `TOPGRIND ∘ lowerFold ∘ FINAL`, `descentSteps a` steps.
+
+**THE SEAMS CLOSE VERBATIM — no reparse needed** (`x2dg_seam.py`, SIMULATOR evidence, all of
+a=5,6,7, bit-for-bit).  §5ad's TOPGRIND `[DESIGN]` was retired by §5af (`braid_topgrind`), and
+the three §5ad/§5af pieces turn out to compose with NO connector at all:
+
+  • **SEAM 1 (`braid_topgrind` OUT → `descent_lower_fold` IN).**  `braid_topgrind`'s tail `casc`
+    is universally quantified; instantiating `casc := descCascade d ++ 0² R` makes its OUT right
+    register `false :: (descCascade d ++ 0² R)` *literally* `descent_lower_fold`'s IN.  The seam
+    is an INSTANTIATION, not a rewrite.  Measured: a=5 raw `14388` right `0² 1^13 0² 1^5 0² 1^1`
+    `= 0 :: descCascade 2` ✓ (a=6 `37741` `= 0 :: descCascade 3`, a=7 `130710` `= 0::descCascade 4`),
+    head `+5+2N` at all three `a` ✓.
+  • **SEAM 2 (`descent_lower_fold` OUT → FINAL).**  The fold lands `E` on the residue
+    `0 · 1^1 · 0² R` — and the FINAL 100 is a BOUNDED TILE.
+
+**THE DECISIVE FINDING: the FINAL 100 is a FIXED TILE, not a growing object** (`x2dg_final.py`,
+`x2dg_tile100.py`, a=5,6,7).  From the post-fold residue the head excursion is `[−4, +11]` and
+the state word is the SAME 100-symbol word at all three `a`
+(`FAEFABCDDDECDDECDEFABCECEFEFEFABCDDDECDD…`), with an IDENTICAL `[−8,+16]` cell window.  So the
+FINAL never reads the accumulated comb (which grows `Θ(2^a)`): it is a `∀`-parametric kernel
+`rfl` tile `descent_final_tile`, `100` steps, head `+8`, depositing `1^12` over the untouched
+left tail.  This is why the `100` is `a`-INDEPENDENT — a fact §5ad recorded but did not explain.
+(§5ad's parenthetical "the two `TERM(3)`" is NOT confirmed: `TERM(3) = 2⁴+3+5 = 24` by
+`exit_terminal_law`, and `2·24 = 48 ≠ 100`.  The `100` is this one tile; the `[3,3]` of §5ac's
+greedy cover is a COVER artifact, not a decomposition.  Corrected here.)
+
+**WHAT IS PROVEN `∀` HERE.**  `descent_lower_fold_dep` (the §5ad fold, STRENGTHENED to expose the
+deposit's leading `0²10` — needed to enter the FINAL), `descent_final_tile` (the `100`, `rfl`),
+`lowerFoldSteps_eq_stdSum` (`∀d`, tying the fold's count to the §5ad closed form),
+`descent_glue` (`∀N d Lc` — TOPGRIND ∘ fold ∘ FINAL as ONE transport), and `descentGlue_steps`
+(`∀a≥4`: the composite's length IS `descentSteps a`).  **`descentGlue` — §5ac's "single remaining
+proof obligation", §5ad's `[DESIGN]` — IS NOW CLOSED `∀`**, modulo the ONE hypothesis below.
+
+**WHAT REMAINS `[DESIGN]` — and it is REACHABILITY, not transport.**  `descent_glue`'s IN shape
+(`E` on the descent's boundary `0`, left comb `(01)^{Lc+N} ++ marker`, right
+`0³ 1^{2N+1} 0² descCascade d 0² 0⁷ R`) is known to occur on the real orbit ONLY by SIMULATOR
+evidence (`x2dg_seam.py` pins raw `13453`/`33830`/`114703` for a=5/6/7).  The `∀a` claim that
+REGEN(k)'s carry-completion hands the descent a config of this shape is NOT proven — it is
+`carry_step`'s job.  Accordingly the shape is a HYPOTHESIS of the statement (an explicit IN
+config), never an axiom.  The `0⁷` right pad is likewise on-path (the tape below the cascade is
+blank at all three measured descents) and is an explicit part of the IN, not an assumption.
+
+No `sorry`/axiom/`native_decide`/`partial def`.  No machine decided.  No label upgraded. -/
+
+/-- **The lower fold's step count IS the §5ad closed form, `∀d`**: `lowerFoldSteps d =
+stdSumSteps (d+3)` (`= 3·2^{d+3} − 9(d+3) + 3`).  Upgrades `descentSteps_decomp_grounds`'s
+three `decide`d instances (a=5,6,7) to `∀`, so the composite's length can be identified with
+`descentSteps a` for every `a`.  Induction on `d`; `three_mul_le_pow` supplies the
+`Nat`-subtraction bounds.  Pure `Nat`. -/
+theorem lowerFoldSteps_eq_stdSum : ∀ d : Nat, lowerFoldSteps d = stdSumSteps (d + 3) := by
+  intro d
+  induction d with
+  | zero => decide
+  | succ d ih =>
+    show (6 * (2 ^ (d + 2) - 2) + 3) + lowerFoldSteps d = stdSumSteps (d + 1 + 3)
+    rw [ih]
+    have h3 : 2 ^ (d + 3) = 2 ^ (d + 2) * 2 := Nat.pow_succ 2 (d + 2)
+    have h4 : 2 ^ (d + 4) = 2 ^ (d + 3) * 2 := Nat.pow_succ 2 (d + 3)
+    have hx : 2 ≤ 2 ^ (d + 2) := by
+      have h := two_le_two_pow_succ (d + 1)
+      rwa [show (d + 1) + 1 = d + 2 from rfl] at h
+    have hb : 9 * (d + 3) ≤ 3 * 2 ^ (d + 3) + 3 := by
+      have := three_mul_le_pow (d + 3) (by omega); omega
+    have hb2 : 9 * (d + 4) ≤ 3 * 2 ^ (d + 4) + 3 := by
+      have := three_mul_le_pow (d + 4) (by omega); omega
+    show _ = 3 * 2 ^ (d + 1 + 3) + 3 - 9 * (d + 1 + 3)
+    rw [show d + 1 + 3 = d + 4 from rfl]
+    unfold stdSumSteps
+    omega
+
+/-- **THE LOWER FOLD, STRENGTHENED — the deposit's leading `0² 1 0` is EXPOSED, `∀d`.**
+Identical to `descent_lower_fold` but at depth `d+1` and with the existential deposit refined
+from `dep` to `false :: false :: true :: false :: dep`.  This is exactly what the FINAL tile
+needs to fire: `descent_final_tile` reads `4` cells to the LEFT of the residue boundary, and
+they are the last STD tile's comb-cap `0² 1` followed by the first cell of its comb `(01)^v`
+(`v = 2^{d+2}−2 ≥ 2`, so `pow01 v` does begin `0 1`).  MEASURED at the post-fold residue: left
+nearest-first `0,0,1,0,1,0,1,0,0,1,0,1` at a=5 — and IDENTICAL at a=6,7 (`x2dg_final.py`).
+Proven `∀d` by induction mirroring `descent_lower_fold`.  `[propext, Quot.sound]`-only. -/
+theorem descent_lower_fold_dep : ∀ (d : Nat) (p : Int) (L R : List Bool),
+    ∃ dep : List Bool,
+      steps (lowerFoldSteps (d + 1))
+          ⟨.E, p, ⟨L, false, false :: (descCascade (d + 1) ++ (false :: false :: R))⟩⟩
+        = some ⟨.E, p + (lowerFoldShiftN (d + 1) : Int),
+            ⟨false :: false :: true :: false :: (dep ++ L), false,
+              false :: (ones 1 ++ (false :: false :: R))⟩⟩ := by
+  intro d
+  induction d with
+  | zero =>
+    intro p L R
+    refine ⟨[true, false, true], ?_⟩
+    have hright : descCascade 1 ++ (false :: false :: R)
+        = ones (2 * 2 + 1) ++ (false :: false :: (ones 1 ++ (false :: false :: R))) := by
+      show (ones (2 ^ 3 - 3) ++ (false :: false :: descCascade 0)) ++ (false :: false :: R) = _
+      exact List.append_assoc (ones 5) (false :: false :: ones 1) (false :: false :: R)
+    show steps (lowerFoldSteps 1) ⟨.E, p, ⟨L, false,
+        false :: (descCascade 1 ++ (false :: false :: R))⟩⟩ = _
+    rw [hright, show lowerFoldSteps 1 = 6 * 2 + 3 from by decide,
+        descent_std_tile 2 p L (ones 1 ++ (false :: false :: R))]
+    refine congrArg some ?_
+    have hL : false :: false :: true :: (pow01 2 ++ L)
+        = false :: false :: true :: false :: ([true, false, true] ++ L) := rfl
+    rw [hL]
+    exact cfgPos (by show p + (2 * ((2 : Nat) : Int) + 3) = p + ((lowerFoldShiftN 1 : Nat) : Int)
+                     rw [show lowerFoldShiftN 1 = 7 from by decide]; push_cast; omega)
+  | succ d ih =>
+    intro p L R
+    have hx : 2 ≤ 2 ^ (d + 3) := by
+      have h := two_le_two_pow_succ (d + 2)
+      rwa [show (d + 2) + 1 = d + 3 from rfl] at h
+    have hv : 2 * (2 ^ (d + 3) - 2) + 1 = 2 ^ (d + 4) - 3 := by
+      have h4 : 2 ^ (d + 4) = 2 ^ (d + 3) * 2 := Nat.pow_succ 2 (d + 3)
+      omega
+    have hright : ones (2 ^ (d + 4) - 3) ++ (false :: false :: descCascade (d + 1))
+          ++ (false :: false :: R)
+        = ones (2 * (2 ^ (d + 3) - 2) + 1)
+          ++ (false :: false :: (descCascade (d + 1) ++ (false :: false :: R))) := by
+      rw [← hv]
+      exact List.append_assoc (ones (2 * (2 ^ (d + 3) - 2) + 1))
+        (false :: false :: descCascade (d + 1)) (false :: false :: R)
+    show ∃ dep, steps ((6 * (2 ^ (d + 3) - 2) + 3) + lowerFoldSteps (d + 1))
+        ⟨.E, p, ⟨L, false, false ::
+          (ones (2 ^ (d + 4) - 3) ++ (false :: false :: descCascade (d + 1))
+            ++ (false :: false :: R))⟩⟩ = _
+    rw [hright, steps_add,
+        descent_std_tile (2 ^ (d + 3) - 2) p L (descCascade (d + 1) ++ (false :: false :: R)),
+        someBind]
+    obtain ⟨dep, hdep⟩ := ih (p + (2 * ((2 ^ (d + 3) - 2 : Nat) : Int) + 3))
+        (false :: false :: true :: (pow01 (2 ^ (d + 3) - 2) ++ L)) R
+    refine ⟨dep ++ (false :: false :: true :: pow01 (2 ^ (d + 3) - 2)), ?_⟩
+    rw [hdep]
+    refine congrArg some ?_
+    have hpos : (p + (2 * ((2 ^ (d + 3) - 2 : Nat) : Int) + 3))
+          + ((lowerFoldShiftN (d + 1) : Nat) : Int)
+        = p + ((lowerFoldShiftN (d + 1 + 1) : Nat) : Int) := by
+      show _ = p + (((2 * (2 ^ (d + 3) - 2) + 3) + lowerFoldShiftN (d + 1) : Nat) : Int)
+      push_cast; omega
+    have hleft : dep ++ (false :: false :: true :: (pow01 (2 ^ (d + 3) - 2) ++ L))
+        = (dep ++ (false :: false :: true :: pow01 (2 ^ (d + 3) - 2))) ++ L :=
+      (List.append_assoc dep (false :: false :: true :: pow01 (2 ^ (d + 3) - 2)) L).symm
+    rw [hpos, hleft]
+
+/-! The FINAL tile is proven in FOUR `25`-step kernel `rfl` chunks (`descent_final_q1..q4`)
+composed by `steps_add`.  The split is forced by REDUCTION COST, not by mathematics: with a
+SYMBOLIC head position `p` the kernel must carry the un-normalized term `p + 1 + 1 − 1 …`, whose
+`whnf` cost grows EXPONENTIALLY in the chain depth (measured: `50` symbolic steps reduce in
+~15 s, `70` exceed 400 000 heartbeats; the file's other long `rfl`s, e.g. `exit_terminal_k5`,
+dodge this by fixing `p = 0`, which costs translation-invariance).  Normalizing the position to
+`p + k` between chunks keeps every chain ≤ 25 deep AND keeps the tile `∀p`.  The three interior
+boundaries are MEASURED and are IDENTICAL at a=5,6,7 (`x2dg_tile100.py`). -/
+
+/-- FINAL tile, chunk 1/4: `t=0→25`, `E` head `+0 → +3`.  Kernel `rfl`. -/
+theorem descent_final_q1 (p : Int) (L R : List Bool) :
+    steps 25 ⟨.E, p, ⟨false :: false :: true :: false :: L, false,
+        false :: true :: false :: false :: false :: false :: false :: false :: false :: false ::
+          false :: R⟩⟩
+      = some ⟨.E, p + 3, ⟨true :: false :: true :: false :: false :: true :: false :: L, false,
+          true :: false :: true :: false :: false :: false :: false :: false :: R⟩⟩ := by
+  have h : steps 25 (⟨.E, p, ⟨false :: false :: true :: false :: L, false,
+      false :: true :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1 - 1 + 1 - 1 - 1 - 1 + 1 - 1 - 1 + 1 + 1
+          + 1 + 1 + 1 - 1 - 1 - 1,
+          ⟨true :: false :: true :: false :: false :: true :: false :: L, false,
+            true :: false :: true :: false :: false :: false :: false :: false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- FINAL tile, chunk 2/4: `t=25→50`, `E` head `+3 → +0`.  Kernel `rfl`. -/
+theorem descent_final_q2 (p : Int) (L R : List Bool) :
+    steps 25 ⟨.E, p, ⟨true :: false :: true :: false :: false :: true :: false :: L, false,
+        true :: false :: true :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, p - 3, ⟨false :: false :: true :: false :: L, true,
+          false :: false :: true :: true :: true :: true :: true :: false :: false :: true ::
+            false :: R⟩⟩ := by
+  have h : steps 25 (⟨.E, p, ⟨true :: false :: true :: false :: false :: true :: false :: L, false,
+      true :: false :: true :: false :: false :: false :: false :: false :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1 - 1 + 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1
+          - 1 + 1 - 1 - 1 - 1 + 1,
+          ⟨false :: false :: true :: false :: L, true,
+            false :: false :: true :: true :: true :: true :: true :: false :: false :: true ::
+              false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- FINAL tile, chunk 3/4: `t=50→75`, `E → F`, head `+0 → +3`.  Kernel `rfl`. -/
+theorem descent_final_q3 (p : Int) (L R : List Bool) :
+    steps 25 ⟨.E, p, ⟨false :: false :: true :: false :: L, true,
+        false :: false :: true :: true :: true :: true :: true :: false :: false :: true ::
+          false :: R⟩⟩
+      = some ⟨.F, p + 3, ⟨true :: true :: true :: true :: true :: true :: false :: L, true,
+          false :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ := by
+  have h : steps 25 (⟨.E, p, ⟨false :: false :: true :: false :: L, true,
+      false :: false :: true :: true :: true :: true :: true :: false :: false :: true ::
+        false :: R⟩⟩ : Cfg)
+      = some ⟨.F, p - 1 - 1 + 1 + 1 + 1 + 1 + 1 - 1 - 1 - 1 + 1 + 1 + 1 + 1 - 1 - 1 - 1 - 1 - 1
+          - 1 + 1 + 1 + 1 + 1 + 1,
+          ⟨true :: true :: true :: true :: true :: true :: false :: L, true,
+            false :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- FINAL tile, chunk 4/4: `t=75→100`, `F → E`, head `+3 → +8`.  Kernel `rfl`. -/
+theorem descent_final_q4 (p : Int) (L R : List Bool) :
+    steps 25 ⟨.F, p, ⟨true :: true :: true :: true :: true :: true :: false :: L, true,
+        false :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩
+      = some ⟨.E, p + 5, ⟨ones 12 ++ L, false, false :: true :: false :: R⟩⟩ := by
+  have h : steps 25 (⟨.F, p, ⟨true :: true :: true :: true :: true :: true :: false :: L, true,
+      false :: true :: true :: true :: false :: false :: true :: false :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 + 1 + 1 + 1 + 1 + 1 + 1
+          + 1 + 1 + 1 + 1 + 1 + 1,
+          ⟨ones 12 ++ L, false, false :: true :: false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **THE DESCENT'S FINAL TILE — the `100` is ONE BOUNDED `∀`-parametric tile.**  From `E` on
+the post-fold residue boundary (right `0 · 1^1 · 0² · 0⁷ R`, left `0² 1 0 · L`), `100` steps
+deposit `1^12` on the left and land `E` at `+8` on `0 · 1 · 0 · R`.  The head excursion is
+`[−4, +11]` — it touches exactly the `4` left cells the fold's comb-cap supplies
+(`descent_lower_fold_dep`) and the `11` right cells of the residue + its blank pad, and NOTHING
+else; in particular it never reads the `Θ(2^a)`-long accumulated comb, which is why the descent's
+finalization costs a FIXED `100` at every `a`.  `L`, `R` fully parametric.  `some` ⇒ HALT-FREE.
+ON-PATH (`x2dg_final.py`/`x2dg_tile100.py`, SIMULATOR evidence, bit-for-bit): raw `14442→14542`
+(a=5), `37882→37982` (a=6), `131034→131134` (a=7) — same state word, same `[−8,+16]` window,
+same `+8` head shift at all three.  Composed from the four `25`-step kernel-`rfl` chunks
+`descent_final_q1..q4` by `steps_add` (see the note above: the split is a reduction-cost
+measure, and it is what keeps the tile `∀p` rather than pinned at `p = 0`). -/
+theorem descent_final_tile (p : Int) (L R : List Bool) :
+    steps 100 ⟨.E, p, ⟨false :: false :: true :: false :: L, false,
+        false :: (ones 1 ++ (false :: false :: (zeros 7 ++ R)))⟩⟩
+      = some ⟨.E, p + 8, ⟨ones 12 ++ L, false, false :: true :: false :: R⟩⟩ := by
+  show steps (25 + (25 + (25 + 25))) ⟨.E, p, ⟨false :: false :: true :: false :: L, false,
+      false :: true :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: R⟩⟩ = _
+  rw [steps_add, descent_final_q1, someBind, steps_add, descent_final_q2, someBind,
+      steps_add, descent_final_q3, someBind, descent_final_q4]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **`descentGlue` — THE WHOLE DESCENT `a → 4` AS ONE TRANSPORT, `∀N d Lc`.**
+`braid_topgrind` ∘ `descent_lower_fold_dep` ∘ `descent_final_tile`.  From `E` on the descent's
+boundary `0` with the top block `1^{2N+1}` behind its `0³` seed pad, the descending cascade
+`descCascade (d+1)` below it, a blank `0⁷` pad under the cascade, and the left comb
+`(01)^{Lc+N} ++ marker`, in `(7 + braidRunSteps 0 N + (4N+4)) + lowerFoldSteps (d+1) + 100`
+steps to `E` at `+13+2N+lowerFoldShiftN (d+1)` on `0 · 1 · 0 · R`, with `1^12` over the
+accumulated deposit.  ALL THREE pieces `∀`-proven; `R` UNTOUCHED throughout.  `some` ⇒
+HALT-FREE `∀N d`.  `[propext, Quot.sound]`-only.
+
+SEAM 1 is the INSTANTIATION `casc := descCascade (d+1) ++ 0² (0⁷ R)` in `braid_topgrind`
+(whose tail is `∀`-quantified) — its OUT right IS the fold's IN right, verbatim.  SEAM 2 is
+`descent_lower_fold_dep`'s exposed comb-cap `0² 1 0` feeding `descent_final_tile`'s left window.
+At `N = 2^{a−1}−2`, `d+1 = a−3` the IN is the descent's real TOPGRIND-start (a=5,6,7 measured
+bit-for-bit, `x2dg_seam.py`) and the length is `descentSteps a` (`descentGlue_steps`).
+
+**REACHABILITY IS NOT CLAIMED.**  That REGEN(k)'s carry-completion actually hands the descent
+this IN config `∀a` is `carry_step`'s open obligation; here the shape is a HYPOTHESIS (the
+explicit IN), on-path by simulator evidence only. -/
+theorem descent_glue (N d Lc : Nat) (p : Int) (marker R : List Bool) :
+    ∃ dep : List Bool,
+      steps ((7 + braidRunSteps 0 N + (4 * N + 4)) + lowerFoldSteps (d + 1) + 100)
+          ⟨.E, p, ⟨pow01 (Lc + N) ++ marker, false,
+              false :: false :: false :: (ones (2 * N + 1) ++ (false :: false ::
+                (descCascade (d + 1) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩
+        = some ⟨.E, p + 13 + 2 * (N : Int) + (lowerFoldShiftN (d + 1) : Nat),
+            ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  rw [steps_add, steps_add,
+      braid_topgrind N Lc p marker (descCascade (d + 1) ++ (false :: false :: (zeros 7 ++ R))),
+      someBind]
+  obtain ⟨dep, hdep⟩ := descent_lower_fold_dep d (p + 5 + 2 * (N : Int))
+      (ones (4 * N + 4) ++ (pow10 Lc ++ (true :: marker))) (zeros 7 ++ R)
+  rw [hdep, someBind,
+      descent_final_tile (p + 5 + 2 * (N : Int) + (lowerFoldShiftN (d + 1) : Nat))
+        (dep ++ (ones (4 * N + 4) ++ (pow10 Lc ++ (true :: marker)))) R]
+  refine ⟨dep ++ (ones (4 * N + 4) ++ (pow10 Lc ++ (true :: marker))), ?_⟩
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **THE COMPOSITE'S LENGTH IS `descentSteps a`, `∀a ≥ 4`** — the arithmetic seam.  At
+`N = 2^{a−1}−2` and `d+1 = a−3`, `descent_glue`'s step count
+`(7 + braidRunSteps 0 N + (4N+4)) + lowerFoldSteps (a−3) + 100` equals `descentSteps a =
+4^a − 9a + 110`.  Chains `topGrindSteps_split` (§5af), `lowerFoldSteps_eq_stdSum` (above) and
+`descentSteps_decomp` (§5ad) — so the assembled transport has EXACTLY the measured descent
+length, `∀a`, with no residue.  Pure `Nat`. -/
+theorem descentGlue_steps (a : Nat) (ha : 4 ≤ a) :
+    (7 + braidRunSteps 0 (2 ^ (a - 1) - 2) + (4 * (2 ^ (a - 1) - 2) + 4))
+        + lowerFoldSteps (a - 3) + 100
+      = descentSteps a := by
+  rw [← topGrindSteps_split a (by omega), lowerFoldSteps_eq_stdSum (a - 3),
+      show a - 3 + 3 = a from by omega, descentSteps_decomp a (by omega)]
+
+/-- **`descentGlue` GROUNDING, cell-for-cell on all three measured descents.**  a=5 (`N=14`,
+`d+1=2`), a=6 (`N=30`, `d+1=3`), a=7 (`N=62`, `d+1=4`): the assembled length is exactly the
+real window length `1089`, `4152`, `16431` (raw `[13453,14542]`, `[33830,37982]`,
+`[114703,131134]` — SIMULATOR evidence, not kernel-checked), and the head shift
+`13+2N+lowerFoldShiftN (d+1)` is the measured `63`, `126`, `253`.  Pure `Nat`. -/
+theorem descentGlue_grounds :
+    ((7 + braidRunSteps 0 14 + (4 * 14 + 4)) + lowerFoldSteps 2 + 100 = descentSteps 5 ∧
+      (7 + braidRunSteps 0 30 + (4 * 30 + 4)) + lowerFoldSteps 3 + 100 = descentSteps 6 ∧
+      (7 + braidRunSteps 0 62 + (4 * 62 + 4)) + lowerFoldSteps 4 + 100 = descentSteps 7) ∧
+    (13 + 2 * 14 + lowerFoldShiftN 2 = 63 ∧ 13 + 2 * 30 + lowerFoldShiftN 3 = 126 ∧
+      13 + 2 * 62 + lowerFoldShiftN 4 = 253) := by
+  refine ⟨⟨?_, ?_, ?_⟩, ⟨?_, ?_, ?_⟩⟩ <;> decide
+
+/-! ### §5ag: what CLOSED, and what the SINGLE remaining obstruction now is.
+
+**PROVEN GREEN this section (`∀`-level, on-path):**
+  • `lowerFoldSteps_eq_stdSum` — `∀d`, the fold's count = §5ad's closed form.
+  • `descent_lower_fold_dep` — the §5ad lower fold with its comb-cap deposit `0² 1 0` EXPOSED.
+  • `descent_final_tile` — the descent's `100`-step finalization as ONE bounded `rfl` tile,
+    `∀`-parametric in both tails (excursion `[−4,+11]`; explains the `a`-independent `100`).
+  • `descent_glue` — **`descentGlue` ITSELF**: TOPGRIND ∘ lower fold ∘ FINAL as ONE `∀N d Lc`
+    HALT-FREE transport.
+  • `descentGlue_steps` — `∀a≥4`, the composite's length IS `descentSteps a`; grounded on all
+    three measured descents (`descentGlue_grounds`).
+
+**THE VERDICT.**  `descentGlue` — §5ac's "single remaining proof obligation", §5ad's `[DESIGN]`,
+and the object `ebec409` judged to be "the CORE doubling-braid wall re-encountered INSIDE the
+descent" — **CLOSES `∀`**.  The `ebec409` verdict is now OBSOLETE in BOTH of its parts: §5af
+retired the TOPGRIND `Θ(4^a)` (it is `braid_seed ∘ braid_run ∘ sweepEF`, all `∀`-proven), and
+this section shows the remaining two seams need NO connector — seam 1 is an instantiation of an
+already-`∀`-quantified tail, seam 2 is a `4`-cell window the fold already produces.  The
+`Θ(4^a)` growth was never an obstruction to the TRANSPORT; it is just the parametric length of
+`∀`-proven pieces.
+
+**THE SINGLE REMAINING OBSTRUCTION IS NOW REACHABILITY, i.e. `carry_step` ITSELF.**  Sharply:
+every piece of the descent is a proven `∀` transport whose IN is an EXPLICIT config; what is
+NOT proven is that REGEN(k)'s carry-completion delivers that config.  Concretely, the open
+`∀k` statement is: *the REGEN(k) exit's carry-completion lands `E` on a boundary `0` with left
+`(01)^{Lc+N} ++ marker` and right `0³ 1^{2^k−3} 0² descCascade (k−3) 0² 0⁷ R`* — the
+`cascadeReg(k)` invariant of §5ac Q3.  This is a SHAPE/INVARIANT obligation on the odometer's
+carry, not a step-count or a braid: `descent_glue` consumes it and returns the descended
+register, `uMeasure` (§5ac) already closes the well-foundedness of both nestings, and
+`descentGlue_steps` already closes the arithmetic.  So `h_doub`/`carry_step` now reduce to
+propagating ONE tape-shape invariant across the carry — with NO growing transport left inside
+it.  That obligation is OPEN and is NOT claimed here.
+
+x2 remains `[OPEN]`.  No `sorry`/axiom/`native_decide`/`partial def`.
+No machine decided.  No label upgraded. -/
+
+-- §5ag descentGlue-assembly axiom audits (fold count + strengthened fold + FINAL + the GLUE):
+#print axioms lowerFoldSteps_eq_stdSum
+#print axioms descent_lower_fold_dep
+#print axioms descent_final_q1
+#print axioms descent_final_q2
+#print axioms descent_final_q3
+#print axioms descent_final_q4
+#print axioms descent_final_tile
+#print axioms descent_glue
+#print axioms descentGlue_steps
+#print axioms descentGlue_grounds
 
 end X2
