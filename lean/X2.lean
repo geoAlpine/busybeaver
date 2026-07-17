@@ -4634,9 +4634,21 @@ theorem foldRegenSteps_grounds :
   refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
 
 /-- **THE BETWEEN-CALL GLUE SEGMENTS** (`x2lf_param.py`, merged run-lengths), in orbit order:
-`[lead ; between consecutive REGEN calls ; trailing]`.  The CONSTANT byte-identical transition
-transports are visible: `215` (the `4→5` glue, at `glueSegs 7` idx 1 and `glueSegs 8` idx 1,4)
-and `1089` (the `5→4` glue, at `glueSegs 7` idx 2 and `glueSegs 8` idx 5). -/
+`[lead ; between consecutive REGEN calls ; trailing]`.  Byte-identical transition transports
+recur: `215` (the `4→5` glue, at `glueSegs 7` idx 1 and `glueSegs 8` idx 1,4) and `1089` (the
+`5→4` glue, at `glueSegs 7` idx 2 and `glueSegs 8` idx 5).
+
+**THESE ARE NOT CONSTANTS — THEY ARE TWO `∀`-PARAMETRIC FAMILIES SAMPLED AT SMALL INDICES.**
+Arithmetically (check them):
+```
+  215 = topGrindSteps 4      935 = topGrindSteps 5      (ONE family, 4^a−3·2^a+7)
+ 1089 = descentSteps  5     4152 = descentSteps  6      (ONE family, 4^a+110−9a)
+```
+So the `4→5` glue `215` and the `4→5`-at-the-next-height glue `935` are the SAME family at
+successive `a` — reading `215` as a "constant motif" and `935` as an unrelated growing term
+(the §5ab framing) is an ARTIFACT of sampling one family at two indices.  Both families are
+now `∀`-covered: `topGrindSteps_split` (§5af) and `descentGlue_steps` (§5ag).  What is still
+missing is the ASCENDING direction as a `steps` TRANSPORT, not the arithmetic. -/
 def glueSegs : Nat → List Nat
   | 5 => [218]
   | 6 => [154, 498]
@@ -4644,11 +4656,18 @@ def glueSegs : Nat → List Nat
   | 8 => [424, 215, 935, 4152, 215, 1089, 884]
   | _ => []
 
-/-- **THE STEP-COUNT `List.foldl` CLOSES `∀`-level-grounded** (deliverable A/B, the decisive
-positive).  `exitSteps k = (glueSegs k).sum + foldRegenSteps k` at ALL FOUR levels — the
-digit-tree fold of the glue segments PLUS the fold of the proven lower `REGEN` counts
-reproduces the entire EXIT step count.  The LIST-FOLD recursion is real at the arithmetic
-level.  Pure `Nat`/`List` (both sides `List.foldl`). -/
+/-- **THE STEP-COUNT `List.foldl` AT FOUR GROUNDED LEVELS** (deliverable A/B).  `exitSteps k =
+(glueSegs k).sum + foldRegenSteps k` at `k=5,6,7,8` — the digit-tree fold of the glue segments
+PLUS the fold of the proven lower `REGEN` counts reproduces the entire EXIT step count.  The
+LIST-FOLD recursion is real at the arithmetic level.  Pure `Nat`/`List` (both sides
+`List.foldl`).
+
+**READ THE NAME WITH CARE — this is FOUR `decide`d INSTANCES, NOT a closure.**  It is a
+conjunction over `k=5,6,7,8`, and it CANNOT be read `∀k`: `glueSegs` is a 4-entry TABLE whose
+catch-all is `| _ => []`, so at `k=9` the right-hand side collapses to `foldRegenSteps 9` and
+the identity is FALSE.  The `∀k` statement this theorem's name suggests is not proven here and
+does not hold of `glueSegs` as defined — closing it needs the glue as a LAW (see the
+`glueSegs` note above: the entries are `topGrindSteps`/`descentSteps` sampled), not a table. -/
 theorem exitSteps_foldl_closure :
     exitSteps 5 = (glueSegs 5).foldl (· + ·) 0 + foldRegenSteps 5 ∧
       exitSteps 6 = (glueSegs 6).foldl (· + ·) 0 + foldRegenSteps 6 ∧
@@ -4895,7 +4914,23 @@ self-similarity does NOT resist a finite Lean recursion: it stratifies into (1) 
 new obstruction.  Base (k=4) and depth-1 (k=5) EXITs stay GREEN and reproduce
 `carry_exit_j3`/`carry_exit_j4`.
 
-No machine decided. No label upgraded. -/
+**UPDATE 2026-07-17 — THIS VERDICT WAS RETRACTED, AND THE RETRACTION IS VOID.**  `ebec409`
+retracted the above as "over-optimism", on the SOLE stated ground that the TOPGRIND inside
+`descentGlue` is a `Θ(4^a)` re-encounter of the core doubling-braid wall.  That ground is now
+FALSE: §5af proves the TOPGRIND `∀` (`braid_topgrind`, `topGrindSteps_split`), and its
+"growing `Θ(2^a)` connector" was a run-length MIS-PARSE of one already-proven `sweepEF`.  And
+this section's "single remaining proof obligation — the transport-assembly of `descentGlue`"
+is now DISCHARGED: §5ag's `descent_glue` (`∀N d Lc`) + `descentGlue_steps` (`∀a≥4`), green.
+The seams needed NO connector — `braid_topgrind`'s `casc` was already `∀`-quantified, so
+instantiating it made the registers match literally.  **So the verdict above stands as
+written**, and its own named obligation is closed.
+
+**What this does NOT mean.**  Feasibility of the *descent* is not feasibility of `carry_step`.
+The OUTER `regen` list-fold over `exitList` is still not built: what is missing is the lift of
+the digit tree from a `Nat` STEP-COUNT identity (`exitSteps_tree_*`, arithmetic) to a
+composable `steps` TRANSPORT factorisation — proven at NO level, `k=6` included, where
+`regen6_transport` is a brute `722`-step kernel run reusing nothing from `regen4_transport`.
+`[OPEN]`, and not claimed. -/
 
 -- §5ac unified nested recursion axiom audits (descent closed form + glueSeg tie + WF measure):
 #print axioms descentSteps_grounds
