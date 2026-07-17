@@ -10,6 +10,48 @@ and upgrades no label**; it is a difficulty-type map and a work-list. Grounded i
 `X2_STATUS_2026-07-12.md`, `X2_UNIFIED_RECURSION_DESIGN_2026-07-16.md`,
 `X2_CARRY_CALCULUS_2026-07-11.md`, `PAPER_SPECIES_SURVEY.md`. No Lean file was edited.*
 
+> ### ⚠ CORRECTED 2026-07-17 — READ THIS FIRST
+>
+> This document's **founding premise is dead**. It was written to find a *friendlier* transparent
+> machine that dodges B1's quadratic braid, and it nominated B5 (and B3/B4) as the "de-risking
+> front". Re-measurement (`TRACK_B_REAUDIT_2026-07-17.md`, reproduced independently again today by
+> `x2ti_island.py`) finds **no such machine anywhere on the island**:
+>
+> | machine | register | per-doubling cost ratio | |
+> |---|---|---|---|
+> | B1 *(control — known Θ(4^k) wall)* | maxrun | **3.97** | Θ(v²) |
+> | B2 | maxrun | **3.94** | Θ(v²) |
+> | B3 | total1 | **3.99** | Θ(v²) |
+> | B4 | total1 | **3.98** | Θ(v²) |
+> | **B5** | maxrun *(phase-conditioned)* | **4.15** | Θ(v²) — **BRAID-BOUND** |
+> | W2 | total1 | **3.94** | Θ(v²) |
+> | W1 | total1 | *(gate refuses — not a doubler)* | — |
+>
+> *Ratios as tabulated at cap 40 M (`TRACK_B_REAUDIT_2026-07-17.md` §3). Independently re-run at
+> cap 12 M by `x2ti_island.py`: B1 3.85, B2 3.90, B3 3.97, B4 3.96, W2 3.94, **B5 4.145** — the same
+> verdict on every machine, converging upward toward 4 with cap. B5's ratios reproduce **exactly**
+> (4.119, 4.142, 4.158, 4.145, 4.130), on an instrument sharing no code with the original.*
+>
+> **2 = linear/braid-free. 4 = Θ(v²) per doubling. Not one ratio-2 machine exists on the island.**
+> B5 — this roadmap's §5 order-1 "fastest possible win", the machine that was supposed to be the
+> braid-free counter-example — is braid-bound, on four independent reproductions (`885f6de` 4.10,
+> coordinator 4.09, `TRACK_B_REAUDIT` 4.145, `x2ti_island.py` 4.145).
+>
+> **Two caveats that must survive any future rewrite of this file:**
+>
+> 1. **Ratio 4 is a COST SIGNATURE, not a MECHANISM.** It shows a doubling costs Θ(v²) — Θ(v) passes
+>    over the register rather than one sweep. It does **NOT** prove that B1's specific combinatorial
+>    object (the growing-arity digit tree / `carry_step`) lives in B2–B5. No mechanism is asserted
+>    for any machine but B1, where it was independently derived.
+> 2. **For ANY machine whose cost ∝ width², doubling an observable gives 4× automatically** — that
+>    is every ordinary quadratic bouncer, with no braid anywhere. A ratio is evidence only for a
+>    register that *genuinely doubles once per macro-generation*. A **`doubling_gate`** (refuse to
+>    answer where the register does not double) is what keeps W1 out of the table above, and its
+>    absence is what produced a spurious "W1: BRAID" reading. Every ratio here is gated.
+>
+> Sections below are corrected in place. `[UNSUPPORTED]` marks a claim that was **never
+> established** — it is *not* a refutation, and must not be read as one.
+
 ---
 
 ## 0. What "carry-transparent" means, and why the island exists
@@ -52,31 +94,51 @@ is attached; none is a certified milestone reduction except the primary.
 machines whose carries encode open mathematics; `CARRY_DICHOTOMY §2`.) The island is drawn entirely
 from the 1104-holdout census, ×2 cluster.
 
-### 1A. The 5 firm transparent-candidates (≈5 distinct; two peak-identical pairs)
+### 1A. The 5 firm transparent-candidates (≈4 distinct structural problems, ONE difficulty class)
+
+*Corrected 2026-07-17. The "reset structure" column was built on `min` over a **sparse
+record-triggered subsample** (fault F2) — such a min is an **upper bound** on the true
+per-generation minimum, never a floor. Only rows re-measured **dense stride-1** are supported;
+the rest are marked `[UNSUPPORTED]` (= never established, NOT refuted).*
 
 | # | transition table | register law (OBSERVED) | reset structure | why transparent | class |
 |---|---|---|---|---|---|
-| **B1 (primary)** | `1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE` | maxrun `v'=2v+2`, `v_k=2^k−2` exact (resid 0.000); pure binary shift, no bit-mixing | data-dependent 9/21/31 | register law **PROVEN** pure doubling; low-phase safety **PROVEN ∀g** (mechanized induction); halt gate PROVEN (B reads 1) | **TRANSPARENT** `[register law PROVEN; residual OPEN]` |
-| **B2 (twin of B1)** | `1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD` | maxrun `v'=2v+2`, same `2^k−2` cascade (14,30,62,…,1022; ratios→2.004; resid 0.003) | (unprobed in detail) | peak-identical to B1 → same base-2 odometer cascade; "TNF-adjacent" to B1 | **TRANSPARENT-candidate** `[OBSERVED]` |
-| **B3 (pair A)** | `1RB0RE_1RC1LF_0LD0RE_---1LE_1RA0LB_1LB0LC` | total1 `v'=2v−28.5`; maxrun peaks **7·2^k EXACT** (224,448,896,1792,3584; `d_k≡0`); resid 0.004 | arithmetic drain 26,22,18,14,10 (**−4/gen**), rigid super-cycle refill | exact geometric ×2 envelope with `d_k≡0` (no correction term); arithmetic (register-driven) resets | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` |
-| **B4 (pair B)** | `1RB0RC_1LC1RA_0RF0LD_1LE0RB_1LB0LD_---1RD` | total1 `v'=2v−28.5`; maxrun peaks **3·2^k EXACT** (96,…,3072; `d_k≡0`); resid 0.005 | **identical** drain 26,22,18,14,10,6 (−4/gen) | same as B3 (peak-identical pair) — one analysis covers both | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` |
-| **B5** | `1RB0LB_1LC1LB_1RD1LA_0RE0RE_0RA1RF_---1RD` | maxrun peaks **EXACT `v'=2v+1`** (71,143,287,575,1151 = 9·2^k−1) | **CONSTANT 14** | most rigid: exact affine doubling + constant reset (no digit read visible) → candidate *pure* linear odometer | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` (noisier fit resid 1.23) |
+| **B1 (primary)** | `1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE` | maxrun `v'=2v+2`, `v_k=2^k−2` exact (resid 0.000); pure binary shift, no bit-mixing | data-dependent 9/21/31 — dense re-measure **CONSISTENT** (true minima include 9 and 21) | register law **PROVEN** pure doubling; low-phase safety **PROVEN ∀g** (mechanized induction); halt gate PROVEN (B reads 1) | **TRANSPARENT** `[register law PROVEN; residual OPEN]` · cost ratio **3.97 = Θ(v²)** *(positive control: matches its independently-known Θ(4^k) TOPGRIND wall)* |
+| **B2 (twin of B1)** | `1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD` | maxrun `v'=2v+2`, same `2^k−2` cascade (14,30,62,…,1022; ratios→2.004; resid 0.003) | (unprobed in detail) | cascade-identical to B1 → same base-2 odometer cascade. **NOT a TNF/mirror relabel of B1** (settled 2026-07-17: a relabel preserves step counts exactly; B1's cascade fires at 153443/597615/2318803/9212415, B2's at 157966/591922/2333374/9186082 — same values, different times) | **TRANSPARENT-candidate** `[OBSERVED]` · cost ratio **3.94 = Θ(v²)** |
+| **B3 (pair A)** | `1RB0RE_1RC1LF_0LD0RE_---1LE_1RA0LB_1LB0LC` | total1 `v'=2v−28.5`; maxrun peaks **7·2^k EXACT** (447/448,895/896,1791/1792,3583/3584; `d_k≡0`); resid 0.004 | ~~arithmetic drain 26,22,18,14,10 (−4/gen)~~ **`[UNSUPPORTED]`** — a sparse-sample min (F2); never re-measured dense. An upper bound, not a floor. | exact geometric ×2 envelope with `d_k≡0` (no correction term). **The inference "cleaner envelope ⟹ cheaper core" is DEAD**: B3 pays the same Θ(v²) | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` · cost ratio **3.99 = Θ(v²)** |
+| **B4 (pair B)** | `1RB0RC_1LC1RA_0RF0LD_1LE0RB_1LB0LD_---1RD` | total1 `v'=2v−28.5`; maxrun peaks **3·2^k EXACT** (383/384,767/768,1535/1536,3071/3072; `d_k≡0`); resid 0.005 | ~~identical drain 26,22,18,14,10,6~~ **`[UNSUPPORTED]`** — same F2 fault as B3 | ~~same as B3 (peak-identical pair) — one analysis covers both~~ **REFUTED 2026-07-17**: B3 peaks are `7·2^k`, B4's are `3·2^k`. **Not peak-identical on either observable**; step-times differ ~3×. They share only a *fit shape*. **Nothing shows one analysis covers both** | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` · cost ratio **3.98 = Θ(v²)** |
+| **B5** | `1RB0LB_1LC1LB_1RD1LA_0RE0RE_0RA1RF_---1RD` | maxrun peaks **EXACT `v'=2v+1`** (17,35,71,143,287,575,1151 = 9·2^k−1). **Register is PHASE-CONDITIONED** — visible only in state C at a left-extent record; B5's *global* maxrun record is an arithmetic ramp (+3/record) and fails the `doubling_gate` | **CONSTANT 14** — **REAL**, dense stride-1 verified. But it is a **per-generation MINIMUM of full-tape maxrun**, a *different statistic* from the C-milestone floors `5·2^k+6`/`+8` (the value at the next state-C left-record after the peak). Both are true of different quantities; neither refutes the other. **No mechanism for 14 is re-derived** `[OPEN]` | ~~most rigid: exact affine doubling + constant reset (no digit read visible) → candidate *pure* linear odometer~~ **RETRACTED 2026-07-17.** B5 is **BRAID-BOUND**: per-doubling ratio **4.15** over k=1..8, four independent reproductions. The constant reset did **not** buy a cheaper core | **TRANSPARENT-candidate** `[OBSERVED, exact tail]` · cost ratio **4.15 = Θ(v²)** — **BRAID-BOUND** |
 
-Pairing note (`CANDIDATE_NEW §1`): B1≡B2 are peak-identical (likely one structure / mirror /
-TNF-adjacent); B3≡B4 are peak-identical. So the 5 firm candidates are **≈3 distinct structural
-problems** (B1/B2, B3/B4, B5), which is why `CANDIDATE_NEW` reports "≈5–7 genuine, ≈5 distinct."
+**Pairing note — re-derived 2026-07-17, not inherited.** `59749fb` claimed *"5 firm candidates ≈ 3
+distinct problems (B1/B2, B3/B4, B5)"*. That count rested on two asserted peak-identical pairs. Both
+were re-tested:
+
+- **B1/B2 — pairing SURVIVES.** Identical `2^k−2` cascade values across all 9 records; step-times
+  differ. One structural problem, two genuinely distinct machines. `[OBSERVED]`
+- **B3/B4 — pairing REFUTED.** `7·2^k` vs `3·2^k`. Two problems, not one.
+- **B5 — a *difficulty-class* merge, not a *structural* merge.** B5 shares B1's cost signature, but
+  its register law (`9·2^k−1` vs `2^k−2`) differs and its register is phase-conditioned where B1's is
+  global. "Same difficulty class" is supported; **"same structural problem" is not**. B5 subtracts
+  nothing from the structural count.
+
+**The count went UP, not down:** **≈4 distinct structural problems — `{B1,B2}`, `{B3}`, `{B4}`,
+`{B5}`** — in **ONE difficulty class** (all five pay Θ(v²) per doubling). The island is *less*
+consolidated than claimed, and simultaneously *more* uniform in difficulty than anyone hoped.
 
 ### 1B. The watchlist (3 — 1 transparent-leaning, 2 UNCLEAR)
 
 | # | transition table | probe finding | class | risk |
 |---|---|---|---|---|
-| **W1 (~13/7 recruit)** | `1RB0LE_1RC0RF_0RD0RB_1RE0RC_1LA0LA_1RA---` | resets **EXACTLY arithmetic +3/gen** (24,27,…,39); peak ratio 1.878→1.977→2 (→×2 envelope + a linear secondary register); "~13/7" was a transient artifact | **TRANSPARENT-leaning UNCLEAR** `[OBSERVED]` | `d_k` drift ≈−3k with residual noise not yet pinned |
-| **W2** | `1RB0LD_1LC0RA_1RA1LB_1LA1LE_1RF0LC_---0RE` | period-2 doubling envelope (peaks pair 609/613, 1239/1237, 2495/2473) but corrections vary **non-affinely** (+21,+17,+43 / +4,−2,−22) | **UNCLEAR** `[OBSERVED]` | possible digit coupling → could eject to opaque |
+| **W1 (~13/7 recruit)** | `1RB0LE_1RC0RF_0RD0RB_1RE0RC_1LA0LA_1RA---` | ~~resets EXACTLY arithmetic +3/gen (24,27,…,39); peak ratio 1.878→1.977→2 → ×2 envelope + a linear secondary register~~ — **BOTH CLAIMS `[UNSUPPORTED]` 2026-07-17.** **W1 is not a doubler.** Its `total1` is an arithmetic ramp (records increment by ~1) and it sets **~1274 records in its top octave**, where a doubler sets O(1). Decisively: **W1's maxrun never exceeds 5** over 12 M steps — no long run ever forms, so there is no binary register to double. The `doubling_gate` **refuses** to report a ratio for it; that refusal is the only reason W1 is not in the braid table as a spurious "4". Its reset row rests on the same sparse-min fault (F2) as B3/B4. *"~13/7" was already known to be a transient artifact* | **UNCLEAR** `[OBSERVED]` *(was "TRANSPARENT-leaning" — that rested entirely on the ×2 envelope, which a correct full-tape instrument does not see)* | register unidentified. **W1 is neither decided nor refuted here — it needs a re-measure, not a ruling** |
+| **W2** | `1RB0LD_1LC0RA_1RA1LB_1LA1LE_1RF0LC_---0RE` | period-2 doubling envelope (peaks pair 609/613, 1239/1237, 2495/2473) but corrections vary **non-affinely** (+21,+17,+43 / +4,−2,−22) | **UNCLEAR** `[OBSERVED]` · cost ratio **3.94 = Θ(v²)** | possible digit coupling → could eject to opaque |
 | **W3** | `1RB0RB_1LC0LF_1RD0LB_1RE1RC_0RA---_1LA1RE` | mixed phases: alternate steps EXACT `d=+5`, others erratic and **value-proportional** (−11,−204,−693) — correction plausibly reads deep digits | **UNCLEAR (opaque-leaning)** `[OBSERVED]` | strongest ejection risk (value-proportional = digit read) |
 
-**Island count: 8 machines flagged** = 5 firm transparent-candidates (≈3 distinct problems: B1/B2,
-B3/B4, B5) + 1 transparent-leaning (W1) + 2 UNCLEAR (W2, W3). This matches the "~5–8" expectation and
-`CARRY_DICHOTOMY §6`'s "~5-machine island (5 candidates + up to 3 more pending)."
+**Island count (corrected 2026-07-17): 8 machines flagged** = 5 firm transparent-candidates
+(**≈4 distinct structural problems: `{B1,B2}`, `{B3}`, `{B4}`, `{B5}` — in ONE difficulty class**)
++ 3 UNCLEAR (W1, W2, W3). This still matches the "~5–8" expectation and `CARRY_DICHOTOMY §6`'s
+"~5-machine island". *(Superseding `59749fb`'s "≈3 distinct problems"; the B3/B4 pairing is refuted
+and B5's merge is a difficulty merge, not a structural one. W1 moves from transparent-leaning to
+UNCLEAR — its register is not a doubler.)*
 
 **Honesty on how well-defined the island is.** The boundary is *sharp in principle* (transparent ⟺
 `q=1` register-driven) but *empirically soft at the edges*. Only B1 has a certified milestone
@@ -127,42 +189,119 @@ No standalone milestone reduction sketched anywhere; the only evidence is the pe
 cascade (`CANDIDATE_NEW §1`). Because it shares B1's exact register law and reset pattern class, its
 milestone form and halt gate are expected to be B1's up to relabeling/mirroring. **Deciding it requires**
 the same four objects (milestone form, halt gate, `h_low`, `h_doub` with a `carry_step`-analogue).
-**Similarity to B1: maximal** — likely the *same* shrinking-comb quadratic braid. First action must be
-a genuineness check (confirm B2 is not literally B1 under a TNF/mirror normalization, i.e. not a
-duplicate of an already-listed machine).
+**Similarity to B1: maximal** — and its cost signature agrees (**3.94**, vs B1's 3.97).
 
-### 2.2 B3/B4 (pair A/B) — status: exact-tail proxy; possibly SIMPLER core
+**The genuineness check is DONE (2026-07-17) — B2 is a real, distinct machine.** A TNF/mirror
+relabeling preserves step counts *exactly*. B1 and B2 have identical `2^k−2` cascade **values** across
+all 9 records but **different step-times** (B1 `153443, 597615, 2318803, 9212415`; B2 `157966, 591922,
+2333374, 9186082`). So B2 is **not** a duplicate of B1: two genuinely distinct machines with an
+identical register law. One structural problem, and risk 5 (duplication) is **closed** for this pair.
 
-No milestone reduction sketched. Observationally **cleaner than B1**: peaks are `7·2^k` / `3·2^k` with
-`d_k≡0` (no correction term at all in the doubling envelope) and resets are **arithmetic −4/gen**, i.e.
-a register-driven drain rather than B1's data-dependent 9/21/31. **This is the key structural
-difference:** B1's data-dependent resets are precisely what force its `carry_step` to be a *growing-arity
-digit tree* (the reset reads digits). If B3/B4's resets are genuinely arithmetic-only (no digit read),
-their doubling-phase carry could be a **simpler recursion — a linear/bounded-arity odometer, not the
-triangular braid.** `CARRY_DICHOTOMY §6` states their laws are "*more* rigid than the primary's," so if
-the B1 calculus works it "should sweep machines 2–5." **Deciding requires** the full B1 treatment;
-**similarity: same `sweepEF` ×2 primitive, plausibly a strictly simpler `carry_step`.** One analysis
-covers both B3 and B4 (peak-identical).
+*Caveat that must not be lost: B2's matching ratio 4 says its doubling costs Θ(v²). It does **not**
+prove B2 hosts B1's growing-arity digit tree. Cost signature ≠ mechanism.*
 
-### 2.3 B5 — status: most rigid; candidate *pure* odometer, possibly NO braid
+### 2.2 B3 and B4 — status: exact-tail proxy; TWO problems, NOT a simpler core
 
-No milestone reduction sketched. Exact `v'=2v+1` (`9·2^k−1`) with **CONSTANT reset 14** — the most
-rigid observed. Per `CANDIDATE_NEW §1b`, a machine whose register is a *pure* deterministic `v↦2v+c`
-orbit with a fixed-modulus gate is **outright DECIDABLE** (the gate `2^k≡r mod M` is eventually
-periodic — `2^k mod M` is computable and periodic), *without any braid at all*. B5's constant reset is
-the strongest signal of this pure-orbit structure. **If B5 is a pure `v↦2v+c` orbit with a modular halt
-gate, it is strictly easier than B1 and INDEPENDENT of B1's `carry_step` closing** — a linear-odometer
-decision. **Risk:** the fit was noisier (resid 1.23), and a constant reset can still hide a digit-read
-that happens to be constant on the observed range; must verify the reset is register-forced, not
-data-coincidental. **Similarity: potentially the *degenerate* case of B1 (no digit tree).**
+*Rewritten 2026-07-17. This section previously nominated B3/B4 as "possibly SIMPLER core" and treated
+them as one target. Both claims are corrected.*
 
-### 2.4 W1 (~13/7) — status: ×2 + explicit linear secondary register
+No milestone reduction sketched for either. Observationally they remain **cleaner than B1**: peaks
+are exactly `7·2^k` (B3) / `3·2^k` (B4) with `d_k≡0` — no correction term at all in the doubling
+envelope. **`d_k≡0` and the clean envelopes are REAL and remain the island's cleanest observables.**
 
-Resets **exactly arithmetic +3/gen** and peak ratio monotone →2: a ×2 envelope with a *linear*
-secondary register. Structurally this is "B1's odometer + one extra explicit affine register," which
-is *more* structure than B1 but still explicit. **Deciding requires** pinning the `d_k≈−3k` drift's
-residual noise (is it register-forced or a digit read?). If register-forced, W1 is transparent with a
-two-register odometer core — comparable to B1, possibly needing its own (but explicit) recursion.
+**What died is the *inference*, in two independent places:**
+
+1. **"Cleaner envelope ⟹ cheaper core" is refuted by measurement.** The argument was: B1's
+   data-dependent resets are what force its `carry_step` to be a growing-arity digit tree, so
+   arithmetic-only resets should give a linear/bounded-arity odometer instead. **B3 and B4 pay
+   `3.99` and `3.98` per doubling — the same Θ(v²) as B1's `3.97`.** They were the best remaining
+   hope for a digit-read-free core after B5 fell; they are not cheaper.
+2. **The pairing is refuted — B3 and B4 are TWO analyses, not one.** They are **not peak-identical**:
+   B3's maxrun records are `7·2^k` (`447/448 … 3583/3584`), B4's are `3·2^k`
+   (`383/384 … 3071/3072`), and their step-times differ ~3× on both observables. What they actually
+   share is a **fit shape** (both fit `total1: v'=2v−28.5`) — a far weaker statement that must not be
+   reported as identity. *"One analysis covers both"* is `[UNSUPPORTED]`.
+
+Their **reset structure** (the "arithmetic −4/gen drain") is `[UNSUPPORTED]` — a `min` over a sparse
+record-triggered subsample (F2), i.e. an upper bound, never established as a floor. It is **not
+refuted**; it was never re-measured densely. That re-measure is now the prerequisite for any
+structural claim about them.
+
+**Deciding requires** the full B1 treatment, **twice**. Similarity: same `sweepEF` ×2 primitive; the
+`carry_step`-analogue is **not** shown simpler — and, per the standing caveat, **not shown to be B1's
+digit tree either**. Ratio 4 is a cost signature, not a mechanism.
+
+### 2.3 B5 — status: **BRAID-BOUND**. The pure-odometer hypothesis is REFUTED by measurement.
+
+*Rewritten 2026-07-17. This section previously nominated B5 as the single fastest win on the track —
+"candidate pure odometer, possibly NO braid, independent of B1". **That is now settled negative.***
+
+No milestone reduction sketched. The register law **`v'=2v+1` (`9·2^k−1`, k=1..8) is REAL** and
+reproduced. Two corrections of substance:
+
+**(a) The register is PHASE-CONDITIONED, and that matters.** B5's *global* maxrun record is an
+arithmetic ramp (+3 per record, ~179 records in the top octave) and **fails the `doubling_gate`
+outright**. Its doubling register is visible only in **state C at a left-extent record**. Read there,
+with a tape-derived extent, the family `9·2^k−1` is exact. Reading any ratio off B5's *global* record
+is the F3 artifact and must not be done.
+
+**(b) B5 pays Θ(v²) per doubling — it is BRAID-BOUND.** First-attainment times of the register peaks:
+
+```
+peak      17        35        71       143       287       575
+step   2,559    10,541    43,663   181,553   752,545  3,108,325
+ratio      -     4.119     4.142     4.158     4.145     4.130      median 4.145
+```
+
+Not 2. **Four independent reproductions** — `885f6de` 4.10, coordinator 4.09, `TRACK_B_REAUDIT` 4.145,
+`x2ti_island.py` 4.145 (an instrument sharing no code with the others). The `CANDIDATE_NEW §1b`
+pure-orbit route — *a pure `v↦2v+c` orbit with a fixed-modulus gate is outright decidable, since
+`2^k mod M` is eventually periodic* — remains **correct as a theorem**; B5 simply **is not such a
+machine**. Its constant reset did not buy a cheaper core.
+
+**The "CONSTANT 14" is REAL — and must not be "fixed" into a new error.** It is dense stride-1
+verified (gens 1–3 reproduced here at `14,14,14`; gens 1–5 in `TRACK_B_REAUDIT`, out-of-sample at
+gen 5). Two traps around it, both already sprung once:
+
+- It is a **per-generation MINIMUM of full-tape maxrun**. The C-milestone floors `5·2^k+6`/`+8`
+  (`6b6d739`) measure a **different statistic** — the value at the next state-C left-record milestone
+  *after* the peak. **Both readings are true of different quantities; neither refutes the other.**
+  `6b6d739` over-corrected 14 to "REFUTED / origin UNEXPLAINED" by comparing the two; `c65bad5`
+  restored it. **Over-correction is a measurement error too.**
+- The "half-tape bug made 14" lead is a **red herring**: 14's origin is `cd_probe2.py` →
+  `mse_extract.simulate`, which maintains **both** bounds. Its extent was never truncated.
+
+`885f6de`'s headline *mechanism* for 14 ("the k=2 tooth recurring verbatim") remains **`[OPEN]`** —
+14 is a confirmed constant, but **no mechanism for it is established**, and none is asserted.
+
+**Similarity to B1: same difficulty class, NOT shown to be the same structure.** B5's register law
+(`9·2^k−1` vs `2^k−2`) differs and its register is phase-conditioned where B1's is global. Ratio 4
+is a cost signature, not a mechanism: **nothing here shows B1's growing-arity digit tree lives in B5.**
+
+### 2.4 W1 (~13/7) — status: UNCLEAR. **Not a doubler**; the ×2 envelope is `[UNSUPPORTED]`.
+
+*Rewritten 2026-07-17.* This section previously read W1 as "a ×2 envelope with a linear secondary
+register — B1's odometer plus one extra explicit affine register". **The ×2 envelope is not visible
+to a correct full-tape instrument.**
+
+What a tape-derived-extent measurement actually finds: W1's `total1` is an **arithmetic ramp** —
+records increment by ~1, with ~1274 records in its top octave (a genuine doubler sets O(1) there).
+Decisively, **W1's maxrun never exceeds 5** over 12 M steps: no long run ever forms, so **there is no
+binary register to double**. This is exactly the failure mode `CANDIDATE_NEW` itself warned of —
+*"the sawtooth's peak~√step gate passes spuriously on the transient startup of a plain linear
+counter"*.
+
+The `doubling_gate` **refuses** to report a cost ratio for W1. That refusal is load-bearing: a first
+pass without it reported "W1: BRAID" at ratio ≈4, which was pure F3 artifact — *any* machine whose
+cost ∝ width² returns 4 when you "double" an arbitrary observable. **No extent discipline would have
+caught that; only the gate did.**
+
+Its resets ("exactly arithmetic +3/gen") rest on the same sparse-min fault (F2) as B3/B4 and are
+`[UNSUPPORTED]`.
+
+**W1 is NOT decided and NOT refuted here — it needs a re-measure, not a ruling.** The prerequisite is
+now prior: *identify W1's register at all* (if it has one), before any question about `d_k` drift or
+transparency can be posed. It moves from **TRANSPARENT-leaning → UNCLEAR**.
 
 ### 2.5 W2, W3 — status: UNCLEAR, ejection risks (see §4)
 
@@ -197,33 +336,43 @@ per distinct structure (~1–2 focused sessions once the pipeline is warm), mech
 peak-identical twins.**
 
 **Layer 3 — `h_doub` / the `carry_step`-analogue: this is where a member can hit its own core.** B1's
-`carry_step` is the growing-arity digit-tree braid, gated on the `descentGlue` transport-assembly. Three
-outcomes per member:
-- **Strictly easier (no braid).** If the member's resets are register-forced (arithmetic/constant, no
-  digit read) — candidates **B5** (constant reset), possibly **B3/B4** (arithmetic −4 drain) — the
-  doubling carry may be a *linear/bounded-arity odometer* with a modular halt gate, decidable *without*
-  the quadratic braid, and *independent of B1's `carry_step`*. These would be the **fastest wins** and
-  do not wait on B1.
-- **Same braid (template transfers if B1 closes).** If the member's reset is data-dependent like B1's —
-  candidate **B2** (twin) and possibly **W1** — its `carry_step`-analogue is the *same* shrinking-comb
-  digit-tree recursion. The B1 `regen`/`descentGlue` stratified-recursion design
-  (`X2_UNIFIED_RECURSION_DESIGN`) should port with re-grounded constants. **These are gated on B1's
-  braid closing first** — no template exists to transfer until it does.
+`carry_step` is the growing-arity digit-tree braid, gated on the `descentGlue` transport-assembly.
+
+*Corrected 2026-07-17: this section's first bullet — the "strictly easier (no braid)" outcome — was
+the roadmap's central bet. **Measurement has emptied that bucket.*** Revised outcomes:
+
+- **~~Strictly easier (no braid)~~ — NO MEMBER IS KNOWN TO BE IN THIS CLASS.** The bet was that
+  register-forced resets (B5's constant 14, B3/B4's arithmetic −4 drain) would yield a
+  *linear/bounded-arity odometer* decidable without the braid and independent of B1. **B5 measures
+  4.15, B3 3.99, B4 3.98 — all Θ(v²).** The class is not *proven* empty, but **nothing is in it**,
+  and the two best candidates are out.
+- **Same COST, mechanism unknown (the honest replacement for "same braid").** Every island member
+  with a genuine doubling register — **B1, B2, B3, B4, B5, W2** — pays Θ(v²) per doubling. For B2
+  (identical register law to B1) a near-verbatim port of the `regen`/`descentGlue` stratified design
+  (`X2_UNIFIED_RECURSION_DESIGN`) is *plausible*; for B3/B4/B5 (different laws, and B5's register
+  phase-conditioned) it is **not established that the same object is even present**. **Ratio 4 is a
+  cost signature, not a mechanism** — it says a doubling takes Θ(v) passes, not that those passes are
+  B1's digit tree. These remain **gated on B1's braid closing first**; no template exists until it does.
 - **Distinct/opaque core (ejects).** If the member's carry reads deep digits with a
   non-register-forced law — candidates **W2, W3** — it hits a *new* base-2 return-frequency conjecture
   and leaves Track B for a Track-C-like new-math gate.
+- **Register not identified (new).** **W1** has no visible doubling register at all (maxrun ≤ 5). It
+  cannot be placed in any of the above until that is resolved.
 
-**Net templateability:** Layer 1 free, Layer 2 routine-but-real, Layer 3 the discriminator. The island
-is **template-friendly for the register-forced members and gated-on-B1 for the digit-dependent ones**.
+**Net templateability (corrected):** Layer 1 free, Layer 2 routine-but-real, Layer 3 the
+discriminator — and Layer 3 now has **no known cheap side**. The island is **gated on B1 for every
+member with a register**, with no register-forced shortcut identified.
 
 ---
 
 ## 4. The honest risks
 
 1. **Track B has zero decided machines and its exemplar is undecided.** B1's `carry_step` is OPEN.
-   For the "same braid" members (B2, W1), the template *does not yet exist* — it is B1's own open core.
-   If B1's braid does not close, the template transfer for those members is vacuous. Mitigant: the
-   register-forced members (B5, B3/B4) may be decidable *independently* of B1.
+   The template *does not yet exist* — it is B1's own open core. If B1's braid does not close, the
+   template transfer is vacuous. ~~Mitigant: the register-forced members (B5, B3/B4) may be decidable
+   *independently* of B1.~~ **THE MITIGANT IS GONE (2026-07-17).** B5, B3 and B4 all pay Θ(v²) per
+   doubling. **There is no known member decidable independently of B1**, so this risk is now
+   unhedged and is the track's dominant risk.
 2. **The reduction status of B2–B5 is OBSERVED-only.** Only B1 has a certified milestone reduction.
    Every "transparent-candidate" label rests on 4–5 exact doublings via observable proxies — a finite
    observation, NOT a proof of the law (`CARRY_DICHOTOMY §7`). Each needs the full B1 treatment
@@ -239,63 +388,128 @@ is **template-friendly for the register-forced members and gated-on-B1 for the d
    *distribution*," not "easy." B1's residual defeated every uniform/local/parity/bounded-radius attack
    (`X2_FRONTIER_MAP §3`, `X2_STATUS_2026-07-12`). A member's `carry_step`-analogue can be a genuine
    nested recursion requiring `Suffix.lean`-scale formalization even when fully explicit.
-5. **Possible duplication.** B2 is "TNF-adjacent" to B1 and the pairs are peak-identical; some island
-   "members" may be the same machine under mirror/TNF normalization, shrinking the true distinct-problem
-   count below 5 (to ≈3). First action per twin: a genuineness/normalization check.
+5. ~~**Possible duplication.**~~ **CLOSED 2026-07-17 — and it resolved the OTHER way.** The
+   genuineness checks are done. **B2 is NOT a TNF/mirror relabel of B1** (identical cascade values,
+   different step-times — a relabel preserves step counts exactly), and **B3/B4 are NOT
+   peak-identical** (`7·2^k` vs `3·2^k`). Rather than shrinking the distinct-problem count to ≈3,
+   the checks **raised it to ≈4**: `{B1,B2}`, `{B3}`, `{B4}`, `{B5}`. There is no duplication to
+   exploit.
+
+6. **NEW — instrument risk is a first-class risk on this track.** Three distinct faults corrupted
+   Track B evidence in one week: **F1** truncated extent (a caller-maintained `lo` with no matching
+   `hi` → a half-tape scan); **F2** minima over sparse record-triggered samples (an upper bound read
+   as a floor — this fault silently underwrites the *entire* "reset structure" column); **F3** a
+   ratio of 4 read off a register that does not double (automatic for any width² machine). Mitigants
+   that actually worked: *structural defence* — an API that takes only the tape, so F1 is
+   inexpressible; *dense stride-1* for any min; *a gate that refuses to answer* outside its
+   applicability. Mitigants that did not: vigilance. **And over-correction is a measurement error
+   too** — `6b6d739` "refuted" a real result (B5's 14) by comparing two incommensurable statistics.
 
 ---
 
 ## 5. The Track B work-list (ordered, easiest first)
 
-Two orthogonal notions of "easy": (i) **intrinsic** (decidable without B1's braid) and (ii)
-**transfer** (closest to B1). The ordering below front-loads the members that are *decidable
-independently of B1* (de-risking the track), then the template transfers.
+**REORDERED 2026-07-17.** The previous ordering front-loaded the members *"decidable independently of
+B1"* (B5 at order 1 as "the fastest possible win", then B3/B4) — **the de-risking front. It does not
+exist.** No member is known to be decidable without B1's braid. With the intrinsic-easiness axis
+empty, only the **transfer** axis survives, and every entry on it is gated on order 0.
 
 | order | target | why this order | shared template used | effort estimate | risk |
 |---|---|---|---|---|---|
-| **0 (prereq/parallel)** | close B1's `carry_step` (`descentGlue` transport-assembly) | unblocks the "same braid" transfers; owned by the X2.lean agent | — (this IS the template source) | multi-session (`Suffix.lean`-scale); assessed constructible | the master gate for B2/W1 |
-| **1** | **B5** — test the *pure-odometer* hypothesis | most rigid (constant reset); if a pure `v↦2v+c` orbit with modular gate, **decidable with no braid, independent of B1** | Layer 1 frame + a *linear* odometer `h_doub` (not the braid); halt gate `2^k≡r mod M` | small–moderate IF pure-orbit confirmed; the fastest possible win | may hide a constant-looking digit read (risk 3) |
-| **2** | **B3 + B4** (pair A/B, one analysis) | arithmetic −4 reset drain + `d_k≡0`; candidate register-forced ⟹ simpler-than-B1 carry; peak-identical so 2-for-1 | Layer 1 + Layer 2 pipeline (`sweepEF` shared); `h_doub` a bounded/linear-arity odometer | moderate (1 milestone analysis for both) | reset could be digit-coupled (risk 3) |
-| **3** | **B2** (twin of B1) | maximal template reuse — same `2^k−2` cascade; but gated on B1's braid | full B1 template incl. `carry_step`-analogue (same braid) | small IF B1 closed (near-verbatim); else blocked | genuineness/duplication check first (risk 5) |
-| **4** | **W1** (~13/7) | ×2 + explicit *linear* secondary register; more structure than B1 but explicit | B1 frame + a two-register odometer core | moderate–large; pin the `d_k≈−3k` residual first | drift residual may be digit-read (risk 3) |
-| **5** | **W2** | period-2 non-affine corrections; classify transparent vs opaque before any proof | (diagnosis only) | diagnosis session | high ejection risk |
+| **0 (prereq — now the ONLY unblocking move)** | close B1's `carry_step` (`descentGlue` transport-assembly) | with no braid-free member left, **every** other target is gated on this; owned by the X2.lean agent | — (this IS the template source) | multi-session (`Suffix.lean`-scale); assessed constructible | **the master gate for the entire track** |
+| **1** | **B2** (twin of B1) | *(was order 3)* now the **best** target: identical `2^k−2` register law, matching cost signature (3.94 vs 3.97), genuineness **confirmed** (not a B1 relabel) | full B1 template incl. `carry_step`-analogue | small IF B1 closed (near-verbatim); else **blocked** | its `carry_step`-analogue is *plausibly* B1's, but **not established** — cost ≠ mechanism |
+| **2** | **B3** (alone) | *(was half of order 2)* `d_k≡0` + exact `7·2^k` envelope remain the island's cleanest observables — but the "simpler core" inference is dead (ratio 3.99) | Layer 1 + Layer 2 pipeline (`sweepEF` shared); `h_doub` **not** known simpler | moderate — **one full analysis, covering B3 only** | prerequisite: **dense re-measure of its resets** (F2) |
+| **3** | **B4** (alone — **NOT** 2-for-1 with B3) | *(was half of order 2)* pairing with B3 **refuted** (`3·2^k` vs `7·2^k`); needs its own analysis | as B3, separately | moderate — a **second** full analysis | same; the 2-for-1 saving is gone |
+| **4** | **W1** (~13/7) | *(was "×2 + linear secondary register")* — **prerequisite is now prior:** identify whether W1 has a doubling register *at all* (maxrun ≤ 5 over 12 M steps) | (diagnosis only, until a register is found) | diagnosis session | its ×2 envelope is `[UNSUPPORTED]`; may not belong to the island |
+| **5** | **W2** | period-2 non-affine corrections; classify transparent vs opaque before any proof. *(Note: W2 does have a doubling register and pays 3.94.)* | (diagnosis only) | diagnosis session | high ejection risk |
 | **6** | **W3** | value-proportional (opaque-leaning); lowest transparency confidence | (diagnosis only) | diagnosis session | highest ejection risk |
+
+**Cross-cutting prerequisite (new).** Before any structural claim is built on the "reset structure"
+column, **dense stride-1 re-measurement** of B3/B4/W1's resets. Those rows are `[UNSUPPORTED]` — a
+`min` over a sparse subsample is an upper bound. This is cheap and it gates orders 2–4.
 
 **Shared template (the reusable spine for every order ≥1):**
 1. Halt gate from the table (forced-predecessor chase) — routine.
 2. Milestone form M(g) via symbolic-RLE decode (`x2cc_decode`/`x2cc_symb` pipeline).
 3. `h_low` (∀g) via the mechanized-induction prover (`x2cc_faith` pipeline; certified cycle lemmas +
    case-split + loop-acceleration).
-4. `h_doub` (∀g) — the discriminator: *linear/bounded odometer* (orders 1–2, no braid) OR *the B1
-   `carry_step` braid* (orders 3–4) OR *ejection to a new base-2 schema* (orders 5–6).
+4. `h_doub` (∀g) — the discriminator: ~~*linear/bounded odometer* (no braid)~~ **[no member known to
+   be in this class]** OR *a Θ(v²) core, plausibly B1's `carry_step` braid but **not established** for
+   any machine but B1* (orders 1–3) OR *ejection to a new base-2 schema* (orders 5–6).
 5. Assemble via the machine-agnostic `x2_nonhalt` / `nonhalt_of_segments` frame (free).
 
-**Strategic note.** Orders 1–2 (B5, B3/B4) are the *de-risking* front: they can be decided — if truly
-register-forced — *without waiting on B1's braid*, and would be the first actual Track B decisions.
-Orders 3–4 (B2, W1) are the *template-transfer* front, gated on B1. Orders 5–6 are *triage*: decide
-whether they belong to Track B at all before spending proof effort.
+**Strategic note — REWRITTEN 2026-07-17.** The previous note read: *"Orders 1–2 (B5, B3/B4) are the
+de-risking front: they can be decided — if truly register-forced — without waiting on B1's braid, and
+would be the first actual Track B decisions."* **There is no de-risking front.** B5 was measured
+braid-bound (4.15) and B3/B4 pay the same 4. Every remaining target is gated on order 0 — B1's
+`carry_step`. Orders 1–3 are the *template-transfer* front, all downstream of B1; orders 4–6 are
+*triage* (does the machine belong to Track B at all — now including W1). **The track's whole value
+now rides on closing B1's braid**; nothing on the island de-risks that.
+
+**What this does NOT license.** The island is *not* shown to be one problem. Ratio 4 is a **cost
+signature, not a mechanism** — it does not prove B1's growing-arity digit tree lives in B2–B5, and
+for any width² machine a doubled observable gives 4 for free. B3/B4's `d_k≡0` and clean envelopes
+remain **real** and remain the island's best observables; what died is the *inference* from "cleaner
+envelope" to "cheaper core". **No machine here is decided, and no label is upgraded or downgraded —
+that is the owner's call.**
 
 ---
 
 ## 6. Report summary
 
-- **Island size: 8 flagged machines** = 5 firm transparent-candidates (B1 primary + B2 twin + B3/B4
-  pair + B5) reducing to **≈3 distinct structural problems** (B1/B2, B3/B4, B5, since the pairs are
-  peak-identical), + 1 transparent-leaning (W1, ~13/7), + 2 UNCLEAR (W2, W3). Named cryptids in the
-  island: 0.
-- **Easiest:** **B5** (constant reset 14 → candidate *pure* `v↦2v+c` odometer, potentially decidable
-  with no braid and independent of B1), then **B3/B4** (arithmetic −4 drain, `d_k≡0`, one analysis for
-  two machines, plausibly simpler-than-B1 core). These are the de-risking front. **B2** (twin) is the
-  easiest *template transfer* but is gated on B1's `carry_step` closing.
+*Corrected 2026-07-17.*
+
+- **Island size: 8 flagged machines** = 5 firm transparent-candidates (B1 primary + B2 twin + B3 + B4
+  + B5) resolving to **≈4 distinct structural problems** — `{B1,B2}`, `{B3}`, `{B4}`, `{B5}` — in
+  **ONE difficulty class**, + 3 UNCLEAR (W1, W2, W3). Named cryptids in the island: 0.
+  *(The count went UP from `59749fb`'s ≈3: the B3/B4 pairing is refuted, B1/B2's survives, and B5's
+  is a difficulty merge, not a structural one. W1 moves to UNCLEAR — not a doubler.)*
+- **Easiest: ~~B5, then B3/B4~~ — NO MEMBER IS DECIDABLE INDEPENDENTLY OF B1.** Every island member
+  with a genuine doubling register pays **Θ(v²) per doubling**: B1 3.97 *(control)*, B2 3.94,
+  B3 3.99, B4 3.98, **B5 4.15**, W2 3.94. **Not one ratio-2 machine was found.** B5 — the nominated
+  "fastest possible win", the pure-odometer candidate — is **BRAID-BOUND** (four independent
+  reproductions). B3/B4, the best remaining hope for a digit-read-free core, pay the same 4.
+  **Track B's founding premise — that a friendlier transparent machine dodges B1's braid — has no
+  surviving support.** The transparent island is not a set of easier problems; it is B1's difficulty,
+  repeated. **B2** is now the best target, but is gated on B1's `carry_step` closing — as is
+  everything else.
+- **The two caveats on that verdict.** (i) **Ratio 4 is a cost signature, not a mechanism**: it shows
+  a doubling costs Θ(v) passes, **not** that B1's growing-arity digit tree lives in B2–B5. No
+  mechanism is asserted for any machine but B1. (ii) For **any** machine whose cost ∝ width²,
+  doubling an observable yields 4× automatically — a **`doubling_gate`** (refuse to answer where the
+  register does not double) is what kept W1 out of that table, and its absence manufactured a
+  spurious "W1: BRAID".
+- **What survives untouched:** B3/B4's `d_k≡0` and exact `7·2^k`/`3·2^k` envelopes; B5's `9·2^k−1`
+  register law and its **real, dense-verified CONSTANT 14** (a per-generation *minimum* — a different
+  statistic from the C-milestone floors `5·2^k+6`/`+8`; both true, neither refuting the other; **no
+  mechanism for 14 established** `[OPEN]`). The `[OBSERVED]` labels for B2–B5 survive on extent —
+  their instrument was never truncated.
+- **What is `[UNSUPPORTED]` (never established — NOT refuted):** the reset rows for **B3, B4, W1**
+  (sparse-sample minima = upper bounds, never re-measured dense), and **W1's ×2 envelope**.
 - **Shared template:** the machine-agnostic `x2_nonhalt`/`nonhalt_of_segments` frame (free) + the
   shared `sweepEF` ×2 repack primitive + the per-machine {halt gate, milestone decode, `h_low`
   mechanized induction, `h_doub`}. The frame and low-phase pipeline transfer mechanically; `h_doub` is
   the discriminator (linear odometer / B1 braid / ejection).
-- **Honest risks:** (1) B1 itself is undecided — the "same-braid" transfers (B2, W1) have no template
-  until B1's `carry_step` closes; (2) B2–B5 are OBSERVED-only, not certified reductions; (3) a clean ×2
-  envelope can hide a digit-coupled branch that ejects a member to a *new* base-2 return-frequency
-  (opaque) conjecture — W3 (value-proportional) and W2 are the prime ejection risks, B3/B4/B5 lower but
-  unproven; (4) transparency ≠ easy (residuals can be o4-wall-class hard); (5) possible duplication —
-  peak-identical/TNF-adjacent members may collapse the distinct count to ≈3.
+- **Honest risks:** (1) **B1 itself is undecided, and this risk is now UNHEDGED** — no member is
+  decidable independently of B1, so every transfer waits on `carry_step`; (2) B2–B5 are OBSERVED-only,
+  not certified reductions; (3) a clean ×2 envelope can hide a digit-coupled branch that ejects a
+  member to a *new* base-2 return-frequency (opaque) conjecture — W3 (value-proportional) and W2 are
+  the prime ejection risks, B3/B4/B5 lower but unproven; (4) transparency ≠ easy (residuals can be
+  o4-wall-class hard) — **today this stopped being a caveat and became the finding**; (5) ~~possible
+  duplication~~ **CLOSED, and it went the other way** — B2 is not a B1 relabel, B3/B4 are not
+  peak-identical, so the count rose to ≈4; (6) **NEW — instrument risk is first-class here**: three
+  faults in one week (F1 truncated extent, F2 sparse-sample minima, F3 an ungated ratio). Structural
+  defences work (an API that takes only the tape; dense stride-1 for any min; a gate that refuses to
+  answer); vigilance does not. **Over-correction is a measurement error too.**
 
 **No machine decided. No label upgraded.**
+
+---
+
+*Corrections of 2026-07-17 are grounded in `TRACK_B_REAUDIT_2026-07-17.md` and
+`B5_INVESTIGATION_2026-07-16.md` (commits `885f6de` / `6b6d739` / `c65bad5`), and every load-bearing
+number above was **independently re-reproduced** before being written here by `x2ti_island.py` — an
+instrument sharing no code with `x2tb_*`, `x2b5_*`, `mse_extract` or `cd_probe`: B1/B2 cascade values
+and step-times, B3 `7·2^k` vs B4 `3·2^k`, B5's `9·2^k−1` first-attainment ratios
+(4.119/4.142/4.158/4.145/4.130, median **4.145**), B5's dense stride-1 floor **14** at gens 1–3, W1's
+maxrun ≤ 5 and its gate failure, and the full ratio table. No Lean file was edited.*
