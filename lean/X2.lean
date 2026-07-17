@@ -6274,4 +6274,457 @@ No machine decided.  No label upgraded. -/
 #print axioms carry_descends_of_reach
 #print axioms carry_level_steps_grounds
 
+
+/-! ### §5ai: REGEN(6) — THE FIRST RECURSIVE LEVEL, and the UNIFORM `regenIn` FAMILY LAW.
+
+**WHY `k=6` AND NOT `k=4,5`.**  §5ah discharged `cascadeRegReached_4/5`, but `exitArity`
+(§5z, `(k−5)(k−4)/2`) is `0` at both: `k=4,5` are arity-0 LEAVES and REGEN(4)/REGEN(5) make
+no recursive REGEN call, so they exercise NONE of the recursion.  `exitSteps_tree_6` has
+arity **1** — one recursive call, to `exitSteps 4`, an arity-0 leaf ALREADY discharged.
+`k=6` is therefore the first level at which the k-recursion is exercised at all, and the
+cleanest available test of whether it composes.
+
+**WHAT CLOSED (this section).**  `regen6_transport`: `REGEN(6)` as a `∀ L R` reusable
+transport, `exitSteps 6 = 722` steps, composed by `steps_add` from NINETEEN 38-step kernel
+`rfl` chunks (`r6_E1..r6_E19`), on-path from `x2bd_sim.build(2)` raw `[33108, 33830]` — the
+SAME generation run (`build(2)`) that carries a=5, per the on-path discipline.  Then
+`descent_reach_6` / `cascadeRegReached_6` exactly as at `k=4,5`.
+
+**HOW IT WAS PROVED — AND WHY THAT IS A NEGATIVE RESULT.**  `regen6_transport` is a
+BRUTE 722-step kernel computation.  It does **NOT** reuse `regen4_transport`, and nothing
+below composes it out of `exitSteps_tree_6`'s summands.  The tree identity is an arithmetic
+fact about STEP COUNTS (`by decide` on `Nat`); it is NOT a transport factorisation, and this
+section did not turn it into one.  So `k=6` is discharged as ANOTHER BESPOKE INSTANCE.
+Discharging it gives **no inductive step**.  Three green levels are three green levels.
+
+**BUT THE INSTANCES ARE NOT SHAPELESS — the IN/OUT family IS uniform** (`regenIn`,
+`regenIn_grounds`, `RegenLaw`, `regenLaw_4/5/6`).  Measured `x2r6_regen6.py` /
+`x2r6_gen.py` on `build(2)` at `k=4,5,6,7` and PROVEN here at `k=4,5,6`:
+
+    IN (k)  =  ⟨E, p, ⟨ones (2^k−3) ++ 0 1 0 0 1 :: pow01 (2^{k−1}−2) ++ marker,
+                       0,  0 :: descCascade (k−4) ++ 0^z ++ R⟩⟩          = `regenIn k p z`
+    OUT(k)  =  cascadeReg k 1 (p − 2^k) marker R
+
+Every earlier "bespoke per-level datum" is an ARTIFACT of how §5ah's two concrete statements
+happened to instantiate their `∀ L R` tails, NOT of the machine:
+  • `zeros 6` / `zeros 8` — the pad `z` is BLANK TAPE bookkeeping, and it is not even free:
+    `z = 2^{k−1}+9` is FORCED by tape geometry (`regenPad_law`, DERIVED not fitted — the
+    anchor moves `−2^k` while `cascadeReg`'s prefix grows, and `R` must land on the same
+    absolute cell), giving `17/25/41` at `k=4,5,6` exactly as the three proofs required.
+  • `pow01 (Lc+4)` / `pow01 (Lc+13)` — the SAME `pow01 (2^{k−1}−2)` comb, cut at different
+    depths because §5s/§5u abstracted `L` at different offsets (`carry_exit_j3` writes
+    `ones 12 ++ (true :: …)`, a NON-maximal run split for `ones 13`; cf. `x2qb_exact.py`).
+  • `p = −7` / `−22` — NOT bespoke: `p_out = p_in − 2^k`, and §5s/§5u merely picked
+    `p_in = 9, 10`.  `9−2^4 = −7`, `10−2^5 = −22`, and here `11−2^6 = −53`.  The law is
+    exact at `k=4,5,6,7` (`x2r6_gen.py`).
+  • `Lc = 1` at every measured level (§5ah, re-confirmed at `k=6`).
+
+**AND `RegenLaw` REPAIRS §5ah's PREDICATE DEFECT.**  `CascadeRegReached`'s `In` is
+existentially quantified over ALL of `List Bool → List Bool → Cfg`, so it is WEAKER than the
+obligation it names (§5ah's corrected docstring).  `RegenLaw k` binds `In` to the ACTUAL
+level-`k` REGEN IN-family `regenIn k`, leaving existential only the decorative anchor `p` and
+the blank pad `z`.  `cascadeRegReached_of_regenLaw` shows `RegenLaw k → CascadeRegReached k`,
+so `RegenLaw` is the strictly stronger, and correctly-named, `∀k` obligation.
+
+**SO: PATTERN, NOT INDUCTION.**  What `∀k` now needs is exactly `∀ k ≥ 4, RegenLaw k` — ONE
+clean transport statement, uniform in `k`, all of whose instances are verified.  That is a
+real sharpening of §5z's "growing-arity odometer tree", and it is NOT a proof of it: nothing
+here derives `RegenLaw (k+1)` (or `RegenLaw k` from lower levels) from anything.  The step is
+still the growing tree.  x2 remains `[OPEN]`. -/
+
+set_option maxRecDepth 40000
+
+/-- `REGEN(6)` 38-step kernel chunks (`r6_E1..r6_E19`), on-path `build(2)` raw
+`[33108, 33830]`; `L`/`R` are cut at FIXED ABSOLUTE tape positions outside the window's
+measured head excursion (`x2r6_gen.py`), so they name the same cells in every chunk and
+compose under `steps_add`. -/
+theorem r6_E1 (L R : List Bool) :
+    steps 38 ⟨.E, 11, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.A, 25, ⟨false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E2 (L R : List Bool) :
+    steps 38 ⟨.A, 25, ⟨false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 39, ⟨true :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E3 (L R : List Bool) :
+    steps 38 ⟨.C, 39, ⟨true :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 33, ⟨true :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E4 (L R : List Bool) :
+    steps 38 ⟨.E, 33, ⟨true :: false :: true :: false :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 39, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E5 (L R : List Bool) :
+    steps 38 ⟨.E, 39, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.D, 49, ⟨true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E6 (L R : List Bool) :
+    steps 38 ⟨.D, 49, ⟨true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, true :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 29, ⟨true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E7 (L R : List Bool) :
+    steps 38 ⟨.C, 29, ⟨true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.F, 29, ⟨true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E8 (L R : List Bool) :
+    steps 38 ⟨.F, 29, ⟨true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 33, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E9 (L R : List Bool) :
+    steps 38 ⟨.C, 33, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 35, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E10 (L R : List Bool) :
+    steps 38 ⟨.C, 35, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.F, 35, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E11 (L R : List Bool) :
+    steps 38 ⟨.F, 35, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.F, 21, ⟨true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E12 (L R : List Bool) :
+    steps 38 ⟨.F, 21, ⟨true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.A, 51, ⟨false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E13 (L R : List Bool) :
+    steps 38 ⟨.A, 51, ⟨false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.D, 55, ⟨true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E14 (L R : List Bool) :
+    steps 38 ⟨.D, 55, ⟨true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 55, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E15 (L R : List Bool) :
+    steps 38 ⟨.E, 55, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.C, 59, ⟨false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: false :: false :: true :: false :: false :: false :: false :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E16 (L R : List Bool) :
+    steps 38 ⟨.C, 59, ⟨false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: false :: false :: true :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.D, 51, ⟨true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E17 (L R : List Bool) :
+    steps 38 ⟨.D, 51, ⟨true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩
+      = some ⟨.D, 15, ⟨true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E18 (L R : List Bool) :
+    steps 38 ⟨.D, 15, ⟨true :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩
+      = some ⟨.D, -21, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩ :=
+  rfl
+
+theorem r6_E19 (L R : List Bool) :
+    steps 38 ⟨.D, -21, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, true, true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩
+      = some ⟨.E, -53, ⟨false :: true :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩ :=
+  rfl
+
+/-- **`REGEN(6)` AS A REUSABLE `∀ L R` TRANSPORT** — `exitSteps 6 = 722` steps, HALT-FREE,
+composed by `steps_add` from `r6_E1..r6_E19`.  The `k=6` analogue of `regen4_transport`
+(=`carry_exit_j3`, 70) and `regen5_transport` (=`carry_exit_j4`, 218).  `some` ⇒ HALT-FREE.
+
+**This is a BRUTE 722-step kernel computation — it does NOT reuse `regen4_transport`.**
+`exitSteps_tree_6` says REGEN(6) contains a REGEN(4) sub-block, but that is an identity
+about STEP COUNTS, not a transport factorisation; no factorisation is proved here. -/
+theorem regen6_transport (L R : List Bool) :
+    steps (exitSteps 6) ⟨.E, 11, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, -53, ⟨false :: true :: L, false, false :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: R⟩⟩ := by
+  rw [show exitSteps 6 = 38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38+(38)))))))))))))))))) from by decide,
+      steps_add, r6_E1, someBind,
+      steps_add, r6_E2, someBind,
+      steps_add, r6_E3, someBind,
+      steps_add, r6_E4, someBind,
+      steps_add, r6_E5, someBind,
+      steps_add, r6_E6, someBind,
+      steps_add, r6_E7, someBind,
+      steps_add, r6_E8, someBind,
+      steps_add, r6_E9, someBind,
+      steps_add, r6_E10, someBind,
+      steps_add, r6_E11, someBind,
+      steps_add, r6_E12, someBind,
+      steps_add, r6_E13, someBind,
+      steps_add, r6_E14, someBind,
+      steps_add, r6_E15, someBind,
+      steps_add, r6_E16, someBind,
+      steps_add, r6_E17, someBind,
+      steps_add, r6_E18, someBind,
+      r6_E19]
+
+/-- **THE UNIFORM `REGEN(k)` IN-FAMILY** — the object §5ah's `CascadeRegReached` failed to
+name.  `E` on a boundary `0`; left = the doubled top block `ones (2^k−3)`, the fixed 4-cell
+seam `0 1 0 0`, then `1 :: pow01 (2^{k−1}−2) ++ marker`; right = `0 :: descCascade (k−4)`
+above a blank pad `0^z` and the untouched `R`.
+
+`z` is BLANK-TAPE BOOKKEEPING ONLY: it fixes where the statement cuts `R`, and carries no
+content (the pad is unread except as blanks).  Grounded at `k=4,5,6` by `regenIn_grounds`
+against the three INDEPENDENTLY proven transports, and measured on-path at `k=4,5,6,7`
+(`x2r6_gen.py`, SIMULATOR evidence). -/
+def regenIn (k : Nat) (p : Int) (z : Nat) (marker R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨ones (2 ^ k - 3) ++ (false :: true :: false :: false :: true ::
+      (pow01 (2 ^ (k - 1) - 2) ++ marker)), false,
+      false :: (descCascade (k - 4) ++ (zeros z ++ R))⟩⟩
+
+/-- **`regenIn` IS the IN of all three proven REGEN transports** — `k=4,5,6` at
+`(p,z) = (9,17), (10,25), (11,41)`.  This is what makes the family law a claim about the
+machine and not a definition: `carry_exit_j3`/`carry_exit_j4`/`regen6_transport` were proved
+independently, at three different times, with three different hand-chosen `L`/`R` cuts, and
+they all land in ONE `k`-parametric family.  Pure `List`, `rfl`. -/
+theorem regenIn_grounds (marker R : List Bool) :
+    regenIn 4 9 17 marker R = ⟨.E, 9, ⟨
+        ones 12 ++ (true :: false :: true :: false :: false :: true :: false ::
+          (true :: (pow01 5 ++ marker))),
+        false,
+        (false :: true :: false :: false :: false :: false :: false :: false ::
+         false :: false :: false :: false :: false :: (zeros 6 ++ R))⟩⟩
+    ∧ regenIn 5 10 25 marker R = ⟨.E, 10, ⟨ones 28 ++ (true :: false :: true :: false ::
+        false :: (true :: (pow01 14 ++ marker))), false,
+        false :: true :: true :: true :: true :: true :: false :: false :: true :: false ::
+        false :: false :: false :: false :: false :: false :: false :: false :: false ::
+        false :: false :: false :: false :: false :: false :: false :: (zeros 8 ++ R)⟩⟩ :=
+  ⟨rfl, rfl⟩
+
+theorem descent_reach_6 (marker R : List Bool) :
+    steps (exitSteps 6) ⟨.E, 11, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: (pow01 30 ++ marker), false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: (zeros 7 ++ R)⟩⟩
+      = some (cascadeReg 6 1 (-53) marker R) := by
+  rw [regen6_transport (pow01 30 ++ marker) (zeros 7 ++ R)]
+  rfl
+
+/-- **`regenIn 6 11 41` IS `descent_reach_6`'s IN** — the `k=6` leg of `regenIn_grounds`,
+split out because it names `regen6_transport`'s own cut.  Pure `List`, `rfl`. -/
+theorem regenIn_grounds_6 (marker R : List Bool) :
+    steps (exitSteps 6) (regenIn 6 11 41 marker R) = some (cascadeReg 6 1 (-53) marker R) :=
+  descent_reach_6 marker R
+
+/-- **THE FULL CARRY AT `k=6`: `REGEN(6)` ∘ `descentGlue`, ONE HALT-FREE TRANSPORT.**
+`exitSteps 6 + descentSteps 6 = 722 + 4152 = 4874` steps, no halt, `R` untouched.  The
+`k=6` analogue of `carry_level_4/5`.  `some` ⇒ HALT-FREE. -/
+theorem carry_level_6 (marker R : List Bool) :
+    ∃ (dep : List Bool) (p' : Int),
+      steps (exitSteps 6 + descentSteps 6) (regenIn 6 11 41 marker R)
+        = some ⟨.E, p', ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨dep, hdep⟩ := descent_glue_cascadeReg 6 1 (by omega) (-53) marker R
+  exact ⟨dep, _, by rw [steps_add, regenIn_grounds_6 marker R, someBind, hdep]⟩
+
+/-- `CascadeRegReached 6` — the FIRST level with a recursive call in its exit tree
+(`exitArity 6 = 1`), discharged by `descent_reach_6`.  Discharged BESPOKELY: see the section
+header.  It composes NOTHING from `cascadeRegReached_4`. -/
+theorem cascadeRegReached_6 : CascadeRegReached 6 :=
+  ⟨1, -53, fun marker R => regenIn 6 11 41 marker R, descent_reach_6⟩
+
+/-- **THE `∀k` OBLIGATION, CORRECTLY NAMED** (a `Prop`, NOT an axiom; the `x2_nonhalt` style).
+`RegenLaw k`: the level-`k` REGEN transport carries the ACTUAL IN-family `regenIn k` to
+`cascadeReg k` with `Lc = 1` and the anchor shifted by exactly `−2^k`, uniformly in the
+untouched tails `marker`/`R`.
+
+**This is strictly stronger than `CascadeRegReached k`, and unlike it, it says what it
+means.**  `CascadeRegReached`'s `In` ranges over ALL of `List Bool → List Bool → Cfg` with
+nothing binding it to the REGEN family (§5ah's corrected docstring); here `In` IS `regenIn k`.
+The pad is NOT existential either: `z = 2^{k−1}+9` is FORCED by tape geometry (`regenPad_law`),
+so the ONLY thing left existential is the decorative absolute anchor `p`, which carries no tape
+content.  PROVEN at `k=4,5,6` (`regenLaw_4/5/6`); OPEN for `k ≥ 7`. -/
+def RegenLaw (k : Nat) : Prop :=
+  ∃ p : Int, ∀ marker R,
+    steps (exitSteps k) (regenIn k p (2 ^ (k - 1) + 9) marker R)
+      = some (cascadeReg k 1 (p - 2 ^ k) marker R)
+
+/-- **THE PAD IS FORCED, NOT FITTED** — `∀k ≥ 4`, `regenIn`'s blank pad must be
+`z = 2^{k−1}+9` for `cascadeReg k`'s `R` to be the SAME untouched list at the SAME absolute
+cell.  Derivation: `R` sits at `P_in + 2 + |descCascade (k−4)| + z` on the IN and at
+`P_in − 2^k + 1 + |cascadeReg-prefix|` on the OUT; equate, and `|descCascade (k−3)| =
+2^{k−1} − 1 + |descCascade (k−4)|` cancels the cascade lengths.  This theorem states the
+resulting length identity; `17/25/41 = 2^{k−1}+9` at `k=4,5,6` are the three values
+`regenIn_grounds`(`_6`) independently required.  Pure `Nat`. -/
+theorem regenPad_law :
+    (2 ^ (4 - 1) + 9 = 17) ∧ (2 ^ (5 - 1) + 9 = 25) ∧ (2 ^ (6 - 1) + 9 = 41)
+      ∧ ∀ k, 4 ≤ k → 3 + (2 ^ k - 3) + 2 + (2 ^ (k - 1) - 1) + 2 + 7 - 1 - 2 ^ k
+          = 2 ^ (k - 1) + 9 := by
+  refine ⟨by decide, by decide, by decide, ?_⟩
+  intro k hk
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have h3 : 2 ^ (m + 4 - 1) = 2 ^ m * 8 := by
+    rw [show m + 4 - 1 = m + 3 from by omega, Nat.pow_add]
+  have h4 : 2 ^ (m + 4) = 2 ^ m * 16 := by rw [Nat.pow_add]
+  have hx : 1 ≤ 2 ^ m := Nat.one_le_two_pow
+  omega
+
+/-- `RegenLaw 4` — `regen4_transport` (= `carry_exit_j3`) at `p=9, z=17`; `9 − 2^4 = −7`. -/
+theorem regenLaw_4 : RegenLaw 4 :=
+  ⟨9, fun marker R => by
+    rw [show ((9 : Int) - 2 ^ 4) = -7 from by decide,
+        show (2 ^ (4 - 1) + 9) = 17 from by decide, (regenIn_grounds marker R).1]
+    exact descent_reach_4 marker R⟩
+
+/-- `RegenLaw 5` — `regen5_transport` (= `carry_exit_j4`) at `p=10, z=25`; `10 − 2^5 = −22`. -/
+theorem regenLaw_5 : RegenLaw 5 :=
+  ⟨10, fun marker R => by
+    rw [show ((10 : Int) - 2 ^ 5) = -22 from by decide,
+        show (2 ^ (5 - 1) + 9) = 25 from by decide, (regenIn_grounds marker R).2]
+    exact descent_reach_5 marker R⟩
+
+/-- `RegenLaw 6` — `regen6_transport` at `p=11, z=41`; `11 − 2^6 = −53`.  The FIRST level
+whose exit tree has a recursive call. -/
+theorem regenLaw_6 : RegenLaw 6 :=
+  ⟨11, fun marker R => by
+    rw [show ((11 : Int) - 2 ^ 6) = -53 from by decide,
+        show (2 ^ (6 - 1) + 9) = 41 from by decide]
+    exact regenIn_grounds_6 marker R⟩
+
+/-- **`RegenLaw k → CascadeRegReached k`** — the repair of §5ah's predicate defect made
+formal: the correctly-named obligation IMPLIES the weak one, so every §5ah consequence
+(notably `carry_descends_of_reach`) is available from `RegenLaw` with the `In` actually
+pinned to the REGEN family.  The converse is NOT proved and is NOT expected to hold. -/
+theorem cascadeRegReached_of_regenLaw (k : Nat) (h : RegenLaw k) : CascadeRegReached k := by
+  obtain ⟨p, hp⟩ := h
+  exact ⟨1, p - 2 ^ k, fun marker R => regenIn k p (2 ^ (k - 1) + 9) marker R, hp⟩
+
+/-- **THE `∀k` CARRY, FROM THE CORRECTLY-NAMED HYPOTHESIS.**  `carry_descends_of_reach`
+re-stated over `RegenLaw`: GIVEN the uniform REGEN family law at level `k`, the level-`k`
+carry is ONE HALT-FREE transport of length `exitSteps k + descentSteps k` FROM `regenIn k`
+— the `In` is now the real family, not an unconstrained existential.  PROVEN at `k=4,5,6`. -/
+theorem carry_descends_of_regenLaw (k : Nat) (hk : 4 ≤ k) (h : RegenLaw k) :
+    ∃ p : Int, ∀ marker R, ∃ (dep : List Bool) (p' : Int),
+      steps (exitSteps k + descentSteps k) (regenIn k p (2 ^ (k - 1) + 9) marker R)
+        = some ⟨.E, p', ⟨ones 12 ++ dep, false, false :: true :: false :: R⟩⟩ := by
+  obtain ⟨p, hp⟩ := h
+  refine ⟨p, fun marker R => ?_⟩
+  obtain ⟨dep, hdep⟩ := descent_glue_cascadeReg k 1 hk (p - 2 ^ k) marker R
+  exact ⟨dep, _, by rw [steps_add, hp marker R, someBind, hdep]⟩
+
+/-- **GROUNDING: `exitArity 6 = 1` — `k=6` IS the first recursive level**, and `k=4,5` are the
+arity-0 leaves that §5ah's green levels tested.  `exitSteps 6 + descentSteps 6 = 4874`.
+Pure `Nat`. -/
+theorem regen6_grounds :
+    exitArity 4 = 0 ∧ exitArity 5 = 0 ∧ exitArity 6 = 1
+      ∧ exitSteps 6 = 722 ∧ exitSteps 6 + descentSteps 6 = 4874 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE FRAME CORRECTION (§5z's `carryExit_wf_frame` is the WRONG SHAPE).**
+`carryExit_wf_frame` is a TRUE theorem but a PREDECESSOR frame (`Nat.le_induction`): its step
+obligation is `P n → P (n+1)`, which offers the level-`n+1` proof ONLY the level-`n` fact.
+The exit tree does not have that shape.  `exitSteps_tree_7` calls REGEN(5) **and** REGEN(4)
+— NOT REGEN(6) — so at `n+1 = 7` a predecessor frame hands you `P 6`, which is exactly the
+level the tree does NOT use.  And `exitArity` GROWS (`0,1,3,6` at `k=5,6,7,8`,
+`exitArity_grounds`; `exitArity_exceeds_four`), so the set of levels a step must consume is
+unbounded.  A recursion whose calls jump to ARBITRARY lower levels needs STRONG induction.
+
+`carryExit_strong_frame` is that frame: its step may consume EVERY lower level `m < n`, which
+is what `exitSteps_tree_k` actually does.  `carryExit_wf_frame` remains sound and is NOT
+retracted — but its §5z docstring's claim that "the k-recursion's control flow IS this
+combinator" is WITHDRAWN: the control flow is the strong frame.  (A predecessor frame can
+still simulate this only by strengthening `P` to the cumulative `∀ m ≤ n, Q m` — which IS the
+standard derivation of strong induction, i.e. the admission that the strong frame is the
+real one.)  Proved from `Nat.strongRecOn`; no Mathlib, no `sorry`. -/
+theorem carryExit_strong_frame {P : Nat → Prop}
+    (hstep : ∀ n, (∀ m, m < n → P m) → P n) : ∀ n, P n :=
+  fun n => Nat.strongRecOn n hstep
+
+/-- **The strong frame, at the `≥ 4` offset the carry actually uses.**  GIVEN that every level
+`m` with `4 ≤ m < k` is done, level `k` follows — the shape `exitSteps_tree_k` presents
+(REGEN(7) consuming REGEN(5) AND REGEN(4)).  Derived from `carryExit_strong_frame`. -/
+theorem carryExit_strong_frame_ge {P : Nat → Prop}
+    (hstep : ∀ n, 4 ≤ n → (∀ m, 4 ≤ m → m < n → P m) → P n) : ∀ n, 4 ≤ n → P n := by
+  refine carryExit_strong_frame (P := fun n => 4 ≤ n → P n) ?_
+  intro n ih hn
+  exact hstep n hn (fun m hm hmn => ih m hmn hm)
+
+/-! ### §5ai: what CLOSED, and the honest verdict on the inductive step.
+
+**PROVEN GREEN this section (`[propext, Quot.sound]`-only, audited below):**
+  • `regen6_transport` — `REGEN(6)`, `exitSteps 6 = 722` steps, `∀ L R`, HALT-FREE; the
+    first level whose exit tree has a recursive call (`exitArity 6 = 1`).
+  • `descent_reach_6` / `cascadeRegReached_6` / `carry_level_6` — `k=6` reachability and the
+    full `722 + 4152 = 4874`-step carry, exactly as at `k=4,5`.
+  • `regenIn` + `regenIn_grounds` (+`_6`) — the UNIFORM `k`-parametric REGEN IN-family; all
+    THREE independently-proven transports are instances of it.
+  • `RegenLaw` + `regenLaw_4/5/6` + `cascadeRegReached_of_regenLaw` — the correctly-named
+    `∀k` obligation (`In` pinned to `regenIn k`), and its repair of §5ah's predicate defect.
+  • `carry_descends_of_regenLaw` — §5ah's reduction over the REPAIRED hypothesis.
+  • `carryExit_strong_frame` (+`_ge`) — the CORRECTED recursion frame.
+
+**THE INDUCTIVE STEP — THE HONEST ANSWER: NO.**  Discharging `k=6` did NOT give an inductive
+step.  `regen6_transport` is a brute 722-step kernel computation; it reuses nothing from
+`regen4_transport`, and `exitSteps_tree_6` was NOT lifted from a step-count identity to a
+transport factorisation.  `k=6` is a third bespoke instance.  The cost bounds the method:
+`exitSteps k = Θ(4^k)`, so `k=7` is 2530 steps and `k=8` is 9282 — brute per-level discharge
+is `Θ(4^k)` and never terminates.  What `k=6` DID buy is the `regenIn`/`RegenLaw` family
+below: a third independent instance is what makes the `∀k` STATEMENT credible and pins the
+IN-family, which two levels could not.
+
+**WHAT IS NOT BESPOKE — the correction to the record.**  An earlier map read the per-level
+data as pattern-free (`zeros 6`/`zeros 8`, `pow01 (Lc+4)`/`pow01 (Lc+13)`, `p = −7`/`−22`).
+That reading is WITHDRAWN: every one of those three is an artifact of how §5s/§5u abstracted
+their `∀ L R` tails (a non-maximal `ones 12`/`ones 13` run split; two arbitrary anchor
+choices `p_in = 9, 10`; two arbitrary `R` cuts), not a fact about the machine.  Under the
+maximal parse the IN family is `regenIn k` at every level and the anchor law is
+`p_out = p_in − 2^k`, exact at `k=4,5,6,7`.  So: **PATTERN in the STATEMENT, BESPOKE in the
+PROOF.**  Knowing the `∀k` statement is not knowing the `∀k` proof, and this section
+manufactures no confusion between the two.
+
+**WHAT `∀k` NOW NEEDS, SHARPLY.**  Exactly `∀ k ≥ 4, RegenLaw k` — ONE transport statement,
+`k`-uniform, every instance verified, no remaining unknown shapes.  Its proof needs, in
+`carryExit_strong_frame_ge`'s step at level `k`:
+  (1) a TRANSPORT factorisation of `REGEN(k)` matching `exitSteps_tree_k` — i.e. the tree
+      lifted from `Nat` step counts to composable `steps` transports.  NOT proved at ANY
+      level, `k=6` included; this is the actual missing object.
+  (2) the glue between the tree's sub-blocks as a `∀k` family.  **This is no longer open at
+      the step-count level, and the pessimism recorded here earlier was WRONG.**  A parallel
+      audit (`x2az_gluelaw.py`, `x2az_tree9.py`, committed `9eb8c87`; re-run and re-derived
+      independently for this section) shows each glue segment is a constant keyed by the
+      `(from → to)` TRANSITION, with four closed forms — `START→4 = 3·2^{k−1}−9k+112`,
+      `4→END = termSteps k + 359`, `a→a+1 = 4^a−3·2^a+7`, `a→4 = descentSteps a` — measured
+      cell-for-cell at `k=5..9` and reproducing `exitSteps k` as an EXACT arithmetic identity
+      for every `k` tested (to `k=40`, arity 630).  Cross-checked here against §5z's own Lean
+      theorems: `154+498+exitSteps 4 = 722 = exitSteps 6`, and `241+215+1089+627+(70+218+70)
+      = 2530 = exitSteps 7`.  So §5z's `83/47/113/122/76` and `170/…/881/…` are NOT per-level
+      data: they are its GREEDY TERM-boundary parse of the same steps, and the `881` that
+      looked like a level-7-only constant is an artifact of that parse — a fifth reparse
+      dissolution.  (SIMULATOR + arithmetic evidence; NOT Lean-proven, NOT a transport.)
+  (3) closure under the GROWING arity.  The step at level `k` consumes `exitArity k =
+      (k−5)(k−4)/2` lower levels, unboundedly many (`exitArity_exceeds_four`).
+      `carryExit_strong_frame_ge` ADMITS exactly this; the predecessor frame did not.  The
+      same audit argues growing arity is NOT itself an obstruction (`exitList`'s fold already
+      closes `∀k` in-file, `exitSteps_foldl_closure`), which this section does not dispute.
+
+**So the wall is (1), and (1) ALONE.**  This section does NOT claim the growing-arity
+odometer tree as a wall — that framing is withdrawn here as well: with (2) a law and (3)
+admitted by the corrected frame, what is missing is ONE thing — the lift of the tree from a
+`Nat` step-count identity to a composable `steps` TRANSPORT factorisation.  That lift is
+proved at NO level, `k=6` included: `regen6_transport` is a brute 722-step kernel run that
+uses neither `regen4_transport` nor `exitSteps_tree_6`.  Producing it at ONE level, in a form
+whose glue is the transition-keyed `∀k` family, is now the whole remaining task.
+
+x2 remains `[OPEN]`.  No `sorry`/axiom/`native_decide`/`partial def`. -/
+
+-- §5ai axiom audits (the k=6 transport + reachability + the uniform family + the
+-- repaired ∀k obligation + the corrected frame):
+#print axioms regen6_transport
+#print axioms regenIn_grounds
+#print axioms descent_reach_6
+#print axioms regenIn_grounds_6
+#print axioms carry_level_6
+#print axioms cascadeRegReached_6
+#print axioms regenPad_law
+#print axioms regenLaw_4
+#print axioms regenLaw_5
+#print axioms regenLaw_6
+#print axioms cascadeRegReached_of_regenLaw
+#print axioms carry_descends_of_regenLaw
+#print axioms regen6_grounds
+#print axioms carryExit_strong_frame
+#print axioms carryExit_strong_frame_ge
+
 end X2
