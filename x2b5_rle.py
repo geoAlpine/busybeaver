@@ -7,11 +7,12 @@ rule would live, if one exists.
 """
 import sys
 from collections import Counter
-from x2b5_sim import RULES
+from x2b5_sim import RULES, extent
 
-def rle(cells, lo, hi):
+def rle(cells, lo=None, hi=None):
     runs = []; cur = 0; gaps = []
     g = 0
+    lo, hi = extent(cells)          # FULL written extent -- never truncate
     for p in range(lo, hi + 1):
         if cells.get(p, 0):
             if g: gaps.append(g); g = 0
@@ -23,7 +24,7 @@ def rle(cells, lo, hi):
     return runs, gaps
 
 def run(max_steps, want='C'):
-    cells = {}; pos = 0; state = 'A'; lo = hi = 0
+    cells = {}; pos = 0; state = 'A'; lo = 0
     snaps = []
     for step in range(max_steps):
         sym = cells.get(pos, 0)
@@ -38,7 +39,7 @@ def run(max_steps, want='C'):
         if pos < lo:
             lo = pos
             if state == want:
-                snaps.append((step, lo, hi) + rle(cells, lo, hi))
+                snaps.append((step,) + extent(cells) + rle(cells))
     return snaps
 
 if __name__ == '__main__':

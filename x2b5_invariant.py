@@ -11,10 +11,10 @@ If (H) never fails, B5 never halts.
 """
 import sys
 from collections import Counter
-from x2b5_sim import RULES
+from x2b5_sim import RULES, extent
 
 def run(max_steps):
-    cells = {}; pos = 0; state = 'A'; lo = hi = 0
+    cells = {}; pos = 0; state = 'A'; lo = 0
     viol_gap = viol_mod = 0; miles = 0
     badmod_hist = Counter()
     regs = []
@@ -37,7 +37,8 @@ def run(max_steps):
             if state == 'C':
                 miles += 1
                 runs = []; gaps = []; cur = 0; g = 0
-                for p in range(lo, hi + 1):
+                elo, ehi = extent(cells)
+                for p in range(elo, ehi + 1):
                     if cells.get(p, 0):
                         if g: gaps.append(g); g = 0
                         cur += 1

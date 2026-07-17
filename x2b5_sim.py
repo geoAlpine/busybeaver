@@ -95,3 +95,32 @@ if __name__ == '__main__':
     print("halted:", halted, "steps:", steps)
     print("state:", state, "pos:", pos, "ones:", tape.ones(), "maxrun:", tape.maxrun())
     print("lo,hi:", tape.lo, tape.hi)
+
+
+# --- full-tape scan helpers (added 2026-07-16 after the lo/hi truncation bug) ---
+# The FIRST version of x2b5_braid.py / _sawtooth / _invariant / _rle / _sweep
+# tracked `lo` at left-record milestones but never updated `hi`, so every tape
+# scan ran over range(lo, 0+1) -- the LEFT half-tape only. These helpers derive
+# the extent from the cells dict itself, so no caller bookkeeping can truncate.
+
+def extent(cells):
+    """Full written extent (min,max) of the nonzero cells."""
+    if not cells:
+        return 0, 0
+    return min(cells), max(cells)
+
+
+def maxrun_full(cells):
+    """Longest run of 1s over the FULL written tape."""
+    if not cells:
+        return 0
+    lo, hi = extent(cells)
+    best = cur = 0
+    for p in range(lo, hi + 1):
+        if cells.get(p, 0):
+            cur += 1
+            if cur > best:
+                best = cur
+        else:
+            cur = 0
+    return best

@@ -6,13 +6,14 @@ the same (state, pos-lo) phase and look for a "prefix + BLOCK^n + suffix"
 skeleton whose n grows by a fixed amount per milestone.
 """
 import sys
-from x2b5_sim import RULES
+from x2b5_sim import RULES, extent
 
-def tapestr(cells, lo, hi):
+def tapestr(cells, lo=None, hi=None):
+    lo, hi = extent(cells)          # FULL written extent -- never truncate
     return ''.join('1' if cells.get(p, 0) else '0' for p in range(lo, hi + 1))
 
 def run(max_steps, want):
-    cells = {}; pos = 0; state = 'A'; lo = hi = 0
+    cells = {}; pos = 0; state = 'A'; lo = 0
     snaps = []
     for step in range(max_steps):
         sym = cells.get(pos, 0)
@@ -27,7 +28,7 @@ def run(max_steps, want):
         if pos < lo:
             lo = pos
             if state == want:
-                snaps.append((step, state, pos, lo, hi, tapestr(cells, lo, hi)))
+                snaps.append((step, state, pos) + extent(cells) + (tapestr(cells),))
     return snaps
 
 if __name__ == '__main__':

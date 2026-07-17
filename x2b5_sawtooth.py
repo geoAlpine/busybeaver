@@ -7,10 +7,10 @@ depth-m resets occurring every ~2^m milestones.
 """
 import sys
 from collections import Counter, defaultdict
-from x2b5_sim import RULES
+from x2b5_sim import RULES, maxrun_full
 
 def run(max_steps):
-    cells = {}; pos = 0; state = 'A'; lo = hi = 0
+    cells = {}; pos = 0; state = 'A'; lo = 0
     traj = []   # (milestone_idx, step, register)
     for step in range(max_steps):
         sym = cells.get(pos, 0)
@@ -25,13 +25,7 @@ def run(max_steps):
         if pos < lo:
             lo = pos
             if state == 'C':
-                best = cur = 0
-                for p in range(lo, hi + 1):
-                    if cells.get(p, 0):
-                        cur += 1
-                        if cur > best: best = cur
-                    else: cur = 0
-                traj.append((len(traj), step, best))
+                traj.append((len(traj), step, maxrun_full(cells)))
     return traj
 
 if __name__ == '__main__':
