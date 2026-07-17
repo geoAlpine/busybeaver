@@ -9,8 +9,10 @@ Established (this session, from the VERIFIED-FAITHFUL raw orbit x2bd_sim):
 DECISIVE FINDING -- the counts are NOT tape-determined; they carry exact
 combinatorial (binary-odometer) structure:
 
-  * comb-at-carry profile is a clean power-of-2 ladder: carry at comb=2^m-1 fires
+  * comb profile over CHEW-STARTS is a clean power-of-2 ladder: comb=2^m-1 occurs
     exactly 2^(K-1-m) times  (K=10: 128,64,32,16,8,4,2,1).
+    CORRECTED 2026-07-17: this was labelled "comb-at-carry".  It is measured over
+    chew-starts, not carries (see x2fr_counts.py), and drops the comb=0 bucket.
   * per-block multiplicity obeys a band law: an individual block-value b lying in
     band j (2^(j-1)-3 < b <= 2^j-3) is chewed exactly 2^(K-j+1)-1 times
     (2^(K-j+2)-1 for a milestone 2^j-3), up to O(K) edge corrections.

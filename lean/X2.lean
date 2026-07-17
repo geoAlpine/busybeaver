@@ -2650,10 +2650,23 @@ edge is the only other correction.  This UPGRADES §5n's caveat "the tape count 
 finer Layer-C quantity": it is finer than `2^K−1`, but STILL a clean pure register.
 
 VERDICT: the doubling-phase tick-count is a CLEAN pure-register quantity, NOT
-irreducibly tape-determined.  The load-bearing evidence is the comb-at-carry LADDER
-(main-loop independently inspected, g=2 K=10): carries fire at `comb = 2^m−1` with
-multiplicities `128,64,32,16,8,4,2,1 = 2^(K−1−m)` across 8 levels — a clean binary
-structure, not a 4-point fit.
+irreducibly tape-determined.  The load-bearing evidence is a `comb = 2^m−1` LADDER with
+multiplicities `128,64,32,16,8,4,2,1 = 2^(K−1−m)` across 8 levels (main-loop independently
+inspected, g=2 K=10) — a clean binary structure, not a 4-point fit.
+
+**EVIDENCE MIS-ATTRIBUTED — corrected 2026-07-17; the VERDICT survives, the SENTENCE naming
+its evidence did not.**  This ladder was called "comb-at-**carry**".  It is not: read
+`x2fr_counts.py` — `cs` is built and commented as the **chew-starts** (local maxima of `blk`
+with `blk ≥ 5`), the carries are a SEPARATE quantity computed in the `depths`/`ncarry` loop,
+and the histogram is `Counter(c for b,c in cs if c > 0)` — i.e. taken over ALL chew-starts,
+NOT over carries, with the `c > 0` filter silently DROPPING the `comb = 0` bucket.  Per the
+audit (`X2_CLAIM_AUDIT_2026-07-17.md`, `REGEN_REACH_MAP_2026-07-17.md`) the true carry
+histogram at K=10 has 64 events at `comb = 0` and ZERO at `comb = 3`, where this prose puts
+its leading `128`; the ladder restates correctly over CARRIES for `m=3..9` (7 exact levels)
+with remainder `2^(K−4)` at `comb = 0`.  The mis-attribution is verified here by reading the
+probe; the proposed restatement is that audit's measurement and is NOT independently
+re-confirmed in this file.  Same mislabel at `x2fr_register.py:13`.  **Prose defect, not a
+proof defect — nothing in Lean depends on it.**
 
 **HONEST SCOPE of THIS Lean section.**  `OdoF = ⟨tick⟩` below is a TRIVIAL counter:
 `faithful_terminates` is tautological (counting 0→`Tfaithful K` by `+1`).  The real
@@ -4271,7 +4284,17 @@ theorem exitSteps_tree_7 :
 frame).  GIVEN the per-level step `P n → P (n+1)` (the one `[DESIGN]` object) and the base
 `P 1` (discharged concretely by `regen4_transport`, = `carry_exit_j3`), the proven §5w
 `carry_level_rec` (a genuine `Nat.le_induction`, no `sorry`/`partial`) yields `∀ n ≥ 1, P n`.
-The k-recursion's control flow IS this combinator; ONLY the step is open. -/
+
+**WITHDRAWN 2026-07-17 — this is the WRONG FRAME for the k-recursion, see §5aj.**  The
+combinator below is sound and generic in `P`, and is NOT retracted; what is withdrawn is the
+claim that "the k-recursion's control flow IS this combinator; ONLY the step is open".  It is
+NOT: a `Nat.le_induction` step `P n → P (n+1)` hands level 7 only `P 6` — precisely the level
+`exitSteps_tree_7` does NOT use (it calls `REGEN(5)` and `REGEN(4)`) — and `exitArity` GROWS
+(`0,1,3,6` at `k=5,6,7,8`), so the set of levels a step must consume is UNBOUNDED.  A
+recursion whose calls jump to ARBITRARY lower levels needs STRONG induction.  The real frame
+is **`carryExit_strong_frame`** (§5aj, from `Nat.strongRecOn`, no axioms).  A predecessor
+frame can simulate it only by strengthening `P` to the cumulative `∀ m ≤ n, Q m` — which IS
+the standard derivation of strong induction, i.e. the admission. -/
 theorem carryExit_wf_frame {P : Nat → Prop} (hbase : P 1)
     (hstep : ∀ n, 1 ≤ n → P n → P (n + 1)) : ∀ n, 1 ≤ n → P n :=
   carry_level_rec hbase hstep

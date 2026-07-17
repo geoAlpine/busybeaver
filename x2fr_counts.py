@@ -42,7 +42,9 @@ def counts(g):
             i = j+1
         else:
             i += 1
-    # comb-at-carry (comb=2^m-1) profile
+    # comb profile over CHEW-STARTS (`cs`), NOT over carries -- the carries are the
+    # separate depths/ncarry loop above.  MISLABELLED "comb-at-carry" until 2026-07-17.
+    # NB the `c > 0` filter DROPS the comb=0 bucket (64 events at K=10).
     from collections import Counter
     combhist = Counter(c for b,c in cs if c > 0)
     return len(cs), ncarry, depths, dict(sorted(combhist.items()))
