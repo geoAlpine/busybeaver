@@ -7854,4 +7854,35 @@ theorem regenDescend (a : Nat) (ha : 5 ≤ a) (h : RegenLaw a) (q : Int) (m R : 
 #print axioms foldDep_split
 #print axioms regenDescend
 
+/-! ### §5am: `RegenLaw 7` — THE k=7 LEVEL CLOSED, from `regen7_factored` (2026-07-18).
+
+§5ai listed `RegenLaw k` as PROVEN at `k=4,5,6` and OPEN for `k ≥ 7`, and §5ak's verdict said
+"reachability (`RegenLaw`, §5ai) is untouched."  That verdict CONFLATED two things: `RegenLaw k`
+is DEFINED as a `steps`-TRANSPORT (`steps (exitSteps k) (regenIn k …) = some (cascadeReg k …)`),
+NOT a reachability claim about getting TO `regenIn k`.  As a transport, `RegenLaw 7` is exactly
+what `regen7_factored` proves — once the tails are lined up.
+
+**THE ONE ALIGNMENT.**  `regen7_factored`'s IN/OUT were cut from `build(2)`'s real orbit with
+the deep tail `R` starting `2^{k-1}+9 − (2^{k-1}+2) = 7` cells LATER than `regenIn 7`/`cascadeReg 7`
+place it (the `0^7` seam of `zeros_pad`).  So the substitution is `R := zeros 7 ++ R`:
+`regenIn 7 11 (2^6+9) marker R = ` `regen7_factored`'s IN at `L := pow01 62 ++ marker`,
+`R := zeros 7 ++ R` (`rfl`), and likewise `cascadeReg 7 1 (11−2^7) marker R` is its OUT.  LEFT
+matches with NO shift — the marker embeds as `pow01 62 ++ marker` on both, `p_out = 11 − 2^7 = −117`
+exactly.
+
+**HONEST SCOPE — THIS IS ONE LEVEL, NOT `∀k`.**  `regenLaw_7` leans on `regen7_factored`, itself a
+per-level assembly (66% `∀`-carried, but lead `241` / trailing `627` are per-level `rfl`).  It does
+NOT give the inductive step `RegenLaw k → RegenLaw (k+1)`, and `∀k RegenLaw k` (T1) stays OPEN: the
+wall is the `∀k` lift of the lead/trailing framing glue to `steps` transports plus the interior
+odometer fold.  What this DOES retire is the record's claim that `k ≥ 7` is untouched — `k=7` is
+now green from existing machinery, and the `zeros 7` tail-alignment is the reusable bridge for any
+`regen{k}_factored ⟹ RegenLaw k`.  `[propext, Quot.sound]`. -/
+set_option maxRecDepth 8000 in
+theorem regenLaw_7 : RegenLaw 7 :=
+  ⟨11, fun marker R => by
+    have h := regen7_factored (pow01 62 ++ marker) (zeros 7 ++ R)
+    exact h⟩
+
+#print axioms regenLaw_7
+
 end X2
