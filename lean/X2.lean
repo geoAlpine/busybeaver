@@ -5166,15 +5166,23 @@ left comb budget spent `Lc+N → Lc`.  This is the doubling odometer's OWN core 
 `braid_core_grounds`), the on-path `[13453,14388]` transport minus its `7`-step entry and
 `60`-step doubling exit.
 
-**WHAT REMAINS `[DESIGN]` (the honest gap).**  The full `topGrindSteps a = 4^a−3·2^a+7`
-splits as `entry(7 fixed) + braid_run core(4N²+6N) + exit(2^{a+1}+3−7)`; the CORE double
-induction is now PROVEN `∀`, but the `exit` — the terminal comb→doubled-block sweep that lays
-the doubled deposit `1^{2^{a+1}−4} 0 1^{2^{a+1}−3}` (a=5: `1^126 0 1^61`, `doubling_id`
-`2·29+3=61`) and re-anchors on the residue — is a growing (`Θ(2^a)`) connector that couples the
-right comb `(10)^{2N+1}` back into the doubled block, NOT captured by `braid_tile`.  So the
-`TOPGRIND`'s quadratic OUTER×INNER braid IS machine-checked `∀a`; its `Θ(2^a)` doubling EXIT
-is the single bounded-shape object left.  No `sorry`/axiom/`native_decide`/`partial def`.  No
-machine decided.  No label upgraded. -/
+**THE `entry`/`exit` CONNECTORS — now CLOSED in §5af (this docstring CORRECTED 2026-07-17).**
+The full `topGrindSteps a = 4^a−3·2^a+7` splits as `entry(7 fixed) + braid_run core(4N²+6N) +
+exit(4N+4 = 2^{a+1}−4)`, and §5af proves ALL THREE `∀` and composes them (`braid_topgrind`,
+`topGrindSteps_split`).
+
+**TWO CLAIMS THAT USED TO STAND HERE WERE WRONG** (caught by `x2qb_exit.py`, a=5 AND a=6 —
+recorded so they are not reintroduced):
+* it said the exit lays `1^{2^{a+1}−4} 0 1^{2^{a+1}−3}` (a=5: `1^126 0 1^61`).  The exponent
+  `2^{a+1}−4` is FALSE: `2^{a+1}−4 = 60 ≠ 126` at a=5 (and `124 ≠ 254` at a=6).  The measured
+  long block is `2^{a+2}−2` (a=5: `126`; a=6: `254`).
+* it said the EXIT lays that block.  Also FALSE: the `1^{2^{a+2}−2}` is ALREADY on the left at
+  the exit's IN (raw step `14328`), inside the `marker` tail, and the exit never touches it.
+  The exit lays ONLY the `1^{2^{a+1}−3}` deposit (a=5: `1^61`; a=6: `1^125` — `= 4N+5`).
+
+The exit is ALSO not the "growing connector NOT captured by the sweeps" it was called here: it
+is EXACTLY ONE already-proven `sweepEF (2N+2)` (see `braid_exit`).  No `sorry`/axiom/
+`native_decide`/`partial def`.  No machine decided.  No label upgraded. -/
 
 /-- **THE MID-BRAID CONFIG** — the `TOPGRIND`'s round-trip shape at the leftmost turn: `E` on a
 boundary `0`, left comb `(10)^{Lc}` over an untouched `marker`, right comb `(10)^{2r+1}` over
@@ -5313,5 +5321,255 @@ theorem braid_core_grounds :
 #print axioms braid_run
 #print axioms braid_core_a5
 #print axioms braid_core_grounds
+
+/-! ## §5af (LAYER A, ON-PATH, 2026-07-17) THE TOPGRIND CLOSES — the `Θ(2^a)` doubling EXIT
+is ONE `sweepEF`, the `7`-step ENTRY is one seed tile, and `topGrindSteps a` splits EXACTLY.
+
+**MEASUREMENT FIRST (`x2qb_exit.py`, SIMULATOR evidence, a=5 AND a=6, bit-for-bit).**  The
+exit's state word is a pure `(FE)^{2N+2}` — `60 = (FE)^30` at a=5, `124 = (FE)^62` at a=6.
+That is the `sweepEF` signature, and indeed the exit's IN register REPARSES:
+
+```
+  pow10 (2N+1) ++ ones 1 ++ 0 :: 0 :: casc  =  pow10 (2N+2) ++ 0 :: casc
+```
+
+(checked cell-for-cell both `a`) — the block RESIDUE `1^1` and the FIRST `0` of the cascade
+boundary `0^2` are exactly ONE more comb pair.  So the "growing connector that couples the
+right comb back into the doubled block" §5ae posited DOES NOT EXIST: the exit is ONE more
+`sweepEF`, `2(2N+2) = 4N+4` steps, and its `Θ(2^a)` growth is just `sweepEF`'s own `∀m`
+parametricity.  The `[DESIGN]` was an artifact of a mis-parse, not a real object.
+
+**THE TRUE DEPOSIT LAW (settling the `1^126`/`1^61` question, a=5 AND a=6).**  Measured left
+tape at the exit's IN and OUT:
+
+```
+  a=5   IN  1^1 0 1^126 0 …      OUT  1^61  0 1^126 0 …      exit = 60  steps
+  a=6   IN  1^1 0 1^254 0 …      OUT  1^125 0 1^254 0 …      exit = 124 steps
+```
+
+The exit lays `1^{4N+5} = 1^{2^{a+1}−3}` (61, 125 ✓ — `doubling_id 2·29+3 = 61`) and NOTHING
+else; the long block `1^{2^{a+2}−2}` (126, 254) is ALREADY there at IN and is UNTOUCHED
+(it rides in `marker`).  §5ae's `1^{2^{a+1}−4}` was arithmetically false and its attribution to
+the exit was false; both are corrected above.
+
+**WHAT IS PROVEN `∀` HERE.**  `braid_exit` (`∀N Lc`, the exit = `sweepEF (2N+2)`),
+`braid_entry_tile` (`7` steps, `rfl`, tail-parametric), `braid_seed` (`∀Lc blk`, the on-path
+entry, incl. the left comb's `(01)^Lc → (10)^Lc` REPARSE — the machine only pushes ONE `true`),
+`braidRunSteps_closed` (`∀r N`, the closed form), `braid_topgrind` (`∀N Lc` — entry ∘ core ∘
+exit as ONE transport in `7 + braidRunSteps 0 N + (4N+4)` steps), and `topGrindSteps_split`
+(`∀a≥2`, the arithmetic identity).  `topGrindSteps` CLOSES: `braid_topgrind 14 1` IS the real
+`[13453,14388]` window, all `935` steps, on-path.
+
+**WHAT REMAINS `[DESIGN]`.**  `braid_topgrind`'s IN config is REACHED on the real orbit only by
+SIMULATOR evidence (`x2qb_exit.py` pins raw step `13453` for a=5 and `33830` for a=6); the
+`∀a` claim that the descent's TOPGRIND-start has this shape is `descentGlue`'s job, still open
+(§5ac/§5ad).  This section closes the TOPGRIND's INTERNAL transport `∀`, not its reachability.
+No `sorry`/axiom/`native_decide`/`partial def`.  No machine decided.  No label upgraded. -/
+
+/-- **THE Θ(2^a) DOUBLING EXIT, `∀N Lc` (deliverable C) — it is ONE `sweepEF`.**  From the
+braid's terminal config `braidCfg N Lc 1` (right comb `(10)^{2N+1}`, block ground to the
+residue `1^1`, then the `0^2` cascade boundary) in `4N+4` steps to `E` on the cascade's `0`
+with the doubled deposit `1^{4N+4}` laid on the left comb.  The whole content is the REPARSE
+`pow10 (2N+1) ++ ones 1 ++ 0::0::casc = pow10 (2N+2) ++ 0::casc` — the residue `1` plus the
+first boundary `0` ARE one more comb pair — after which `sweepEF (2N+2)` (§4, already proven
+`∀m`) does all `2(2N+2) = 4N+4` steps.  `casc` UNTOUCHED.  `some` ⇒ HALT-FREE `∀N`.
+ON-PATH: a=5 (`N=14`, `60` steps, `14328→14388`) and a=6 (`N=30`, `124` steps, `37617→37741`)
+verified bit-for-bit by `x2qb_exit.py` (simulator evidence).  `[propext, Quot.sound]`-only. -/
+theorem braid_exit (N Lc : Nat) (p : Int) (marker casc : List Bool) :
+    steps (4 * N + 4) (braidCfg N Lc 1 p marker casc)
+      = some ⟨.E, p + (4 * N + 4 : Nat), ⟨ones (4 * N + 4) ++ (pow10 Lc ++ marker), false,
+          false :: casc⟩⟩ := by
+  show steps (4 * N + 4) ⟨.E, p, ⟨pow10 Lc ++ marker, false,
+      pow10 (2 * N + 1) ++ (ones 1 ++ (false :: false :: casc))⟩⟩ = _
+  -- THE REPARSE: the residue `1` and the boundary's first `0` are one more comb pair.
+  have hre : pow10 (2 * N + 1) ++ (ones 1 ++ (false :: false :: casc))
+      = pow10 (2 * N + 2) ++ (false :: casc) := by
+    have h1 : ones 1 ++ (false :: false :: casc) = pow10 1 ++ (false :: casc) := rfl
+    have h2 : pow10 (2 * N + 1) ++ (pow10 1 ++ (false :: casc))
+        = pow10 ((2 * N + 1) + 1) ++ (false :: casc) := by
+      rw [← List.append_assoc, ← pow10_add]
+    rw [h1, h2]
+  rw [hre, show 4 * N + 4 = 2 * (2 * N + 2) from by omega,
+      sweepEF (2 * N + 2) p (pow10 Lc ++ marker) (false :: casc)]
+  refine congrArg some (cfgPos ?_)
+  push_cast; omega
+
+/-- **THE a=5 EXIT, on-path (deliverable C).**  `braidCfg 14 1 1 → E` on the cascade `0` with
+`1^61 0 marker` on the left, in `60` steps — a DIRECT instance of `braid_exit`, no `rfl`.
+`60 = 2^{a+1}−4` and the deposit `61 = 2^{a+1}−3` (`doubling_id 2·29+3`).  MEASURED on the real
+orbit (`x2qb_exit.py`, simulator): raw `14328 → 14388`, left `1^1 0 1^126 … → 1^61 0 1^126 …`.
+The `1^126` is in `marker` — ALREADY present at IN and UNTOUCHED (see §5af's correction). -/
+theorem braid_exit_a5 (p : Int) (marker casc : List Bool) :
+    steps 60 (braidCfg 14 1 1 p marker casc)
+      = some ⟨.E, p + 60, ⟨ones 61 ++ (false :: marker), false, false :: casc⟩⟩ := by
+  have h : steps 60 (braidCfg 14 1 1 p marker casc)
+      = some ⟨.E, p + ((60 : Nat) : Int), ⟨ones 60 ++ (pow10 1 ++ marker), false,
+          false :: casc⟩⟩ :=
+    braid_exit 14 1 p marker casc
+  have hL : ones 60 ++ (pow10 1 ++ marker) = ones 61 ++ (false :: marker) := by
+    show ones 60 ++ (true :: (false :: marker)) = ones 61 ++ (false :: marker)
+    rw [ones_append_true]
+  rw [h, hL]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **The 7-step block-SEED tile** (`E:0→1RF · F:0→0RA · A:0→1RB · B:0→1RC · C:1→1LE ·
+E:1→0LC · C:1→1LE`): head `E` on a `0` with `0 0 0 1` ahead; it writes the pair `1 0` at the
+head and at `+2`, walks out to the block's first `1`, bounces, and lands `E` back on the `0` at
+`+1` — i.e. it SEEDS the braid's first right-comb pair `(10)^1` out of the leading `0^3`, and
+pushes exactly ONE `true` onto the left.  `L` and `X` arbitrary.  Kernel `rfl`. -/
+theorem braid_entry_tile (p : Int) (L X : List Bool) :
+    steps 7 ⟨.E, p, ⟨L, false, false :: false :: false :: (true :: X)⟩⟩
+      = some ⟨.E, p + 1, ⟨true :: L, false, true :: false :: (true :: X)⟩⟩ := by
+  have h : steps 7 (⟨.E, p, ⟨L, false, false :: false :: false :: (true :: X)⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 + 1 - 1 - 1 - 1, ⟨true :: L, false,
+          true :: false :: (true :: X)⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **The left comb's REPARSE**: prepending ONE `true` to `(01)^k` turns it into `(10)^k` with
+the `true` pushed past it.  Pure list induction — this is why the `7`-step seed tile, which
+touches only the head neighbourhood, nonetheless converts the WHOLE left comb `(01)^{Lc}` into
+`(10)^{Lc}`: no machine work is involved, only where the pairs are cut. -/
+theorem true_cons_pow01 : ∀ (k : Nat) (M : List Bool),
+    true :: (pow01 k ++ M) = pow10 k ++ (true :: M) := by
+  intro k
+  induction k with
+  | zero => intro M; rfl
+  | succ k ih =>
+    intro M
+    show true :: (false :: true :: (pow01 k ++ M)) = true :: false :: (pow10 k ++ (true :: M))
+    rw [ih]
+
+/-- **THE ON-PATH BRAID SEED, `∀Lc blk` (deliverable D).**  The `TOPGRIND`'s `7`-step entry:
+from `E` on the descent's boundary `0` with `0^3 1^{blk+1} 0^2 casc` ahead and the left comb
+`(01)^{Lc}` behind, to `braidCfg 0 Lc (blk+1)` — the braid's `r=0` config — in `7` steps.  The
+right comb `(10)^1` is SEEDED from the leading `0^3`; the left comb reparses `(01)^{Lc} →
+(10)^{Lc}` by `true_cons_pow01` (one pushed `true`, no machine work).  `casc` UNTOUCHED.
+ON-PATH (`x2qb_exit.py`, simulator): a=5 raw `13453→13460`, IN left `(01)^15 1 1 1 1 …`, IN
+right `0^3 1^29 0^2 …`, OUT `= braidCfg 0 15 29` (and a=6: `33830→33837`, `(01)^31`, `0^3 1^61
+0^2`, OUT `= braidCfg 0 31 61`) — the entry is FIXED `7` at both `a`.  `[propext, Quot.sound]`. -/
+theorem braid_seed (Lc blk : Nat) (p : Int) (marker casc : List Bool) :
+    steps 7 ⟨.E, p, ⟨pow01 Lc ++ marker, false,
+        false :: false :: false :: (ones (blk + 1) ++ (false :: false :: casc))⟩⟩
+      = some (braidCfg 0 Lc (blk + 1) (p + 1) (true :: marker) casc) := by
+  have hb : ones (blk + 1) ++ (false :: false :: casc)
+      = true :: (ones blk ++ (false :: false :: casc)) := by
+    rw [show blk + 1 = 1 + blk from by omega, ones_add]; rfl
+  rw [hb, braid_entry_tile p (pow01 Lc ++ marker) (ones blk ++ (false :: false :: casc)),
+      true_cons_pow01]
+  show _ = some (⟨.E, p + 1, ⟨pow10 Lc ++ (true :: marker), false,
+      pow10 (2 * 0 + 1) ++ (ones (blk + 1) ++ (false :: false :: casc))⟩⟩ : Cfg)
+  rw [hb]
+  rfl
+
+/-- **The braid run's step count in CLOSED FORM, `∀r N`**: `braidRunSteps r N = 4N² + 6N + 8rN`
+(the sum `Σ_{i<N}(8(r+i)+10)`).  At `r = 0` this is the `4N²+6N` of §5ae — the OUTER×INNER
+`Θ(4^a)`.  Proven by induction on `N`, generalizing `r`.  Pure `Nat`. -/
+theorem braidRunSteps_closed : ∀ (N r : Nat),
+    braidRunSteps r N = 4 * (N * N) + 6 * N + 8 * (r * N) := by
+  intro N
+  induction N with
+  | zero => intro r; rfl
+  | succ N ih =>
+    intro r
+    show (8 * r + 10) + braidRunSteps (r + 1) N = _
+    rw [ih (r + 1)]
+    simp [Nat.mul_add, Nat.add_mul, Nat.mul_comm, Nat.mul_assoc]
+    omega
+
+/-- **THE WHOLE TOPGRIND AS ONE TRANSPORT, `∀N Lc` (deliverable E — `topGrindSteps` CLOSES).**
+`braid_seed` ∘ `braid_run` ∘ `braid_exit`: from `E` on the descent's boundary `0` with the top
+block `1^{2N+1}` behind a `0^3` seed pad and the left comb `(01)^{Lc+N}`, in
+`7 + braidRunSteps 0 N + (4N+4)` steps, to `E` on the cascade's `0` with the doubled deposit
+`1^{4N+4}` laid over the (reparsed) left comb.  ALL THREE pieces `∀`-proven; `casc` UNTOUCHED
+throughout.  `some` ⇒ HALT-FREE `∀N`.  `[propext, Quot.sound]`-only.
+
+At `N = 2^{a−1}−2` the top block is `1^{2N+1} = 1^{2^a−3}` — the descent's top block — the left
+comb is `(10)^{2^{a−1}−1}`, and the step count is exactly `topGrindSteps a`
+(`topGrindSteps_split`).  Instantiated on-path at a=5 by `braid_topgrind_a5`. -/
+theorem braid_topgrind (N Lc : Nat) (p : Int) (marker casc : List Bool) :
+    steps (7 + braidRunSteps 0 N + (4 * N + 4))
+        ⟨.E, p, ⟨pow01 (Lc + N) ++ marker, false,
+            false :: false :: false :: (ones (2 * N + 1) ++ (false :: false :: casc))⟩⟩
+      = some ⟨.E, p + 5 + 2 * (N : Int),
+          ⟨ones (4 * N + 4) ++ (pow10 Lc ++ (true :: marker)), false, false :: casc⟩⟩ := by
+  rw [steps_add, steps_add,
+      show 2 * N + 1 = (2 * N) + 1 from rfl,
+      braid_seed (Lc + N) (2 * N) p marker casc, someBind]
+  show (steps (braidRunSteps 0 N) ⟨.E, p + 1, ⟨pow10 (Lc + N) ++ (true :: marker), false,
+      pow10 (2 * 0 + 1) ++ (ones (2 * N + 1) ++ (false :: false :: casc))⟩⟩).bind _ = _
+  rw [show 2 * N + 1 = 1 + 2 * N from by omega,
+      braid_run N 0 Lc 1 (p + 1) (true :: marker) casc, someBind,
+      show 2 * (0 + N) + 1 = 2 * N + 1 from by omega]
+  show steps (4 * N + 4) (braidCfg N Lc 1 (p + 1 - 2 * (N : Int)) (true :: marker) casc) = _
+  rw [braid_exit N Lc (p + 1 - 2 * (N : Int)) (true :: marker) casc]
+  refine congrArg some (cfgPos ?_)
+  push_cast; omega
+
+/-- **THE a=5 TOPGRIND, on-path (deliverable E).**  `N = 14`, `Lc = 1`: the top block `1^29`,
+the left comb `(01)^15`, in `7 + 868 + 60 = 935 = topGrindSteps 5` steps, depositing `1^60` over
+the reparsed comb (`= 1^61 0 marker`).  A DIRECT instance of `braid_topgrind` — no `rfl`, no
+re-derivation.  MEASURED on the real orbit (`x2qb_exit.py`, SIMULATOR evidence, bit-for-bit):
+the window is raw `[13453,14388]`, IN left `(01)^15 1 1 1 1 …`, IN right `0^3 1^29 0^2 1^13 0^2
+1^5 0^2 1^1`, OUT left `1^61 0 1^126 …`, OUT right `0 1^13 0^2 1^5 0^2 1^1 0`. -/
+theorem braid_topgrind_a5 (p : Int) (marker casc : List Bool) :
+    steps 935 ⟨.E, p, ⟨pow01 15 ++ marker, false,
+        false :: false :: false :: (ones 29 ++ (false :: false :: casc))⟩⟩
+      = some ⟨.E, p + 33, ⟨ones 60 ++ (pow10 1 ++ (true :: marker)), false, false :: casc⟩⟩ := by
+  have h : steps 935 ⟨.E, p, ⟨pow01 15 ++ marker, false,
+      false :: false :: false :: (ones 29 ++ (false :: false :: casc))⟩⟩
+        = some ⟨.E, p + 5 + 2 * ((14 : Nat) : Int),
+            ⟨ones 60 ++ (pow10 1 ++ (true :: marker)), false, false :: casc⟩⟩ :=
+    braid_topgrind 14 1 p marker casc
+  rw [h]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **THE TOPGRIND STEP-COUNT SPLIT, `∀a ≥ 2` (deliverable E).**  `topGrindSteps a = 7 +
+braidRunSteps 0 N + (4N+4)` at `N = 2^{a−1}−2` — the `7`-step SEED, the `4N²+6N` OUTER×INNER
+braid, and the `4N+4 = 2^{a+1}−4` doubling EXIT account for `4^a − 3·2^a + 7` EXACTLY, with no
+residue.  Together with `braid_topgrind` (the transport) this CLOSES §5ae's `[DESIGN]`.
+Pure `Nat` (`braidRunSteps_closed` + `ring` + `omega` over the `Nat` subtraction). -/
+theorem topGrindSteps_split (a : Nat) (ha : 2 ≤ a) :
+    topGrindSteps a
+      = 7 + braidRunSteps 0 (2 ^ (a - 1) - 2) + (4 * (2 ^ (a - 1) - 2) + 4) := by
+  have ha1 : a - 1 + 1 = a := by omega
+  have h2a : 2 ^ a = 2 * 2 ^ (a - 1) := by
+    have h : 2 ^ (a - 1 + 1) = 2 ^ (a - 1) * 2 := Nat.pow_succ 2 (a - 1)
+    rw [ha1] at h; omega
+  have h4a : 2 ^ (2 * a) = 2 ^ a * 2 ^ a := by
+    rw [show 2 * a = a + a from by omega, Nat.pow_add]
+  have hge : 2 ≤ 2 ^ (a - 1) := by
+    have h : (2 : Nat) ^ 1 ≤ 2 ^ (a - 1) := Nat.pow_le_pow_right (by decide) (by omega)
+    have h1 : (2 : Nat) ^ 1 = 2 := by decide
+    omega
+  obtain ⟨k, hk⟩ : ∃ k, 2 ^ (a - 1) = k + 2 := ⟨2 ^ (a - 1) - 2, by omega⟩
+  -- `2^a = 2k+4` and `4^a = 4k²+16k+16`, so both sides are the SAME polynomial in `k`.
+  have hA : 2 ^ (2 * a) = 4 * (k * k) + 16 * k + 16 := by
+    rw [h4a, h2a, hk]
+    simp [Nat.mul_add, Nat.mul_comm, Nat.mul_assoc, Nat.mul_left_comm]
+    omega
+  have hB : 2 ^ a = 2 * k + 4 := by rw [h2a, hk]; omega
+  rw [show 2 ^ (a - 1) - 2 = k from by omega, braidRunSteps_closed]
+  unfold topGrindSteps
+  omega
+
+/-- **TOPGRIND split grounding, cell-for-cell** (a=5, a=6 — the two `a` MEASURED end-to-end by
+`x2qb_exit.py`).  a=5: `N=14`, `7 + 868 + 60 = 935`.  a=6: `N=30`, `7 + 3780 + 124 = 3911`.
+Pure `Nat` (the raw-orbit windows `[13453,14388]` / `[33830,37741]` are simulator evidence, not
+kernel-checked). -/
+theorem topGrind_split_grounds :
+    (7 + braidRunSteps 0 14 + (4 * 14 + 4) = topGrindSteps 5)
+      ∧ (7 + braidRunSteps 0 30 + (4 * 30 + 4) = topGrindSteps 6) := by
+  refine ⟨by decide, by decide⟩
+
+#print axioms braid_exit
+#print axioms braid_exit_a5
+#print axioms braid_entry_tile
+#print axioms true_cons_pow01
+#print axioms braid_seed
+#print axioms braidRunSteps_closed
+#print axioms braid_topgrind
+#print axioms braid_topgrind_a5
+#print axioms topGrindSteps_split
+#print axioms topGrind_split_grounds
 
 end X2
