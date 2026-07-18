@@ -6929,8 +6929,13 @@ theorem r6f_G1_5 (L R : List Bool) :
   rfl
 
 /-- The `START→4` glue of `REGEN(6)`: `154` steps from `REGEN(6)`'s IN to `regen4_transport`'s
-IN (translated by `32`).  §5ab's `START→4` family (`154, 241, 424 …` = the nested
-DESCENT-FOLD `2^{k−3}−2`, `∀`-covered in principle by §5w/§5ag but NOT wired here). -/
+IN (translated by `32`).  §5ab's `START→4` family has the closed form `leadSteps k` (§5al,
+`= 154, 241, 424 …`), but its `∀k` MACHINE transport is **OPEN** — and, contra an earlier note,
+it is NOT covered by §5w/§5ag's `carry_descent_fold`: that fold runs on a RIGHT-tape block
+`ones (carryDigit m)` in `6·(2^{m+1}−2) = 3·2^{m+2}−12` steps, whereas the lead prefix
+`|P_k| = 3·2^{k−1}−9` runs on a LEFT-tape `ones (2^k−3)` region (counts `−12 ≠ −9`, no matching
+`m,k`).  So the fold is a structural ANALOGY, not an applicable lemma; the lead `∀k` needs a new
+left-geometry sweep transport + a `leadOut k` config family (verified 2026-07-19). -/
 theorem r6f_glue1 (L R : List Bool) :
     steps 154 ⟨.E, 11, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: false :: true :: true :: true :: true :: true :: false :: false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩
       = some ⟨.E, 41, ⟨true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: true :: false :: true :: false :: false :: true :: L, false, false :: true :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: false :: R⟩⟩ := by
@@ -7947,7 +7952,21 @@ real-tape instances `hlow_g2` / `hlow_g4`, `rfl` on the FULL untruncated milesto
 
 Both are TOTAL (`Nat → Cfg`, both parities, real exponential big block + full cascade), so the
 other two hypotheses `h_init` (`blank → M1 1`) and `h_doub` (`M6 g → M1 (g+1)`) can be stated
-against the SAME families — these are the actual milestone configs, not a weakened stand-in.
+against the SAME families — these are the actual milestone configs (correct CONTENT), not a
+weakened stand-in.
+
+**CAVEAT — these are CANONICAL representatives (`pos = 0`, boundary-blank-trimmed), so `h_init`
+is FALSE as literally stated (verified 2026-07-19).**  `def M1 g` anchors at `pos 0` with
+`left = []`; the real orbit reaches the `M1(1)` milestone at a DRIFTED position (measured `pos −25`
+at step 188 099) carrying the explicit boundary blanks `mvL`/`mvR` generate (`left = [false]`, extra
+trailing `0`).  Since `step` never reads `pos` and boundary blanks ride harmlessly, the RELATIVE
+transports here (`hlow_g2`/`hlow_g4`, `M1 g → M6 g`) are genuine `rfl`.  But `steps n init = some
+(M1 1)` demands EXACT `Cfg` equality including pos + blanks, which the canonical form does not have
+— a sibling check kernel-proved `steps 188099 init ≠ some (M1 1)`.  Discharging `h_init` therefore
+needs the pos + BOUNDARY-BLANK normalization (a `steps`-congruence weapon) to connect `init`'s
+reached config to the canonical `M1 1`, OR the families re-based to the reached configs.  This is
+the milestone-family assembly obligation (§1.4), OPEN — do NOT assume `h_init` follows from these
+defs as they stand.
 
 **`h_low` `∀g` STAYS OPEN.**  Proven here only at g=2, g=4 (real tapes, even g rides the big block
 as an opaque tail under `rfl`).  The `∀g` low phase is a g-GROWING braid (lengths 343/419/419/495/495
