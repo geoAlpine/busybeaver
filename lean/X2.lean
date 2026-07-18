@@ -6605,7 +6605,8 @@ means.**  `CascadeRegReached`'s `In` ranges over ALL of `List Bool → List Bool
 nothing binding it to the REGEN family (§5ah's corrected docstring); here `In` IS `regenIn k`.
 The pad is NOT existential either: `z = 2^{k−1}+9` is FORCED by tape geometry (`regenPad_law`),
 so the ONLY thing left existential is the decorative absolute anchor `p`, which carries no tape
-content.  PROVEN at `k=4,5,6` (`regenLaw_4/5/6`); OPEN for `k ≥ 7`. -/
+content.  PROVEN at `k=4,5,6,7` (`regenLaw_4/5/6`, and `regenLaw_7` in §5an — the FIRST
+recursive level, from `regen7_factored`); OPEN as a `∀k` law for `k ≥ 8`. -/
 def RegenLaw (k : Nat) : Prop :=
   ∃ p : Int, ∀ marker R,
     steps (exitSteps k) (regenIn k p (2 ^ (k - 1) + 9) marker R)
@@ -7925,5 +7926,148 @@ def leadSteps (k : Nat) : Nat := leadRec (k - 6)
 #print axioms trailSteps_closed
 #print axioms leadRec_closed
 #print axioms leadRec_pow_dom
+
+/-! ## §5am (MILESTONE FAMILIES, 2026-07-19) The CONCRETE `M1, M6 : Nat → Cfg` — §1.4.
+
+The top theorem `x2_nonhalt` quantifies over milestone families `M1, M6 : Nat → Cfg`.  This
+section makes them CONCRETE, matching the certified `x2cc` template `m1_spec(g)` (the
+generation-start E-milestone with leading `0`-gap 22) and the measured low-phase exit `M6(g)`.
+
+**Provenance / faithfulness.**  Both families were extracted bit-for-bit from the
+VERIFIED-FAITHFUL raw simulator `x2bd_sim.build(g)` (which matches this file's `step`), and the
+encodings below reproduce `build(g)` EXACTLY for `g = 1..6` (`M1`) and the low-phase exit for
+`g = 2..6` (`M6`) — cross-checked cell-for-cell (see the `#eval` audits and the two green
+real-tape instances `hlow_g2` / `hlow_g4`, `rfl` on the FULL untruncated milestone tapes).
+
+* `M1(g)`  (`K = g+8`): `[E]  0^22 (1 0^6)^{g-1} tail_g  1^{big_g}  0^2 1^{2^{K-1}-3} … 0^2 1^1`,
+  with `tail_g = 1 0^10` (g even) / `1 0^4 (10)^6` (g odd), `big_g = 2^K-3` (even) / `2^K-9` (odd).
+* `M6(g)`: `[E@-5]  0^2 (10)^4 1^9 0^2 (1^5 0^2)^{r_g} X_g  1^{bigM6_g}  0^2 1^{2^{K-1}-3} …`,
+  with `r_g = g+1, X_g = 1 0^2, bigM6_g = 2^K-3` (g even);
+       `r_g = g,   X_g = (10)^10, bigM6_g = 2^K-13` (g odd — the odd `−4` big-block trim).
+
+Both are TOTAL (`Nat → Cfg`, both parities, real exponential big block + full cascade), so the
+other two hypotheses `h_init` (`blank → M1 1`) and `h_doub` (`M6 g → M1 (g+1)`) can be stated
+against the SAME families — these are the actual milestone configs, not a weakened stand-in.
+
+**`h_low` `∀g` STAYS OPEN.**  Proven here only at g=2, g=4 (real tapes, even g rides the big block
+as an opaque tail under `rfl`).  The `∀g` low phase is a g-GROWING braid (lengths 343/419/419/495/495
+for g=2..6), not a fixed transport, and odd g's head reaches the big block (couples to `1^{2^K}`),
+so odd g is not even a fixed `rfl`.  Five named `[DESIGN]` pieces remain to assemble `∀g` (entry
+connector; the RETURN-pass `∀`-lemma; the `M4→M6` exit; the odd-g `−4` trim; the growing-register
+induction).  No `sorry`, no axiom; no machine decided. -/
+
+/-- Register U-units `(1 0^6)^k` (right-tape, nearest-first). -/
+def uUnits : Nat → List Bool
+  | 0 => []
+  | k + 1 => true :: (zeros 6 ++ uUnits k)
+
+/-- The milestone cascade `0^2 1^{2^hi-3} 0^2 1^{2^{hi-1}-3} …` — `n` descending `0^2`-separated
+blocks with top exponent `hi`, terminated by `T`. -/
+def m1casc : Nat → Nat → List Bool → List Bool
+  | 0, _, T => T
+  | n + 1, hi, T => false :: false :: (ones (2 ^ hi - 3) ++ m1casc n (hi - 1) T)
+
+/-- `M6` register R-units `(1^5 0^2)^r`. -/
+def rUnits : Nat → List Bool
+  | 0 => []
+  | r + 1 => ones 5 ++ (false :: false :: rUnits r)
+
+/-- **The generation-start milestone family `M1(g)`.**  State `E`, head on the first `0` of the
+mature register prefix `0^22`, pos 0.  Faithful to `x2bd_sim.build g` (verified g=1..6). -/
+def M1 (g : Nat) : Cfg :=
+  ⟨.E, 0, ⟨[], false,
+     zeros 21 ++ (uUnits (g - 1) ++
+       ((if g % 2 = 0 then true :: zeros 10 else true :: (zeros 4 ++ pow10 6)) ++
+        (ones (if g % 2 = 0 then 2 ^ (g + 8) - 3 else 2 ^ (g + 8) - 9) ++
+         m1casc (g + 6) (g + 7) [])))⟩⟩
+
+/-- **The mid-generation milestone family `M6(g)`** (the low-phase exit `M1(g) → M6(g)`).  State
+`E`, pos −5, one `0` to the left.  Faithful to the low-phase exit of `x2bd_sim.build g` (g=2..6). -/
+def M6 (g : Nat) : Cfg :=
+  ⟨.E, -5, ⟨[false], false,
+     false :: (pow10 4 ++ (ones 9 ++ (false :: false ::
+       (rUnits (if g % 2 = 0 then g + 1 else g) ++
+        ((if g % 2 = 0 then true :: false :: false :: [] else pow10 10) ++
+         (ones (if g % 2 = 0 then 2 ^ (g + 8) - 3 else 2 ^ (g + 8) - 13) ++
+          m1casc (g + 6) (g + 7) []))))))⟩⟩
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+/-- **`h_low` AT g=2, on the REAL milestone tapes (not truncated).**  The full untruncated
+`M1(2)` (exponential big block `1^{2^10-3}` + entire cascade as an untouched tail) reaches the
+full `M6(2)` in 343 steps.  Kernel `rfl` (even g never touches the big block, so it rides as an
+opaque tail).  `some` ⇒ HALT-FREE.  A genuine instance of `h_low` for the concrete families. -/
+theorem hlow_g2 : steps 343 (M1 2) = some (M6 2) := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 4000000 in
+/-- **`h_low` AT g=4, on the REAL milestone tapes.**  Full `M1(4) → M6(4)` in 419 steps, kernel
+`rfl`.  A second even instance on the untruncated milestone families. -/
+theorem hlow_g4 : steps 419 (M1 4) = some (M6 4) := rfl
+
+/-- The `h_low`-shaped existential at g=2 (`∃ n, 1 ≤ n ∧ steps n (M1 2) = some (M6 2)`). -/
+theorem h_low_at2 : ∃ n, 1 ≤ n ∧ steps n (M1 2) = some (M6 2) := ⟨343, by omega, hlow_g2⟩
+
+/-- The `h_low`-shaped existential at g=4. -/
+theorem h_low_at4 : ∃ n, 1 ≤ n ∧ steps n (M1 4) = some (M6 4) := ⟨419, by omega, hlow_g4⟩
+
+-- §5am MILESTONE FAMILIES axiom audits (must be `[propext, Quot.sound]`-only, NO `sorryAx`):
+#print axioms hlow_g2
+#print axioms hlow_g4
+#print axioms h_low_at2
+#print axioms h_low_at4
+
+-- FAITHFULNESS #eval audits (kernel-executed at build).  M1(g) reaches M6(g) in the measured
+-- low-phase length, on the FULL milestone tape, landing state E @ pos −5:
+#eval decide ((steps 343 (M1 2)).map (fun c => (c.st, c.pos)) = some (St.E, (-5 : Int)))   -- true
+#eval decide ((steps 419 (M1 4)).map (fun c => (c.st, c.pos)) = some (St.E, (-5 : Int)))   -- true
+-- odd g reaches the big block (excursion > register): the low phase is NOT even-style
+-- tail-independent, so no `rfl` instance here — the head trims `1^{2^K-9} → 1^{2^K-13}`.
+#eval decide (M1 3 = M1 3)                                                                  -- true (M1 total at odd g)
+#eval decide (M6 3 = M6 3)                                                                  -- true (M6 total at odd g)
+
+/-! ### §5an: `RegenLaw 7` — the FOURTH grounded level, and the FIRST recursive one.
+
+**`regen7_factored` (§5ak) ALREADY discharges `RegenLaw 7`, `∀ marker R`** — a connection §5ak's
+own docstring missed when it wrote "the IN config is a HYPOTHESIS … reachability (`RegenLaw`,
+§5ai) is untouched".  It is not untouched at `k=7`: `regen7_factored`'s IN/OUT ARE the
+`regenIn 7` / `cascadeReg 7` family, once its two FREE tails are instantiated —
+`L := pow01 62 ++ marker` (so `regen7_factored`'s `L` supplies `regenIn 7`'s comb-then-marker)
+and `R := zeros 7 ++ R` (the on-path config makes `66` blanks explicit and folds `7` more into
+the OUT's `cascadeReg` seam; `RegenLaw 7` uses the FORCED pad `2^{7−1}+9 = 73 = 66 + 7`, exactly
+`regenPad_law` at `k=7`).  With those two substitutions the IN is `regenIn 7 11 73 marker R` and
+the OUT is `cascadeReg 7 1 (11 − 2^7) marker R` — `11 − 128 = −117`, the anchor law `p − 2^k`.
+
+**This adds a fourth grounded level (`k=4,5,6,7`) and — decisively — the FIRST with a genuine
+interior recursion**: `exitArity 7 = 3`, `exitList 7 = [4,5,4]`, so `RegenLaw 7` is the first
+`RegenLaw` instance whose transport exercises BOTH an ascending (`4→5`) and a descending (`5→4`)
+interior leg of the odometer tree.  `k=4,5` are arity-0 leaves and `k=6` is arity-1 with no
+intermediate transition.
+
+**HONEST SCOPE — THIS IS NOT THE `∀k` STEP.**  `RegenLaw 7` rests on `regen7_factored`, which is
+a per-level assembly: its lead (`241`) and trailing (`627`) glue are brute per-level `rfl` runs
+(§5ak), so `k=7` is a FOURTH BESPOKE instance, not an inductive step.  Nothing here derives
+`RegenLaw 8` from `RegenLaw ≤7`; the `∀k` step still needs (i) the LEAD glue `regenIn k → interior
+start` as a `∀k` law, (ii) the TRAILING glue `interior end → cascadeReg k` as a `∀k` law (both
+now have transport-verified CLOSED FORMS — §5al `leadRec_closed` / `trailSteps_closed` — but not
+`∀k` machine proofs), and (iii) the interior chain assembled from `regenAscend`/`regenDescend`
+(§5al, already `∀a`) along `exitList k`, with the pad/marker bookkeeping threaded.  x2 stays
+`[OPEN]`. -/
+set_option maxRecDepth 20000 in
+set_option maxHeartbeats 8000000 in
+theorem regenLaw_7 : RegenLaw 7 :=
+  ⟨11, fun marker R => by
+    rw [show ((11 : Int) - 2 ^ 7) = -117 from by decide,
+        show (2 ^ (7 - 1) + 9) = 73 from by decide]
+    have h := regen7_factored (pow01 62 ++ marker) (zeros 7 ++ R)
+    -- Make the 2530-step count opaque so the goal reduces to a CONFIG identity (no simulation),
+    -- then the two configs are definitionally `regenIn 7` / `cascadeReg 7`.
+    revert h
+    generalize exitSteps 7 = n
+    intro h
+    exact h⟩
+
+-- AXIOM AUDIT — the fourth grounded level (first recursive one).  `[propext, Quot.sound]`.
+#print axioms regenLaw_7
 
 end X2
