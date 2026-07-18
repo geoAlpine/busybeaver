@@ -2990,6 +2990,142 @@ theorem lowMiddle_fwd : ∀ (m : Nat) (p : Int) (L Y : List Bool),
         rdepo_append_dep]
     exact congrArg some (cfgPos (by push_cast; omega))
 
+/-! ## §5tt (ON-PATH, 2026-07-19) THE REMAINING LOW-PHASE FIXED-SHAPE `∀`-LEMMAS — the RETURN
+pass (`∀`-unit), the `M4→M6` EXIT (`∀`-tail), and the fixed TURNAROUND connector (frame-∀).
+These are three of the five `[DESIGN]` pieces §5q/§5t flagged for `h_low ∀g`, now CLOSED GREEN.
+
+**Instrumentation (probes `x2probe`/`x2lm`/`x2lo`, forward from the VERIFIED-FAITHFUL
+`x2bd_sim.build(g)` = §5am `M1 g`, g = 2..6; positions/windows kernel-cross-checked).**  The
+EVEN-g low phase `M1(g) → M6(g)` decomposes EXACTLY as a measured length law
+
+    N(g) = 267 + 38·g       (= 343/419/495 at g=2/4/6, kernel-verified via `hlow_g2`/`hlow_g4`)
+
+into `267` steps of g-INDEPENDENT fixed connectors + `38·g = 29·g` (the FORWARD run `lowMiddle_fwd`)
+`+ 9·g` (the RETURN run `lowReturn_fold` below).  The three lemmas here are the fixed-shape halves:
+
+* `lowReturn_fold` — PIECE 2.  The RETURN pass is a CLEAN translation-invariant tile
+  (`lowReturn_tile`: `9` steps, `−7` pos, state `C`, consume one left `1^6 0` unit, deposit
+  `0 1^5 0` on the right), run `∀`-unit by length induction — the exact MIRROR of `lowMiddle_fwd`,
+  the `dSweepTurn`-shape `len-9`-per-unit crossing §5q/§5t named.  `some` ⇒ HALT-FREE.
+* `lowExit` — PIECE 3.  The `M4 → M6` exit is `36` fixed steps, TAIL-PARAMETRIC (any tail `T`):
+  from `[E@−3] 0^3 1^5 · T` it lands `[E@−5] (01)^5 · T`, i.e. the `M6`-register head form
+  `false :: pow10 4 ++ ones 9 ++ …` once `T` is the register tail.  Kernel `rfl`, `∀g`-composable.
+* `lowTurn` — PIECE 1 (turnaround half).  The FORWARD-end → RETURN-start connector: `42` fixed
+  steps, FRAME-INDEPENDENT (any left frame `L`, any right tail `R` past the big block); from
+  `[E] (1 0 1 0 0 1) 0^{10} · R` it lands `[C@+12] (1^6 0 1^5)·L … (0 1 0 0)·R`, converting the
+  forward `rdepo` deposit into the `retLcomb` form the return consumes.  Reads only `rel[0,15]`
+  (the big block rides untouched).  `some` ⇒ HALT-FREE.
+
+**Still `[DESIGN]` for the full `h_low ∀g` (honest boundary).**  (i) the fixed ENTRY connector
+`M1(g)→chain-start` (`157` steps, g-indep, tail-param — a longer `lowPhase_entry`-style `rfl`) and
+the fixed `return→M4` connector (`32` steps); (ii) the register RE-PARSE `∀g` list identities
+(`uUnits (g−1)·tail = comb ++ rcomb g ++ Y`, and `[1^5]·rdepo g` folds to `retLcomb`), pure list
+algebra; (iii) threading the untouched big-block tail `T` through all connectors; (iv) the ODD-g
+`−4` big-block trim — odd g's head REACHES the block (window max `2g+44 > blockStart`, `#eval`), so
+the odd low phase is NOT tail-independent and these frame-`∀` lemmas do not cover it.  None here
+decides the machine. -/
+
+/-- **PIECE 3 — the `M4 → M6` low-phase EXIT, `36` steps, TAIL-PARAMETRIC (`∀g`-composable).**
+From the measured `M4` near-head `[E@−3] 0^3 1^5 · T` (`T` = the register `(1^5 0^2)^r X 1^{big}…`
+tail, RIDES untouched) the head lands the `M6` register head form `[E@−5] (0 1)^5 · T`
+(`= false :: pow10 4 ++ ones 9 ++ …` after `T`).  Kernel `rfl`; `some` ⇒ HALT-FREE. -/
+theorem lowExit (T : List Bool) :
+    steps 36 ⟨.E, -3, ⟨[false], false,
+        false :: false :: false :: true :: true :: true :: true :: true :: T⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: true :: false :: true :: false :: true :: false :: true :: false :: true :: T⟩⟩ := by
+  rfl
+
+/-- Return-pass LEFT comb consumed (`1^6 0` per unit, front-nested). -/
+def retLcomb : Nat → List Bool
+  | 0 => []
+  | m + 1 => true :: true :: true :: true :: true :: true :: false :: retLcomb m
+
+/-- Return-pass RIGHT deposit (`0 1^5 0` per unit). -/
+def retDep : Nat → List Bool
+  | 0 => []
+  | m + 1 => false :: true :: true :: true :: true :: true :: false :: retDep m
+
+/-- Pushing one more deposit unit under `retDep` (the `rdepo_append_dep` analogue). -/
+theorem retDep_push : ∀ (m : Nat) (L : List Bool),
+    retDep m ++ (false :: true :: true :: true :: true :: true :: false :: L)
+      = retDep (m + 1) ++ L := by
+  intro m
+  induction m with
+  | zero => intro L; rfl
+  | succ m ih =>
+    intro L
+    show false :: true :: true :: true :: true :: true :: false ::
+        (retDep m ++ (false :: true :: true :: true :: true :: true :: false :: L))
+      = false :: true :: true :: true :: true :: true :: false :: (retDep (m + 1) ++ L)
+    rw [ih]
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **THE RETURN PER-UNIT TILE** (`9` steps, `C` on a `0`, net `−7`), FRAME-INDEPENDENT (any
+`Lrest`, `Rtail`).  Consumes one left `1^6 0` unit, deposits `0 1^5 0` on the right, sweeps `−7` —
+the MIRROR of `lowMiddle_tile`, the `dSweepTurn`-shape return crossing.  Kernel `rfl`. -/
+theorem lowReturn_tile (p : Int) (Lrest Rtail : List Bool) :
+    steps 9 ⟨.C, p, ⟨true :: true :: true :: true :: true :: true :: false :: Lrest, false, Rtail⟩⟩
+      = some ⟨.C, p - 7, ⟨Lrest, false,
+          false :: true :: true :: true :: true :: true :: false :: Rtail⟩⟩ := by
+  have h : steps 9 (⟨.C, p, ⟨true :: true :: true :: true :: true :: true :: false :: Lrest,
+        false, Rtail⟩⟩ : Cfg)
+      = some ⟨.C, p-1-1-1-1-1-1-1+1-1, ⟨Lrest, false,
+          false :: true :: true :: true :: true :: true :: false :: Rtail⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- **PIECE 2 — THE RETURN RUN, ARBITRARY UNIT COUNT `m` (the clean length induction).**  `m`
+tiles = `9 m` steps take the left comb `(1^6 0)^m ++ Lrest` to `Lrest`, depositing `retDep m` on
+the right and sweeping `−7 m`, for EVERY `m` and arbitrary far frames.  Proven by tile + length
+induction (the `lowMiddle_fwd` pattern).  `some` ⇒ HALT-FREE. -/
+theorem lowReturn_fold : ∀ (m : Nat) (p : Int) (Lrest Rtail : List Bool),
+    steps (9 * m) ⟨.C, p, ⟨retLcomb m ++ Lrest, false, Rtail⟩⟩
+      = some ⟨.C, p - 7 * (m : Int), ⟨Lrest, false, retDep m ++ Rtail⟩⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro p Lrest Rtail
+    show steps 0 _ = _
+    exact congrArg some (cfgPos (by push_cast; omega))
+  | succ m ih =>
+    intro p Lrest Rtail
+    have hn : 9 * (m + 1) = 9 + 9 * m := by omega
+    rw [hn, steps_add]
+    show (steps 9 ⟨.C, p, ⟨true :: true :: true :: true :: true :: true :: false ::
+        (retLcomb m ++ Lrest), false, Rtail⟩⟩).bind (steps (9 * m)) = _
+    rw [lowReturn_tile, someBind,
+        ih (p - 7) Lrest (false :: true :: true :: true :: true :: true :: false :: Rtail),
+        retDep_push]
+    exact congrArg some (cfgPos (by push_cast; omega))
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 2000000 in
+/-- **PIECE 1 (turnaround half) — THE FORWARD-END → RETURN-START CONNECTOR**, `42` fixed steps,
+FRAME-INDEPENDENT (any `L`, `R`).  From `[E] (1 0 1 0 0 1) 0^{10} · R` (the forward terminal comb
++ the even parity tail; the big block `1^{big}` is `R`, RIDES untouched — read window `rel[0,15]`)
+the head turns at the block boundary and re-forms the register as `retLcomb` on the left, landing
+`[C@+12] (1^6 0 1^5)·L · (0 1 0 0)·R` — the `lowReturn_fold` start form.  Kernel `rfl`;
+`some` ⇒ HALT-FREE. -/
+theorem lowTurn (p : Int) (L R : List Bool) :
+    steps 42 ⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true :: (zeros 10 ++ R)⟩⟩
+      = some ⟨.C, p + 12, ⟨true :: true :: true :: true :: true :: true :: false ::
+          true :: true :: true :: true :: true :: L, false,
+          false :: true :: false :: false :: R⟩⟩ := by
+  have h : steps 42 (⟨.E, p, ⟨L, false,
+        true :: false :: true :: false :: false :: true :: (zeros 10 ++ R)⟩⟩ : Cfg)
+      = some ⟨.C, p+1+1+1+1+1+1+1+1+1+1+1-1-1-1+1-1-1-1+1-1-1+1+1+1+1+1-1-1-1+1+1+1+1+1+1+1+1-1-1-1+1-1,
+          ⟨true :: true :: true :: true :: true :: true :: false ::
+           true :: true :: true :: true :: true :: L, false,
+           false :: true :: false :: false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+-- §5tt axiom audits (must be `[propext, Quot.sound]`-only, NO `sorryAx`/`native`):
+#print axioms lowExit
+#print axioms lowReturn_fold
+#print axioms lowTurn
+
 /-! ## §5r (LOGICAL FRAME, 2026-07-13) THE TOP-LEVEL NON-HALT ASSEMBLY — a clean CONDITIONAL
 theorem (`x2_nonhalt`) on the two OPEN phase transports.
 
