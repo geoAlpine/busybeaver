@@ -69,8 +69,13 @@ are unbuilt; the per-level `rfl` runs at k=6,7 (`r{6,7}f_glue1/glue2`) are bespo
 - **(G-blocker) boundary-blank / pos normalization** — §5am `M1/M6` are canonical (pos 0, blank-trimmed);
   the real orbit reaches them at drifting negative pos WITH explicit boundary blanks, so
   `steps n init = some (M1 1)` is FALSE as stated (kernel-proved). `step` ignores pos and boundary
-  blanks ride harmlessly (`mvR ⟨l,h,[]⟩ = mvR ⟨l,h,[false]⟩`), so a **blank-normalization congruence**
-  reconciles them. *(Weapon under construction 2026-07-19.)* Unblocks `h_init` and milestone anchoring.
+  blanks ride harmlessly (`mvR ⟨l,h,[]⟩ = mvR ⟨l,h,[false]⟩`).
+  **✅ BUILT (`lean/BlankNorm.lean`, GREEN, `[propext]`-only): the blank-normalization congruence
+  `steps_rpad`/`steps_lpad` (single blank, disjunction handling absorption) + `steps_rpad_zeros`/
+  `steps_lpad_zeros` (iterated `zeros k`, `j ≤ k` survive).** Proved by a `step`-level bisimulation
+  (`rtail`/`ltail` + one-cell lemmas + 12-way case). Composes with `steps_pos_shift` (pos) to close
+  the two `M1`-vs-`c189` mismatch axes; residual = a finite `zeros j` arithmetic reconciliation.
+  Unblocks `h_init` and all milestone anchoring.
 
 ## Reading of the map
 
