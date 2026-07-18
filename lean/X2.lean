@@ -3091,6 +3091,24 @@ theorem lowExit_tile (p : Int) (Lf R : List Bool) :
   rw [h]
   exact congrArg some (cfgPos (by omega))
 
+/-- **THE EXIT TILE IN THE RAW-ORBIT LEFT FRAME** (`M4 → M6`, 36 steps, `−2`).  A cell-for-cell
+trace of the real g=4 milestone orbit (`lowPhaseEven_g4`, steps 383→419) shows its exit-start left
+frame is the single blank `[0]`, NOT `lowExit_tile`'s `0 0 0 :: Lf` — the two are different
+frames, both `rfl`.  This is the version that COMPOSES with the raw milestone orbit; `R`-parametric
+(the accumulated register rides untouched, head window `[−6,+4]`), hence `∀ even g`.  `some` ⇒
+HALT-FREE. -/
+theorem lowExit_blankLeft (p : Int) (R : List Bool) :
+    steps 36 ⟨.E, p, ⟨[false], false,
+        false :: false :: false :: true :: true :: true :: true :: R⟩⟩
+      = some ⟨.E, p - 2, ⟨[false], false,
+          false :: true :: false :: true :: false :: true :: false :: true :: false :: R⟩⟩ := by
+  have h : steps 36 (⟨.E, p, ⟨[false], false,
+        false :: false :: false :: true :: true :: true :: true :: R⟩⟩ : Cfg)
+      = some ⟨.E, p+1+1+1+1-1-1-1+1+1+1+1-1-1-1-1-1-1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1+1,
+          ⟨[false], false,
+           false :: true :: false :: true :: false :: true :: false :: true :: false :: R⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
 /-! ## §5r (LOGICAL FRAME, 2026-07-13) THE TOP-LEVEL NON-HALT ASSEMBLY — a clean CONDITIONAL
 theorem (`x2_nonhalt`) on the two OPEN phase transports.
 
@@ -8042,5 +8060,145 @@ theorem term_transport_k5 (L R : List Bool) :
 #print axioms trailSteps_grounds
 #print axioms term_transport_k4
 #print axioms term_transport_k5
+
+/-! ### §5ao: THE LEAD GLUE IS AN INTERIOR-INDEPENDENT CASCADE FOLD, `∀`-machinery (2026-07-18).
+
+The framing glue's OTHER half.  Unlike trailing (§5an, entangled with the interior), the LEAD's IN
+is `regenIn k` (known `∀k` shape) and it sweeps the milestone cascade `1^{2^{k-1}-3} 0 0 … 0 0 1^5`
+on the RIGHT of the head — reading only bounded local windows — so it is INTERIOR-INDEPENDENT.  A
+cell-for-cell trace of the real k=6,7 lead orbits shows it is a SELF-SIMILAR cascade FOLD (matching
+the nesting law `leadword(k)` ⊑ `leadword(k+1)`), not a flat sweep, built from the pre-existing
+frame-independent period-6 chew (`ecombChew_tile`/`ecombChewFold`, §5b) plus a separator-cross and
+a fixed 100-step odometer-entry tail:
+
+  • `leadSep_tile` — the residue+`00` separator cross, `∀`-frame.
+  • `leadBlock v` — one cascade block `1^{2v+1}` chewed + separator crossed, `∀v`, `∀`-frame.
+  • `leadFold` — the VARIABLE-LENGTH cascade-list fold `∀ vs`, interior-independent (the `∀k` sweep).
+  • `leadTail_tile` — the fixed 100-step odometer-entry tail (`50+50` kernel chunks + `steps_pos_shift`).
+  • `r6_lead_reconstruct` — CAPSTONE: rebuilds `r6f_glue1`'s entire `lead(6)=154` transport
+    (`⟨.E,11,…⟩ → ⟨.E,41,…⟩`) purely from `leadBlock 6 ∘ leadBlock 2 ∘ leadTail_tile`, `∀ L R`,
+    landing at the exact endpoint `r6f_glue1` reports.  `lead(k) = (3·2^{k-1}-9k+12) + 100`.
+
+**HONEST SCOPE.**  This is the lead's `∀k` DYNAMICS as green machinery — NOT yet a single `∀k`
+lead-glue theorem.  Three symbolic-wiring obligations remain: (1) exposing `leadFold`'s concrete
+head-deposit to hand off to `leadTail_tile`; (2) grounding `regenIn k`'s right tape ≡
+`ecasc [2^{k-2}-2,…,2^2-2] …` `∀k` (the `2^j-3` block arithmetic); (3) identifying the tail's OUT
+with the interior's entry.  All are wiring, not dynamics.  `∀k RegenLaw k` stays [OPEN].
+`[propext, Quot.sound]`. -/
+theorem leadSep_tile (p : Int) (L X : List Bool) :
+    steps 3 ⟨.E, p, ⟨L, false, false :: true :: false :: false :: X⟩⟩
+      = some ⟨.E, p + 3, ⟨false :: false :: true :: L, false, false :: X⟩⟩ := by
+  have h : steps 3 (⟨.E, p, ⟨L, false, false :: true :: false :: false :: X⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1, ⟨false :: false :: true :: L, false, false :: X⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+theorem leadBlock (v : Nat) (p : Int) (L X : List Bool) :
+    steps (6 * v + 3) ⟨.E, p, ⟨L, false, false :: (ones (2 * v + 1) ++ (false :: false :: X))⟩⟩
+      = some ⟨.E, p + 2 * (v : Int) + 3,
+          ⟨false :: false :: true :: (pow01 v ++ L), false, false :: X⟩⟩ := by
+  rw [steps_add, ecombChewFold v p L (false :: false :: X), someBind]
+  show steps 3 ⟨.E, p + 2 * (v : Int), ⟨pow01 v ++ L, false,
+      false :: true :: false :: false :: X⟩⟩ = _
+  rw [leadSep_tile]
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 8000000 in
+theorem tailC1 (M R : List Bool) :
+    steps 50 ⟨.E, 64, ⟨false :: false :: true :: false :: true :: M, false,
+        false :: true :: false :: false :: false :: false :: false :: false ::
+          false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 64, ⟨false :: false :: true :: false :: true :: M, true,
+          false :: false :: true :: true :: true :: true :: true :: false :: false ::
+            true :: false :: false :: false :: false :: R⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 8000000 in
+theorem tailC2 (M R : List Bool) :
+    steps 50 ⟨.E, 64, ⟨false :: false :: true :: false :: true :: M, true,
+        false :: false :: true :: true :: true :: true :: true :: false :: false ::
+          true :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, 72, ⟨ones 13 ++ M, false,
+          false :: true :: false :: false :: false :: false :: R⟩⟩ := rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 8000000 in
+theorem leadTail_tile (p : Int) (M R : List Bool) :
+    steps 100 ⟨.E, p, ⟨false :: false :: true :: false :: true :: M, false,
+        false :: true :: false :: false :: false :: false :: false :: false ::
+          false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, p + 8, ⟨ones 13 ++ M, false,
+          false :: true :: false :: false :: false :: false :: R⟩⟩ := by
+  have base : steps 100 ⟨.E, (64:Int), ⟨false :: false :: true :: false :: true :: M, false,
+        false :: true :: false :: false :: false :: false :: false :: false ::
+          false :: false :: false :: false :: false :: false :: R⟩⟩
+      = some ⟨.E, (72:Int), ⟨ones 13 ++ M, false,
+          false :: true :: false :: false :: false :: false :: R⟩⟩ := by
+    rw [show (100:Nat) = 50+50 from rfl, steps_add, tailC1, someBind, tailC2]
+  have sh := steps_pos_shift (d := p - 64) base
+  rw [show (64:Int) + (p - 64) = p from by omega,
+      show (72:Int) + (p - 64) = p + 8 from by omega] at sh
+  exact sh
+
+/-- The lead cascade as a list of block half-widths `v` (block `= 1^{2v+1}`), tail `T`. -/
+def ecasc : List Nat → List Bool → List Bool
+  | [], T => T
+  | v :: rest, T => ones (2 * v + 1) ++ (false :: false :: ecasc rest T)
+
+def leadTime : List Nat → Nat
+  | [] => 0
+  | v :: rest => (6 * v + 3) + leadTime rest
+
+/-- **THE `∀`-CASCADE-LIST LEAD FOLD** — interior-independent.  For ANY block list `vs`, the head
+sweeps the whole cascade in `leadTime vs` steps, depositing some `dep` on the left, `T` untouched.
+This is the lead's `∀k` sweep: at level `k`, `vs = [2^{k-2}-2, …, 2^2-2]`.  `some` ⇒ HALT-FREE. -/
+theorem leadFold : ∀ (vs : List Nat) (p : Int) (L T : List Bool),
+    ∃ (dep : List Bool) (q : Int),
+      steps (leadTime vs) ⟨.E, p, ⟨L, false, false :: ecasc vs T⟩⟩
+        = some ⟨.E, q, ⟨dep ++ L, false, false :: T⟩⟩ := by
+  intro vs
+  induction vs with
+  | nil => intro p L T; exact ⟨[], p, by show steps 0 _ = _; rfl⟩
+  | cons v rest ih =>
+    intro p L T
+    obtain ⟨dep', q', hIH⟩ := ih (p + 2 * (v : Int) + 3)
+      (false :: false :: true :: (pow01 v ++ L)) T
+    refine ⟨dep' ++ (false :: false :: true :: pow01 v), q', ?_⟩
+    show steps ((6 * v + 3) + leadTime rest) ⟨.E, p, ⟨L, false,
+        false :: (ones (2 * v + 1) ++ (false :: false :: ecasc rest T))⟩⟩ = _
+    rw [steps_add, leadBlock v p L (ecasc rest T), someBind, hIH, List.append_assoc]; rfl
+
+set_option maxRecDepth 8000 in
+set_option maxHeartbeats 8000000 in
+/-- **CAPSTONE — `lead(6)=154` REBUILT from the fold**, `∀ L R`: the entire `r6f_glue1` lead
+transport `⟨.E,11,…⟩ → ⟨.E,41,…⟩` from `leadBlock 6 ∘ leadBlock 2 ∘ leadTail_tile`, landing at the
+exact endpoint `r6f_glue1` (line ~7034) reports.  The lead machinery is real at a concrete level. -/
+theorem r6_lead_reconstruct (L R : List Bool) :
+    steps 154 ⟨.E, 11, ⟨ones 61 ++ (false :: true :: false :: false :: true :: L), false,
+        false :: (ones 13 ++ (false :: false :: (ones 5 ++ (false :: false :: true ::
+          (List.replicate 40 false ++ R)))))⟩⟩
+      = some ⟨.E, 41, ⟨ones 13 ++ (false :: true ::
+          (false :: false :: true :: (pow01 6 ++
+            (ones 61 ++ (false :: true :: false :: false :: true :: L))))), false,
+          false :: true :: false :: false :: false :: false ::
+            (List.replicate 28 false ++ R)⟩⟩ := by
+  rw [show (154:Nat) = (6*6+3) + ((6*2+3) + 100) from by decide,
+      steps_add, leadBlock 6 11 (ones 61 ++ (false :: true :: false :: false :: true :: L))
+        (ones 5 ++ (false :: false :: true :: (List.replicate 40 false ++ R))), someBind,
+      steps_add, leadBlock 2 _ _ (true :: (List.replicate 40 false ++ R)), someBind]
+  show steps 100 ⟨.E, (11:Int) + 2*(6:Int) + 3 + 2*(2:Int) + 3,
+      ⟨false :: false :: true :: false :: true :: (false :: true ::
+        (false :: false :: true :: (pow01 6 ++
+          (ones 61 ++ (false :: true :: false :: false :: true :: L))))), false,
+       false :: true :: false :: false :: false :: false :: false :: false ::
+        false :: false :: false :: false :: false :: false :: (List.replicate 28 false ++ R)⟩⟩ = _
+  rw [leadTail_tile]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms lowExit_blankLeft
+#print axioms leadSep_tile
+#print axioms leadBlock
+#print axioms leadTail_tile
+#print axioms leadFold
+#print axioms r6_lead_reconstruct
 
 end X2
