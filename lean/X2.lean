@@ -7854,4 +7854,76 @@ theorem regenDescend (a : Nat) (ha : 5 ≤ a) (h : RegenLaw a) (q : Int) (m R : 
 #print axioms foldDep_split
 #print axioms regenDescend
 
+/-! ## §5al (2026-07-19) THE FRAMING-GLUE CLOSED FORM — arithmetic backbone [GREEN],
+machine-level law [DESIGN].
+
+Transport-verified (`x2fg_frame.py` + an independent re-extraction) lead/trailing at k=6..11:
+```
+  k    :  6    7    8     9     10    11
+  lead : 154  241  424   799   1558  3085
+  trail: 498  627  884   1397  2422  4471
+```
+Arities match `exitArity k = (k−5)(k−4)/2` at every level, and each decomposition sums (with the
+inter-steps) to `exitSteps k`.  Structure (word identities, not a curve fit): the TRAILING is a
+k-INDEPENDENT 359-step word followed by `TERM(k)` (0 free params); the LEAD obeys the nesting law
+`leadword(k+1) = P ++ leadword(k)` with `|P| = 3·2^{k−1}−9` (word identity at all 5 transitions),
+base `lead(6)=154` and the per-level `−9` `[OBSERVED]`.  See `FRAMING_GLUE_2026-07-17.md`.
+
+What is GREEN here is the ARITHMETIC: the recursions match the closed forms.  The machine-level
+`framingGlue` (that these counts ARE the REGEN(k) frame step counts `∀k`) needs the transport
+word-identities as a `∀k` theorem = the `RegenLaw ∀k` object (§1.3.3), and stays OPEN.  No machine
+decided; no `sorry`, no axiom, no `native_decide`. -/
+
+/-- trailing-glue step count = a fixed 359-step word `++ TERM(k)`. -/
+def trailSteps (k : Nat) : Nat := 359 + termSteps k
+
+/-- **trailing closed form** `= 2^{k+1} + k + 364`. -/
+theorem trailSteps_closed (k : Nat) : trailSteps k = 2 ^ (k + 1) + k + 364 := by
+  unfold trailSteps termSteps; omega
+
+/-- lead-glue step count, 0-indexed by `j = k−6`: the nesting law prepends `3·2^{k−1}−9` per level. -/
+def leadRec : Nat → Nat
+  | 0     => 154
+  | (j+1) => leadRec j + 3 * 2 ^ (j + 5) - 9
+
+/-- `32 ≤ 2^{n+5}` (guards the truncated subtraction in `leadRec`). -/
+theorem leadRec_pow_ge32 (n : Nat) : (32 : Nat) ≤ 2 ^ (n + 5) := by
+  have h : (2 : Nat) ^ 5 ≤ 2 ^ (n + 5) := Nat.pow_le_pow_right (by decide) (by omega)
+  have e : (2 : Nat) ^ 5 = 32 := by decide
+  omega
+
+/-- `3·(j+7) ≤ 2^{j+5}` — the per-level prepend `3·2^{k−1}−9` never underflows. -/
+theorem leadRec_pow_dom (j : Nat) : 3 * (j + 7) ≤ 2 ^ (j + 5) := by
+  induction j with
+  | zero => decide
+  | succ n ih =>
+    have hpow : (2 : Nat) ^ (n + 1 + 5) = 2 * 2 ^ (n + 5) := by rw [Nat.pow_succ]; omega
+    have h32 := leadRec_pow_ge32 n
+    rw [hpow]; omega
+
+/-- **lead closed form** `leadRec j = 3·2^{j+5} − 9(j+6) + 112`; with `leadSteps k := leadRec (k−6)`
+this is `3·2^{k−1} − 9k + 112` for `6 ≤ k`. -/
+theorem leadRec_closed (j : Nat) : leadRec j = 3 * 2 ^ (j + 5) - 9 * (j + 6) + 112 := by
+  induction j with
+  | zero => decide
+  | succ n ih =>
+    have hpow : (2 : Nat) ^ (n + 1 + 5) = 2 * 2 ^ (n + 5) := by rw [Nat.pow_succ]; omega
+    have hb := leadRec_pow_dom n
+    show leadRec n + 3 * 2 ^ (n + 5) - 9 = _
+    rw [ih, hpow]; omega
+
+/-- lead-glue step count for `6 ≤ k` (closed form `3·2^{k−1} − 9k + 112` via `leadRec_closed`). -/
+def leadSteps (k : Nat) : Nat := leadRec (k - 6)
+
+-- [DESIGN — OPEN, = `RegenLaw ∀k`] the machine-level framing-glue law:
+--   theorem framingGlue (k : Nat) (h : 6 ≤ k) :
+--     exitSteps k = leadSteps k + interSteps k + trailSteps k
+-- Needs the lead-nesting and 359-word transport identities as a `∀k` theorem (§1.3.3).
+-- Deliberately NOT stated as `theorem … := sorry` (that would inject `sorryAx`); kept a comment.
+
+-- AXIOM AUDIT — framing-glue arithmetic backbone.  All `[propext, Quot.sound]`.
+#print axioms trailSteps_closed
+#print axioms leadRec_closed
+#print axioms leadRec_pow_dom
+
 end X2
