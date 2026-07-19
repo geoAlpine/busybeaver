@@ -8593,11 +8593,147 @@ theorem regenInterior_8 (q : Int) (m R : List Bool) :
   rw [steps_add, hA, someBind, regenIn_pad 4 qA 1 16 _ (ascR 4 1 R)]
   exact hB
 
+/-! ### §5ap (cont.) THE MARKER-REPARSE `∀` LIST IDENTITY — the self-similar seam made a law.
+The `k=8` seam (`regenInterior_8`) reparsed the descend-OUT marker as the next block's ascending
+marker by DEFEQ at one concrete level.  It is in fact a `∀d` LIST IDENTITY: `foldDepTail` and
+`ascMarker 4` are the SAME nested product `∏_{j<d} (0 0 1 (01)^{2^{4+j}-2})`, built from opposite
+ends of the append.  Proving `ascMarker 4 d TAIL = foldDepTail d ++ TAIL` turns the inter-block
+seam into a `∀k` step (combined with `regenIn_pad` for the pad-1→pad-17 renormalization). -/
+
+/-- **TAIL FACTORS OUT OF `ascMarker`, `∀ b n`** — `ascMarker b n TAIL = ascMarker b n [] ++ TAIL`.
+The nested marker is a fixed prefix times the free tail.  Induction on `n`. `[propext]`. -/
+theorem ascMarker_tail (n : Nat) : ∀ (b : Nat) (TAIL : List Bool),
+    ascMarker b n TAIL = ascMarker b n [] ++ TAIL := by
+  induction n with
+  | zero => intro b TAIL; rfl
+  | succ n ih =>
+    intro b TAIL
+    simp only [ascMarker]
+    rw [ih (b + 1) TAIL]
+    simp [List.append_assoc]
+
+/-- **`ascMarker` SNOC, `∀ b d`** — one more block at the TOP: `ascMarker b (d+1) [] =
+ascMarker b d [] ++ (0 0 1 (01)^{2^{b+d}-2})`.  Bridges `ascMarker`'s bottom-up recursion to
+`foldDepTail`'s top-down one.  Induction on `d`. `[propext]`. -/
+theorem ascMarker_snoc (d : Nat) : ∀ (b : Nat),
+    ascMarker b (d + 1) [] = ascMarker b d [] ++ (false :: false :: true :: pow01 (2 ^ (b + d) - 2)) := by
+  induction d with
+  | zero => intro b; simp only [ascMarker, Nat.add_zero, List.append_nil, List.nil_append]
+  | succ d ih =>
+    intro b
+    show false :: false :: true :: (pow01 (2 ^ b - 2) ++ ascMarker (b + 1) (d + 1) [])
+        = (false :: false :: true :: (pow01 (2 ^ b - 2) ++ ascMarker (b + 1) d []))
+          ++ (false :: false :: true :: pow01 (2 ^ (b + (d + 1)) - 2))
+    rw [ih (b + 1), show b + (d + 1) = (b + 1) + d from by omega]
+    simp [List.append_assoc]
+
+/-- **`foldDepTail d = ascMarker 4 d []`, `∀d`** — the descend-OUT deposit IS the ascending-ramp
+marker at base 4.  Both are `∏_{j<d} (0 0 1 (01)^{2^{4+j}-2})`.  Induction on `d` via `ascMarker_snoc`.
+`[propext]`. -/
+theorem foldDepTail_eq (d : Nat) : foldDepTail d = ascMarker 4 d [] := by
+  induction d with
+  | zero => rfl
+  | succ d ih =>
+    show foldDepTail d ++ (false :: false :: true :: pow01 (2 ^ (d + 4) - 2)) = ascMarker 4 (d + 1) []
+    rw [ascMarker_snoc d 4, ih, show (4 : Nat) + d = d + 4 from by omega]
+
+/-- **THE MARKER-REPARSE `∀` LIST IDENTITY** — `ascMarker 4 d TAIL = foldDepTail d ++ TAIL`.
+This is the self-similar SEAM as a law: `rampDescend`'s OUT marker `foldDepTail d ++ TAIL` is
+EXACTLY the ascending marker `ascMarker 4 d TAIL` the next super-digit's `rampDescend` consumes.
+Combined with `regenIn_pad` (∀) for the pad, the inter-block seam is a `∀k` step. `[propext]`. -/
+theorem ascMarker_foldDepTail (d : Nat) (TAIL : List Bool) :
+    ascMarker 4 d TAIL = foldDepTail d ++ TAIL := by
+  rw [ascMarker_tail d 4 TAIL, foldDepTail_eq d]
+
+/-! ### §5ap (cont.) THE SELF-SIMILAR ODOMETER FOLD, `∀k` (roadmap T3, D closed conditionally).
+
+`exitList (k+6) = range'(4,k+1) ++ exitList (k+5)`, so `interior(k+6) = rampDescend 4 k` (the top
+super-digit: sub-calls `4..k+4`, ramp up then reset to floor 4) `·` `interior(k+5)`.  Unfolded,
+`interior(k+6)` is a DESCENDING chain of `rampDescend 4 n` super-digits, `n = k, k−1, …, 1`, glued
+at each seam by the two `∀` laws just proved: `ascMarker_foldDepTail` (the descend-OUT marker IS the
+next block's ascending marker) and `regenIn_pad` (pad `1 → 2^3+9`).  `interiorFold` runs this as a
+`∀k` induction; the ONLY hypotheses are `RegenLaw m` for `4 ≤ m ≤ k+4 = (k+6)−2 < k+6` — exactly the
+strictly-lower laws `carryExit_strong_frame`'s strong IH supplies.  So the interior fold `D` is
+CLOSED `∀k` (conditionally); what remains for `RegenLaw ∀k` is only the lead/trailing framing B/C. -/
+
+/-- The nested blank-pad tail for a `k`-super-digit interior fold: block `n`'s pad `ascR 4 n`,
+seams carrying `0^16` (the `pad 1 → 17` renormalization budget) between consecutive blocks. -/
+def interiorPadTail : Nat → List Bool → List Bool
+  | 0, R => R
+  | 1, R => ascR 4 1 R
+  | (k + 2), R => ascR 4 (k + 2) (zeros 16 ++ interiorPadTail (k + 1) R)
+
+/-- Total step count of the `k`-super-digit interior fold: `Σ_{n=1}^{k} rampDescend-steps(n)`. -/
+def interiorFoldSteps : Nat → Nat
+  | 0 => 0
+  | (k + 1) => (ascSteps 4 (k + 1) + (exitSteps (4 + (k + 1)) + descentSteps (4 + (k + 1))))
+                 + interiorFoldSteps k
+
+/-- **THE SELF-SIMILAR ODOMETER FOLD, `∀k`.**  `j+1` super-digits (`rampDescend 4 (j+1)`, then
+`4 (j)`, …, then `4 1`) compose into ONE interior transport `regenIn 4 → regenIn 4`, in
+`interiorFoldSteps (j+1)` steps, conditional ONLY on `RegenLaw (4+i)` for `i ≤ j+1`.  The induction
+step glues the top super-digit's descend-OUT to the continuation's ascending-IN by
+`ascMarker_foldDepTail` (marker) and `regenIn_pad` (pad); the base is `rampDescend 4 1`.  The anchor
+`q'` and OUT marker `mOut` are existential (position-free / determined).  `some` ⇒ HALT-FREE.
+`[propext, Quot.sound]`. -/
+theorem interiorFold : ∀ (j : Nat),
+    (∀ i, i ≤ j + 1 → RegenLaw (4 + i)) →
+    ∀ (q : Int) (m R : List Bool),
+      ∃ (q' : Int) (mOut : List Bool),
+        steps (interiorFoldSteps (j + 1))
+          (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (j + 1) m) (interiorPadTail (j + 1) R))
+        = some (regenIn 4 q' 1 mOut R) := by
+  intro j
+  induction j with
+  | zero =>
+    intro hlaw q m R
+    obtain ⟨q', h⟩ := rampDescend 4 1 (by omega) (by omega) (fun i hi => hlaw i (by omega)) q m R
+    refine ⟨q', ?_⟩
+    apply Exists.intro
+    exact h
+  | succ j ih =>
+    intro hlaw q m R
+    obtain ⟨qA, hA⟩ := rampDescend 4 (j + 2) (by omega) (by omega)
+        (fun i hi => hlaw i (by omega)) q m (zeros 16 ++ interiorPadTail (j + 1) R)
+    obtain ⟨q'', mOut, hIH⟩ := ih (fun i hi => hlaw i (by omega)) qA
+        (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))) R
+    refine ⟨q'', mOut, ?_⟩
+    show steps ((ascSteps 4 (j + 2) + (exitSteps (4 + (j + 2)) + descentSteps (4 + (j + 2))))
+          + interiorFoldSteps (j + 1))
+        (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (j + 2) m)
+          (ascR 4 (j + 2) (zeros 16 ++ interiorPadTail (j + 1) R)))
+      = some (regenIn 4 q'' 1 mOut R)
+    rw [steps_add, hA, someBind,
+        show 4 + (j + 2) - 5 = j + 1 from by omega,
+        show 4 + (j + 2) - 1 = j + 5 from by omega,
+        ← ascMarker_foldDepTail, regenIn_pad 4 qA 1 16 _ (interiorPadTail (j + 1) R)]
+    exact hIH
+
+/-- **D `∀k` IN THE LOWER-LAW FORM** — the interior fold for `k ≥ 1` super-digits, conditional on
+`RegenLaw m` for `4 ≤ m ≤ k+4`.  For `REGEN(k+6)` the interior has `k` super-digits and top level
+`k+4 = (k+6)−2 < k+6`, so this hypothesis is exactly the strictly-lower laws available to the `∀k`
+recursion.  Interior fold `D` closes `∀k`; `RegenLaw ∀k` now reduces to the lead/trailing framing
+B/C.  `[propext, Quot.sound]`. -/
+theorem interiorFold_lower (k : Nat) (hk : 1 ≤ k)
+    (hlow : ∀ m, 4 ≤ m → m ≤ k + 4 → RegenLaw m)
+    (q : Int) (mk R : List Bool) :
+    ∃ (q' : Int) (mOut : List Bool), steps (interiorFoldSteps k)
+        (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 k mk) (interiorPadTail k R))
+      = some (regenIn 4 q' 1 mOut R) := by
+  obtain ⟨j, rfl⟩ : ∃ j, k = j + 1 := ⟨k - 1, by omega⟩
+  exact interiorFold j (fun i hi => hlow (4 + i) (by omega) (by omega)) q mk R
+
 -- AXIOM AUDIT — the interior leg-fold: pad law, k=7 fold, ∀ ascending spine, ∀ super-digit, k=8.
 #print axioms regenIn_pad
 #print axioms regenInterior_7
 #print axioms ascSpine
 #print axioms rampDescend
 #print axioms regenInterior_8
+#print axioms ascMarker_tail
+#print axioms ascMarker_snoc
+#print axioms foldDepTail_eq
+#print axioms ascMarker_foldDepTail
+#print axioms interiorFold
+#print axioms interiorFold_lower
 
 end X2
