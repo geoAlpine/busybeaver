@@ -9350,4 +9350,58 @@ theorem foldMarker_length : ∀ (j : Nat) (m : List Bool),
 -- AXIOM AUDIT — foldMarker width weapon.  `[propext, Quot.sound]`.
 #print axioms foldMarker_length
 
+/-! ### §5ay (2026-07-20) TRAILING WORD — PHASE 3 (RE-ANCHOR) BANKED `∀`.
+
+The trailing word (`cascadeReg 4 (foldMarker (k−7) marker) → cascadeReg k`) is a braided odometer
+sweep whose crux crossing is `dSweepTurn`-family (already `∀`).  Its terminal RE-ANCHOR — Phase 3 —
+is an 8-step LOCAL settle: after the big leftward doubling sweep reaches the odometer comb, the head
+lays `cascadeReg`'s `0^3` block separator and settles into `E` on the comb/block boundary.  Reverse-
+engineered from the real `r7f_glue2` trace (steps 619→627, absolute-tape), and — decisively — verified
+`∀ L R`: the head range is only 5 cells, so the fresh top block (`ones N`, to the right) and the comb
+below (to the left) are FREE tails.  This banks Phase 3 of the trailing word as a reusable `∀`
+transport (the erase phase, the `dSweepTurn` fold, and the marker-fold-back remain).  No `sorry`,
+no axiom, no `native_decide`. -/
+
+/-- **TRAILING-WORD RE-ANCHOR TILE, `∀ p L R`** — the 8-step terminal settle: state `D` on the comb
+boundary `1 0 0` above the fresh top block `1 :: R` lands in state `E` two cells left with the `0^3`
+block separator laid (`false :: false :: false :: R`), comb tail `L` and block tail `R` free.  Fixed
+5-cell window; Phase 3 of the trailing word.  Kernel `rfl` on the tape + `cfgPos` on the anchor.
+`[propext, Quot.sound]`. -/
+theorem trailReanchor (p : Int) (L R : List Bool) :
+    steps 8 ⟨.D, p, ⟨true :: false :: false :: L, false, true :: R⟩⟩
+      = some ⟨.E, p - 2, ⟨false :: L, false, false :: false :: false :: R⟩⟩ := by
+  have h : steps 8 (⟨.D, p, ⟨true :: false :: false :: L, false, true :: R⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 - 1 - 1 - 1 + 1 - 1 - 1 + 1,
+          ⟨false :: L, false, false :: false :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+-- AXIOM AUDIT — trailing-word Phase 3 (re-anchor).  `[propext, Quot.sound]`.
+#print axioms trailReanchor
+
+/-! ### §5az (2026-07-20) TRAILING WORD — PHASE 1 SEPARATOR TURNAROUND BANKED `∀`.
+
+The trailing word's doubling sweep crosses each cascade block leftward in state `D`, then does a
+FIXED 4-step turnaround at each block separator that lays the `0^2` block gap and shrinks the block
+by one (the `1^{2^n−2} ⇝ 1^{2^n−3}` reparse) before continuing into the next block.  Reverse-engineered
+from the real `r7f_glue2` trace (steps 489→493, absolute-tape) and verified `∀ L R` (the head range is
+3 cells; both blocks are free tails).  This is the per-block STEP of the doubling fold: composed with
+the block crossing (`dSweepTurn`-family), it advances one odometer digit.  Banks Phase 1's separator
+tile; the block-crossing fold and the erase phase remain.  No `sorry`, no axiom. -/
+
+/-- **TRAILING-WORD SEPARATOR-TURNAROUND TILE, `∀ p L R`** — the 4-step per-block step: state `D` on a
+block `1` with the separator `0` and next block `1 :: L` behind lands two cells left, still `D`, having
+laid the `0^2` separator (`false :: false :: R`) on the crossed side.  Fixed 3-cell window; the per-block
+step of the doubling sweep.  Kernel `rfl` + `cfgPos`.  `[propext, Quot.sound]`. -/
+theorem trailTurn (p : Int) (L R : List Bool) :
+    steps 4 ⟨.D, p, ⟨false :: true :: L, true, R⟩⟩
+      = some ⟨.D, p - 2, ⟨L, true, false :: false :: R⟩⟩ := by
+  have h : steps 4 (⟨.D, p, ⟨false :: true :: L, true, R⟩⟩ : Cfg)
+      = some ⟨.D, p - 1 + 1 - 1 - 1, ⟨L, true, false :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+-- AXIOM AUDIT — trailing-word Phase 1 separator turnaround.  `[propext, Quot.sound]`.
+#print axioms trailTurn
+
 end X2
