@@ -8736,4 +8736,132 @@ theorem interiorFold_lower (k : Nat) (hk : 1 ≤ k)
 #print axioms interiorFold
 #print axioms interiorFold_lower
 
+/-! ## §5aq (2026-07-19) PROBLEM B STATED `∀k` ON THE NEW `leadOut` FAMILY, AND B ∘ D COMPOSED.
+
+§5ap closed the interior fold `D` `∀k` (`interiorFold_lower`), whose IN is the concrete config
+family `regenIn 4 q (2^3+9) (ascMarker 4 (k−6) marker) (interiorPadTail (k−6) R)`.  THAT family is
+the interior-start / lead-OUT config whose absence was the earlier blocker to even STATING problem
+B (the lead glue `∀k`).  With it, B is now statable — and this section states it precisely and
+composes it with `D`.
+
+**HONEST VERDICT ON B ITSELF (re-measured 2026-07-19).**  `leadOut` now existing resolves the
+STATABILITY blocker, but NOT the machine blocker.  B's transport is the collapse of `regenIn k`'s
+LEFT block `1^{2^k−3}` into the nested marker, in `leadSteps k = 3·2^{k−1}−9k+112` steps — a
+per-level LEFT-geometry sweep that is STILL not a proven `∀k` primitive, and — decisively — is NOT
+an instance of the `ascMarker` machinery: every rung of that machinery (`regenAscend`,
+`regenDescend`, `ascSpine`, `rampDescend`, `interiorFold`) RUNS a full sub-`REGEN` via
+`regenLaw_pos` (cost `exitSteps` per leg, `Θ(2^{2a−3})`), whereas `leadSteps k = Θ(k·2^k) ≪
+exitSteps (k−1)` has no step budget to run even ONE sub-`REGEN(k−1)`.  So B is the collapse
+BEFORE the interior recursion, provably outside the `ascMarker`/`interiorFold` family; it needs a
+new left-block sweep transport.  B stays `[OPEN]` `∀k` (grounded at `k=6,7` by `r6f_glue1` /
+`r7f_glue1`, per-level `rfl`).  No `sorry`, no axiom, no `native_decide`. -/
+
+/-- **THE LEAD-OUT / INTERIOR-START CONFIG FAMILY, `∀k`** — definitionally `interiorFold_lower
+(k−6)`'s IN.  The config the lead glue of `REGEN(k)` must reach: `regenIn 4` at the odometer
+floor, decorated with the `k−6` nested ascending-ramp markers `ascMarker 4 (k−6)` and the matching
+nested blank pad `interiorPadTail (k−6)`.  Position `q` is free (the lead is position-covariant).
+This family did not exist when B was first assessed `[OPEN]`; §5ap's `ascMarker`/`interiorPadTail`
+supply it. -/
+def leadOut (k : Nat) (q : Int) (marker R : List Bool) : Cfg :=
+  regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (k - 6) marker) (interiorPadTail (k - 6) R)
+
+/-- **PROBLEM B, STATED `∀k`** — the LEAD glue as a machine transport, now that `leadOut` exists.
+In `leadSteps k` steps the level-`k` IN family `regenIn k` collapses its big left block `1^{2^k−3}`
+into the nested odometer marker, landing on `leadOut k`, tails free.  This is the REAL statement
+(real `regenIn k` IN, real `leadOut k` OUT, real `leadSteps k` count) — not a weakened one.
+`[OPEN]` as a `∀k` theorem (see the section verdict); stated here so the assembly can consume it. -/
+def LeadTransport (k : Nat) : Prop :=
+  ∀ (q0 : Int) (marker R : List Bool), ∃ q : Int,
+    steps (leadSteps k) (regenIn k q0 (2 ^ (k - 1) + 9) marker R)
+      = some (leadOut k q marker R)
+
+/-- **B ∘ D — GIVEN THE LEAD, THE CLOSED INTERIOR FOLD CARRIES `REGEN(k)` TO THE FINAL FLOOR
+SUB-CALL.**  Conditional on problem B (`LeadTransport k`, hypothesis) and the strictly-lower laws
+`RegenLaw m` (`4 ≤ m ≤ k−2`) that the `∀k` recursion's strong IH supplies (exactly
+`interiorFold_lower`'s antecedent, since `(k−6)+4 = k−2`), `REGEN(k)`'s IN `regenIn k` transports —
+in `leadSteps k + interiorFoldSteps (k−6)` steps — to the last odometer floor sub-call `regenIn 4`
+(pad `1`).  This CONSUMES the lead-OUT family through `D` for the first time: it machine-checks that
+`leadOut k` IS exactly `interiorFold_lower (k−6)`'s IN (the two `∀k` families compose with NO gap).
+What remains for `RegenLaw k` is then B itself and problem C (the trailing leg, from this `regenIn 4`
+to `cascadeReg k`).  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem lead_then_interior (k : Nat) (hk : 7 ≤ k)
+    (hlead : LeadTransport k)
+    (hlow : ∀ m, 4 ≤ m → m ≤ k - 2 → RegenLaw m)
+    (q0 : Int) (marker R : List Bool) :
+    ∃ (q' : Int) (mOut : List Bool),
+      steps (leadSteps k + interiorFoldSteps (k - 6))
+        (regenIn k q0 (2 ^ (k - 1) + 9) marker R)
+      = some (regenIn 4 q' 1 mOut R) := by
+  obtain ⟨q, hq⟩ := hlead q0 marker R
+  obtain ⟨q', mOut, hD⟩ :=
+    interiorFold_lower (k - 6) (by omega)
+      (fun m hm hmle => hlow m hm (by omega)) q marker R
+  refine ⟨q', mOut, ?_⟩
+  rw [steps_add, hq, someBind]
+  exact hD
+
+-- AXIOM AUDIT — problem B stated on `leadOut`, and B ∘ D composed.  `[propext, Quot.sound]`.
+#print axioms leadOut
+#print axioms LeadTransport
+#print axioms lead_then_interior
+
+/-! ### §5ar: leg C's IN family de-existentialised — `interiorFold`'s OUT marker made explicit.
+
+`interiorFold`/`interiorFold_lower` land on `regenIn 4 q' 1 mOut R` with `mOut` existential; C
+(trailing) cannot even be STATED over an existential IN.  `foldMarker` names it, so the fold's OUT
+is exactly `regenIn 4 q' 1 (foldMarker j m) R`.  This pins problem C's IN family `∀k`.  Its OUT-side
+transport to `cascadeReg k` — the descCascade lay/collapse — remains `[OPEN]`. -/
+
+/-- The interior fold's OUT marker, explicit (`J+1` ascending left-blocks `2^{n+2}−4`). -/
+def foldMarker : Nat → List Bool → List Bool
+  | 0, m => foldDepTail 0 ++ (ones (4 * (2 ^ 4 - 2) + 4) ++ (pow10 1 ++ (true :: m)))
+  | (j + 1), m =>
+      foldMarker j (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m)))
+
+/-- **`interiorFold` with the OUT marker EXPLICIT** (`= foldMarker j m`, no existential). -/
+theorem interiorFold_expl : ∀ (j : Nat),
+    (∀ i, i ≤ j + 1 → RegenLaw (4 + i)) →
+    ∀ (q : Int) (m R : List Bool),
+      ∃ q' : Int,
+        steps (interiorFoldSteps (j + 1))
+          (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (j + 1) m) (interiorPadTail (j + 1) R))
+        = some (regenIn 4 q' 1 (foldMarker j m) R) := by
+  intro j
+  induction j with
+  | zero =>
+    intro hlaw q m R
+    obtain ⟨q', h⟩ := rampDescend 4 1 (by omega) (by omega) (fun i hi => hlaw i (by omega)) q m R
+    exact ⟨q', h⟩
+  | succ j ih =>
+    intro hlaw q m R
+    obtain ⟨qA, hA⟩ := rampDescend 4 (j + 2) (by omega) (by omega)
+        (fun i hi => hlaw i (by omega)) q m (zeros 16 ++ interiorPadTail (j + 1) R)
+    obtain ⟨q'', hIH⟩ := ih (fun i hi => hlaw i (by omega)) qA
+        (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))) R
+    refine ⟨q'', ?_⟩
+    show steps ((ascSteps 4 (j + 2) + (exitSteps (4 + (j + 2)) + descentSteps (4 + (j + 2))))
+          + interiorFoldSteps (j + 1))
+        (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (j + 2) m)
+          (ascR 4 (j + 2) (zeros 16 ++ interiorPadTail (j + 1) R)))
+      = some (regenIn 4 q'' 1 (foldMarker (j + 1) m) R)
+    rw [steps_add, hA, someBind,
+        show 4 + (j + 2) - 5 = j + 1 from by omega,
+        show 4 + (j + 2) - 1 = j + 5 from by omega,
+        ← ascMarker_foldDepTail, regenIn_pad 4 qA 1 16 _ (interiorPadTail (j + 1) R)]
+    exact hIH
+
+/-- The lower-law form of `interiorFold_expl`. -/
+theorem interiorFold_lower_expl (k : Nat) (hk : 1 ≤ k)
+    (hlow : ∀ m, 4 ≤ m → m ≤ k + 4 → RegenLaw m)
+    (q : Int) (mk R : List Bool) :
+    ∃ q' : Int, steps (interiorFoldSteps k)
+        (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 k mk) (interiorPadTail k R))
+      = some (regenIn 4 q' 1 (foldMarker (k - 1) mk) R) := by
+  obtain ⟨j, rfl⟩ : ∃ j, k = j + 1 := ⟨k - 1, by omega⟩
+  exact interiorFold_expl j (fun i hi => hlow (4 + i) (by omega) (by omega)) q mk R
+
+-- AXIOM AUDIT — leg C's IN family pinned explicit.  `[propext, Quot.sound]`.
+#print axioms interiorFold_expl
+#print axioms interiorFold_lower_expl
+
 end X2
