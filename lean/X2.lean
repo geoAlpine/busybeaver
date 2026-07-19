@@ -9302,4 +9302,52 @@ theorem trailFloorRegen (q : Int) (marker R : List Bool) :
 -- AXIOM AUDIT — leg C's IN family pinned explicit, and C's first (floor-REGEN) leg proven.
 #print axioms trailFloorRegen
 
+/-! ### §5ax (2026-07-20) `foldMarker` LENGTH `∀j` — the interior-fold OUT-marker width, for C.
+
+The trailing word must LOCATE the original `marker` after the fold (the marker-fold-back) and match
+the cascade width `descCascade`.  `foldMarker_length` gives the exact width `∀j`:
+`|foldMarker j m| = 2^{j+7} − 65 − j + |m|` (stated subtraction-free).  Pure list/`Nat`, using the
+§5au weapon `ones_length` and §5at's `pow_shift`.  No `sorry`, no axiom. -/
+
+/-- **`foldMarker` LENGTH, `∀j`** — `|foldMarker j m| + 65 + j = 2^{j+7} + |m|`.  The interior fold's
+OUT marker (`j+1` ascending blocks `2^{n+2}−4` plus the `1 0 1` per-layer seams) has total width
+`2^{j+7} − 65 − j + |m|`.  Induction on `j` via `ones_length`, `pow_shift`.  `[propext, Quot.sound]`. -/
+theorem foldMarker_length : ∀ (j : Nat) (m : List Bool),
+    (foldMarker j m).length + 65 + j = 2 ^ (j + 7) + m.length := by
+  intro j
+  induction j with
+  | zero =>
+    intro m
+    have e : foldMarker 0 m
+        = foldDepTail 0 ++ (ones (4 * (2 ^ 4 - 2) + 4) ++ (pow10 1 ++ (true :: m))) := rfl
+    rw [e, List.length_append, List.length_append, List.length_append, ones_length]
+    have h0 : (foldDepTail 0).length = 0 := rfl
+    have hp : (pow10 1).length = 2 := rfl
+    rw [h0, hp, List.length_cons, show (2 : Nat) ^ 4 = 16 from rfl,
+        show (2 : Nat) ^ (0 + 7) = 128 from rfl]
+    omega
+  | succ j ih =>
+    intro m
+    have e : foldMarker (j + 1) m
+        = foldMarker j (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))) := rfl
+    have hih := ih (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m)))
+    have hm' : (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))).length
+        = 4 * (2 ^ (j + 5) - 2) + 4 + 3 + m.length := by
+      rw [List.length_append, List.length_append, ones_length, List.length_cons,
+          show (pow10 1).length = 2 from rfl]
+      omega
+    rw [hm'] at hih
+    rw [e]
+    have hpow : (2 : Nat) ^ (j + 7) = 4 * 2 ^ (j + 5) := by
+      rw [show j + 7 = (j + 5) + 2 from by omega]; exact pow_shift (j + 5) 2
+    have hpow2 : (2 : Nat) ^ (j + 1 + 7) = 2 * 2 ^ (j + 7) := by
+      rw [show j + 1 + 7 = (j + 7) + 1 from by omega, Nat.pow_succ]; omega
+    have hge : (2 : Nat) ≤ 2 ^ (j + 5) := by
+      calc (2 : Nat) = 2 ^ 1 := rfl
+        _ ≤ 2 ^ (j + 5) := Nat.pow_le_pow_right (by decide) (by omega)
+    omega
+
+-- AXIOM AUDIT — foldMarker width weapon.  `[propext, Quot.sound]`.
+#print axioms foldMarker_length
+
 end X2
