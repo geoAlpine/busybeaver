@@ -8181,6 +8181,210 @@ theorem h_low_at4 : ∃ n, 1 ≤ n ∧ steps n (M1 4) = some (M6 4) := ⟨419, b
 #eval decide (M1 3 = M1 3)                                                                  -- true (M1 total at odd g)
 #eval decide (M6 3 = M6 3)                                                                  -- true (M6 total at odd g)
 
+
+/-! ## §5ao (ON-PATH, 2026-07-19) THE EVEN-`g` LOW PHASE `h_low`, CLOSED GREEN `∀` EVEN `g`.
+
+`h_low_even (k) : ∃ n, 1 ≤ n ∧ steps n (M1 (2*k+2)) = some (M6 (2*k+2))` — the low-phase transport
+`M1(g) → M6(g)` for EVERY even generation `g = 2k+2` (ALL of them, not a finite set; `g=2,4` are the
+`rfl` instances `hlow_g2`/`hlow_g4`), on the §5am concrete milestone families `M1, M6`.  No `sorry`,
+no `native`, no axiom beyond `[propext, Quot.sound]`.
+
+**Method — the measured decomposition `N(g) = 267 + 38·g` (kernel-verified via `hlow_g2`/`hlow_g4`).**
+The even-`g` low phase is TAIL-INDEPENDENT (the big block `1^{2^K}` + cascade rides untouched — even
+`g`'s head window stays `2` cells below the block; odd `g` does NOT, §5am `#eval`).  So `h_low_even`
+factors, `∀ TAIL`, through five composable transports (§5t/§5tt) threaded by `steps_add`:
+
+    M1(g)=[E]0^22(1 0^6)^{g-1}(1 0^{10})·TAIL
+      →[lowEntry, 157, g-indep fixed rfl]→   [E@9] comb·rcomb g·0^{10}·TAIL
+      →[lowMiddle_fwd, 29g, m=g]→            [E@9+7g] rdepo g·… · comb·0^{10}·TAIL
+      →[lowTurn, 42, g-indep frame-rfl]→     [C@21+7g] retLcomb(g+1)·… · (0100)·TAIL
+      →[lowReturn_fold, 9g, m=g]→            [C@21] … · retDep g·(0100)·TAIL
+      →[lowExitReg, 68, g-indep tail-rfl]→   [E@-5] …(01)^5·retDep g·… = M6(g)
+
+The `g`-growing registers are carried by the two `∀`-unit runs (`lowMiddle_fwd` fwd, `lowReturn_fold`
+ret) and reconciled to the milestone forms by pure `List` identities (`uUnits_reparse`,
+`ones5_rdepo`, `retLcomb_succ`, `retDep_rUnits`) — the `uUnits↔rcomb`, `rdepo↔retLcomb`,
+`retDep↔rUnits` reparse laws.  `some` everywhere ⇒ HALT-FREE.  ODD `g` stays OPEN (the head reaches
+the big block, coupling to `1^{2^K}`; §5am). -/
+
+section LowEven
+set_option maxRecDepth 10000
+set_option maxHeartbeats 4000000
+
+theorem uUnits_reparse : ∀ (k : Nat) (X : List Bool),
+    zeros 6 ++ uUnits k ++ (true :: X) = rcomb (k + 1) ++ X := by
+  intro k
+  induction k with
+  | zero => intro X; rfl
+  | succ k ih =>
+    intro X
+    show false::false::false::false::false::false::true:: (zeros 6 ++ uUnits k ++ (true :: X))
+       = rcomb (k + 2) ++ X
+    rw [ih]; rfl
+
+theorem ones5_rdepo : ∀ (g : Nat), ones 5 ++ rdepo g = retLcomb g ++ ones 5 := by
+  intro g
+  induction g with
+  | zero => rfl
+  | succ g ih =>
+    show true::true::true::true::true:: (true::false::true::true::true::true::true:: rdepo g)
+       = true::true::true::true::true::true::false:: (retLcomb g ++ ones 5)
+    rw [← ih]; rfl
+
+theorem retLcomb_succ : ∀ (g : Nat),
+    retLcomb (g + 1) = retLcomb g ++ (true::true::true::true::true::true::false::[]) := by
+  intro g
+  induction g with
+  | zero => rfl
+  | succ g ih =>
+    show true::true::true::true::true::true::false:: retLcomb (g+1)
+       = true::true::true::true::true::true::false:: (retLcomb g ++ (true::true::true::true::true::true::false::[]))
+    rw [ih]
+
+theorem retDep_rUnits : ∀ (g : Nat) (X : List Bool),
+    ones 5 ++ false :: retDep g ++ (false::true::false::false:: X)
+      = rUnits (g + 1) ++ (true::false::false:: X) := by
+  intro g
+  induction g with
+  | zero => intro X; rfl
+  | succ g ih =>
+    intro X
+    show ones 5 ++ false::false:: (ones 5 ++ false :: retDep g ++ (false::true::false::false:: X))
+       = ones 5 ++ false::false:: (rUnits (g+1) ++ (true::false::false:: X))
+    rw [ih]
+
+-- BRIDGE 1: entry output right false::Z -> comb ++ rcomb(g) form
+theorem entry_reshape (k : Nat) (TAIL : List Bool) :
+    false :: (zeros 5 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++ TAIL))))
+      = rcomb (2*k+2) ++ (zeros 10 ++ TAIL) := by
+  show zeros 6 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++ TAIL))) = rcomb (2*k+2) ++ (zeros 10 ++ TAIL)
+  rw [← List.append_assoc]
+  exact uUnits_reparse (2*k+1) (zeros 10 ++ TAIL)
+
+-- BRIDGE 2: turnaround output left -> retLcomb(g) ++ Lrest
+theorem turn_left_reshape (g : Nat) :
+    true::true::true::true::true::true::false:: true::true::true::true::true::
+        (rdepo g ++ (ones 9 ++ (false::true::false::[])))
+      = retLcomb g ++ (true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[]))) := by
+  show true::true::true::true::true::true::false:: (ones 5 ++ rdepo g ++ (ones 9 ++ (false::true::false::[])))
+     = retLcomb g ++ (true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[])))
+  rw [ones5_rdepo, List.append_assoc, show ones 5 ++ (ones 9 ++ (false::true::false::[])) = ones 14 ++ (false::true::false::[]) from by rw [← List.append_assoc, ← ones_add]]
+  show retLcomb (g+1) ++ (ones 14 ++ (false::true::false::[])) = _
+  rw [retLcomb_succ, List.append_assoc]; rfl
+
+-- BRIDGE 3: exit output right -> M6 register form
+theorem exit_reshape (k : Nat) (TAIL : List Bool) :
+    false :: pow10 4 ++ ones 9 ++ false::false:: ones 5 ++ false ::
+        (retDep (2*k+2) ++ (false::true::false::false:: TAIL))
+      = false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (true::false::false:: TAIL)) := by
+  have h := retDep_rUnits (2*k+2) TAIL
+  simp only [List.append_assoc, List.cons_append] at h ⊢
+  rw [h]
+
+
+-- ============ ASSEMBLY ============
+theorem ent_c0 (Z : List Bool) :
+    steps 52 ⟨.E, 0, ⟨[], false, zeros 16 ++ Z⟩⟩
+      = some ⟨.E, 0, ⟨[false,true,false], false,
+          (false::true::true::true::false::false::true::false:: zeros 8) ++ Z⟩⟩ := by rfl
+theorem ent_c1 (Z : List Bool) :
+    steps 52 ⟨.E, 0, ⟨[false,true,false], false,
+        (false::true::true::true::false::false::true::false:: zeros 8) ++ Z⟩⟩
+      = some ⟨.D, 8, ⟨[true,false,true,false,false,true,false,true,false,true,false], true,
+          (true::true::true::true::false::false::true::false:: []) ++ Z⟩⟩ := by rfl
+theorem ent_c2 (Z : List Bool) :
+    steps 53 ⟨.D, 8, ⟨[true,false,true,false,false,true,false,true,false,true,false], true,
+        (true::true::true::true::false::false::true::false:: []) ++ Z⟩⟩
+      = some ⟨.E, 9, ⟨true::true::true::true::true::true::true::true::true::false::true::false::[], false,
+          true :: false :: true :: false :: false :: true :: false :: Z⟩⟩ := by rfl
+theorem lowEntry (Z : List Bool) :
+    steps 157 ⟨.E, 0, ⟨[], false, zeros 16 ++ Z⟩⟩
+      = some ⟨.E, 9, ⟨true::true::true::true::true::true::true::true::true::false::true::false::[], false,
+          true :: false :: true :: false :: false :: true :: false :: Z⟩⟩ := by
+  have e : (157:Nat) = 52 + (52 + 53) := by rfl
+  rw [e, steps_add, ent_c0, someBind, steps_add, ent_c1, someBind, ent_c2]
+
+set_option maxHeartbeats 20000000 in
+theorem lowExitReg (p : Int) (RIDE : List Bool) :
+    steps 68 ⟨.C, p, ⟨true::true::true::true::true::true::false::(ones 14 ++ [false,true,false]), false, RIDE⟩⟩
+      = some ⟨.E, p - 26, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false::false:: ones 5 ++ false :: RIDE⟩⟩ := by
+  have h : steps 68 (⟨.C, p, ⟨true::true::true::true::true::true::false::(ones 14 ++ [false,true,false]), false, RIDE⟩⟩ : Cfg)
+      = some ⟨.E, p-1-1-1-1-1-1-1+1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1+1-1-1-1+1-1-1+1+1+1+1+1-1-1-1+1+1+1+1-1-1-1-1-1-1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1+1,
+          ⟨[false], false, false :: pow10 4 ++ ones 9 ++ false::false:: ones 5 ++ false :: RIDE⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+set_option maxHeartbeats 8000000 in
+theorem h_low_even_core (k : Nat) (TAIL : List Bool) :
+    steps (267 + 38*(2*k+2))
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++ TAIL)))⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (true::false::false:: TAIL))⟩⟩ := by
+  have hE : steps 157 ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++ TAIL)))⟩⟩
+      = some ⟨.E, 9, ⟨ones 9 ++ (false::true::false::[]), false,
+          true::false::true::false::false::true:: (rcomb (2*k+2) ++ (zeros 10 ++ TAIL))⟩⟩ := by
+    show steps 157 ⟨.E, 0, ⟨[], false,
+        zeros 16 ++ (zeros 5 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++ TAIL))))⟩⟩ = _
+    rw [lowEntry, entry_reshape]; rfl
+  have hF : steps (29*(2*k+2))
+        ⟨.E, 9, ⟨ones 9 ++ (false::true::false::[]), false,
+          true::false::true::false::false::true:: (rcomb (2*k+2) ++ (zeros 10 ++ TAIL))⟩⟩
+      = some ⟨.E, 9 + 7 * ((2*k+2 : Nat) : Int), ⟨rdepo (2*k+2) ++ (ones 9 ++ (false::true::false::[])), false,
+          true::false::true::false::false::true:: (zeros 10 ++ TAIL)⟩⟩ :=
+    lowMiddle_fwd (2*k+2) 9 (ones 9 ++ (false::true::false::[])) (zeros 10 ++ TAIL)
+  have hT : steps 42
+        ⟨.E, 9 + 7 * ((2*k+2 : Nat) : Int), ⟨rdepo (2*k+2) ++ (ones 9 ++ (false::true::false::[])), false,
+          true::false::true::false::false::true:: (zeros 10 ++ TAIL)⟩⟩
+      = some ⟨.C, (9 + 7 * ((2*k+2 : Nat) : Int)) + 12,
+          ⟨retLcomb (2*k+2) ++ (true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[]))), false,
+           false::true::false::false:: TAIL⟩⟩ := by
+    rw [lowTurn, turn_left_reshape]
+  have hR : steps (9*(2*k+2))
+        ⟨.C, (9 + 7 * ((2*k+2 : Nat) : Int)) + 12,
+          ⟨retLcomb (2*k+2) ++ (true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[]))), false,
+           false::true::false::false:: TAIL⟩⟩
+      = some ⟨.C, 21, ⟨true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[])), false,
+          retDep (2*k+2) ++ (false::true::false::false:: TAIL)⟩⟩ := by
+    rw [lowReturn_fold]
+    exact congrArg some (cfgPos (by omega))
+  have hX : steps 68
+        ⟨.C, 21, ⟨true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[])), false,
+          retDep (2*k+2) ++ (false::true::false::false:: TAIL)⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (true::false::false:: TAIL))⟩⟩ := by
+    rw [lowExitReg, exit_reshape]; rfl
+  have hsum : (267 + 38*(2*k+2)) = 157 + (29*(2*k+2) + (42 + (9*(2*k+2) + 68))) := by omega
+  rw [hsum, steps_add, hE, someBind, steps_add, hF, someBind, steps_add, hT, someBind,
+      steps_add, hR, someBind, hX]
+
+
+theorem h_low_even (k : Nat) :
+    ∃ n, 1 ≤ n ∧ steps n (M1 (2*k+2)) = some (M6 (2*k+2)) := by
+  refine ⟨267 + 38*(2*k+2), by omega, ?_⟩
+  have hmod : (2*k+2) % 2 = 0 := by omega
+  have hM1 : M1 (2*k+2)
+      = ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+1) ++ (true :: (zeros 10 ++
+          (ones (2^(2*k+2+8)-3) ++ m1casc (2*k+2+6) (2*k+2+7) []))))⟩⟩ := by
+    unfold M1
+    rw [hmod]
+    simp only [reduceIte]
+    rfl
+  have hM6 : M6 (2*k+2)
+      = ⟨.E, -5, ⟨[false], false, false :: pow10 4 ++ ones 9 ++ false::false::
+          (rUnits (2*k+3) ++ (true::false::false:: (ones (2^(2*k+2+8)-3) ++ m1casc (2*k+2+6) (2*k+2+7) [])))⟩⟩ := by
+    unfold M6
+    rw [hmod]
+    simp only [reduceIte]
+    rfl
+  rw [hM1, hM6]
+  exact h_low_even_core k (ones (2^(2*k+2+8)-3) ++ m1casc (2*k+2+6) (2*k+2+7) [])
+
+end LowEven
+
+-- §5ao axiom audits (must be `[propext, Quot.sound]`-only, NO `sorryAx`):
+#print axioms h_low_even_core
+#print axioms h_low_even
+
 /-! ### §5an: `RegenLaw 7` — the FOURTH grounded level, and the FIRST recursive one.
 
 **`regen7_factored` (§5ak) ALREADY discharges `RegenLaw 7`, `∀ marker R`** — a connection §5ak's
