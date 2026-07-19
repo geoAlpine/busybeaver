@@ -8385,6 +8385,91 @@ end LowEven
 #print axioms h_low_even_core
 #print axioms h_low_even
 
+/-! ## §5aw (ON-PATH, 2026-07-20) THE ODD-`g` LOW PHASE — the block-edge `−4` trim is a BOUNDED
+`∀`-COMPOSABLE TILE, plus two grounded odd instances.
+
+The odd-`g` low phase `M1(g) → M6(g)` is NOT tail-independent: unlike even `g` (§5ao), the head
+REACHES the big block `1^{2^K-9}` and trims it to `1^{2^K-13}` (a `−4`), the reason §5ao/§5am left
+odd `g` OPEN.  This section pins down the exact nature of that coupling and gives the key missing
+`∀`-piece.
+
+**The coupling is BOUNDED, hence a fixed `∀`-tile (`blockEdge_trim`).**  Instrumented forward from
+the VERIFIED-FAITHFUL `x2bd_sim.build(g)` (= §5am `M1 g`), the odd head's excursion into the block
+is EXACTLY `3` cells for EVERY odd `g` (measured g=3,5,7 — the depth does NOT grow with `g`), and
+the whole block interaction is one `54`-step tile, byte-identical across g=3/5/7.  The tile
+`blockEdge_trim` is frame-independent in BOTH the deep-left frame `L'` and the deep-right frame
+`FRAME` (`= 1^{2^K-13} ·` cascade, which rides UNTOUCHED): it consumes `1^4` off the block, deposits
+two period-2 units `(10)^3 → (10)^5` (the source of the M6 odd `X = (10)^10` vs entry `(10)^6`,
+a `+4`-unit growth mirroring the block's `−4`), flips one left `0→1`, and RETURNS to the same
+position.  So the odd `−4` trim, which looked like an exponential-block coupling, is in fact a
+BOUNDED, `∀`-composable transport — exactly the object §5t/§5am flagged as missing.
+
+**Two grounded odd instances (kernel `rfl`, NO axioms).**  `hlow_g3`/`hlow_g5` run the FULL
+untruncated odd milestone tapes `M1(3)/M1(5)` (real exponential blocks `1^{2^11-9}`, `1^{2^13-9}` +
+full cascade) to `M6(3)/M6(5)` in the measured `419`/`495` steps — the block is actually TRIMMED
+here (not an opaque tail), so these are genuine odd `h_low` witnesses, the odd analogue of
+§5am's `hlow_g2`/`hlow_g4`.
+
+**HONEST SCOPE — `h_low_odd ∀g` is NOT closed here.**  What remains to assemble `∀` odd `g` (a
+§5ao-sized effort): the odd ENTRY reshape (`lowEntry` REUSES — the g=157 chain-start config is
+g-independent, measured identical g=3,5), the register forward run (`lowMiddle_fwd` REUSES), the
+two fixed connectors bracketing `blockEdge_trim` (register-end → tile-start and tile-end →
+return-start), the return run (`lowReturn_fold` REUSES), the odd EXIT reshape (`X=(10)^10`, `r=g`),
+and the odd `M1/M6` list-reparse identities.  `blockEdge_trim` is the one genuinely NEW obstruction
+(the `−4` coupling), now discharged `∀`-frame; the surrounding connectors are fixed `rfl`s not yet
+extracted.  No `sorry`, no `native`, no axiom beyond `[propext, Quot.sound]`; no machine decided. -/
+
+section LowOdd
+set_option maxRecDepth 10000
+set_option maxHeartbeats 4000000
+
+/-- **THE ODD-`g` BLOCK-EDGE `−4` TRIM TILE** (54 steps), frame-independent in the deep-left frame
+`L'` and the deep-right frame `FRAME` (the block residual `1^{2^K-13}` + the entire cascade, which
+rides UNTOUCHED — the head enters the block by `≤3` cells).  From
+`[F@p]  1^10 0 0·L'  |  (10)^3 1^4·FRAME` the machine TRIMS the block by four (`1^4·FRAME → FRAME`),
+grows the period-2 region by two units (`(10)^3 → (10)^5`, the M6-odd `X` growth), flips one left
+`0→1`, and returns to the SAME position in state `C`.  Bounded window; kernel `rfl` (pos folded,
+`cfgPos`-normalised).  `some` ⇒ HALT-FREE.  This is the odd-parity coupling to `1^{2^K}` reduced to
+a genuine `∀`-composable transport. -/
+theorem blockEdge_trim (p : Int) (L' FRAME : List Bool) :
+    steps 54 ⟨.F, p, ⟨ones 10 ++ (false::false:: L'), true,
+        false::true::false::true::false:: (true::true::true::true:: FRAME)⟩⟩
+      = some ⟨.C, p, ⟨ones 10 ++ (true::false:: L'), true,
+        false::true::false::true::false::true::false::true::false:: FRAME⟩⟩ := by
+  have h : steps 54 (⟨.F, p, ⟨ones 10 ++ (false::false:: L'), true,
+        false::true::false::true::false:: (true::true::true::true:: FRAME)⟩⟩ : Cfg)
+      = some ⟨.C,
+          p+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1,
+          ⟨ones 10 ++ (true::false:: L'), true,
+           false::true::false::true::false::true::false::true::false:: FRAME⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+set_option maxHeartbeats 8000000 in
+/-- **`h_low` AT g=3, on the REAL odd milestone tapes.**  Full `M1(3) → M6(3)` in 419 steps on the
+untruncated odd milestone families (block `1^{2^11-9}` actually trimmed to `1^{2^11-13}`, full
+cascade).  Kernel `rfl`, NO axioms.  The odd analogue of §5am `hlow_g2`. -/
+theorem hlow_g3 : steps 419 (M1 3) = some (M6 3) := rfl
+
+set_option maxHeartbeats 16000000 in
+/-- **`h_low` AT g=5, on the REAL odd milestone tapes.**  Full `M1(5) → M6(5)` in 495 steps
+(block `1^{2^13-9} → 1^{2^13-13}`).  Kernel `rfl`, NO axioms. -/
+theorem hlow_g5 : steps 495 (M1 5) = some (M6 5) := rfl
+
+/-- The `h_low`-shaped existential at the odd generation g=3. -/
+theorem h_low_at3 : ∃ n, 1 ≤ n ∧ steps n (M1 3) = some (M6 3) := ⟨419, by omega, hlow_g3⟩
+
+/-- The `h_low`-shaped existential at the odd generation g=5. -/
+theorem h_low_at5 : ∃ n, 1 ≤ n ∧ steps n (M1 5) = some (M6 5) := ⟨495, by omega, hlow_g5⟩
+
+end LowOdd
+
+-- §5aw axiom audits (block-edge tile: `[propext, Quot.sound]`-only; odd instances: NO axioms):
+#print axioms blockEdge_trim
+#print axioms hlow_g3
+#print axioms hlow_g5
+#print axioms h_low_at3
+#print axioms h_low_at5
+
 /-! ### §5an: `RegenLaw 7` — the FOURTH grounded level, and the FIRST recursive one.
 
 **`regen7_factored` (§5ak) ALREADY discharges `RegenLaw 7`, `∀ marker R`** — a connection §5ak's
@@ -8765,42 +8850,52 @@ supply it. -/
 def leadOut (k : Nat) (q : Int) (marker R : List Bool) : Cfg :=
   regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 (k - 6) marker) (interiorPadTail (k - 6) R)
 
-/-- **PROBLEM B, STATED `∀k`** — the LEAD glue as a machine transport, now that `leadOut` exists.
+/-- **PROBLEM B, STATED `∀k` (CORRECTED 2026-07-20 — the marker/pad are WRAPPED, not preserved).**
 In `leadSteps k` steps the level-`k` IN family `regenIn k` collapses its big left block `1^{2^k−3}`
-into the nested odometer marker, landing on `leadOut k`, tails free.  This is the REAL statement
-(real `regenIn k` IN, real `leadOut k` OUT, real `leadSteps k` count) — not a weakened one.
-`[OPEN]` as a `∀k` theorem (see the section verdict); stated here so the assembly can consume it. -/
+into the nested odometer marker, landing on `leadOut k`.  **The lead-OUT's marker `mk` and pad tail
+`RR` are EXISTENTIAL, not the input `marker`/`R`** — reverse-engineering `r7f_glue1` showed the OUT
+carries `mk = (unconsumed block remainder) ++ (01)^{2^{k−1}−2} ++ marker` and `RR = 0^… ++ R`, i.e.
+the input decoration is WRAPPED inside the floor config, not passed through verbatim.  (An earlier
+version tied `mk,RR` to `marker,R`; that made `LeadTransport 7` FALSE — a list cannot equal a proper
+extension of itself — so `lead_then_interior` was vacuous.)  Position `p0` existential, mirroring
+`RegenLaw`.  Real `regenIn k` IN, real `leadOut k` OUT, real `leadSteps k` count — not weakened.
+`[OPEN]` as a `∀k` theorem (see the section verdict).  Verified off-line (byte-exact, `x2` transport
+parser) that `r6f_glue1`/`r7f_glue1`'s OUT ARE `leadOut 6`/`leadOut 7` instances — the
+`ascMarker 4 1 = 0 0 1 (01)^{14}` layer appears in `r7f_glue1`'s OUT as a 61-cell prefix — so this
+form IS witnessed at `k=6,7`; the in-Lean grounding is mechanical but elaborator-costly (deep defeq
+on ~190-cell configs) and left as a note. -/
 def LeadTransport (k : Nat) : Prop :=
-  ∀ (q0 : Int) (marker R : List Bool), ∃ q : Int,
-    steps (leadSteps k) (regenIn k q0 (2 ^ (k - 1) + 9) marker R)
-      = some (leadOut k q marker R)
+  ∃ p0 : Int, ∀ (marker R : List Bool), ∃ (q : Int) (mk RR : List Bool),
+    steps (leadSteps k) (regenIn k p0 (2 ^ (k - 1) + 9) marker R)
+      = some (leadOut k q mk RR)
 
 /-- **B ∘ D — GIVEN THE LEAD, THE CLOSED INTERIOR FOLD CARRIES `REGEN(k)` TO THE FINAL FLOOR
-SUB-CALL.**  Conditional on problem B (`LeadTransport k`, hypothesis) and the strictly-lower laws
-`RegenLaw m` (`4 ≤ m ≤ k−2`) that the `∀k` recursion's strong IH supplies (exactly
-`interiorFold_lower`'s antecedent, since `(k−6)+4 = k−2`), `REGEN(k)`'s IN `regenIn k` transports —
-in `leadSteps k + interiorFoldSteps (k−6)` steps — to the last odometer floor sub-call `regenIn 4`
-(pad `1`).  This CONSUMES the lead-OUT family through `D` for the first time: it machine-checks that
-`leadOut k` IS exactly `interiorFold_lower (k−6)`'s IN (the two `∀k` families compose with NO gap).
-What remains for `RegenLaw k` is then B itself and problem C (the trailing leg, from this `regenIn 4`
-to `cascadeReg k`).  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+SUB-CALL.**  Conditional on problem B (`LeadTransport k`, hypothesis — now the CORRECTED,
+witnessable form) and the strictly-lower laws `RegenLaw m` (`4 ≤ m ≤ k−2`) that the `∀k` recursion's
+strong IH supplies (exactly `interiorFold_lower`'s antecedent, since `(k−6)+4 = k−2`), `REGEN(k)`'s
+IN `regenIn k` transports — in `leadSteps k + interiorFoldSteps (k−6)` steps — to the last odometer
+floor sub-call `regenIn 4` (pad `1`).  This CONSUMES the lead-OUT family through `D`: it machine-checks
+that `leadOut k` IS exactly `interiorFold_lower (k−6)`'s IN (the two `∀k` families compose with NO
+gap), threading the lead's wrapped `mk`/`RR` straight into `D`.  What remains for `RegenLaw k` is B
+itself and problem C.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
 theorem lead_then_interior (k : Nat) (hk : 7 ≤ k)
     (hlead : LeadTransport k)
     (hlow : ∀ m, 4 ≤ m → m ≤ k - 2 → RegenLaw m)
-    (q0 : Int) (marker R : List Bool) :
-    ∃ (q' : Int) (mOut : List Bool),
+    (marker R : List Bool) :
+    ∃ (p0 q' : Int) (mOut RR : List Bool),
       steps (leadSteps k + interiorFoldSteps (k - 6))
-        (regenIn k q0 (2 ^ (k - 1) + 9) marker R)
-      = some (regenIn 4 q' 1 mOut R) := by
-  obtain ⟨q, hq⟩ := hlead q0 marker R
+        (regenIn k p0 (2 ^ (k - 1) + 9) marker R)
+      = some (regenIn 4 q' 1 mOut RR) := by
+  obtain ⟨p0, hL⟩ := hlead
+  obtain ⟨q, mk, RR, hq⟩ := hL marker R
   obtain ⟨q', mOut, hD⟩ :=
     interiorFold_lower (k - 6) (by omega)
-      (fun m hm hmle => hlow m hm (by omega)) q marker R
-  refine ⟨q', mOut, ?_⟩
+      (fun m hm hmle => hlow m hm (by omega)) q mk RR
+  refine ⟨p0, q', mOut, RR, ?_⟩
   rw [steps_add, hq, someBind]
   exact hD
 
--- AXIOM AUDIT — problem B stated on `leadOut`, and B ∘ D composed.  `[propext, Quot.sound]`.
+-- AXIOM AUDIT — problem B corrected (witnessable form), and B ∘ D composed.  `[propext, Quot.sound]`.
 #print axioms leadOut
 #print axioms LeadTransport
 #print axioms lead_then_interior
@@ -8863,5 +8958,348 @@ theorem interiorFold_lower_expl (k : Nat) (hk : 1 ≤ k)
 -- AXIOM AUDIT — leg C's IN family pinned explicit.  `[propext, Quot.sound]`.
 #print axioms interiorFold_expl
 #print axioms interiorFold_lower_expl
+
+
+/-! ### §5at (FRAMING ARITHMETIC, ∀k) — the framing glue-law's ARITHMETIC backbone, closed.
+
+The framing identity `exitSteps K = leadSteps K + interiorFoldSteps (K−6) + exitSteps 4 +
+trailSteps K` (for `K ≥ 7`) is the pure-`Nat` step-count law weapon T6 needs.  This section
+proves it `∀K≥7` by first deriving CLOSED FORMS for the two recursive step counts
+`ascSteps 4 n` and `interiorFoldSteps k`, then substituting all closed forms and discharging the
+`2^k`-symbolic arithmetic by pulling every power back to the atoms `2^k`, `2^{2k}`, `k·2^k` and
+`omega`.  No Mathlib, no `native_decide`, no `sorry`, no axiom beyond `[propext, Quot.sound]`. -/
+
+/-- Power shift, `2^{n+a} = 2^a · 2^n` (rewrites a power to a literal multiple of `2^n`). -/
+theorem pow_shift (n a : Nat) : 2 ^ (n + a) = 2 ^ a * 2 ^ n := by
+  rw [Nat.pow_add, Nat.mul_comm]
+
+/-- Product power shift, `n · 2^{n+a} = 2^a · (n · 2^n)` (isolates the arithmetico-geometric
+atom `n·2^n`). -/
+theorem nmul_pow_shift (n a : Nat) : n * 2 ^ (n + a) = 2 ^ a * (n * 2 ^ n) := by
+  rw [pow_shift, Nat.mul_left_comm]
+
+/-- **`ascSteps` SNOC, `∀ n b`** — the ascending ramp peels its LAST rung: `ascSteps b (n+1) =
+ascSteps b n + (exitSteps (b+n) + topGrindSteps (b+n))`.  (The `def` peels the FIRST rung; this
+turns it into a fixed-base recursion.)  Induction on `n`.  `[propext, Quot.sound]`. -/
+theorem ascSteps_snoc : ∀ (n b : Nat),
+    ascSteps b (n + 1) = ascSteps b n + (exitSteps (b + n) + topGrindSteps (b + n)) := by
+  intro n
+  induction n with
+  | zero =>
+    intro b
+    show _ = ascSteps b 0 + (exitSteps (b + 0) + topGrindSteps (b + 0))
+    simp [ascSteps]
+  | succ n ih =>
+    intro b
+    have e1 : ascSteps b (n + 1 + 1)
+        = (exitSteps b + topGrindSteps b) + ascSteps (b + 1) (n + 1) := rfl
+    have e2 : ascSteps b (n + 1)
+        = (exitSteps b + topGrindSteps b) + ascSteps (b + 1) n := rfl
+    rw [e1, e2, ih (b + 1), show (b + 1) + n = b + (n + 1) from by omega]; omega
+
+/-- **`ascSteps 4 n` CLOSED FORM, `∀n`** (`= 96·4^n + 8·n·2^n − 28·2^n + 9n − 68`, stated
+subtraction-free as an equation over `Nat`).  Induction on `n` via `ascSteps_snoc`; each step
+expands `exitSteps (4+n) + topGrindSteps (4+n)` to the atoms `2^n, 2^{2n}, n·2^n` and closes by
+`omega` (the `topGrindSteps` truncated `−3·2^{4+n}` is exact since `2^n ≤ 2^{2n}`).
+`[propext, Quot.sound]`. -/
+theorem ascSteps_closed (n : Nat) :
+    ascSteps 4 n + 28 * 2 ^ n + 68 = 96 * 2 ^ (2 * n) + 8 * (n * 2 ^ n) + 9 * n := by
+  induction n with
+  | zero => decide
+  | succ n ih =>
+    rw [ascSteps_snoc n 4]
+    unfold exitSteps topGrindSteps
+    rw [show 2 * (4 + n) - 3 = 2 * n + 5 from by omega,
+        show (4 + n) - 1 = n + 3 from by omega,
+        show (4 + n) - 2 = n + 2 from by omega,
+        show 2 * (4 + n) = 2 * n + 8 from by omega]
+    have pA : 2 ^ (2 * n + 5) = 2 ^ 5 * 2 ^ (2 * n) := pow_shift (2 * n) 5
+    have pB : 2 ^ (2 * n + 8) = 2 ^ 8 * 2 ^ (2 * n) := pow_shift (2 * n) 8
+    have pC : 2 ^ (2 * (n + 1)) = 2 ^ 2 * 2 ^ (2 * n) := by
+      rw [show 2 * (n + 1) = 2 * n + 2 from by omega]; exact pow_shift (2 * n) 2
+    have p2 : 2 ^ (n + 3) = 2 ^ 3 * 2 ^ n := pow_shift n 3
+    have p3 : 2 ^ (n + 2) = 2 ^ 2 * 2 ^ n := pow_shift n 2
+    have p6 : 2 ^ (n + 1) = 2 ^ 1 * 2 ^ n := pow_shift n 1
+    have pD : 2 ^ (4 + n) = 2 ^ 4 * 2 ^ n := Nat.pow_add 2 4 n
+    have q1 : (4 + n) * 2 ^ (n + 3) = 2 ^ 3 * (n * 2 ^ n) + 4 * (2 ^ 3 * 2 ^ n) := by
+      have h := nmul_pow_shift n 3; rw [Nat.add_mul, h, pow_shift n 3]; omega
+    have q2 : (n + 1) * 2 ^ (n + 1) = 2 ^ 1 * (n * 2 ^ n) + 2 ^ 1 * 2 ^ n := by
+      have h := nmul_pow_shift n 1; rw [Nat.add_mul, Nat.one_mul, h, pow_shift n 1]
+    have hle : 2 ^ n ≤ 2 ^ (2 * n) := Nat.pow_le_pow_right (by decide) (by omega)
+    omega
+
+/-- **`interiorFoldSteps k` CLOSED FORM, `∀k`** (`= 512·4^k + 32·k·2^k − 16·2^k + 8k − 496`,
+subtraction-free).  Induction on `k`: the recursion consumes `ascSteps 4 (k+1)` (via
+`ascSteps_closed`) plus `exitSteps (k+5) + descentSteps (k+5)`, all re-expressed over
+`2^k, 2^{2k}, k·2^k` and closed by `omega` (the `descentSteps` truncated `−9(k+5)` is exact since
+`k ≤ 2^{2k}`).  `[propext, Quot.sound]`. -/
+theorem interiorFoldSteps_closed (k : Nat) :
+    interiorFoldSteps k + 16 * 2 ^ k + 496 = 512 * 2 ^ (2 * k) + 32 * (k * 2 ^ k) + 8 * k := by
+  induction k with
+  | zero => decide
+  | succ k ih =>
+    rw [show interiorFoldSteps (k + 1)
+          = (ascSteps 4 (k + 1) + (exitSteps (4 + (k + 1)) + descentSteps (4 + (k + 1))))
+              + interiorFoldSteps k from rfl,
+        show (4 : Nat) + (k + 1) = k + 5 from by omega]
+    unfold exitSteps descentSteps
+    rw [show 2 * (k + 5) - 3 = 2 * k + 7 from by omega,
+        show (k + 5) - 1 = k + 4 from by omega,
+        show (k + 5) - 2 = k + 3 from by omega,
+        show 2 * (k + 5) = 2 * k + 10 from by omega]
+    have hasc := ascSteps_closed (k + 1)
+    have pE : 2 ^ (2 * k + 7) = 2 ^ 7 * 2 ^ (2 * k) := pow_shift (2 * k) 7
+    have pF : 2 ^ (2 * k + 10) = 2 ^ 10 * 2 ^ (2 * k) := pow_shift (2 * k) 10
+    have pG : 2 ^ (2 * (k + 1)) = 2 ^ 2 * 2 ^ (2 * k) := by
+      rw [show 2 * (k + 1) = 2 * k + 2 from by omega]; exact pow_shift (2 * k) 2
+    have pH : 2 ^ (k + 4) = 2 ^ 4 * 2 ^ k := pow_shift k 4
+    have pI : 2 ^ (k + 3) = 2 ^ 3 * 2 ^ k := pow_shift k 3
+    have pJ : 2 ^ (k + 1) = 2 ^ 1 * 2 ^ k := pow_shift k 1
+    have qE : (k + 5) * 2 ^ (k + 4) = 2 ^ 4 * (k * 2 ^ k) + 5 * (2 ^ 4 * 2 ^ k) := by
+      have h := nmul_pow_shift k 4; rw [Nat.add_mul, h, pow_shift k 4]
+    have qK : (k + 1) * 2 ^ (k + 1) = 2 ^ 1 * (k * 2 ^ k) + 2 ^ 1 * 2 ^ k := by
+      have h := nmul_pow_shift k 1; rw [Nat.add_mul, Nat.one_mul, h, pow_shift k 1]
+    have hle : 2 ^ k ≤ 2 ^ (2 * k) := Nat.pow_le_pow_right (by decide) (by omega)
+    have hkb : k ≤ 2 ^ (2 * k) :=
+      Nat.le_trans (Nat.le_of_lt Nat.lt_two_pow_self)
+        (Nat.pow_le_pow_right (by decide) (by omega))
+    omega
+
+/-- **THE FRAMING ARITHMETIC, `∀K≥7`** — the framing glue-law's step-count identity:
+`exitSteps K = leadSteps K + interiorFoldSteps (K−6) + exitSteps 4 + trailSteps K`.  The level-`K`
+EXIT budget splits EXACTLY into the lead glue (`leadSteps`), the self-similar interior odometer
+fold (`interiorFoldSteps (K−6)`, closed form above), the floor sub-call (`exitSteps 4 = 70`), and
+the trailing glue (`trailSteps`).  Proof: substitute `leadRec_closed`, `interiorFoldSteps_closed`,
+`trailSteps_closed` and unfold `exitSteps K`, then `omega` over the atoms `2^{K−7}, 2^{2(K−7)},
+(K−7)·2^{K−7}` (the two truncated subtractions — lead's `−9K`, descent-inside-interior — are exact
+via `leadRec_pow_dom` and the closed form).  Pure `Nat`; no Mathlib/`native_decide`/`sorry`/axiom.
+`[propext, Quot.sound]`. -/
+theorem framingArith (K : Nat) (hK : 7 ≤ K) :
+    exitSteps K = leadSteps K + interiorFoldSteps (K - 6) + exitSteps 4 + trailSteps K := by
+  obtain ⟨k, rfl⟩ : ∃ k, K = k + 7 := ⟨K - 7, by omega⟩
+  rw [show (k + 7) - 6 = k + 1 from by omega, show exitSteps 4 = 70 from by decide]
+  have hld : leadSteps (k + 7) = 3 * 2 ^ (k + 6) - 9 * (k + 7) + 112 := by
+    unfold leadSteps
+    rw [show (k + 7) - 6 = k + 1 from by omega, leadRec_closed (k + 1),
+        show (k + 1) + 5 = k + 6 from by omega, show (k + 1) + 6 = k + 7 from by omega]
+  have htr := trailSteps_closed (k + 7)
+  rw [show (k + 7) + 1 = k + 8 from by omega] at htr
+  have hif := interiorFoldSteps_closed (k + 1)
+  unfold exitSteps
+  rw [show 2 * (k + 7) - 3 = 2 * k + 11 from by omega,
+      show (k + 7) - 1 = k + 6 from by omega,
+      show (k + 7) - 2 = k + 5 from by omega]
+  have x1 : 2 ^ (2 * k + 11) = 2 ^ 11 * 2 ^ (2 * k) := pow_shift (2 * k) 11
+  have x2 : 2 ^ (k + 6) = 2 ^ 6 * 2 ^ k := pow_shift k 6
+  have x3 : 2 ^ (k + 5) = 2 ^ 5 * 2 ^ k := pow_shift k 5
+  have x4 : 2 ^ (k + 8) = 2 ^ 8 * 2 ^ k := pow_shift k 8
+  have x5 : 2 ^ (k + 1) = 2 ^ 1 * 2 ^ k := pow_shift k 1
+  have x6 : 2 ^ (2 * (k + 1)) = 2 ^ 2 * 2 ^ (2 * k) := by
+    rw [show 2 * (k + 1) = 2 * k + 2 from by omega]; exact pow_shift (2 * k) 2
+  have y1 : (k + 7) * 2 ^ (k + 6) = 2 ^ 6 * (k * 2 ^ k) + 7 * (2 ^ 6 * 2 ^ k) := by
+    have h := nmul_pow_shift k 6; rw [Nat.add_mul, h, pow_shift k 6]
+  have y2 : (k + 1) * 2 ^ (k + 1) = 2 ^ 1 * (k * 2 ^ k) + 2 ^ 1 * 2 ^ k := by
+    have h := nmul_pow_shift k 1; rw [Nat.add_mul, Nat.one_mul, h, pow_shift k 1]
+  have hbd : 9 * (k + 7) ≤ 3 * 2 ^ (k + 6) := by
+    have hd := leadRec_pow_dom (k + 1)
+    rw [show (k + 1) + 5 = k + 6 from by omega, show (k + 1) + 7 = k + 8 from by omega] at hd
+    omega
+  omega
+
+/-- **GROUNDING — the framing identity is EXACT at `K = 7..11`** (concrete `Nat`, `decide`),
+matching the sibling's transport-verification of the same five levels. -/
+theorem framingArith_grounds :
+    (exitSteps 7 = leadSteps 7 + interiorFoldSteps (7 - 6) + exitSteps 4 + trailSteps 7) ∧
+    (exitSteps 8 = leadSteps 8 + interiorFoldSteps (8 - 6) + exitSteps 4 + trailSteps 8) ∧
+    (exitSteps 9 = leadSteps 9 + interiorFoldSteps (9 - 6) + exitSteps 4 + trailSteps 9) ∧
+    (exitSteps 10 = leadSteps 10 + interiorFoldSteps (10 - 6) + exitSteps 4 + trailSteps 10) ∧
+    (exitSteps 11 = leadSteps 11 + interiorFoldSteps (11 - 6) + exitSteps 4 + trailSteps 11) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+-- AXIOM AUDIT — the framing arithmetic backbone.  All `[propext, Quot.sound]`.
+#print axioms ascSteps_snoc
+#print axioms ascSteps_closed
+#print axioms interiorFoldSteps_closed
+#print axioms framingArith
+#print axioms framingArith_grounds
+
+/-! ### §5au  BREADTH BATCH — reusable `∀` list/arithmetic weapons (length, comb-reparse, snoc,
+cascade-block arithmetic) mined from the corpus.  Each is a REAL `∀` statement, GREEN, axiom-clean
+(`[propext, Quot.sound]` at most).  They feed B (left-block `ones`/comb reparse), C (`descCascade`
+lay + reachability length bookkeeping), and the assembly (marker/seam length accounting). -/
+
+/-- Length of an `ones` block. -/
+theorem ones_length : ∀ n : Nat, (ones n).length = n := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ n ih => show (ones n).length + 1 = n + 1; rw [ih]
+
+/-- Length of a `zeros` block. -/
+theorem zeros_length : ∀ n : Nat, (zeros n).length = n := by
+  intro n
+  induction n with
+  | zero => rfl
+  | succ n ih => show (zeros n).length + 1 = n + 1; rw [ih]
+
+/-- Length of the doubling comb `pow10 j = (10)^j`. -/
+theorem pow10_length : ∀ j : Nat, (pow10 j).length = 2 * j := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih => show (pow10 j).length + 1 + 1 = 2 * (j + 1); rw [ih]; omega
+
+/-- Length of the comb `pow01 k = (01)^k`. -/
+theorem pow01_length : ∀ k : Nat, (pow01 k).length = 2 * k := by
+  intro k
+  induction k with
+  | zero => rfl
+  | succ k ih => show (pow01 k).length + 1 + 1 = 2 * (k + 1); rw [ih]; omega
+
+/-- Right-append a single `1` onto an `ones` block (the snoc form of `ones_add`). -/
+theorem ones_snoc : ∀ n : Nat, ones (n + 1) = ones n ++ [true] := by
+  intro n; rw [ones_add n 1]; rfl
+
+/-- Right-append one `01` unit onto a `pow01` comb (the snoc form of `pow01_add`). -/
+theorem pow01_snoc : ∀ k : Nat, pow01 (k + 1) = pow01 k ++ [false, true] := by
+  intro k; rw [pow01_add k 1]; rfl
+
+/-- Right-append one `10` unit onto a `pow10` comb (the snoc form of `pow10_add`). -/
+theorem pow10_snoc : ∀ j : Nat, pow10 (j + 1) = pow10 j ++ [true, false] := by
+  intro j; rw [pow10_add j 1]; rfl
+
+/-- **COMB BOUNDARY REPARSE (falling edge)** — a leading `0` on a `(10)^j` comb re-reads as a
+`(01)^j` comb with the `0` pushed to the trailing edge: `0 (10)^j = (01)^j 0`.  The same `2j+1`
+cells, boundary swung left-to-right.  `[propext]`-only. -/
+theorem pow10_shift_pow01 : ∀ j : Nat, false :: pow10 j = pow01 j ++ [false] := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show false :: true :: (false :: pow10 j) = false :: true :: (pow01 j ++ [false])
+    rw [ih]
+
+/-- **COMB BOUNDARY REPARSE (rising edge)** — the `1`-anchored dual: `1 (01)^k = (10)^k 1`.
+`[propext]`-only. -/
+theorem pow01_shift_pow10 : ∀ k : Nat, true :: pow01 k = pow10 k ++ [true] := by
+  intro k
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    show true :: false :: (true :: pow01 k) = true :: false :: (pow10 k ++ [true])
+    rw [ih]
+
+/-- **`descCascade` LENGTH, `∀d`** (the C-leg reachability length weapon) — the depth-`d`
+descending cascade occupies exactly `2^{d+3} − d − 7` cells: `|descCascade d| + d + 7 = 2^{d+3}`.
+Stated additively to stay Nat-subtraction-free.  `[propext, Quot.sound]`. -/
+theorem descCascade_length : ∀ d : Nat, (descCascade d).length + d + 7 = 2 ^ (d + 3) := by
+  intro d
+  induction d with
+  | zero => rfl
+  | succ d ih =>
+    have hlen : (descCascade (d + 1)).length
+        = (2 ^ (d + 3) - 3) + (descCascade d).length + 2 := by
+      show ((ones (2 ^ (d + 3) - 3)) ++ (false :: false :: descCascade d)).length = _
+      rw [List.length_append, ones_length]
+      show (2 ^ (d + 3) - 3) + ((descCascade d).length + 1 + 1) = _
+      omega
+    have e : 2 ^ (d + 1 + 3) = 2 * 2 ^ (d + 3) := by
+      rw [show d + 1 + 3 = (d + 3) + 1 from rfl, Nat.pow_succ]; omega
+    have e8 : (2 : Nat) ^ 3 = 8 := rfl
+    have h3 : 3 ≤ 2 ^ (d + 3) := by
+      have hpa : 2 ^ (d + 3) = 2 ^ d * 2 ^ 3 := Nat.pow_add 2 d 3
+      have hp := LayerB.two_pow_pos d
+      rw [hpa, e8]; omega
+    rw [hlen, e]; omega
+
+/-- **`foldDepTail` LENGTH, `∀d`** (the seam/marker length weapon) — the descend-OUT / ascending
+marker `foldDepTail d = ascMarker 4 d []` occupies exactly `2^{d+5} − d − 32` cells:
+`|foldDepTail d| + d + 32 = 2^{d+5}`.  `[propext, Quot.sound]`. -/
+theorem foldDepTail_length : ∀ d : Nat, (foldDepTail d).length + d + 32 = 2 ^ (d + 5) := by
+  intro d
+  induction d with
+  | zero => rfl
+  | succ d ih =>
+    have hlen : (foldDepTail (d + 1)).length
+        = (foldDepTail d).length + (3 + 2 * (2 ^ (d + 4) - 2)) := by
+      show (foldDepTail d ++ (false :: false :: true :: pow01 (2 ^ (d + 4) - 2))).length = _
+      rw [List.length_append]
+      show (foldDepTail d).length + ((pow01 (2 ^ (d + 4) - 2)).length + 1 + 1 + 1) = _
+      rw [pow01_length]; omega
+    have e5 : 2 ^ (d + 5) = 2 * 2 ^ (d + 4) := by
+      rw [show d + 5 = (d + 4) + 1 from rfl, Nat.pow_succ]; omega
+    have e6 : 2 ^ (d + 1 + 5) = 2 * 2 ^ (d + 5) := by
+      rw [show d + 1 + 5 = (d + 5) + 1 from rfl, Nat.pow_succ]; omega
+    have hb : 2 ≤ 2 ^ (d + 4) := by
+      have h := two_le_two_pow_succ (d + 3); rwa [show (d + 3) + 1 = d + 4 from rfl] at h
+    rw [hlen, e6]; omega
+
+/-- **THE CASCADE BLOCK-LENGTH IDENTITY, `∀m`** (generalises `cascadeReg_block`'s `2^{k-1}`
+instance) — `2·(2^{m+1} − 2) + 1 = 2^{m+2} − 3`: the odd solid-block width a folded `(01)` comb
+of height `2^{m+1}−2` repacks to.  `[propext, Quot.sound]`. -/
+theorem two_pow_reg_odd : ∀ m : Nat, 2 * (2 ^ (m + 1) - 2) + 1 = 2 ^ (m + 2) - 3 := by
+  intro m
+  have e : 2 ^ (m + 2) = 2 * 2 ^ (m + 1) := by
+    rw [show m + 2 = (m + 1) + 1 from rfl, Nat.pow_succ]; omega
+  have hb : 2 ≤ 2 ^ (m + 1) := two_le_two_pow_succ m
+  omega
+
+/-- Companion `+3` variant, `∀m` — `2·(2^{m+1} − 2) + 3 = 2^{m+2} − 1` (the descent tiles' shift
+bookkeeping).  `[propext, Quot.sound]`. -/
+theorem two_pow_reg_odd3 : ∀ m : Nat, 2 * (2 ^ (m + 1) - 2) + 3 = 2 ^ (m + 2) - 1 := by
+  intro m
+  have e : 2 ^ (m + 2) = 2 * 2 ^ (m + 1) := by
+    rw [show m + 2 = (m + 1) + 1 from rfl, Nat.pow_succ]; omega
+  have hb : 2 ≤ 2 ^ (m + 1) := two_le_two_pow_succ m
+  omega
+
+-- AXIOM AUDIT — §5au breadth batch (all `[propext, Quot.sound]` or `[propext]`-only).
+#print axioms ones_length
+#print axioms zeros_length
+#print axioms pow10_length
+#print axioms pow01_length
+#print axioms ones_snoc
+#print axioms pow01_snoc
+#print axioms pow10_snoc
+#print axioms pow10_shift_pow01
+#print axioms pow01_shift_pow10
+#print axioms descCascade_length
+#print axioms foldDepTail_length
+#print axioms two_pow_reg_odd
+#print axioms two_pow_reg_odd3
+
+/-! ### §5av (2026-07-20) LEG C, FIRST LEG PROVEN — the floor `REGEN(4)`; residual = trailing word.
+
+The corrected count for problem C is `exitSteps 4 + trailSteps k` (final floor `REGEN(4)` + the
+`359 + TERM(k)` trailing word).  `trailFloorRegen` discharges the FIRST leg `∀`: from the interior
+fold's OUT family `regenIn 4 q 1 (foldMarker j m) (0^16 ++ R)` (pad `1`, blank-padded tail — exactly
+what `interiorFold_expl` lands on, with `R := 0^16 ++ R'` on-orbit), one `REGEN(4)` via the PROVEN
+`regenLaw_4` (through `regenIn_pad`'s `1+16 = 2^3+9` normalization) lands on `cascadeReg 4 1 (q−16)
+(foldMarker j m) R`.  So C reduces to the **trailing WORD** `cascadeReg 4 (foldMarker j m) →
+cascadeReg k` in `trailSteps k` steps.
+
+**RESIDUAL — the trailing word, MECHANISM reverse-engineered (`r7f_glue2`, full 627-step trace).**
+The word is a monolithic braided odometer sweep in three phases: (i) an `E:0→1RF · F:1→1RE`
+oscillation that reads/erases the standing descending cascade (`sweepEF`-family); (ii) `k−4` per-block
+DOUBLING cycles, each growing the top block `1^{2^{n−1}−3} → 1^{2^n−3}` in `2^n+1` steps (measured
+`65 = 2^6+1` for block `61`, `129 = 2^7+1` for block `125`; `dSweepTurn`-family linear crossings that
+absorb the pre-laid left comb via the `ones_append_true` reparse `2^n−2 ⇝ 2^n−3`); (iii) a fixed
+terminal re-anchor.  The per-block lay tile is thus IDENTIFIED (`∀n`: block-double in `2^n+1`), but its
+`∀`-machine proof + the `k−4`-fold + the erase/re-anchor glue is a `braid_topgrind`-scale construction
+(reverse orientation to the descent legs) that stays `[OPEN]`.  No `sorry`, no axiom. -/
+
+/-- **LEG C, FIRST LEG (`∀`) — the floor `REGEN(4)`.**  From the interior fold's OUT family (pad `1`,
+tail `0^16 ++ R`), `exitSteps 4` steps run one `REGEN(4)` (`regenLaw_4`, position-shifted, pad
+normalized `1+16 = 2^3+9` by `regenIn_pad`) landing on `cascadeReg 4 1 (q − 2^4) marker R`.  This pins
+C's residual to the trailing word `cascadeReg 4 (foldMarker (k−7) marker) → cascadeReg k`.
+`[propext, Quot.sound]`. -/
+theorem trailFloorRegen (q : Int) (marker R : List Bool) :
+    steps (exitSteps 4) (regenIn 4 q 1 marker (zeros 16 ++ R))
+      = some (cascadeReg 4 1 (q - 2 ^ 4) marker R) := by
+  rw [regenIn_pad 4 q 1 16 marker R]
+  exact regenLaw_pos regenLaw_4 q marker R
+
+-- AXIOM AUDIT — leg C's IN family pinned explicit, and C's first (floor-REGEN) leg proven.
+#print axioms trailFloorRegen
 
 end X2
