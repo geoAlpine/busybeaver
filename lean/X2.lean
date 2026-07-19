@@ -8429,4 +8429,175 @@ theorem regenLaw_7 : RegenLaw 7 :=
 -- AXIOM AUDIT — the fourth grounded level (first recursive one).  `[propext, Quot.sound]`.
 #print axioms regenLaw_7
 
+/-! ## §5ap (2026-07-19) THE INTERIOR LEG-FOLD — composing `regenAscend`/`regenDescend`
+along `exitList k` (roadmap T3).
+
+Prior sections proved the two interior TRANSITIONS `∀a` (`regenAscend`, `regenDescend`, §5al),
+each taking `RegenLaw a` as its ONLY hypothesis, and named the odometer call-list `exitList`
+(§5ab) and the strong-recursion frame `carryExit_strong_frame` (§5aj).  What was NEVER built —
+at ANY level — is the FOLD: the actual composition of those legs into the interior chain.
+`regenLaw_7` used the bespoke `regen7_factored`, not the legs.  This section builds the
+leg-fold FROM `regenAscend`/`regenDescend`, both at the concrete level `k=7` and as two `∀`
+COMPOSITE BLOCKS (the ascending spine, and the spine-then-descend super-digit), each conditional
+ONLY on the lower `RegenLaw` antecedents that `carryExit_strong_frame` supplies for `m < k`.
+
+**HONEST SCOPE.**  These blocks are the interior's `∀`-parametric COMPOSITES; they do NOT close
+the full `∀k` interior — that additionally needs the inter-block PAD normalization (`regenIn_pad`
+below, `∀`, but its threading across the self-similar `exitList` recursion is unbuilt) and the
+lead/trailing framing (§5al, closed forms only).  No `sorry`, no axiom, no `native_decide`. -/
+
+/-- **PAD NORMALIZATION, `∀k`** — `regenIn`'s blank pad absorbs leading blanks of the tail:
+`regenIn k p z1 marker (0^{z2} ++ R) = regenIn k p (z1+z2) marker R`.  This is the machine
+identity behind `regenDescend`'s "PAD 1, NOT 17" seam: a descend lands on `regenIn 4` with pad
+`1`, and on blank on-orbit tape `R = 0^{16} ++ R'` this IS the `regenIn 4` of pad `2^3+9 = 17`
+the next ascend consumes.  Pure `List` (`zeros_add`).  `[propext]`. -/
+theorem regenIn_pad (k : Nat) (p : Int) (z1 z2 : Nat) (marker R : List Bool) :
+    regenIn k p z1 marker (zeros z2 ++ R) = regenIn k p (z1 + z2) marker R := by
+  have h : zeros (z1 + z2) ++ R = zeros z1 ++ (zeros z2 ++ R) := by
+    rw [zeros_add, List.append_assoc]
+  unfold regenIn
+  rw [h]
+
+/-- **THE `k=7` INTERIOR `[4,5,4]`, FROM THE LEGS.**  The first level with a genuine interior
+recursion (`exitList 7 = [4,5,4]`), reproved NOT from `regen7_factored` but by composing the two
+`∀a` legs: `regenAscend 4` (the `4→5` ascend, on `RegenLaw 4`) then `regenDescend 5` (the `5→4`
+descend, on `RegenLaw 5`).  `regenLaw_4`/`regenLaw_5` discharge the antecedents.  In
+`(exitSteps 4 + topGrindSteps 4) + (exitSteps 5 + descentSteps 5)` steps the level-4 IN family
+lands back on the level-4 IN family (the odometer super-digit completed), `m`/`R` free.  `some`
+⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem regenInterior_7 (q : Int) (m R : List Bool) :
+    ∃ q' : Int, steps ((exitSteps 4 + topGrindSteps 4) + (exitSteps 5 + descentSteps 5))
+        (regenIn 4 q (2 ^ (4 - 1) + 9)
+          (false :: false :: true :: (pow01 (2 ^ 4 - 2) ++ m))
+          (zeros (2 ^ 4) ++ R))
+      = some (regenIn 4 q' 1
+          (foldDepTail (5 - 5)
+            ++ (ones (4 * (2 ^ (5 - 1) - 2) + 4) ++ (pow10 1 ++ (true :: m)))) R) := by
+  apply Exists.intro
+  rw [steps_add, regenAscend 4 (by omega) regenLaw_4 q m R, someBind]
+  exact regenDescend 5 (by omega) regenLaw_5 _ m R
+
+/-- The nested ascending-ramp step count: `n` ascend legs from base `b`. -/
+def ascSteps : Nat → Nat → Nat
+  | _, 0 => 0
+  | b, (n + 1) => (exitSteps b + topGrindSteps b) + ascSteps (b + 1) n
+
+/-- The nested ascending-ramp MARKER — each ascend leg peels one `0 0 1 (01)^{2^{b+i}-2}` layer.
+This is exactly the decoration `regenAscend` forces at each height, stacked. -/
+def ascMarker : Nat → Nat → List Bool → List Bool
+  | _, 0, m => m
+  | b, (n + 1), m => false :: false :: true :: (pow01 (2 ^ b - 2) ++ ascMarker (b + 1) n m)
+
+/-- The nested ascending-ramp PAD tail — each ascend leg consumes `0^{2^{b+i}}` further blanks. -/
+def ascR : Nat → Nat → List Bool → List Bool
+  | _, 0, R => R
+  | b, (n + 1), R => zeros (2 ^ b) ++ ascR (b + 1) n R
+
+/-- **THE ASCENDING SPINE, `∀ b n` — the interior's ascending ramp as ONE fold.**  From the
+level-`b` IN family, `n` successive `regenAscend` legs land on the level-`(b+n)` IN family, in
+`ascSteps b n` steps, provided `RegenLaw (b+i)` holds for every `i < n`.  This is the `∀k`
+interior fold for a pure ascending ramp `[b, b+1, …, b+n-1]` (e.g. `exitList`'s `range' 4 (k+1)`
+head block): the markers nest via `ascMarker`, the pads via `ascR`, and the composition runs by
+induction — each rung is `regenAscend (b+i)`, threaded by `steps_add`.  The absolute anchor `q'`
+is existential (position-free, as in `RegenLaw`).  `some` ⇒ HALT-FREE.  Conditional on the
+lower-level laws ONLY — exactly what `carryExit_strong_frame`'s strong IH delivers.
+`[propext, Quot.sound]`. -/
+theorem ascSpine : ∀ (n b : Nat), 4 ≤ b → (∀ i, i < n → RegenLaw (b + i)) →
+    ∀ (q : Int) (m R : List Bool),
+      ∃ q' : Int, steps (ascSteps b n)
+          (regenIn b q (2 ^ (b - 1) + 9) (ascMarker b n m) (ascR b n R))
+        = some (regenIn (b + n) q' (2 ^ (b + n - 1) + 9) m R) := by
+  intro n
+  induction n with
+  | zero =>
+    intro b _ _ q m R
+    exact ⟨q, rfl⟩
+  | succ n ih =>
+    intro b hb hlaw q m R
+    have hb0 : RegenLaw b := by
+      have h := hlaw 0 (by omega); rwa [Nat.add_zero] at h
+    have hlaw' : ∀ i, i < n → RegenLaw ((b + 1) + i) := by
+      intro i hi
+      have h := hlaw (i + 1) (by omega)
+      rwa [show b + (i + 1) = (b + 1) + i from by omega] at h
+    obtain ⟨q', hq'⟩ :=
+      ih (b + 1) (by omega) hlaw' (q - 2 ^ b + 5 + 2 * ((2 ^ (b - 1) - 2 : Nat) : Int)) m R
+    have e : (b + 1) + n = b + (n + 1) := by omega
+    rw [e] at hq'
+    refine ⟨q', ?_⟩
+    show steps ((exitSteps b + topGrindSteps b) + ascSteps (b + 1) n)
+        (regenIn b q (2 ^ (b - 1) + 9)
+          (false :: false :: true :: (pow01 (2 ^ b - 2) ++ ascMarker (b + 1) n m))
+          (zeros (2 ^ b) ++ ascR (b + 1) n R))
+      = some (regenIn (b + (n + 1)) q' (2 ^ (b + (n + 1) - 1) + 9) m R)
+    rw [steps_add, regenAscend b hb hb0 q (ascMarker (b + 1) n m) (ascR (b + 1) n R), someBind]
+    exact hq'
+
+/-- **THE ODOMETER SUPER-DIGIT, `∀ b n` — an ascending ramp THEN its terminal descend.**  From
+the level-`b` IN family, `n` ascends to level `b+n` (`ascSpine`) followed by the `regenDescend`
+reset lands on the level-4 IN family — the full "carry a digit up to `b+n`, then drop to floor 4"
+super-step of the odometer, as ONE `∀`-parametric transport from the lower `RegenLaw`s.  The reset
+lands with pad `1` (`regenIn_pad` normalizes it to the next block's `17` once `R` supplies the
+blanks — the inter-block seam, threaded per-level but not yet folded across the whole
+self-similar recursion).  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem rampDescend (b n : Nat) (hb : 4 ≤ b) (hn : 1 ≤ n)
+    (hlaw : ∀ i, i ≤ n → RegenLaw (b + i)) (q : Int) (m R : List Bool) :
+    ∃ q' : Int, steps (ascSteps b n + (exitSteps (b + n) + descentSteps (b + n)))
+        (regenIn b q (2 ^ (b - 1) + 9) (ascMarker b n m) (ascR b n R))
+      = some (regenIn 4 q' 1
+          (foldDepTail (b + n - 5)
+            ++ (ones (4 * (2 ^ (b + n - 1) - 2) + 4) ++ (pow10 1 ++ (true :: m)))) R) := by
+  obtain ⟨q1, h1⟩ := ascSpine n b hb (fun i hi => hlaw i (by omega)) q m R
+  apply Exists.intro
+  rw [steps_add, h1, someBind]
+  exact regenDescend (b + n) (by omega) (hlaw n (Nat.le_refl n)) q1 m R
+
+/-- **THE `k=8` INTERIOR `[4,5,6,4,5,4]`, FROM THE LEGS** — the FIRST level whose interior is
+TWO odometer super-digits, composed across the inter-block PAD seam.  Block A = `rampDescend 4 2`
+(ramp `4→5→6`, descend `6→4`, on `RegenLaw 4/5/6`); its reset lands with pad `1`, which
+`regenIn_pad` normalizes to the `17 = 2^3+9` block B needs by absorbing `0^16` from the tail;
+block B = `rampDescend 4 1` (ramp `4→5`, descend `5→4`, on `RegenLaw 4/5`).  The descend OUT marker
+is (definitionally) block B's nested ascending marker — the "framing glue" that makes the blocks
+compose.  This is the interior leg-fold BEYOND the single super-digit, threading the pad by hand at
+the one seam.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem regenInterior_8 (q : Int) (m R : List Bool) :
+    ∃ q' : Int,
+      steps ((ascSteps 4 2 + (exitSteps (4 + 2) + descentSteps (4 + 2)))
+              + (ascSteps 4 1 + (exitSteps (4 + 1) + descentSteps (4 + 1))))
+        (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 2 m)
+          (ascR 4 2 (zeros 16 ++ ascR 4 1 R)))
+      = some (regenIn 4 q' 1
+          (foldDepTail (4 + 1 - 5)
+            ++ (ones (4 * (2 ^ (4 + 1 - 1) - 2) + 4) ++ (pow10 1 ++ (true ::
+                (ones (4 * (2 ^ 5 - 2) + 4) ++ (pow10 1 ++ (true :: m))))))) R) := by
+  have hlawA : ∀ i, i ≤ 2 → RegenLaw (4 + i) := by
+    intro i hi
+    cases i with
+    | zero => exact regenLaw_4
+    | succ i => cases i with
+      | zero => exact regenLaw_5
+      | succ i => cases i with
+        | zero => exact regenLaw_6
+        | succ i => exact absurd hi (by omega)
+  have hlawB : ∀ i, i ≤ 1 → RegenLaw (4 + i) := by
+    intro i hi
+    cases i with
+    | zero => exact regenLaw_4
+    | succ i => cases i with
+      | zero => exact regenLaw_5
+      | succ i => exact absurd hi (by omega)
+  obtain ⟨qA, hA⟩ := rampDescend 4 2 (by omega) (by omega) hlawA q m (zeros 16 ++ ascR 4 1 R)
+  obtain ⟨qB, hB⟩ := rampDescend 4 1 (by omega) (by omega) hlawB qA
+      (ones (4 * (2 ^ 5 - 2) + 4) ++ (pow10 1 ++ (true :: m))) R
+  refine ⟨qB, ?_⟩
+  rw [steps_add, hA, someBind, regenIn_pad 4 qA 1 16 _ (ascR 4 1 R)]
+  exact hB
+
+-- AXIOM AUDIT — the interior leg-fold: pad law, k=7 fold, ∀ ascending spine, ∀ super-digit, k=8.
+#print axioms regenIn_pad
+#print axioms regenInterior_7
+#print axioms ascSpine
+#print axioms rampDescend
+#print axioms regenInterior_8
+
 end X2
