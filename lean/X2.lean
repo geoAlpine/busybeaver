@@ -9404,4 +9404,82 @@ theorem trailTurn (p : Int) (L R : List Bool) :
 -- AXIOM AUDIT — trailing-word Phase 1 separator turnaround.  `[propext, Quot.sound]`.
 #print axioms trailTurn
 
+/-! ### §5ba (2026-07-20) TRAILING WORD — THE `k−4` DOUBLING FOLD, `∀` (interiorFold-style).
+
+The doubling sweep of the trailing word lays the descending cascade block-by-block.  Reverse-
+engineering the real `r7f_glue2` trace showed each cycle is EXACTLY `dSweepTurn` (the existing
+`∀n` block-cross) preceded by a fixed 2-step transition `trailTrans` (state `E→D` reset at the
+block boundary).  So the per-cycle tile `trailCycle` peels one block `1^{N}` off the LEFT nest and
+lays it — with the `0^2` cascade separator — onto the RIGHT, the **accumulated cascade being a FREE
+TAIL `R`** (braid_topgrind-shape).  `trailFold` then composes `k−4` cycles by induction on the block
+list, exactly as `ascSpine`/`interiorFold` folded their legs.  Banks the FOLD phase `∀`.  No `sorry`,
+no axiom, no `native_decide`. -/
+
+/-- **TRANSITION TILE, `∀ p L R`** — the fixed 2-step `E→D` reset at a block boundary that sets up
+the next `dSweepTurn`, laying one `0^2` cascade separator.  Verified `∀ L R` (3-cell window).
+Kernel `rfl` + `cfgPos`.  `[propext, Quot.sound]`. -/
+theorem trailTrans (p : Int) (L R : List Bool) :
+    steps 2 ⟨.E, p, ⟨false :: true :: L, true, R⟩⟩
+      = some ⟨.D, p - 2, ⟨L, true, false :: false :: R⟩⟩ := by
+  have h : steps 2 (⟨.E, p, ⟨false :: true :: L, true, R⟩⟩ : Cfg)
+      = some ⟨.D, p - 1 - 1, ⟨L, true, false :: false :: R⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- **THE PER-BLOCK DOUBLING CYCLE, `∀N`** — `trailTrans ∘ dSweepTurn`: in `N + 4` steps peel the
+top block `1^{N}` off the LEFT nest (`false :: true :: (ones N ++ (false :: L))`) and lay it onto the
+RIGHT as a fresh descending-cascade block `ones N` with its `0^2` separator, the accumulated cascade
+`R` a FREE TAIL.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem trailCycle (N : Nat) (p : Int) (L R : List Bool) :
+    steps (N + 4) ⟨.E, p, ⟨false :: true :: (ones N ++ (false :: L)), true, R⟩⟩
+      = some ⟨.E, p - (N + 2), ⟨false :: L, true, ones N ++ (false :: false :: R)⟩⟩ := by
+  rw [show N + 4 = 2 + (N + 2) from by omega, steps_add,
+      trailTrans p (ones N ++ (false :: L)) R, someBind,
+      dSweepTurn N (p - 2) L (false :: false :: R)]
+  exact congrArg some (cfgPos (by push_cast; omega))
+
+/-- The LEFT nest a `k−4`-block doubling fold consumes: block list top-first, each `1^{N}` flanked by
+the `1`-head and `0`-separator the cycle reads. -/
+def trailNest : List Nat → List Bool → List Bool
+  | [], L => L
+  | (N :: rest), L => true :: (ones N ++ (false :: trailNest rest L))
+
+/-- The RIGHT descending cascade a fold deposits (each cycle prepends `ones N ++ 0^2`, so the LAST
+block folded ends up on top). -/
+def trailCasc : List Nat → List Bool → List Bool
+  | [], R => R
+  | (N :: rest), R => trailCasc rest (ones N ++ (false :: false :: R))
+
+/-- Total fold step count `= Σ (Nᵢ + 4)`. -/
+def trailCost : List Nat → Nat
+  | [] => 0
+  | (N :: rest) => (N + 4) + trailCost rest
+
+/-- **THE DOUBLING FOLD, `∀ (bs : List Nat)`** — composing `trailCycle` over the block list `bs`:
+from the LEFT nest `false :: trailNest bs L` the sweep peels every block and lays the descending
+cascade `trailCasc bs R` on the RIGHT, in `trailCost bs` steps, `L`/`R` free.  Induction on `bs`,
+exactly the `ascSpine`/`interiorFold` pattern.  `some` ⇒ HALT-FREE.  `[propext, Quot.sound]`. -/
+theorem trailFold : ∀ (bs : List Nat) (p : Int) (L R : List Bool),
+    ∃ p' : Int, steps (trailCost bs) ⟨.E, p, ⟨false :: trailNest bs L, true, R⟩⟩
+      = some ⟨.E, p', ⟨false :: L, true, trailCasc bs R⟩⟩ := by
+  intro bs
+  induction bs with
+  | nil =>
+    intro p L R
+    exact ⟨p, rfl⟩
+  | cons N rest ih =>
+    intro p L R
+    obtain ⟨p', hp'⟩ := ih (p - (N + 2)) L (ones N ++ (false :: false :: R))
+    refine ⟨p', ?_⟩
+    rw [show trailCost (N :: rest) = (N + 4) + trailCost rest from rfl, steps_add,
+        show (false :: trailNest (N :: rest) L : List Bool)
+          = false :: true :: (ones N ++ (false :: trailNest rest L)) from rfl,
+        trailCycle N p (trailNest rest L) R, someBind]
+    exact hp'
+
+-- AXIOM AUDIT — trailing-word FOLD phase.  `[propext, Quot.sound]`.
+#print axioms trailTrans
+#print axioms trailCycle
+#print axioms trailFold
+
 end X2
