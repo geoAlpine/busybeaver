@@ -9706,4 +9706,82 @@ theorem trailCasc_append : ∀ (bs : List Nat) (X Y : List Bool),
 #print axioms trailCasc_descCascade
 #print axioms trailCasc_append
 
+/-! ## §5bc (2026-07-20) THE ON-ORBIT `exitSteps` FACTORISATION — `exitSteps_7_split` GENERALISED.
+
+After the B/D/C (`interiorFold`) route was found OFF-ORBIT (its OUT lands on the floor `regenIn 4`
+with a BLANK `interiorPadTail`, whereas the real orbit carries the ACCUMULATED top block there —
+laid by the DESCENT glue `descent_glue_expl` at the top level, `Θ(4^k)`), the correct skeleton is
+the one `regen7_factored` (§5ak, `regenLaw_7`) actually uses:
+
+  `REGEN(k) = lead(k) ∘ [fold along exitList k of  REGEN(e) · glue(e→e')] ∘ trailing(k)`
+
+where the between-call glue is `braid_topgrind e` (ASCEND `e→e+1`, `= topGrindSteps e`) or
+`descent_glue_expl` (DESCEND `e→4`, `= descentSteps e`).  This section pins the ARITHMETIC skeleton
+that any such transport must satisfy, `∀`-parametrically over `exitList` — the honest generalisation
+of `exitSteps_7_split` (which was a single `decide`d instance).  The CONFIG-level `∀k` transport
+(threading the real block-carrying tape, not blanks) is the residual — the actual `RegenLaw ∀k`.
+
+Arithmetic backbone only — NO machine decided beyond the three grounded levels; `decide`-checked. -/
+
+/-- The between-call glue step count: ASCEND `e→e+1` is `braid_topgrind`'s `topGrindSteps e`;
+DESCEND `e→4` (odometer carry-reset) is `descent_glue_expl`'s `descentSteps e`. -/
+def glueOf (a b : Nat) : Nat := if b = a + 1 then topGrindSteps a else descentSteps a
+
+/-- **THE MIDDLE-CHAIN GLUE SUM, `∀k`** — the `foldl` of `glueOf` over the CONSECUTIVE pairs of
+`exitList k` (`= (exitList k).zip (exitList k).tail`).  Each pair is one on-orbit transition, its
+cost the `∀`-covered `topGrindSteps`/`descentSteps` — NOT a table.  Grounded `0,0,1304,6606`. -/
+def glueMiddleSteps (k : Nat) : Nat :=
+  ((exitList k).zip (exitList k).tail).foldl (fun s p => s + glueOf p.1 p.2) 0
+
+/-- **GROUNDING `glueMiddleSteps`** `= 0,0,1304,6606` for `k=5,6,7,8` — the `k=7` value
+`1304 = topGrindSteps 4 + descentSteps 5` reproduces `exitSteps_7_forall_covered`, and the `k=8`
+value `6606 = topGrindSteps 4 + topGrindSteps 5 + descentSteps 6 + topGrindSteps 4 + descentSteps 5`
+matches `glueSegs 8`'s middle five entries.  Pure `Nat`/`List`. -/
+theorem glueMiddleSteps_grounds :
+    glueMiddleSteps 5 = 0 ∧ glueMiddleSteps 6 = 0 ∧
+      glueMiddleSteps 7 = 1304 ∧ glueMiddleSteps 8 = 6606 := by
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **THE ON-ORBIT SPLIT, grounded `k=6,7,8`** — `exitSteps k = leadSteps k + (foldRegenSteps k +
+glueMiddleSteps k) + trailSteps k`.  The middle `= foldRegenSteps k` (the REGEN sub-calls, one per
+`exitList` entry) `+ glueMiddleSteps k` (the between-call `topGrind`/`descent` glues), exactly the
+pieces `regen7_factored` composes.  This is the on-orbit replacement for the retracted `framingArith`
+(`interiorFoldSteps + exitSteps 4`): the two SUMS agree (both `= exitSteps k − leadSteps k −
+trailSteps k`), but THIS one is the decomposition whose configs stay on the real orbit.  Verified
+off-line `k=6..11`; grounded in-kernel at `k=6,7,8`.  Pure `Nat`. -/
+theorem exitSteps_onorbit_split :
+    exitSteps 6 = leadSteps 6 + (foldRegenSteps 6 + glueMiddleSteps 6) + trailSteps 6 ∧
+      exitSteps 7 = leadSteps 7 + (foldRegenSteps 7 + glueMiddleSteps 7) + trailSteps 7 ∧
+        exitSteps 8 = leadSteps 8 + (foldRegenSteps 8 + glueMiddleSteps 8) + trailSteps 8 := by
+  refine ⟨?_, ?_, ?_⟩ <;> decide
+
+/-- **THE `k=8` FACTORISATION, EXPLICIT** — `exitSteps_7_split` at the next level, from the SAME
+`∀`-families (`topGrindSteps 4/5`, `descentSteps 5/6`, `exitSteps 4/5/6`), laid out along
+`exitList 8 = [4,5,6,4,5,4]`: lead ∘ R(4) ∘ TG(4) ∘ R(5) ∘ TG(5) ∘ R(6) ∘ DESC(6) ∘ R(4) ∘ TG(4)
+∘ R(5) ∘ DESC(5) ∘ R(4) ∘ trailing.  The DESC(6) `= descentSteps 6 = 4152` is the `Θ(4^k)` term
+that lays the top block — the piece `interiorFold` mis-threaded.  `241`/`627` → `424`/`884` are the
+per-level lead/trailing.  `9282 = exitSteps 8`.  Pure `Nat`. -/
+theorem exitSteps_8_split :
+    exitSteps 8
+      = 424 + (exitSteps 4 + (topGrindSteps 4 + (exitSteps 5 + (topGrindSteps 5
+          + (exitSteps 6 + (descentSteps 6 + (exitSteps 4 + (topGrindSteps 4 + (exitSteps 5
+              + (descentSteps 5 + (exitSteps 4 + 884))))))))))) := by
+  decide
+
+/-- **THE `k=8` GLUES ARE THE `∀`-FAMILIES AT THE `exitList 8` LEVELS** — every between-call glue
+of `REGEN(8)` is a `topGrindSteps`/`descentSteps` instance (NOT a fresh constant): the five middle
+entries of `glueSegs 8` are `TG(4),TG(5),DESC(6),TG(4),DESC(5)`.  Confirms the middle chain is a
+fold of the two proven `∀` transport families along `exitList 8`.  Pure `Nat`/`List`. -/
+theorem glueSegs_8_are_families :
+    (glueSegs 8)[1]? = some (topGrindSteps 4) ∧ (glueSegs 8)[2]? = some (topGrindSteps 5) ∧
+      (glueSegs 8)[3]? = some (descentSteps 6) ∧ (glueSegs 8)[4]? = some (topGrindSteps 4) ∧
+        (glueSegs 8)[5]? = some (descentSteps 5) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+-- AXIOM AUDIT — the on-orbit factorisation skeleton (arithmetic).  All `[propext, Quot.sound]` or none.
+#print axioms glueMiddleSteps_grounds
+#print axioms exitSteps_onorbit_split
+#print axioms exitSteps_8_split
+#print axioms glueSegs_8_are_families
+
 end X2
