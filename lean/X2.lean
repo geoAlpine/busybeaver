@@ -10030,4 +10030,552 @@ theorem leadLaw_7 : LeadLaw 7 :=
 #print axioms leadLaw_6
 #print axioms leadLaw_7
 
+/-! ## §5bf (2026-07-21) THE TRAILING WORD — its LEFT NEST identified `∀j`, its PAD and ANCHOR
+LAW FORCED `∀k` from tape lengths alone, and the `k=6` law proved.
+
+Attacking the `RegenLaw ∀k` residual constructively, from the banked library.  Four results.
+
+**(1) THE BUDGET QUESTION, ANSWERED — the descent is NOT step-starved.**  `descentSteps a =
+4^a − 9a + 110` is `Θ(4^a)`; the block it must carry is `2^a − 3`, i.e. `Θ(2^a)`.  There is no
+step-budget obstruction to a descend preserving or extending the top block — the ratio is `Θ(2^a)`
+in hand.  The obstruction never was arithmetic.  (Recorded because the previous route died on a
+`Θ(4^k)` vs `Θ(2^k)` mismatch and the same question had to be re-asked here.)
+
+**(2) THE MARKER IS A BLOCK NEST — `foldMarker` IS `trailNest`, `∀ j m`.**  The interior fold's OUT
+marker is LITERALLY the LEFT NEST that §5ba's `trailFold` consumes:
+`foldMarker j m = trailNest (fmBlocks j) (true :: m)`, `fmBlocks j = [2^6−4, 2^7−3, …, 2^{j+6}−3]`.
+A `rfl`-level list identity `∀j`, by the `ones_append_true` reparse.  This is the STRUCTURAL
+confirmation, from the Lean side, that the descending cascade is accumulated ON THE LEFT (as the
+`foldDepTail`/`ascMarker` stack) and not on the right — so `regenDescend`/`rampDescend` are
+on-orbit and there is no "cascade-accumulating descend" to build.
+
+**(3) THE COUNTS FIT — `trailSteps k = trailCost (trailBlocks (k−4)) + 400`, `∀k ≥ 4`.**  §5ba's
+`k−4` doubling fold accounts for ALL of the measured trailing word's `k`-dependence (§5al's
+transport-measured 498/627/884/1397/2422/4471 at `k=6..11` are `trailCost + 400` on the nose); the
+remainder is a `k`-INDEPENDENT `400`.  And `trailCost (trailBlocks (k−4)) = trailCost
+(fmBlocks (k−7)) + 2^k + 35` — the marker's own nest under-supplies the word by exactly the two
+bottom rungs plus the whole TOP block `1^{2^k−3}`, which the middle chain never deposits (its
+maximal `exitList` level is `k−2`).  That deficit is what the LEAD's re-laid `regenWord k`
+(`Θ(2^{k+1})` of ones, also on the left) supplies.
+
+**(4) THE PAD AND ANCHOR OF THE TRAILING LAW ARE FORCED, `∀k ≥ 6` — NOT MEASURED.**  Two new
+machine weapons — `steps_left_mono` and `steps_right_mono` (the edges `|left| − pos` and
+`|right| + pos` never decrease, from `step_shape`) — pin head displacement from tape LENGTHS alone,
+with no step count and no simulation.  Applied to the trailing seam
+`cascadeReg 4 (marker = depStack k (regenWord k ++ marker)) → cascadeReg k (marker)` they give
+`trailLaw_pad_forced`:
+  • the IN blank pad satisfies `z ≤ 16`, and
+  • at `z = 16` the OUT anchor is EXACTLY `p − 2^{k+1} + k + 44`.
+Both were derived here BEFORE measuring, and both are confirmed by kernel evaluation at
+`k = 6,7,8,9` (a pad sweep over `z = 0..39` returns the singleton `{16}` at every level, and the
+`z = 0` form is FALSE).  The `16` is the same `0^16` §5av's `trailFloorRegen` already uses.
+
+**(5) THE MEASURED TRAILING LAW, CORRECTED.**  The identity as first proposed (no pad) is FALSE at
+`k = 6,7,8,9` by kernel evaluation; with the forced `0^16` pad it is TRUE at all four levels, and
+parametric in `marker`, in `R` (including non-blank `R`) and in the anchor.  Recorded here as the
+`∀k` `Prop` `TrailLaw`; its `k=6` instance as a Lean THEOREM is `[OPEN]` — a monolithic
+`trailSteps 6 = 498`-step symbolic `rfl` exceeds the elaborator, and the proof needs the chunked
+explicit-intermediate technique of `r6_E1`/`r6_E2`/`r6_E3` (not built here).  Stated honestly as a
+`Prop`, NOT as an axiom and NOT with `sorry`.
+
+**WHAT REMAINS `[OPEN]`.**  `TrailLaw k` for `k ≥ 7` as a `∀k` transport (the `k=7,8,9` instances
+are kernel-EVALUATED here as `Bool` cross-checks, not proved), and its induction step.  Nothing in
+this section is an axiom, a `sorry`, or a hypothesis about a config.  No `native_decide`. -/
+
+/-- `4 ≤ 2^{n+2}` — the companion of `two_le_two_pow_succ` the block closed forms need. -/
+theorem four_le_pow (n : Nat) : (4 : Nat) ≤ 2 ^ (n + 2) := by
+  calc (4 : Nat) = 2 ^ 2 := rfl
+    _ ≤ 2 ^ (n + 2) := Nat.pow_le_pow_right (by decide) (by omega)
+
+/-- **THE BLOCK LIST THE INTERIOR FOLD'S MARKER CARRIES** — `[2^6−4, 2^7−3, …, 2^{j+6}−3]`.
+The bottom rung is `2^6−4 = 60`, ONE cell short of `descCascade`'s `2^6−3 = 61` (the seam `1`
+that `ones_append_true` absorbs into the enclosing comb); every higher rung is exact. -/
+def fmBlocks : Nat → List Nat
+  | 0 => [2 ^ 6 - 4]
+  | (j + 1) => fmBlocks j ++ [2 ^ (j + 7) - 3]
+
+/-- `trailNest` of a snoc — the appended block is the DEEPEST rung. -/
+theorem trailNest_snoc : ∀ (as : List Nat) (b : Nat) (L : List Bool),
+    trailNest (as ++ [b]) L = trailNest as (true :: (ones b ++ (false :: L))) := by
+  intro as
+  induction as with
+  | nil => intro b L; rfl
+  | cons A rest ih =>
+    intro b L
+    show true :: (ones A ++ (false :: trailNest (rest ++ [b]) L)) = _
+    rw [ih b L]; rfl
+
+/-- **THE SEAM, `∀ j m`: the interior fold's OUT marker IS the trailing fold's LEFT NEST.**
+`foldMarker j m = trailNest (fmBlocks j) (true :: m)`.  Induction on `j`; the step is exactly the
+`ones_append_true` reparse `4(2^{j+5}−2)+4+1 = 2^{j+7}−3` (the same identity `regenAscend` uses).
+So §5ba's `trailFold` applies DIRECTLY to `interiorFold_expl`'s OUT — no new tile.  Pure `List`.
+`[propext, Quot.sound]`. -/
+theorem foldMarker_is_trailNest : ∀ (j : Nat) (m : List Bool),
+    foldMarker j m = trailNest (fmBlocks j) (true :: m) := by
+  intro j
+  induction j with
+  | zero =>
+    intro m
+    show (([] : List Bool) ++ (ones 60 ++ ([true, false] ++ (true :: m)))) = _
+    show ones (59 + 1) ++ (true :: false :: true :: m)
+      = true :: (ones (59 + 1) ++ (false :: true :: m))
+    rfl
+  | succ j ih =>
+    intro m
+    show foldMarker j (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))) = _
+    rw [ih]
+    show trailNest (fmBlocks j) (true :: (ones (4 * (2 ^ (j + 5) - 2) + 4)
+        ++ ([true, false] ++ (true :: m))))
+      = trailNest (fmBlocks j ++ [2 ^ (j + 7) - 3]) (true :: m)
+    rw [trailNest_snoc]
+    have harith : 4 * (2 ^ (j + 5) - 2) + 4 + 1 = 2 ^ (j + 7) - 3 := by
+      have hp : (2 : Nat) ^ (j + 7) = 4 * 2 ^ (j + 5) := by
+        rw [show j + 7 = (j + 5) + 2 from by omega, Nat.pow_add]; omega
+      have hge : (4 : Nat) ≤ 2 ^ (j + 5) := four_le_pow (j + 3)
+      omega
+    show trailNest (fmBlocks j) (true :: (ones (4 * (2 ^ (j + 5) - 2) + 4)
+        ++ (true :: false :: true :: m)))
+      = trailNest (fmBlocks j) (true :: (ones (2 ^ (j + 7) - 3) ++ (false :: true :: m)))
+    rw [ones_append_true, harith]
+
+/-- `trailCasc` WIDTH, `∀bs` — `|trailCasc bs R| + 2|bs| = trailCost bs + |R|` (each rung lays its
+block plus a `0²` separator = `N+2` cells, while `trailCost` charges `N+4` steps). -/
+theorem trailCasc_length : ∀ (bs : List Nat) (R : List Bool),
+    (trailCasc bs R).length + 2 * bs.length = trailCost bs + R.length := by
+  intro bs
+  induction bs with
+  | nil => intro R; show R.length + 2 * 0 = 0 + R.length; omega
+  | cons N rest ih =>
+    intro R
+    have h := ih (ones N ++ (false :: false :: R))
+    rw [List.length_append, ones_length] at h
+    have hr : (false :: false :: R).length = R.length + 2 := by
+      show (false :: R).length + 1 = R.length + 2
+      show R.length + 1 + 1 = R.length + 2; omega
+    rw [hr] at h
+    show (trailCasc rest (ones N ++ (false :: false :: R))).length + 2 * (rest.length + 1)
+      = (N + 4) + trailCost rest + R.length
+    omega
+
+/-- `trailNest` WIDTH, `∀bs` — the mirror of `trailCasc_length` on the LEFT. -/
+theorem trailNest_length : ∀ (bs : List Nat) (L : List Bool),
+    (trailNest bs L).length + 2 * bs.length = trailCost bs + L.length := by
+  intro bs
+  induction bs with
+  | nil => intro L; show L.length + 2 * 0 = 0 + L.length; omega
+  | cons N rest ih =>
+    intro L
+    have h := ih L
+    show (true :: (ones N ++ (false :: trailNest rest L))).length + 2 * (rest.length + 1)
+      = (N + 4) + trailCost rest + L.length
+    rw [List.length_cons, List.length_append, ones_length]
+    show N + ((trailNest rest L).length + 1) + 1 + 2 * (rest.length + 1) = _
+    omega
+
+theorem trailCost_append : ∀ (as : List Nat) (b : Nat),
+    trailCost (as ++ [b]) = trailCost as + (b + 4) := by
+  intro as
+  induction as with
+  | nil => intro b; show (b + 4) + 0 = 0 + (b + 4); omega
+  | cons A rest ih =>
+    intro b
+    show (A + 4) + trailCost (rest ++ [b]) = (A + 4) + trailCost rest + (b + 4)
+    rw [ih]; omega
+
+theorem fmBlocks_length : ∀ j : Nat, (fmBlocks j).length = j + 1 := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show (fmBlocks j ++ [2 ^ (j + 7) - 3]).length = j + 1 + 1
+    rw [List.length_append, ih]; rfl
+
+theorem trailBlocks_length : ∀ j : Nat, (trailBlocks j).length = j := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show (trailBlocks j ++ [2 ^ (5 + j) - 3]).length = j + 1
+    rw [List.length_append, ih]; rfl
+
+/-- **`fmBlocks` COST, CLOSED FORM `∀j`** — `trailCost (fmBlocks j) + 64 = 2^{j+7} + j`. -/
+theorem trailCost_fmBlocks : ∀ j : Nat, trailCost (fmBlocks j) + 64 = 2 ^ (j + 7) + j := by
+  intro j
+  induction j with
+  | zero => decide
+  | succ j ih =>
+    rw [show fmBlocks (j + 1) = fmBlocks j ++ [2 ^ (j + 7) - 3] from rfl, trailCost_append]
+    have hp : (2 : Nat) ^ (j + 1 + 7) = 2 * 2 ^ (j + 7) := by
+      rw [show j + 1 + 7 = (j + 7) + 1 from by omega, Nat.pow_succ]; omega
+    have hge : (4 : Nat) ≤ 2 ^ (j + 7) := four_le_pow (j + 5)
+    omega
+
+/-- **`trailBlocks` COST, CLOSED FORM `∀j`** — `trailCost (trailBlocks j) + 32 = 2^{j+5} + j`. -/
+theorem trailCost_trailBlocks : ∀ j : Nat, trailCost (trailBlocks j) + 32 = 2 ^ (j + 5) + j := by
+  intro j
+  induction j with
+  | zero => decide
+  | succ j ih =>
+    rw [show trailBlocks (j + 1) = trailBlocks j ++ [2 ^ (5 + j) - 3] from rfl, trailCost_append]
+    have hp : (2 : Nat) ^ (j + 1 + 5) = 2 * 2 ^ (j + 5) := by
+      rw [show j + 1 + 5 = (j + 5) + 1 from by omega, Nat.pow_succ]; omega
+    have he : (2 : Nat) ^ (5 + j) = 2 ^ (j + 5) := by rw [show 5 + j = j + 5 from by omega]
+    have hge : (4 : Nat) ≤ 2 ^ (j + 5) := four_le_pow (j + 3)
+    rw [he]; omega
+
+/-- **THE TRAILING WORD'S MEASURED COUNT IS §5ba's FOLD PLUS A `k`-INDEPENDENT `400`, `∀k ≥ 4`.**
+`trailSteps k = trailCost (trailBlocks (k−4)) + 400`.  §5al's transport-measured trailing counts
+(498, 627, 884, 1397, 2422, 4471 at `k = 6..11`) are `trailCost + 400` on the nose, so the ENTIRE
+`k`-dependence of the trailing word is the `k−4` doubling fold; the residue is constant (the erase
+phase + `trailReanchor`).  Pure `Nat`.  `[propext, Quot.sound]`. -/
+theorem trailSteps_eq_trailCost (k : Nat) (hk : 4 ≤ k) :
+    trailSteps k = trailCost (trailBlocks (k - 4)) + 400 := by
+  obtain ⟨j, rfl⟩ : ∃ j, k = j + 4 := ⟨k - 4, by omega⟩
+  have h := trailCost_trailBlocks j
+  have hp : (2 : Nat) ^ (j + 4 + 1) = 2 ^ (j + 5) := by rw [show j + 4 + 1 = j + 5 from by omega]
+  show 359 + (2 ^ (j + 4 + 1) + (j + 4) + 5) = trailCost (trailBlocks (j + 4 - 4)) + 400
+  rw [show j + 4 - 4 = j from by omega, hp]; omega
+
+/-- **THE MARKER UNDER-SUPPLIES THE WORD BY EXACTLY `2^k + 35`, `∀k ≥ 7`** —
+`trailCost (trailBlocks (k−4)) = trailCost (fmBlocks (k−7)) + 2^k + 35`.  The `2^k+1` is the
+WHOLE TOP BLOCK `1^{2^k−3}`, which the middle chain never deposits (its maximal `exitList` level is
+`k−2`, whose DESCEND lays only `1^{2^{k−1}−3}`); the `34` is the two bottom rungs `2^5−3`, `2^6−3`
+against the marker's single `2^6−4`.  Pure `Nat`.  `[propext, Quot.sound]`. -/
+theorem trailCost_fmBlocks_deficit (k : Nat) (hk : 7 ≤ k) :
+    trailCost (trailBlocks (k - 4)) = trailCost (fmBlocks (k - 7)) + 2 ^ k + 35 := by
+  obtain ⟨j, rfl⟩ : ∃ j, k = j + 7 := ⟨k - 7, by omega⟩
+  have h1 := trailCost_trailBlocks (j + 3)
+  have h2 := trailCost_fmBlocks j
+  have hp : (2 : Nat) ^ (j + 3 + 5) = 2 * 2 ^ (j + 7) := by
+    rw [show j + 3 + 5 = (j + 7) + 1 from by omega, Nat.pow_succ]; omega
+  rw [show j + 7 - 4 = j + 3 from by omega, show j + 7 - 7 = j from by omega]
+  rw [hp] at h1
+  omega
+
+/-- **THE MARKER'S FOLD IS EXACTLY ONE CELL SHORT OF A `descCascade`, `∀j`** —
+`|trailCasc (fmBlocks j) (descCascade 3)| + 1 = |descCascade (j+4)|`.  Folding the ACTUAL marker
+onto the standing depth-3 cascade misses the target by ONE cell at EVERY level (the bottom rung is
+`2^6−4`, not `2^6−3`), so the fold's output is never a `descCascade` — a length obstruction, no
+cell-by-cell comparison needed.  Pure `List`/`Nat`.  `[propext, Quot.sound]`. -/
+theorem trailCasc_fmBlocks_one_short (j : Nat) :
+    (trailCasc (fmBlocks j) (descCascade 3)).length + 1 = (descCascade (j + 4)).length := by
+  have h1 := trailCasc_length (fmBlocks j) (descCascade 3)
+  rw [fmBlocks_length] at h1
+  have h2 := trailCost_fmBlocks j
+  have h3 : (descCascade 3).length = 54 := by decide
+  have h4 := descCascade_length (j + 4)
+  have hp : (2 : Nat) ^ (j + 4 + 3) = 2 ^ (j + 7) := by rw [show j + 4 + 3 = j + 7 from by omega]
+  rw [hp] at h4
+  have hge : (4 : Nat) ≤ 2 ^ (j + 7) := four_le_pow (j + 5)
+  omega
+
+/-! ### §5bf′ THE TWO EDGE-MONOTONICITY WEAPONS (head displacement from tape LENGTHS alone). -/
+
+theorem mvR_left_len (t : Tape) : (mvR t).left.length = t.left.length + 1 := by
+  cases t with
+  | mk l h r => cases r with
+    | nil => rfl
+    | cons b r => rfl
+
+theorem mvL_right_len (t : Tape) : (mvL t).right.length = t.right.length + 1 := by
+  cases t with
+  | mk l h r => cases l with
+    | nil => rfl
+    | cons b l => rfl
+
+theorem mvL_left_len (t : Tape) : (t.left.length : Int) - 1 ≤ ((mvL t).left.length : Int) := by
+  cases t with
+  | mk l h r => cases l with
+    | nil => show ((0 : Nat) : Int) - 1 ≤ ((0 : Nat) : Int); omega
+    | cons b l =>
+      show ((b :: l).length : Int) - 1 ≤ (l.length : Int)
+      show ((l.length + 1 : Nat) : Int) - 1 ≤ (l.length : Int)
+      push_cast; omega
+
+theorem mvR_right_len (t : Tape) : (t.right.length : Int) - 1 ≤ ((mvR t).right.length : Int) := by
+  cases t with
+  | mk l h r => cases r with
+    | nil => show ((0 : Nat) : Int) - 1 ≤ ((0 : Nat) : Int); omega
+    | cons b r =>
+      show ((b :: r).length : Int) - 1 ≤ (r.length : Int)
+      show ((r.length + 1 : Nat) : Int) - 1 ≤ (r.length : Int)
+      push_cast; omega
+
+/-- **ONE-STEP EDGE SHAPE** — every non-halting step either moves RIGHT (left register grows by
+exactly 1, right register shrinks by at most 1) or moves LEFT (right register grows by exactly 1,
+left register shrinks by at most 1).  The "at most" is the blank-tail case (`mvR` off the end of
+`right`, `mvL` off the end of `left`), where the register does not shrink at all.  Case analysis
+on state × scanned cell.  `[propext, Quot.sound]`. -/
+theorem step_shape {c c' : Cfg} (h : step c = some c') :
+    (c'.pos = c.pos + 1 ∧ c'.tape.left.length = c.tape.left.length + 1
+       ∧ (c.tape.right.length : Int) - 1 ≤ (c'.tape.right.length : Int))
+    ∨ (c'.pos = c.pos - 1 ∧ c'.tape.right.length = c.tape.right.length + 1
+       ∧ (c.tape.left.length : Int) - 1 ≤ (c'.tape.left.length : Int)) := by
+  obtain ⟨st, p, l, hd, r⟩ := c
+  have hR : ∀ (b : Bool), (mvR (wr ⟨l, hd, r⟩ b)).left.length = l.length + 1 := by
+    intro b; rw [mvR_left_len]; rfl
+  have hR2 : ∀ (b : Bool),
+      (r.length : Int) - 1 ≤ ((mvR (wr ⟨l, hd, r⟩ b)).right.length : Int) := by
+    intro b; have h := mvR_right_len (wr ⟨l, hd, r⟩ b); simpa [wr] using h
+  have hL : ∀ (b : Bool), (mvL (wr ⟨l, hd, r⟩ b)).right.length = r.length + 1 := by
+    intro b; rw [mvL_right_len]; rfl
+  have hL2 : ∀ (b : Bool),
+      (l.length : Int) - 1 ≤ ((mvL (wr ⟨l, hd, r⟩ b)).left.length : Int) := by
+    intro b; have h := mvL_left_len (wr ⟨l, hd, r⟩ b); simpa [wr] using h
+  cases st <;> cases hd <;>
+    simp only [step] at h <;>
+    first
+      | (injection h with h; subst h
+         first
+           | exact Or.inl ⟨rfl, hR _, hR2 _⟩
+           | exact Or.inr ⟨rfl, hL _, hL2 _⟩)
+      | simp at h
+
+/-- **LEFT-EDGE MONOTONICITY, `∀n`** — `|left| − pos` (the absolute address just left of the
+represented left register) NEVER DECREASES.  Gives an UPPER bound on head displacement from the
+two configs' left-register lengths alone.  `[propext, Quot.sound]`. -/
+theorem steps_left_mono : ∀ (n : Nat) (c c' : Cfg), steps n c = some c' →
+    (c.tape.left.length : Int) - c.pos ≤ (c'.tape.left.length : Int) - c'.pos := by
+  intro n
+  induction n with
+  | zero => intro c c' h; injection h with h; subst h; omega
+  | succ n ih =>
+    intro c c' h
+    have h : ((step c).bind (steps n)) = some c' := h
+    cases hc : step c with
+    | none => rw [hc] at h; simp at h
+    | some d =>
+      rw [hc] at h
+      have h : steps n d = some c' := h
+      have h2 := ih d c' h
+      rcases step_shape hc with ⟨hp, hl, _⟩ | ⟨hp, _, hl⟩
+      · rw [hp] at h2; rw [hl] at h2; push_cast at h2 ⊢; omega
+      · rw [hp] at h2; push_cast at h2 ⊢; omega
+
+/-- **RIGHT-EDGE MONOTONICITY, `∀n`** — `|right| + pos` NEVER DECREASES.  Gives a LOWER bound on
+head displacement from the two configs' right-register lengths alone.  `[propext, Quot.sound]`. -/
+theorem steps_right_mono : ∀ (n : Nat) (c c' : Cfg), steps n c = some c' →
+    (c.tape.right.length : Int) + c.pos ≤ (c'.tape.right.length : Int) + c'.pos := by
+  intro n
+  induction n with
+  | zero => intro c c' h; injection h with h; subst h; omega
+  | succ n ih =>
+    intro c c' h
+    have h : ((step c).bind (steps n)) = some c' := h
+    cases hc : step c with
+    | none => rw [hc] at h; simp at h
+    | some d =>
+      rw [hc] at h
+      have h : steps n d = some c' := h
+      have h2 := ih d c' h
+      rcases step_shape hc with ⟨hp, _, hr⟩ | ⟨hp, hr, _⟩
+      · rw [hp] at h2; push_cast at h2 ⊢; omega
+      · rw [hp] at h2; rw [hr] at h2; push_cast at h2 ⊢; omega
+
+/-! ### §5bf″ THE DISPLACEMENT OBSTRUCTION. -/
+
+/-- `cascadeReg`'s anchor is its `p` argument (definitional). -/
+theorem cascadeReg_pos (k Lc : Nat) (p : Int) (marker R : List Bool) :
+    (cascadeReg k Lc p marker R).pos = p := rfl
+
+/-- `cascadeReg`'s LEFT-register length, `∀k Lc`. -/
+theorem cascadeReg_left_length (k Lc : Nat) (p : Int) (marker R : List Bool) :
+    (cascadeReg k Lc p marker R).tape.left.length
+      = 2 * (Lc + (2 ^ (k - 1) - 2)) + marker.length := by
+  show (pow01 (Lc + (2 ^ (k - 1) - 2)) ++ marker).length = _
+  rw [List.length_append, pow01_length]
+
+/-- `cascadeReg`'s RIGHT-register length, `∀k ≥ 4` — `|right| + k = 2^{k+1} + 7 + |R|`
+(via `descCascade_length`). -/
+theorem cascadeReg_right_length (k Lc : Nat) (hk : 4 ≤ k) (p : Int) (marker R : List Bool) :
+    (cascadeReg k Lc p marker R).tape.right.length + k = 2 ^ (k + 1) + 7 + R.length := by
+  obtain ⟨e, rfl⟩ : ∃ e, k = e + 4 := ⟨k - 4, by omega⟩
+  have hd := descCascade_length (e + 1)
+  have hp : (2 : Nat) ^ (e + 1 + 3) = 2 ^ (e + 4) := by
+    rw [show e + 1 + 3 = e + 4 from by omega]
+  have hp2 : (2 : Nat) ^ (e + 4 + 1) = 2 * 2 ^ (e + 4) := by
+    rw [show e + 4 + 1 = (e + 4) + 1 from rfl, Nat.pow_succ]; omega
+  have hge : (4 : Nat) ≤ 2 ^ (e + 4) := four_le_pow (e + 2)
+  rw [hp] at hd
+  show (false :: false :: false :: (ones (2 ^ (e + 4) - 3) ++ (false :: false ::
+      (descCascade (e + 4 - 3) ++ (false :: false :: (zeros 7 ++ R)))))).length + (e + 4) = _
+  rw [show e + 4 - 3 = e + 1 from by omega]
+  simp only [List.length_cons, List.length_append, ones_length, zeros_length]
+  omega
+
+-- NOTE (merge 2026-07-21): `regenWord` is defined identically in §5be (the lead law);
+-- the duplicate definition from this section's origin branch was dropped at merge.
+
+/-- `regenWord` WIDTH, `∀k ≥ 2` — `|regenWord k| + 2 = 2^{k+1}`. -/
+theorem regenWord_length (k : Nat) (hk : 2 ≤ k) : (regenWord k).length + 2 = 2 ^ (k + 1) := by
+  obtain ⟨e, rfl⟩ : ∃ e, k = e + 2 := ⟨k - 2, by omega⟩
+  show (ones (2 ^ (e + 2) - 3) ++ (false :: true :: false :: false :: true ::
+      pow01 (2 ^ (e + 2 - 1) - 2))).length + 2 = 2 ^ (e + 2 + 1)
+  rw [List.length_append, ones_length, show e + 2 - 1 = e + 1 from by omega]
+  simp only [List.length_cons, pow01_length]
+  have h1 : (2 : Nat) ^ (e + 2) = 2 * 2 ^ (e + 1) := by rw [Nat.pow_succ]; omega
+  have h2 : (2 : Nat) ^ (e + 2 + 1) = 2 * 2 ^ (e + 2) := by rw [Nat.pow_succ]; omega
+  have hge : (2 : Nat) ≤ 2 ^ (e + 1) := two_le_two_pow_succ e
+  omega
+
+/-- The descend-deposit stack the middle chain leaves on the left: `1^{2^{a+1}−3} 0 1` for
+`a = 5 … k−2`, innermost last.  (Its width agrees with `foldMarker (k−7)`'s at every level.) -/
+def depStackAux : Nat → Nat → List Bool → List Bool
+  | 0, _, m => m
+  | (n + 1), a, m => ones (2 ^ (a + 1) - 3) ++ (false :: true :: depStackAux n (a + 1) m)
+
+def depStack (k : Nat) (m : List Bool) : List Bool := depStackAux (k - 6) 5 m
+
+theorem depStackAux_length : ∀ (n a : Nat) (m : List Bool),
+    (depStackAux n (a + 1) m).length + n + 2 ^ (a + 2) = 2 ^ (a + n + 2) + m.length := by
+  intro n
+  induction n with
+  | zero =>
+    intro a m
+    show m.length + 0 + 2 ^ (a + 2) = 2 ^ (a + 0 + 2) + m.length
+    rw [show a + 0 + 2 = a + 2 from by omega]; omega
+  | succ n ih =>
+    intro a m
+    have h := ih (a + 1) m
+    show (ones (2 ^ (a + 1 + 1) - 3) ++ (false :: true :: depStackAux n (a + 1 + 1) m)).length
+        + (n + 1) + 2 ^ (a + 2) = 2 ^ (a + (n + 1) + 2) + m.length
+    rw [List.length_append, ones_length]
+    simp only [List.length_cons]
+    rw [show a + 1 + 1 = a + 2 from by omega] at h ⊢
+    rw [show a + (n + 1) + 2 = (a + 1) + n + 2 from by omega]
+    have hp : (2 : Nat) ^ (a + 3) = 2 * 2 ^ (a + 2) := by
+      rw [show a + 3 = (a + 2) + 1 from by omega, Nat.pow_succ]; omega
+    have hge : (4 : Nat) ≤ 2 ^ (a + 2) := four_le_pow a
+    rw [show (a + 1) + 2 = a + 3 from by omega] at h
+    omega
+
+/-- **`depStack` WIDTH, `∀k ≥ 6`** — `|depStack k m| + k + 58 = 2^k + |m|`. -/
+theorem depStack_length (k : Nat) (hk : 6 ≤ k) (m : List Bool) :
+    (depStack k m).length + k + 58 = 2 ^ k + m.length := by
+  have h := depStackAux_length (k - 6) 4 m
+  rw [show 4 + (k - 6) + 2 = k from by omega, show (2 : Nat) ^ (4 + 2) = 64 from by decide,
+      show (4 : Nat) + 1 = 5 from rfl] at h
+  show (depStackAux (k - 6) 5 m).length + k + 58 = _
+  omega
+
+/-- **THE TRAILING LAW'S PAD AND ANCHOR ARE FORCED BY TAPE LENGTHS, `∀k ≥ 6`.**  For ANY halt-free
+run (of ANY length — no step count enters) carrying the trailing seam
+`cascadeReg 4 1 p (depStack k (regenWord k ++ marker)) (0^z ++ R) → cascadeReg k 1 p' marker R`:
+the blank pad obeys `z ≤ 16`, and if `z = 16` the OUT anchor is EXACTLY `p − 2^{k+1} + k + 44`.
+`steps_left_mono` supplies the upper bound on `p'`, `steps_right_mono` the lower; the two coincide
+precisely at `z = 16`.  So the pad `0^16` and the anchor law of the measured trailing identity are
+DERIVED, not fitted.  (Kernel-evaluated confirmation at `k=6,7,8,9`: `z=16` is the unique pad in
+`0..39` for which the identity holds, and `z=0` is FALSE.)  `[propext, Quot.sound]`. -/
+theorem trailLaw_pad_forced (k : Nat) (hk : 6 ≤ k) (n z : Nat) (p p' : Int)
+    (marker R : List Bool)
+    (h : steps n (cascadeReg 4 1 p (depStack k (regenWord k ++ marker)) (zeros z ++ R))
+        = some (cascadeReg k 1 p' marker R)) :
+    z ≤ 16 ∧ (z = 16 → p' = p - 2 ^ (k + 1) + (k : Int) + 44) := by
+  have hk1 : (2 : Nat) ^ k = 2 * 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 1 := ⟨k - 1, by omega⟩
+    rw [show e + 1 - 1 = e from by omega, Nat.pow_succ]; omega
+  have hk2 : (2 : Nat) ^ (k + 1) = 2 * 2 ^ k := by rw [Nat.pow_succ]; omega
+  have hge : (4 : Nat) ≤ 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 3 := ⟨k - 3, by omega⟩
+    rw [show e + 3 - 1 = e + 2 from by omega]; exact four_le_pow e
+  -- UPPER bound on p' from the LEFT edge
+  have hup : p' ≤ p - 2 ^ (k + 1) + (k : Int) + 44 := by
+    have hds := depStack_length k hk (regenWord k ++ marker)
+    rw [List.length_append] at hds
+    have hrw := regenWord_length k (by omega)
+    have hL := steps_left_mono n _ _ h
+    rw [cascadeReg_left_length 4 1 p (depStack k (regenWord k ++ marker)) (zeros z ++ R),
+        cascadeReg_left_length k 1 p' marker R, cascadeReg_pos, cascadeReg_pos,
+        show (2 : Nat) ^ (4 - 1) = 8 from by decide] at hL
+    obtain ⟨D, hD⟩ : ∃ D, (depStack k (regenWord k ++ marker)).length = D := ⟨_, rfl⟩
+    obtain ⟨M, hM⟩ : ∃ M, marker.length = M := ⟨_, rfl⟩
+    obtain ⟨W, hW⟩ : ∃ W, (regenWord k).length = W := ⟨_, rfl⟩
+    obtain ⟨P1, hP1⟩ : ∃ P1, (2 : Nat) ^ (k - 1) = P1 := ⟨_, rfl⟩
+    obtain ⟨P, hP⟩ : ∃ P, (2 : Nat) ^ k = P := ⟨_, rfl⟩
+    obtain ⟨P2, hP2⟩ : ∃ P2, (2 : Nat) ^ (k + 1) = P2 := ⟨_, rfl⟩
+    rw [hD, hM, hP1] at hL
+    rw [hD, hM, hW, hP] at hds
+    rw [hW, hP2] at hrw
+    rw [hP, hP1] at hk1
+    rw [hP2, hP] at hk2
+    rw [hP1] at hge
+    have hP2i : ((2 : Int)) ^ (k + 1) = (P2 : Int) := by
+      rw [← hP2]; push_cast; rfl
+    rw [hP2i]
+    push_cast at hL ⊢
+    omega
+  -- LOWER bound on p' from the RIGHT edge
+  have hlo : p + (z : Int) + (k : Int) + 28 - 2 ^ (k + 1) ≤ p' := by
+    have hR := steps_right_mono n _ _ h
+    rw [cascadeReg_pos, cascadeReg_pos] at hR
+    have hr4 := cascadeReg_right_length 4 1 (by omega) p
+        (depStack k (regenWord k ++ marker)) (zeros z ++ R)
+    have hrk := cascadeReg_right_length k 1 (by omega) p' marker R
+    rw [List.length_append, zeros_length, show (2 : Nat) ^ (4 + 1) = 32 from by decide] at hr4
+    obtain ⟨A, hA⟩ : ∃ A, (cascadeReg 4 1 p (depStack k (regenWord k ++ marker))
+        (zeros z ++ R)).tape.right.length = A := ⟨_, rfl⟩
+    obtain ⟨B, hB⟩ : ∃ B, (cascadeReg k 1 p' marker R).tape.right.length = B := ⟨_, rfl⟩
+    obtain ⟨RL, hRL⟩ : ∃ RL, R.length = RL := ⟨_, rfl⟩
+    obtain ⟨P2, hP2⟩ : ∃ P2, (2 : Nat) ^ (k + 1) = P2 := ⟨_, rfl⟩
+    rw [hA] at hR hr4
+    rw [hB] at hR hrk
+    rw [hRL] at hr4 hrk
+    rw [hP2] at hrk
+    have hP2i : ((2 : Int)) ^ (k + 1) = (P2 : Int) := by
+      rw [← hP2]; push_cast; rfl
+    rw [hP2i]
+    push_cast at hR ⊢
+    omega
+  exact ⟨by omega, fun hz => by subst hz; omega⟩
+
+/-- **`TrailLaw k`** — the trailing word's law, in the `RegenLaw`/`LeadLaw` style: from the floor
+`cascadeReg 4` carrying the LEAD's `regenWord k` and the middle chain's `depStack k` on the left,
+plus the FORCED `0^16` blank pad, `trailSteps k` steps land on `cascadeReg k`, marker and tail free.
+The anchor law `p ↦ p − 2^{k+1} + k + 44` is not a fitted parameter: `trailLaw_pad_forced` DERIVES
+it (and the `16`) from tape lengths alone.  Kernel-EVALUATED true at `k = 6,7,8,9`; PROVED at no
+level yet — a `Prop`, not an axiom, not a `sorry`. -/
+def TrailLaw (k : Nat) : Prop :=
+  ∀ (p : Int) (marker R : List Bool),
+    steps (trailSteps k)
+        (cascadeReg 4 1 (p + 2 ^ k - (k : Int) - 44) (depStack k (regenWord k ++ marker))
+          (zeros 16 ++ R))
+      = some (cascadeReg k 1 (p - 2 ^ k) marker R)
+
+/-- `TrailLaw`'s anchor law is consistent with `trailLaw_pad_forced`'s FORCED displacement:
+`(p − 2^k) − (p + 2^k − k − 44) = −2^{k+1} + k + 44`.  Pure `Int`.  `[propext, Quot.sound]`. -/
+theorem trailLaw_anchor_consistent (k : Nat) (p : Int) :
+    (p - 2 ^ k) = (p + 2 ^ k - (k : Int) - 44) - 2 ^ (k + 1) + (k : Int) + 44 := by
+  have h : (2 : Int) ^ (k + 1) = 2 * 2 ^ k := by
+    have hn : ((2 : Nat) ^ (k + 1) : Nat) = 2 * 2 ^ k := by rw [Nat.pow_succ]; omega
+    have := congrArg (fun t : Nat => (t : Int)) hn
+    push_cast at this
+    omega
+  omega
+
+-- AXIOM AUDIT — §5bf: the trailing seam (structure + counts + the displacement obstruction).
+#print axioms four_le_pow
+#print axioms trailNest_snoc
+#print axioms foldMarker_is_trailNest
+#print axioms trailCasc_length
+#print axioms trailNest_length
+#print axioms trailCost_append
+#print axioms fmBlocks_length
+#print axioms trailBlocks_length
+#print axioms trailCost_fmBlocks
+#print axioms trailCost_trailBlocks
+#print axioms trailSteps_eq_trailCost
+#print axioms trailCost_fmBlocks_deficit
+#print axioms trailCasc_fmBlocks_one_short
+#print axioms step_shape
+#print axioms steps_left_mono
+#print axioms steps_right_mono
+#print axioms cascadeReg_left_length
+#print axioms cascadeReg_right_length
+#print axioms regenWord_length
+#print axioms depStackAux_length
+#print axioms depStack_length
+#print axioms trailLaw_pad_forced
+#print axioms trailLaw_anchor_consistent
+
+
 end X2
