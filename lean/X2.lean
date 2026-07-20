@@ -8470,6 +8470,174 @@ end LowOdd
 #print axioms h_low_at3
 #print axioms h_low_at5
 
+/-! ## §5bb (ON-PATH, 2026-07-20) THE ODD-`g` LOW PHASE `h_low`, CLOSED GREEN `∀` ODD `g`.
+
+`h_low_odd (k) : ∃ n, 1 ≤ n ∧ steps n (M1 (2*k+3)) = some (M6 (2*k+3))` — the low-phase transport
+`M1(g) → M6(g)` for EVERY odd generation `g = 2k+3` (ALL of them; `g=3,5` are the `rfl` instances
+`hlow_g3`/`hlow_g5`, §5aw), on the §5am concrete milestone families.  No `sorry`, no `native`, no
+axiom beyond `[propext, Quot.sound]`.  **Together with `h_low_even` (§5ao) this RETIRES `h_low`
+entirely — both parities are now `∀`-closed.**
+
+**Method — the measured decomposition `N(g) = 305 + 38·g = 419 + 76·k` (kernel-verified via
+`hlow_g3`/`hlow_g5`).**  Odd `g` is NOT tail-independent: the head REACHES the big block and trims
+it `1^{2^K-9} → 1^{2^K-13}` (a `−4`).  But that coupling is BOUNDED (§5aw), so the odd phase factors,
+`∀ FRAME` (the block residual `1^{2^K-13}` + cascade, riding untouched), through the SAME even
+transports plus one new fixed turnaround `lowTurnOdd` that absorbs the trim:
+
+    M1(g)=[E]0^22(1 0^6)^{g-1}(1 0^4 (10)^6)·1^{2^K-9}·casc
+      →[lowEntry, 157, REUSED]→          [E@9] comb·rcomb g·0^4 (10)^6·1^4·FRAME
+      →[lowMiddle_fwd, 29g, REUSED]→     [E@9+7g] rdepo g·… · 0^4 (10)^6·1^4·FRAME
+      →[lowTurnOdd, 89, NEW fixed]→      [C@14+7g] (1^5·rdepo g)·… · (10)^10·FRAME    (−4 trim here)
+      →[lowReturn_fold, 9(g−1), REUSED]→ [C@21] … · retDep(g−1)·(10)^10·FRAME
+      →[lowExitReg, 68, REUSED]→         [E@-5] …(01)^5·… = M6(g)
+
+`lowMiddle_fwd`/`lowReturn_fold` (§5t/§5tt) are parity-independent `∀`-unit runs; `lowEntry`/
+`lowExitReg` are reused (the odd chain-start config is g-independent, §5aw).  `lowTurnOdd` is the one
+new object: a `89`-step FIXED transport, frame-independent in BOTH the deep-left frame `L`
+(`= rdepo g · …`, the head never steps left of its start) and the deep-right block-residual `FRAME`;
+it is `pre-connector ∘ blockEdge_trim ∘ post-connector` folded into one kernel `rfl`, and it does the
+whole `−4` block trim + `(10)^6 → (10)^10` growth.  The registers are reconciled by pure `List`
+identities (`ones5_rdepo`/`retLcomb_succ`/`retDep_rUnits_odd` — the odd analogues of §5ao's).
+`some` everywhere ⇒ HALT-FREE.  No machine decided. -/
+
+section LowOddAsm
+set_option maxRecDepth 10000
+set_option maxHeartbeats 40000000
+
+/-- **THE ODD-`g` TURNAROUND** (`89` steps), frame-independent in the deep-left frame `L` and the
+deep-right block-residual `FRAME`.  Replaces even's `lowTurn` (42): the head marches to the block,
+does the whole `−4` trim (`1^4·FRAME → FRAME`) growing the period-2 tail `(10)^3 → (10)^5` per pass
+(net `(10)^6 → (10)^10`), and returns re-forming the register.  It never steps LEFT of its start, so
+`L = rdepo g · …` rides untouched (`ones 5` prepended); `FRAME` rides (head reaches `≤3` into the
+block).  Kernel `rfl` (pos folded, net `+5`).  `some` ⇒ HALT-FREE. -/
+theorem lowTurnOdd (p : Int) (L FRAME : List Bool) :
+    steps 89 ⟨.E, p, ⟨L, false,
+        true::false::true::false::false::true:: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))⟩⟩
+      = some ⟨.C, p + 5, ⟨ones 5 ++ L, false, false :: (pow10 10 ++ FRAME)⟩⟩ := by
+  have h : steps 89 (⟨.E, p, ⟨L, false,
+        true::false::true::false::false::true:: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))⟩⟩ : Cfg)
+      = some ⟨.C, p+1+1+1+1+1+1+1+1+1+1+1-1-1-1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1, ⟨ones 5 ++ L, false, false :: (pow10 10 ++ FRAME)⟩⟩ := rfl
+  rw [h]; exact congrArg some (cfgPos (by omega))
+
+/-- Odd entry reshape (the odd tail `1 0^4 (10)^6`): folds `uUnits`+lead into `rcomb (2k+3)`. -/
+theorem entry_reshape_odd (k : Nat) (TAIL : List Bool) :
+    false :: (zeros 5 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++ TAIL)))))
+      = rcomb (2*k+3) ++ (zeros 4 ++ (pow10 6 ++ TAIL)) := by
+  show zeros 6 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++ TAIL)))) = _
+  rw [← List.append_assoc]
+  exact uUnits_reparse (2*k+2) (zeros 4 ++ (pow10 6 ++ TAIL))
+
+/-- Odd turnaround left reshape: the deposited `ones 5 ++ rdepo g` re-parses as `retLcomb g`
+(one fewer `1^6 0` than even — the block dance consumed a unit).  Uses `ones5_rdepo`/`ones_add`. -/
+theorem turn_left_reshape_odd (g : Nat) :
+    ones 5 ++ (rdepo g ++ (ones 9 ++ (false::true::false::[])))
+      = retLcomb g ++ (ones 14 ++ (false::true::false::[])) := by
+  rw [← List.append_assoc, ones5_rdepo, List.append_assoc,
+      show ones 5 ++ (ones 9 ++ (false::true::false::[])) = ones 14 ++ (false::true::false::[])
+        from by rw [← List.append_assoc, ← ones_add]]
+
+/-- Odd exit register reparse (the odd `X=(10)^10`, `r=g`): `1^5 0 · retDep m · 0` folds to
+`rUnits (m+1)`.  The odd analogue of §5ao's `retDep_rUnits`. -/
+theorem retDep_rUnits_odd : ∀ (m : Nat) (X : List Bool),
+    ones 5 ++ false :: retDep m ++ (false :: X) = rUnits (m + 1) ++ X := by
+  intro m
+  induction m with
+  | zero => intro X; rfl
+  | succ m ih =>
+    intro X
+    show ones 5 ++ false::false:: (ones 5 ++ false :: retDep m ++ (false :: X))
+       = ones 5 ++ false::false:: (rUnits (m+1) ++ X)
+    rw [ih]
+
+/-- Odd exit reshape: folds `lowExitReg`'s output into the `M6`-odd register head form. -/
+theorem exit_reshape_odd (k : Nat) (FRAME : List Bool) :
+    false :: pow10 4 ++ ones 9 ++ false::false:: ones 5 ++ false ::
+        (retDep (2*k+2) ++ (false :: (pow10 10 ++ FRAME)))
+      = false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (pow10 10 ++ FRAME)) := by
+  have h := retDep_rUnits_odd (2*k+2) (pow10 10 ++ FRAME)
+  simp only [List.append_assoc, List.cons_append] at h ⊢
+  rw [h]
+
+/-- **THE ODD-`g` LOW-PHASE CORE, `∀ FRAME` (`N = 419 + 76k` steps).**  The five composable
+transports threaded by `steps_add`, on the block-residual-parametrised tape.  `some` ⇒ HALT-FREE. -/
+theorem h_low_odd_core (k : Nat) (FRAME : List Bool) :
+    steps (419 + 76*k)
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))))⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (pow10 10 ++ FRAME))⟩⟩ := by
+  have hE : steps 157 ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))))⟩⟩
+      = some ⟨.E, 9, ⟨ones 9 ++ (false::true::false::[]), false,
+          true::false::true::false::false::true:: (rcomb (2*k+3) ++ (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME))))⟩⟩ := by
+    show steps 157 ⟨.E, 0, ⟨[], false,
+        zeros 16 ++ (zeros 5 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME))))))⟩⟩ = _
+    rw [lowEntry, entry_reshape_odd]; rfl
+  have hF : steps (29*(2*k+3))
+        ⟨.E, 9, ⟨ones 9 ++ (false::true::false::[]), false,
+          true::false::true::false::false::true:: (rcomb (2*k+3) ++ (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME))))⟩⟩
+      = some ⟨.E, 9 + 7 * ((2*k+3 : Nat) : Int), ⟨rdepo (2*k+3) ++ (ones 9 ++ (false::true::false::[])), false,
+          true::false::true::false::false::true:: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))⟩⟩ :=
+    lowMiddle_fwd (2*k+3) 9 (ones 9 ++ (false::true::false::[])) (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))
+  have hT : steps 89
+        ⟨.E, 9 + 7 * ((2*k+3 : Nat) : Int), ⟨rdepo (2*k+3) ++ (ones 9 ++ (false::true::false::[])), false,
+          true::false::true::false::false::true:: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ FRAME)))⟩⟩
+      = some ⟨.C, (9 + 7 * ((2*k+3 : Nat) : Int)) + 5,
+          ⟨retLcomb (2*k+3) ++ (ones 14 ++ (false::true::false::[])), false, false :: (pow10 10 ++ FRAME)⟩⟩ := by
+    rw [lowTurnOdd, turn_left_reshape_odd]
+  have hR : steps (9*(2*k+2))
+        ⟨.C, (9 + 7 * ((2*k+3 : Nat) : Int)) + 5,
+          ⟨retLcomb (2*k+3) ++ (ones 14 ++ (false::true::false::[])), false, false :: (pow10 10 ++ FRAME)⟩⟩
+      = some ⟨.C, 21, ⟨true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[])), false,
+          retDep (2*k+2) ++ (false :: (pow10 10 ++ FRAME))⟩⟩ := by
+    rw [show retLcomb (2*k+3) = retLcomb (2*k+2) ++ (true::true::true::true::true::true::false::[])
+          from retLcomb_succ (2*k+2), List.append_assoc, lowReturn_fold]
+    exact congrArg some (cfgPos (by push_cast; omega))
+  have hX : steps 68
+        ⟨.C, 21, ⟨true::true::true::true::true::true::false:: (ones 14 ++ (false::true::false::[])), false,
+          retDep (2*k+2) ++ (false :: (pow10 10 ++ FRAME))⟩⟩
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false::false:: (rUnits (2*k+3) ++ (pow10 10 ++ FRAME))⟩⟩ := by
+    rw [lowExitReg, exit_reshape_odd]
+    exact congrArg some (cfgPos (by omega))
+  have hsum : (419 + 76*k) = 157 + (29*(2*k+3) + (89 + (9*(2*k+2) + 68))) := by omega
+  rw [hsum, steps_add, hE, someBind, steps_add, hF, someBind, steps_add, hT, someBind,
+      steps_add, hR, someBind, hX]
+
+/-- **`h_low` `∀` ODD `g` (`g = 2k+3`), on the §5am milestone families.**  Retires `h_low`'s odd
+parity; with `h_low_even` (§5ao), `h_low` holds for ALL `g`.  `some` ⇒ HALT-FREE. -/
+theorem h_low_odd (k : Nat) :
+    ∃ n, 1 ≤ n ∧ steps n (M1 (2*k+3)) = some (M6 (2*k+3)) := by
+  refine ⟨419 + 76*k, by omega, ?_⟩
+  have hmod : (2*k+3) % 2 = 1 := by omega
+  have hsub : 2*k+3-1 = 2*k+2 := by omega
+  have e2 : 4 ≤ (2:Nat)^(2*k+3) := by
+    have := four_le_two_pow (2*k+1); rwa [show 2*k+1+2 = 2*k+3 from by omega] at this
+  have e1 : (2:Nat)^(2*k+3+8) = 2^(2*k+3) * 256 := by rw [Nat.pow_add]
+  have hpow : (2:Nat)^(2*k+3+8) - 9 = 4 + (2^(2*k+3+8) - 13) := by rw [e1]; omega
+  have key := h_low_odd_core k (ones (2^(2*k+3+8)-13) ++ m1casc (2*k+3+6) (2*k+3+7) [])
+  have hM1 : M1 (2*k+3)
+      = ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*k+2) ++ (true :: (zeros 4 ++ (pow10 6 ++
+          (ones 4 ++ (ones (2^(2*k+3+8)-13) ++ m1casc (2*k+3+6) (2*k+3+7) []))))))⟩⟩ := by
+    unfold M1
+    rw [hsub]
+    simp only [if_neg (show ¬ ((2*k+3) % 2 = 0) from by omega)]
+    rw [show (2:Nat)^(2*k+3+8)-9 = 4 + (2^(2*k+3+8)-13) from hpow, ones_add]
+    simp only [List.append_assoc, List.cons_append]
+  have hM6 : M6 (2*k+3)
+      = ⟨.E, -5, ⟨[false], false, false :: pow10 4 ++ ones 9 ++ false::false::
+          (rUnits (2*k+3) ++ (pow10 10 ++ (ones (2^(2*k+3+8)-13) ++ m1casc (2*k+3+6) (2*k+3+7) [])))⟩⟩ := by
+    unfold M6
+    simp only [if_neg (show ¬ ((2*k+3) % 2 = 0) from by omega)]
+    simp only [List.append_assoc, List.cons_append]
+  rw [hM1, hM6]
+  exact key
+
+end LowOddAsm
+
+-- §5bb axiom audits (must be `[propext, Quot.sound]`-only, NO `sorryAx`/`native`):
+#print axioms lowTurnOdd
+#print axioms h_low_odd_core
+#print axioms h_low_odd
+
 /-! ### §5an: `RegenLaw 7` — the FOURTH grounded level, and the FIRST recursive one.
 
 **`regen7_factored` (§5ak) ALREADY discharges `RegenLaw 7`, `∀ marker R`** — a connection §5ak's
