@@ -9784,4 +9784,57 @@ theorem glueSegs_8_are_families :
 #print axioms exitSteps_8_split
 #print axioms glueSegs_8_are_families
 
+/-! ## §5bd (2026-07-20) THE BLOCK-THREADING GUARD — kernel-proof that the floor-resetting fold is
+OFF-ORBIT, and the exact residual for `RegenLaw ∀k`.
+
+The block-threaded middle fold `∀k` (= the real `RegenLaw ∀k`) requires the interior state to
+ACCUMULATE the cascade toward `cascadeReg k`'s right register `descCascade (k−3)` (which contains the
+top block `1^{2^k−3}`).  `interiorFold`'s self-similar recursion (`rampDescend`, floor-resetting)
+instead ends EVERY super-digit back at the floor `regenIn 4`, whose right register is only
+`descCascade 0 = 1^1` (cascade-depth 0).  Its STEP COUNT matches `foldRegenSteps k + glueMiddleSteps k`
+(§5bc, verified), but its CONFIG lands at cascade-depth 0, not `k−3` — the top block is discarded.
+
+This is why the B/D/C route was retracted.  Here the gap is a THEOREM, not a claim: at `k=8` the
+grounded fold (discharged unconditionally by `regenLaw_4/5/6`) reaches a config whose right register
+is kernel-PROVED `≠` `cascadeReg 8`'s.  This is the guard the off-orbit bug was caught by (§ "kernel-
+verify on-orbit before generalizing"), now green.
+
+**THE EXACT RESIDUAL.**  A cascade-ACCUMULATING descend — `regenIn a → (cascadeReg-partial)` that
+KEEPS the `descCascade` on the right rather than `regenDescend`'s reset to floor `regenIn 4` — folded
+`∀k` so the composite reaches `cascadeReg k`'s full `descCascade (k−3)`.  `regenAscend`/`braid_topgrind`
+already grow the block (on-orbit); the missing piece is the non-resetting descend and its fold.  That
+is `RegenLaw ∀k` and is NOT built here.  No `sorry`, no axiom, no `native_decide`. -/
+
+/-- **THE GROUNDED `k=8` MIDDLE FOLD LANDS OFF-ORBIT — kernel-proved.**  The `interiorFold` fold for
+`REGEN(8)`'s interior (`interiorFoldSteps 2` steps, discharged UNCONDITIONALLY by `regenLaw_4/5/6`)
+transports the floor IN to `regenIn 4 q' 1 mOut R` — and that config's right register (cascade-depth
+`0`, block `1^1`) is provably `≠` `cascadeReg 8`'s (cascade-depth `5`, block `1^{2^8−3}`).  So the
+floor-resetting fold, though its step count is on the split, is NOT `REGEN(8)`'s transport: it
+discarded the top block.  `[propext, Quot.sound]`. -/
+theorem middleFold_8_lands_offorbit (q : Int) (mk R : List Bool) :
+    ∃ (q' : Int) (mOut : List Bool),
+      steps (interiorFoldSteps 2)
+          (regenIn 4 q (2 ^ (4 - 1) + 9) (ascMarker 4 2 mk) (interiorPadTail 2 R))
+        = some (regenIn 4 q' 1 mOut R)
+      ∧ (regenIn 4 q' 1 mOut R).tape.right ≠ (cascadeReg 8 1 (q' - 2 ^ 8) mk R).tape.right := by
+  have hlow : ∀ m, 4 ≤ m → m ≤ 2 + 4 → RegenLaw m := by
+    intro m h4 h6
+    rcases (show m = 4 ∨ m = 5 ∨ m = 6 by omega) with rfl | rfl | rfl
+    · exact regenLaw_4
+    · exact regenLaw_5
+    · exact regenLaw_6
+  obtain ⟨q', mOut, h⟩ := interiorFold_lower 2 (by omega) hlow q mk R
+  refine ⟨q', mOut, h, ?_⟩
+  intro hc
+  rw [show (regenIn 4 q' 1 mOut R).tape.right = false :: true :: false :: R from rfl,
+      show (cascadeReg 8 1 (q' - 2 ^ 8) mk R).tape.right
+        = false :: false :: false :: (ones (2 ^ 8 - 3) ++ (false :: false ::
+            (descCascade (8 - 3) ++ (false :: false :: (zeros 7 ++ R))))) from rfl] at hc
+  injection hc with _ hc1
+  injection hc1 with hc2 _
+  exact Bool.noConfusion hc2
+
+-- AXIOM AUDIT — the block-threading off-orbit guard (grounded k=8).  `[propext, Quot.sound]`.
+#print axioms middleFold_8_lands_offorbit
+
 end X2
