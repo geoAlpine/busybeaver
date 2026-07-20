@@ -9482,4 +9482,60 @@ theorem trailFold : ∀ (bs : List Nat) (p : Int) (L R : List Bool),
 #print axioms trailCycle
 #print axioms trailFold
 
+/-! ### §5bb (2026-07-20) STRUCTURE-MATCH (RIGHT) — the fold's cascade IS `descCascade`, `∀k`.
+
+The doubling fold lays `trailCasc bs R` on the right, `bs = [2⁵−3, 2⁶−3, …, 2^k−3]` (`k−4` blocks,
+ascending).  Each block ADVANCES the descending cascade by one level: `trailCasc (trailBlocks j)
+(descCascade 2) = descCascade (2+j)`.  At `j = k−4` this is `descCascade (k−2)` — exactly (via
+`cascadeReg_collapse`) cascadeReg k's cascade.  Pure `List`, no machine.  No `sorry`, no axiom. -/
+
+/-- `trailCasc` peels its LAST block first onto the front: `trailCasc (as ++ [b]) R =
+1^b 0² (trailCasc as R)`.  Induction on `as`. -/
+theorem trailCasc_snoc : ∀ (as : List Nat) (b : Nat) (R : List Bool),
+    trailCasc (as ++ [b]) R = ones b ++ (false :: false :: trailCasc as R) := by
+  intro as
+  induction as with
+  | nil => intro b R; rfl
+  | cons A rest ih => intro b R; exact ih b (ones A ++ (false :: false :: R))
+
+/-- The doubling fold's block list for a `k`-level trailing word: `j = k−4` ascending blocks
+`[2⁵−3, 2⁶−3, …, 2^{4+j}−3]` (biggest appended last, so it lands on top of the cascade). -/
+def trailBlocks : Nat → List Nat
+  | 0 => []
+  | (j + 1) => trailBlocks j ++ [2 ^ (5 + j) - 3]
+
+/-- **THE RIGHT STRUCTURE-MATCH, `∀j`** — folding `trailBlocks j` onto the standing cascade
+`descCascade 2` yields exactly `descCascade (2+j)`: each block advances the odometer cascade one
+level.  Induction on `j` via `trailCasc_snoc` and `descCascade`'s defining equation. -/
+theorem trailCasc_descCascade : ∀ (j : Nat),
+    trailCasc (trailBlocks j) (descCascade 2) = descCascade (2 + j) := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    show trailCasc (trailBlocks j ++ [2 ^ (5 + j) - 3]) (descCascade 2) = descCascade (2 + (j + 1))
+    rw [trailCasc_snoc, ih, show 2 + (j + 1) = (2 + j) + 1 from by omega]
+    show ones (2 ^ (5 + j) - 3) ++ (false :: false :: descCascade (2 + j))
+        = ones (2 ^ (2 + j + 3) - 3) ++ (false :: false :: descCascade (2 + j))
+    rw [show 5 + j = 2 + j + 3 from by omega]
+
+/-- `trailCasc` appends its free tail LAST: `trailCasc bs (X ++ Y) = trailCasc bs X ++ Y`.
+Induction on `bs`. -/
+theorem trailCasc_append : ∀ (bs : List Nat) (X Y : List Bool),
+    trailCasc bs (X ++ Y) = trailCasc bs X ++ Y := by
+  intro bs
+  induction bs with
+  | nil => intro X Y; rfl
+  | cons N rest ih =>
+    intro X Y
+    show trailCasc rest (ones N ++ (false :: false :: (X ++ Y))) = trailCasc rest (ones N ++ (false :: false :: X)) ++ Y
+    rw [show (ones N ++ (false :: false :: (X ++ Y)))
+          = (ones N ++ (false :: false :: X)) ++ Y from by
+        rw [List.append_assoc]; rfl, ih]
+
+-- AXIOM AUDIT — right structure-match.  `[propext, Quot.sound]`.
+#print axioms trailCasc_snoc
+#print axioms trailCasc_descCascade
+#print axioms trailCasc_append
+
 end X2
