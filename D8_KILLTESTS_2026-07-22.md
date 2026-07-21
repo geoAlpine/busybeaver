@@ -39,7 +39,7 @@ Recurrences implemented: `3G′ = 4G + e(ρ)`, `ρ = G mod 3`, `e = {0:9, 1:14, 
 | ledger at `ρ=1` gens: `12, 17, 30, 37, 54, 63, …, 115` | §5 | `12, 17, 30, 37, 54, 63, 90, 89, 100, 99, 116, 115` | ✅ |
 | min `a` at any `ρ=1` generation | `9` (startup, `G=7`) | `9`, at `n=1`, `G=7` | ✅ |
 | longest `ρ=1` run **within the recorded window** `n ≤ 40` | `2`, at `n=26–27, 30–31, 35–36` | `2`, at exactly `n=26–27, 30–31, 35–36` | ✅ |
-| run-structure closed form `run = v₃(G+14)` (`O4_RUN_STRUCTURE` §1) | theorem | **22,277 runs checked, 0 mismatches** | ✅ |
+| run-structure closed form `run = v₃(G+14)` (`O4_RUN_STRUCTURE` §1) | theorem | **44,515 runs checked, 0 mismatches** | ✅ |
 
 **One indexing note (not a disagreement).** `O4_RUN_STRUCTURE_2026-07-07.md` §2 cites `a₄₀ = 124`. In this
 indexing (`a₀ = 3` at `n = 0`) the value `124` occurs at `n = 39` and `a₄₀ = 130`. The ledger *sequence* is
@@ -47,7 +47,7 @@ identical — it is a one-step generation-index convention difference, not a num
 `(G, a, ρ)` triple in the §5 anchor table matches exactly, which pins the convention used there.
 
 The independent cross-check that matters most: the **run-structure theorem** `maximal ρ=1 run at `G` =
-`v₃(G+14)`` was verified against the directly-observed runs on 22,277 separate runs with zero mismatches.
+`v₃(G+14)`` was verified against the directly-observed runs on 44,515 separate runs with zero mismatches.
 Two logically independent computations of the same quantity agree. **Instrument accepted.**
 
 ### 0b. Antihydra renewal / collision counts — `d8_m2odd_envelope.py`
@@ -144,8 +144,12 @@ The run-length distribution is geometric with ratio `1/3` to three digits — th
 445,104 maximal runs, 668,067 `ρ=1` steps, **`freq{ρ=1} = 0.334033`** (annealed `1/3`; fatal threshold `0.8`),
 **mean run length 1.5009** (annealed `1/(1−1/3) = 1.5`).
 
-The maximal run grows like `log₃ n`, exactly the annealed/random-itinerary law (a random ternary itinerary of
-length `n` has longest single-symbol run `≈ log₃ n`). Observed `freq{ρ=1} ≈ 1/3`, again the annealed value,
+The maximal run is **consistent with** `log₃ n` growth — the annealed/random-itinerary law (a random ternary
+itinerary of length `n` has longest single-symbol run `≈ log₃ n`). The measured max sits within `±1.5` of
+`log₃ N` at every checkpoint, and is flat at 12 from `N = 10⁵` to `2×10⁶` while `log₃ N` moves `10.5 → 13.2`;
+that is one sample of an extreme-value statistic, so the agreement is suggestive, not established. The
+*distributional* evidence is much stronger: the run-length histogram is geometric with ratio `1/3` over four
+decades of counts. Observed `freq{ρ=1} ≈ 1/3`, again the annealed value,
 nowhere near the fatal `4/5`. The unconditional cap `run ≤ 0.262n + O(1)` (`O4_RUN_STRUCTURE` §2) is nowhere
 near binding: at `n = 10⁵` the cap allows 26,200 and the observed max is 12.
 
@@ -187,22 +191,29 @@ Pushed from the recorded `J ≤ 8×10⁴` to **`J = 2×10⁶`** (25× deeper; 4,
 
 | `J` | orbit steps | crude `(2/J)Σ|ε_k|` (≤1) | `k*` | **`Σ` @ `k*` (need ≤ 1/4)** | `2Σ` @ `k*` (≤1) | `2Σ` @ `k_max=20` | recorded |
 |---|---|---|---|---|---|---|---|
-| 16,000 | 31,975 | 0.0105 | 14 | **0.04733** | 0.09467 | 0.14214 | 0.142 ✅ |
+| 16,000 | 32,018 | 0.0105 | 14 | **0.04733** | 0.09467 | 0.14214 | 0.142 ✅ |
 | 40,000 | 79,892 | 0.0100 | 21 | **0.04974** | 0.09947 | 0.09447 | 0.094 ✅ |
-| 80,000 | 160,046 | 0.0090 | 21 | **0.03528** | 0.07056 | 0.06702 | 0.067 ✅ |
-| 200,000 | 400,285 | 0.0077 | 21 | **0.02499** | 0.04999 | 0.04775 | — |
-| 500,000 | 1,000,878 | 0.0050 | 21 | **0.01536** | 0.03072 | 0.02931 | — |
+| 80,000 | 159,937 | 0.0090 | 21 | **0.03528** | 0.07056 | 0.06702 | 0.067 ✅ |
+| 200,000 | 400,720 | 0.0077 | 21 | **0.02499** | 0.04999 | 0.04775 | — |
+| 500,000 | 1,001,018 | 0.0050 | 21 | **0.01536** | 0.03072 | 0.02931 | — |
 | 1,000,000 | 2,002,179 | 0.0031 | 21 | **0.01086** | 0.02171 | 0.02071 | — |
 | **2,000,000** | 4,002,538 | **0.0016** | 21 | **0.00737** | 0.01474 | 0.01403 | — |
 
 At `J = 2×10⁶` the envelope is **0.0074 against a threshold of 0.25 — a 34× margin**, down from the recorded
 `0.03–0.07` (a 3.5–8× margin). The crude magnitude bound is `0.0016` against `1` — a 625× margin.
 
-**Verdict: the envelope stays far inside the threshold and DECREASES monotonically with `J`.** No drift up.
-No anomaly. `[OBSERVED]`
+**Verdict: the envelope stays far inside the threshold and decreases with `J`.** No drift up. No anomaly.
+`[OBSERVED]`
 
-The crude (magnitude) bound `(2/J)Σ|ε_k| ≤ 1` likewise keeps falling and holds with a `>100×` margin
-throughout.
+*Precision on "decreases":* at the natural cutoff the sequence is `0.04733, 0.04974, 0.03528, 0.02499,
+0.01536, 0.01086, 0.00737`. It is **strictly decreasing from `J = 4×10⁴` onward**; the single step up
+(`16,000 → 40,000`) is not a drift in the quantity but a change in the cutoff itself (`k*` jumps `14 → 21`
+because `J = 16,000` resolves fewer scales). At a *fixed* cutoff `k_max = 20` the sequence
+`0.07107, 0.04724, 0.03351, 0.02388, 0.01465, 0.01035, 0.00702` is strictly decreasing throughout. Either
+way the trend is unambiguously downward.
+
+The crude (magnitude) bound `(2/J)Σ|ε_k| ≤ 1` likewise falls monotonically (`0.0105 → 0.0016`), holding with
+a margin that widens from `~95×` to `~625×`.
 
 ### 2.3 A genuine methodological finding: the envelope is cutoff-dominated
 
@@ -280,7 +291,7 @@ Total ≈ 16 minutes single-core. Both tests were decided far inside budget — 
 
 | question | answer | label |
 |---|---|---|
-| Instruments validated against recorded anchors? | **Yes, all matched** (o4: 8/8 ledger triples + 22,277 closed-form cross-checks, 0 mismatches; Antihydra: `M₂ᵒᵈᵈ`, `M₂ᶠᵘˡˡ`, crude bound, envelope, even-density all reproduced) | `[VERIFIED]` |
+| Instruments validated against recorded anchors? | **Yes, all matched** (o4: 8/8 ledger triples + 44,515 closed-form cross-checks, 0 mismatches; Antihydra: `M₂ᵒᵈᵈ`, `M₂ᶠᵘˡˡ`, crude bound, envelope, even-density all reproduced) | `[VERIFIED]` |
 | o4: does the real orbit have a `ρ=1` run of length ≥ 3? | **Yes, first at `n = 51`** | `[OBSERVED]` |
 | o4: length ≥ 4? | **Yes, first at `n = 90`** | `[OBSERVED]` |
 | Is the `R ≤ 3` sufficient condition true on the real orbit? | **NO — falsified** | `[OBSERVED, decisive]` |

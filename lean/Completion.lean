@@ -325,9 +325,19 @@ def AllHoldoutsNonHalt : Prop :=
   o7_nonhalt ∧ spaceNeedle_nonhalt ∧ o17_nonhalt ∧
   holdouts1087_nonhalt
 
-/-- The champion machine's halting step count: `1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE`
-halts at a Kropitz-class value ≈ 10↑↑15. Opaque: the exact tower is the current record
-(machine-verified halting; the integer is not a clean literal). -/
+/-- The champion machine's halting step count for `1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE`.
+Opaque: a hyperoperation-scale value, not a clean literal.
+
+**⚠ PROVENANCE FLAGGED 2026-07-22 — this docstring contradicts the repo's own records.**  It
+previously read "a Kropitz-class value ≈ 10↑↑15".  But `PROBLEM_LIST.md` and
+`NEW_MATH_PROGRAM.md` BOTH record the BB(6) lower bound as `Σ(6) > 2↑↑↑5` (mxdys, 2025) —
+**pentational, a whole hyperoperation level above 10↑↑15** (tetrational).  The two cannot both
+be right.  The 10↑↑15/Kropitz figure is the outlier (3 sites: here, `COMPLETION_SKELETON`,
+`DATA_SUMMARY`) against 2 independent internal records of `2↑↑↑5`; `10↑↑15` is plausibly the
+superseded Kropitz record rather than this machine's value.  **Not resolved in-repo — the exact
+value and its attribution are UNVERIFIED here and must be re-confirmed externally before being
+quoted.**  Nothing depends on it: `championSteps` is opaque and `champion_lower` is an axiom, so
+no theorem changes either way. -/
 axiom championSteps : Nat
 
 /-- `BB6` = the maximal halting step-count over all 6-state 2-symbol Turing machines.

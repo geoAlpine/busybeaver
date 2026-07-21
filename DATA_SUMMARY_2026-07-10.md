@@ -14,7 +14,7 @@ BB(6) = N(champion)   ⟸   [A] 17 named cryptids  ∧  [B] thin-set/timing  ∧
 | **[A]** | 14 (K)-band + o7/SN + o17 | **collapsed to 3 meta-schemas** [Lean: `Completion.lean`] | (K)/Mahler + Collatz + timing |
 | **[B]** | o7, Space Needle, o17 | thin-set/timing, closed to internal attack (17 tool classes) | Collatz-hard / unbounded-state |
 | **[C]** | 1087 un-catalogued holdouts | **landscape mapped; collapse blocked (digit-string)** | community-scale deep analysis |
-| champion | `1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE` ≈ 10↑↑15 | BB(6) ≥ N [lit]; N exact = engineering | checkable |
+| champion | `1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE` ≈ 10↑↑15 **[DISPUTED 07-22: repo elsewhere records Σ(6)>2↑↑↑5, mxdys 2025 — unverified, see lean/Completion.lean §3]** | BB(6) ≥ N [lit]; N exact = engineering | checkable |
 
 ## 2. The [A] collapse — the true arithmetic content is minimal `[PROVEN, Lean]`
 

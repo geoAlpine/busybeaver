@@ -88,7 +88,9 @@ a mechanistic closure proof (frequency band) or a confirmed reachability/finite-
 
 - **Champion machine** (bbchallenge BB(6) record, verbatim in `suite.py::CRYPTIDS`):
   `1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE`.
-- **Step count:** halts after **~10↑↑15** steps (`README.md`; Kropitz-class tetrational record). This is a specific
+- **Step count:** halts after **~10↑↑15** [DISPUTED, see below] steps (`README.md`; Kropitz-class tetrational record). This is a specific
+  ⚠ **VALUE FLAGGED 2026-07-22:** the `10↑↑15`/Kropitz figure contradicts this repo's own `PROBLEM_LIST.md` / `NEW_MATH_PROGRAM.md`, which record `Σ(6) > 2↑↑↑5` (mxdys, 2025) — pentational, one hyperoperation level higher. UNVERIFIED in-repo; re-confirm externally before quoting. Nothing depends on it (`championSteps` is opaque). See `lean/Completion.lean` §3.
+
   finite tower value with a closed form derivable from the machine's nested-loop structure, **not brute-force
   runnable** (unphysical). Our simulator self-verifies only the hand-checkable champions BB(2)=6, BB(3)=21,
   BB(4)=107, BB(5)=47,176,870 (`bb_sim.py`, `suite.py`); the BB(6) champion's halt is asserted from the analyzed
