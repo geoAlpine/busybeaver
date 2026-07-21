@@ -148,11 +148,31 @@ measurement; every measurement survived. Applied forward: T7's "largest single o
 the `∀g` extrapolation of the ladder are narrative, and are the next things that should be
 measured (g=3), not assumed.
 
+## 10. Gap law + g=3 test ✅ (`T7_GAPLAW_2026-07-22.md`) — executed after the above
+
+Items 1–2 of the "recommended next" list below were then carried out in this same session.
+
+- **`gap(k) = 4^k − 3·2^k + 7`** — exact closed form for the ladder's gaps. **12 exact hits across
+  two generations (k=5…10)**, the g=3 ones being a genuine *forward* prediction; ladder start
+  positions `s₆…s₁₁` at g=3 also predicted on the nose, with `regenIn 11` confirmed at the
+  predicted step 4 482 050.
+- **The g=2 phase is now COMPLETELY accounted for:**
+  `6 580 + Σ_{5..11} exitSteps + Σ_{5..10} gap + 211 = 2 119 015` — exactly the measured length.
+  Every step is either inside a proven `RegenLaw` transport (34.00 %) or inside a closed-form gap.
+- **But the boundary is g-dependent and my extrapolation FAILED:** the head is not constant
+  (6 580 at g=2 vs 53 382 at g=3); `gap(11)` measured 4 188 247 vs the law's 4 188 167 (**+80**),
+  so the k=12 rung is real but displaced by 80; the top rung's landing is not `cascadeReg k` at
+  g=3 the way it was at g=2; and the predicted `M1(4)` location was wrong.
+- **Net:** T7's *interior* is solved-shaped (two closed forms, the seam structure that closed
+  lead/trail); the residual is now **three small boundary objects**, not a Θ(2^{2K}) fog. The gap
+  law is a *fit*, not yet derived — deriving it is what should explain the `+80`.
+
 ## Recommended next
 
-1. **Extract the gap law** for the doubling-phase ladder and derive it from the machine, the way
-   `x2lead_rec.py` / `x2trail_rec.py` derived `leadRec_closed` / `trailSteps_closed`.
-2. **Confirm the ladder at g=3** (M6(3)→M1(4)) — predicted: one REGEN per level k=5…13, gaps 4×.
+1. **Derive `gap(k)` from the machine** rather than fitting it (the way `x2lead_rec.py` /
+   `x2trail_rec.py` derived `leadRec_closed` / `trailSteps_closed`) — this should supply the
+   missing term that shows up as `+80` at k=11.
+2. **Characterize the three boundary objects** (entry head, top-rung exit, tail) at g=2,3,4.
 3. Then state `h_doub` for one generation as `∏_k [gap(k) ∘ REGEN(k)]` with `REGEN(k)` supplied by
    `regenLaw_closed`. If the gap episodes admit a `∀k` transport, **T7 closes the way `RegenLaw ∀k`
    did**.
