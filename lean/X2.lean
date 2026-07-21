@@ -11701,4 +11701,508 @@ theorem seam_marker_control_offby1 : foldMarker 0 ([] : List Bool) ≠ depStack 
 #print axioms seam_marker_ground_8
 #print axioms seam_marker_control_offby1
 
+/-! ### §5bj (2026-07-21) `TrailLaw ∀k` — THE TRAILING WORD CLOSED FOR EVERY `k ≥ 6`.
+
+**WHAT THIS SECTION ESTABLISHES.**  `TrailLaw k` is a THEOREM for every `k ≥ 6`
+(`trailLaw_all`), closing problem C and with it the last open piece of `RegenLaw ∀k`.
+Chunked kernel `rfl` (§5bg/§5bg′) cannot reach `k ≥ 8` — `k=8` is ~891 steps over a ~760-cell
+tape and both roughly double per level — so this is an INDUCTION.
+
+MEASURED FIRST (`x2trail_rec.py`, a simulator validated against the kernel-proven
+`trailLaw_6`/`trailLaw_7` before use — it FAILED that validation on the first attempt,
+catching an off-by-one in `descCascade`, and every claim below carries a control that
+must fail).  The measurement shows the run splits at two `k`-INDEPENDENT seams, confirming
+that §5ba's `trailFold` was ALREADY the induction step:
+
+  `trailSteps k  =  393  +  trailCost (trailBlocks (k−4))  +  7`
+
+* the PREFIX is 393 steps, the SAME at every `k`, head displacement `+19`.  It manufactures
+  the fold's BOTTOM block `1^{2^5−3}` out of `cascadeReg 4`'s own register and leaves the
+  right side standing at `descCascade 2`;
+* the FOLD is §5ba's `trailFold` along `trailBlocks (k−4)` — ALL of the `k`-dependence,
+  exactly as `trailSteps_eq_trailCost` already proved arithmetically;
+* the SUFFIX is 7 steps, the same at every `k`, displacement `−3`.
+
+So — unlike the lead law (§5bh), which needed the new `∀m` primitive `leadTransit` — NO new
+`∀`-indexed primitive was required here.  The two seams are single FIXED-SIZE kernel lemmas
+with free context words (`trailPrefix`, `trailSuffix`), and the genuinely missing piece was
+the SEAM connecting `cascadeReg` to `trailFold`: `nest_depStack`, which identifies the
+machine's actual left word `depStack k (regenWord k ++ marker)` — the middle chain's
+descend-deposit stack capped by the lead's `regenWord` — with `trailFold`'s nest
+`trailNest (trailBlocks (k−4))`.  The lead's `regenWord` supplies precisely the TOP block
+`1^{2^k−3}` that `trailCost_fmBlocks_deficit` measured the marker as under-supplying.
+
+`trailFoldPos` upgrades `trailFold`'s EXISTENTIAL anchor to the exact displacement, and the
+four displacements then close on the nose:
+`(2^k − k − 44) + 19 − (2^{k+1} + k − 36) + 2(k−4) − 3 = −2^k`, which is exactly `TrailLaw`'s
+anchor law — independently forced by `trailLaw_pad_forced` from tape lengths alone.
+
+`trailLaw_all_agrees_6`/`_7` are ANTI-VACUITY controls: the `∀k` theorem specialises on the
+nose to the two independently kernel-proven levels.  No `sorry`, no `axiom`, no
+`native_decide`, no Mathlib.  All `[propext, Quot.sound]`. -/
+
+/-- Ascending block list `[2^a−3, 2^{a+1}−3, …, 2^{a+n−1}−3]`, head-recursive so the nest
+identity can peel the OUTERMOST (smallest) block.  §5ba's `trailBlocks` is snoc-built, which
+peels the largest first; these are the same list (`trailBlocks_eq_ascBlocks`). -/
+def ascBlocks : Nat → Nat → List Nat
+  | _, 0 => []
+  | a, (n + 1) => (2 ^ a - 3) :: ascBlocks (a + 1) n
+
+/-- `ascBlocks` appends its LARGEST block last. -/
+theorem ascBlocks_snoc : ∀ (n a : Nat),
+    ascBlocks a (n + 1) = ascBlocks a n ++ [2 ^ (a + n) - 3] := by
+  intro n
+  induction n with
+  | zero =>
+    intro a
+    show ((2 : Nat) ^ a - 3) :: ascBlocks (a + 1) 0 = [] ++ [2 ^ (a + 0) - 3]
+    rw [show a + 0 = a from by omega]
+    rfl
+  | succ j ih =>
+    intro a
+    show ((2 : Nat) ^ a - 3) :: ascBlocks (a + 1) (j + 1)
+        = ((2 ^ a - 3) :: ascBlocks (a + 1) j) ++ [2 ^ (a + (j + 1)) - 3]
+    rw [ih (a + 1), show a + 1 + j = a + (j + 1) from by omega]
+    rfl
+
+/-- §5ba's snoc-built `trailBlocks` IS the head-recursive `ascBlocks 5`. -/
+theorem trailBlocks_eq_ascBlocks : ∀ j : Nat, trailBlocks j = ascBlocks 5 j := by
+  intro j
+  induction j with
+  | zero => rfl
+  | succ i ih =>
+    show trailBlocks i ++ [2 ^ (5 + i) - 3] = ascBlocks 5 (i + 1)
+    rw [ih, ascBlocks_snoc i 5]
+
+/-- **THE SEAM LEMMA, `∀ n a marker`** — the middle chain's descend-deposit stack
+`depStackAux`, capped by the lead's `regenWord`, IS `trailFold`'s nest.  This is the one
+identity that was missing: it turns the machine's actual left word into the object
+`trailFold` consumes.  Induction on `n`; pure `List`, no machine. -/
+theorem nest_depStackAux : ∀ (n a : Nat) (marker : List Bool),
+    trailNest (ascBlocks (a + 1) (n + 1))
+        (true :: false :: false :: true :: (pow01 (2 ^ (a + n) - 2) ++ marker))
+      = true :: depStackAux n a (regenWord (a + n + 1) ++ marker) := by
+  intro n
+  induction n with
+  | zero =>
+    intro a marker
+    show true :: (ones (2 ^ (a + 1) - 3) ++ (false ::
+        (true :: false :: false :: true :: (pow01 (2 ^ (a + 0) - 2) ++ marker))))
+      = true :: (regenWord (a + 0 + 1) ++ marker)
+    rw [show a + 0 = a from by omega, show a + 0 + 1 = a + 1 from by omega]
+    show _ = true :: ((ones (2 ^ (a + 1) - 3) ++ (false :: true :: false :: false :: true ::
+        pow01 (2 ^ (a + 1 - 1) - 2))) ++ marker)
+    rw [show a + 1 - 1 = a from by omega, List.append_assoc]
+    rfl
+  | succ j ih =>
+    intro a marker
+    have hx : a + (j + 1) = a + 1 + j := by omega
+    show true :: (ones (2 ^ (a + 1) - 3) ++ (false ::
+        trailNest (ascBlocks (a + 1 + 1) (j + 1))
+          (true :: false :: false :: true :: (pow01 (2 ^ (a + (j + 1)) - 2) ++ marker))))
+      = true :: depStackAux (j + 1) a (regenWord (a + (j + 1) + 1) ++ marker)
+    show _ = true :: (ones (2 ^ (a + 1) - 3) ++ (false :: true ::
+        depStackAux j (a + 1) (regenWord (a + (j + 1) + 1) ++ marker)))
+    rw [hx, ih (a + 1) marker]
+
+/-- **THE SEAM, at `k`** — `∀ k ≥ 6`: the trailing IN's left word IS `trailFold`'s nest
+along `trailBlocks (k−4)`, over the residue `1 0 0 1 (01)^{2^{k−1}−2} marker`. -/
+theorem nest_depStack (k : Nat) (hk : 6 ≤ k) (marker : List Bool) :
+    trailNest (trailBlocks (k - 4))
+        (true :: false :: false :: true :: (pow01 (2 ^ (k - 1) - 2) ++ marker))
+      = true :: (ones 29 ++ (false :: true :: depStack k (regenWord k ++ marker))) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have h := nest_depStackAux n 5 marker
+  rw [show (5 : Nat) + n = n + 5 from by omega] at h
+  rw [show n + 5 + 1 = n + 6 from by omega] at h
+  rw [trailBlocks_eq_ascBlocks, show n + 6 - 4 = n + 2 from by omega,
+      show n + 6 - 1 = n + 5 from by omega]
+  show true :: (ones (2 ^ 5 - 3) ++ (false :: trailNest (ascBlocks (5 + 1) (n + 1)) _)) = _
+  rw [h]
+  rfl
+
+/-- The left-word seam in the orientation the assembly consumes it. -/
+theorem trailSeam_left (k : Nat) (hk : 6 ≤ k) (marker : List Bool) :
+    (false :: true :: (ones 29 ++ (false :: true :: depStack k (regenWord k ++ marker)))
+      : List Bool)
+      = false :: trailNest (trailBlocks (k - 4))
+          (true :: false :: false :: true :: (pow01 (2 ^ (k - 1) - 2) ++ marker)) := by
+  rw [nest_depStack k hk marker]
+
+/-- **`trailFold` WITH THE EXACT ANCHOR, `∀ bs`** — §5ba's fold states only `∃ p'`, but
+`TrailLaw` needs the displacement.  Each `trailCycle` costs `N+4` and moves `−(N+2)`, so the
+fold moves `−trailCost bs + 2·|bs|`.  Same induction as `trailFold`. -/
+theorem trailFoldPos : ∀ (bs : List Nat) (p : Int) (L R : List Bool),
+    steps (trailCost bs) ⟨.E, p, ⟨false :: trailNest bs L, true, R⟩⟩
+      = some ⟨.E, p - (trailCost bs : Int) + 2 * (bs.length : Int),
+          ⟨false :: L, true, trailCasc bs R⟩⟩ := by
+  intro bs
+  induction bs with
+  | nil =>
+    intro p L R
+    show some _ = some _
+    refine congrArg some (cfgPos ?_)
+    rw [show trailCost ([] : List Nat) = 0 from rfl,
+        show ([] : List Nat).length = 0 from rfl]
+    push_cast
+    omega
+  | cons N rest ih =>
+    intro p L R
+    rw [show trailCost (N :: rest) = (N + 4) + trailCost rest from rfl, steps_add,
+        show (false :: trailNest (N :: rest) L : List Bool)
+          = false :: true :: (ones N ++ (false :: trailNest rest L)) from rfl,
+        trailCycle N p (trailNest rest L) R, someBind,
+        ih (p - ((N : Int) + 2)) L (ones N ++ (false :: false :: R))]
+    refine congrArg some ?_
+    refine cfgPos ?_
+    rw [List.length_cons]
+    push_cast
+    omega
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 1/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_0 (V R : List Bool) :
+    steps 20 ⟨.E, 0, ⟨[false, true, false, true, false, true, false, true, false, true, false, true, false, true] ++ V, false, [false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 2, ⟨[true, true, true, true, false, true, false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 2/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_1 (V R : List Bool) :
+    steps 20 ⟨.F, 2, ⟨[true, true, true, true, false, true, false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 2, ⟨[true, true, true, true, true, true, false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 3/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_2 (V R : List Bool) :
+    steps 20 ⟨.F, 2, ⟨[true, true, true, true, true, true, false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.C, (-4), ⟨[false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 4/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_3 (V R : List Bool) :
+    steps 20 ⟨.C, (-4), ⟨[false, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.C, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 5/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_4 (V R : List Bool) :
+    steps 20 ⟨.C, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, (-2), ⟨[true, true, true, true, true, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 6/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_5 (V R : List Bool) :
+    steps 20 ⟨.F, (-2), ⟨[true, true, true, true, true, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.C, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 7/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_6 (V R : List Bool) :
+    steps 20 ⟨.C, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, (-6), ⟨[true, true, true, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 8/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_7 (V R : List Bool) :
+    steps 20 ⟨.F, (-6), ⟨[true, true, true, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 14, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true] ++ V, true, [true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 9/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_8 (V R : List Bool) :
+    steps 20 ⟨.F, 14, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, false, true] ++ V, true, [true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.C, (-4), ⟨[true, true, true, true, true, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 10/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_9 (V R : List Bool) :
+    steps 20 ⟨.C, (-4), ⟨[true, true, true, true, true, true, false, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 2, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 11/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_10 (V R : List Bool) :
+    steps 20 ⟨.F, 2, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.D, 18, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 12/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_11 (V R : List Bool) :
+    steps 20 ⟨.D, 18, ⟨[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.D, 28, ⟨[true, false, false, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 13/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_12 (V R : List Bool) :
+    steps 20 ⟨.D, 28, ⟨[true, false, false, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 32, ⟨[true, true, true, true, true, true, false, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 14/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_13 (V R : List Bool) :
+    steps 20 ⟨.F, 32, ⟨[true, true, true, true, true, true, false, true, false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.E, 24, ⟨[false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 15/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_14 (V R : List Bool) :
+    steps 20 ⟨.E, 24, ⟨[false, false, true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.E, 22, ⟨[true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, false, true, false, true, false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 16/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_15 (V R : List Bool) :
+    steps 20 ⟨.E, 22, ⟨[true, false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, false, true, false, true, false, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.E, 22, ⟨[true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, false, true, false, true, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 17/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_16 (V R : List Bool) :
+    steps 20 ⟨.E, 22, ⟨[true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, false, true, false, true, false, true, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.D, 36, ⟨[true, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 18/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_17 (V R : List Bool) :
+    steps 20 ⟨.D, 36, ⟨[true, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.F, 40, ⟨[true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 19/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_18 (V R : List Bool) :
+    steps 20 ⟨.F, 40, ⟨[true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, false, [false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.D, 30, ⟨[true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Trailing-word PREFIX chunk 20/20, kernel `rfl`, tails `V`/`R` FREE. -/
+theorem tp_19 (V R : List Bool) :
+    steps 13 ⟨.D, 30, ⟨[true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+      = some ⟨.E, 19, ⟨[false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false] ++ R⟩⟩ := by
+  rfl
+
+
+/-- The 393-step PREFIX at `p = 0`, composed from the 20 chunks. -/
+theorem trailPrefix0 (V R : List Bool) :
+    steps 393 ⟨.E, 0, ⟨pow01 7 ++ V, false,
+        false :: false :: false :: (ones 13 ++ (false :: false ::
+          (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩
+      = some ⟨.E, 19, ⟨false :: true :: (ones 29 ++ (false :: true :: V)), true,
+          descCascade 2 ++ (zeros 9 ++ R)⟩⟩ := by
+  show steps 393 ⟨.E, 0, ⟨[false, true, false, true, false, true, false, true, false, true, false, true, false, true] ++ V, false, [false, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+    = some ⟨.E, 19, ⟨[false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, true] ++ V, true, [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true, false, false, true, false, false, false, false, false, false, false, false, false] ++ R⟩⟩
+  rw [show (393 : Nat) = 20 + 373 from by decide, steps_add, tp_0, someBind]
+  rw [show (373 : Nat) = 20 + 353 from by decide, steps_add, tp_1, someBind]
+  rw [show (353 : Nat) = 20 + 333 from by decide, steps_add, tp_2, someBind]
+  rw [show (333 : Nat) = 20 + 313 from by decide, steps_add, tp_3, someBind]
+  rw [show (313 : Nat) = 20 + 293 from by decide, steps_add, tp_4, someBind]
+  rw [show (293 : Nat) = 20 + 273 from by decide, steps_add, tp_5, someBind]
+  rw [show (273 : Nat) = 20 + 253 from by decide, steps_add, tp_6, someBind]
+  rw [show (253 : Nat) = 20 + 233 from by decide, steps_add, tp_7, someBind]
+  rw [show (233 : Nat) = 20 + 213 from by decide, steps_add, tp_8, someBind]
+  rw [show (213 : Nat) = 20 + 193 from by decide, steps_add, tp_9, someBind]
+  rw [show (193 : Nat) = 20 + 173 from by decide, steps_add, tp_10, someBind]
+  rw [show (173 : Nat) = 20 + 153 from by decide, steps_add, tp_11, someBind]
+  rw [show (153 : Nat) = 20 + 133 from by decide, steps_add, tp_12, someBind]
+  rw [show (133 : Nat) = 20 + 113 from by decide, steps_add, tp_13, someBind]
+  rw [show (113 : Nat) = 20 + 93 from by decide, steps_add, tp_14, someBind]
+  rw [show (93 : Nat) = 20 + 73 from by decide, steps_add, tp_15, someBind]
+  rw [show (73 : Nat) = 20 + 53 from by decide, steps_add, tp_16, someBind]
+  rw [show (53 : Nat) = 20 + 33 from by decide, steps_add, tp_17, someBind]
+  rw [show (33 : Nat) = 20 + 13 from by decide, steps_add, tp_18, someBind]
+  exact tp_19 V R
+
+/-- **THE 393-STEP PREFIX, `∀ p V R`** — `k`-INDEPENDENT.  From `cascadeReg 4`'s floor it
+manufactures the fold's BOTTOM block `1^{2^5−3}` out of the register itself and hands the run
+to `trailFold` with the right side standing at `descCascade 2`.  `V` (the entire `k`-dependent
+left word) and `R` are FREE; the run never reads either. -/
+theorem trailPrefix (p : Int) (V R : List Bool) :
+    steps 393 ⟨.E, p, ⟨pow01 7 ++ V, false,
+        false :: false :: false :: (ones 13 ++ (false :: false ::
+          (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩
+      = some ⟨.E, p + 19, ⟨false :: true :: (ones 29 ++ (false :: true :: V)), true,
+          descCascade 2 ++ (zeros 9 ++ R)⟩⟩ := by
+  have h := steps_shiftCfg 393 .E .E 0 19 p _ _ (trailPrefix0 V R)
+  rw [show (0 : Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+set_option maxRecDepth 100000 in
+/-- The 7-step SUFFIX at `p = 0`.  `U`/`Y` FREE (the run never moves right off the explicit
+window, so the kernel `rfl` goes through with both tails symbolic). -/
+theorem trailSuffix0 (U Y : List Bool) :
+    steps 7 ⟨.E, 0, ⟨false :: true :: false :: false :: true :: U, true, Y⟩⟩
+      = some ⟨.E, (-3), ⟨false :: true :: U, false, false :: false :: false :: Y⟩⟩ := by
+  rfl
+
+/-- **THE 7-STEP SUFFIX, `∀ p U Y`** — `k`-INDEPENDENT.  Re-anchors the fold's OUT onto
+`cascadeReg k`'s floor, laying the register's leading `0^3`. -/
+theorem trailSuffix (p : Int) (U Y : List Bool) :
+    steps 7 ⟨.E, p, ⟨false :: true :: false :: false :: true :: U, true, Y⟩⟩
+      = some ⟨.E, p - 3, ⟨false :: true :: U, false, false :: false :: false :: Y⟩⟩ := by
+  have h := steps_shiftCfg 7 .E .E 0 (-3) p _ _ (trailSuffix0 U Y)
+  rw [show (0 : Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE TRAILING WORD, `∀ k ≥ 6`, POSITION-GENERAL** — `trailPrefix ∘ trailFoldPos ∘
+trailSuffix`, glued by `nest_depStack` on the LEFT and `trailCasc_descCascade` on the RIGHT,
+with `cascadeReg_collapse` rebuilding `cascadeReg k`'s register.  `marker`/`R` FREE.
+`some` ⇒ HALT-FREE. -/
+theorem trailOut_all (k : Nat) (hk : 6 ≤ k) (p : Int) (marker R : List Bool) :
+    steps (trailSteps k)
+        (cascadeReg 4 1 (p + 2 ^ k - (k : Int) - 44) (depStack k (regenWord k ++ marker))
+          (zeros 16 ++ R))
+      = some (cascadeReg k 1 (p - 2 ^ k) marker R) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  -- COUNT: trailSteps = 393 (prefix) + trailCost (fold) + 7 (suffix)
+  have hsteps : trailSteps (n + 6) = 393 + (trailCost (trailBlocks (n + 2)) + 7) := by
+    have h := trailSteps_eq_trailCost (n + 6) (by omega)
+    rw [show n + 6 - 4 = n + 2 from by omega] at h
+    omega
+  rw [hsteps, steps_add]
+  -- PHASE 1 : the k-INDEPENDENT 393-step prefix
+  rw [show cascadeReg 4 1 (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+        (depStack (n + 6) (regenWord (n + 6) ++ marker)) (zeros 16 ++ R)
+      = ⟨.E, p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44,
+          ⟨pow01 7 ++ depStack (n + 6) (regenWord (n + 6) ++ marker), false,
+            false :: false :: false :: (ones 13 ++ (false :: false ::
+              (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩ from rfl,
+    trailPrefix (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+      (depStack (n + 6) (regenWord (n + 6) ++ marker)) R,
+    someBind]
+  -- SEAM : the machine's left word IS trailFold's nest
+  rw [trailSeam_left (n + 6) (by omega) marker,
+    show n + 6 - 4 = n + 2 from by omega, show n + 6 - 1 = n + 5 from by omega]
+  -- PHASE 2 : the fold, with its exact anchor
+  rw [steps_add,
+    trailFoldPos (trailBlocks (n + 2))
+      (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19)
+      (true :: false :: false :: true :: (pow01 (2 ^ (n + 5) - 2) ++ marker))
+      (descCascade 2 ++ (zeros 9 ++ R)),
+    someBind, trailBlocks_length]
+  -- RIGHT structure-match : the fold's cascade IS descCascade (k−2)
+  rw [show trailCasc (trailBlocks (n + 2)) (descCascade 2 ++ (zeros 9 ++ R))
+      = descCascade (n + 4) ++ (zeros 9 ++ R) from by
+        rw [trailCasc_append, trailCasc_descCascade, show 2 + (n + 2) = n + 4 from by omega]]
+  -- PHASE 3 : the k-INDEPENDENT 7-step suffix
+  rw [trailSuffix _ (pow01 (2 ^ (n + 5) - 2) ++ marker) (descCascade (n + 4) ++ (zeros 9 ++ R))]
+  -- LAND on cascadeReg k
+  refine congrArg some ?_
+  have hleft : (false :: true :: (pow01 (2 ^ (n + 5) - 2) ++ marker) : List Bool)
+      = pow01 (1 + (2 ^ (n + 6 - 1) - 2)) ++ marker := by
+    rw [show n + 6 - 1 = n + 5 from by omega,
+        show 1 + (2 ^ (n + 5) - 2) = (2 ^ (n + 5) - 2) + 1 from by omega]
+    rfl
+  have hright : (false :: false :: false :: (descCascade (n + 4) ++ (zeros 9 ++ R)) : List Bool)
+      = false :: false :: false :: (ones (2 ^ (n + 6) - 3) ++ (false :: false ::
+          (descCascade (n + 6 - 3) ++ (false :: false :: (zeros 7 ++ R))))) := by
+    have hc := cascadeReg_collapse (n + 6) (by omega)
+    rw [show n + 6 - 3 = n + 3 from by omega, show n + 6 - 2 = n + 4 from by omega] at hc
+    rw [show n + 6 - 3 = n + 3 from by omega, ← hc, List.append_assoc]
+    rfl
+  show (⟨.E, _, ⟨_, false, _⟩⟩ : Cfg) = cascadeReg (n + 6) 1 (p - 2 ^ (n + 6)) marker R
+  rw [show cascadeReg (n + 6) 1 (p - 2 ^ (n + 6)) marker R
+      = ⟨.E, p - 2 ^ (n + 6), ⟨pow01 (1 + (2 ^ (n + 6 - 1) - 2)) ++ marker, false,
+          false :: false :: false :: (ones (2 ^ (n + 6) - 3) ++ (false :: false ::
+            (descCascade (n + 6 - 3) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩ from rfl]
+  rw [hleft, hright]
+  refine cfgPos ?_
+  -- ANCHOR : the four displacements close on the nose
+  have ht := trailCost_trailBlocks (n + 2)
+  rw [show n + 2 + 5 = n + 7 from by omega] at ht
+  have h7 : (2 : Nat) ^ (n + 7) = 2 * 2 ^ (n + 6) := by
+    rw [show n + 7 = (n + 6) + 1 from by omega, Nat.pow_succ]; omega
+  have hge : (32 : Nat) ≤ 2 ^ (n + 6) := by
+    have h1 : (2 : Nat) ^ 5 ≤ 2 ^ (n + 6) := Nat.pow_le_pow_right (by decide) (by omega)
+    have h2 : (2 : Nat) ^ 5 = 32 := by decide
+    omega
+  obtain ⟨T, hT⟩ : ∃ T, trailCost (trailBlocks (n + 2)) = T := ⟨_, rfl⟩
+  obtain ⟨P, hP⟩ : ∃ P, (2 : Nat) ^ (n + 6) = P := ⟨_, rfl⟩
+  rw [hT] at ht
+  rw [hP] at h7 hge
+  have hPi : ((2 : Int)) ^ (n + 6) = (P : Int) := by rw [← hP]; push_cast; rfl
+  rw [hT, hPi]
+  push_cast
+  omega
+
+/-- **`TrailLaw k` FOR EVERY `k ≥ 6` — the `∀k` closure of problem C.**  Together with
+`leadLaw_all` (§5bh) this completes `RegenLaw ∀k`. -/
+theorem trailLaw_all (k : Nat) (hk : 6 ≤ k) : TrailLaw k :=
+  fun p marker R => trailOut_all k hk p marker R
+
+/-- **CROSS-CHECK (anti-vacuity).**  The `∀k` law inhabits `TrailLaw 6`, established
+independently in §5bg by a 498-step / 21-chunk kernel `rfl`. -/
+theorem trailLaw_all_agrees_6 : TrailLaw 6 := trailLaw_all 6 (by decide)
+
+/-- **CROSS-CHECK (anti-vacuity).**  Same at `k=7` (§5bg′, 627 steps, 26 chunks). -/
+theorem trailLaw_all_agrees_7 : TrailLaw 7 := trailLaw_all 7 (by decide)
+
+-- AXIOM AUDIT — §5bj (the trailing law `∀k`).  All `[propext, Quot.sound]`.
+#print axioms ascBlocks_snoc
+#print axioms trailBlocks_eq_ascBlocks
+#print axioms nest_depStackAux
+#print axioms nest_depStack
+#print axioms trailSeam_left
+#print axioms trailFoldPos
+#print axioms trailPrefix0
+#print axioms trailPrefix
+#print axioms trailSuffix0
+#print axioms trailSuffix
+#print axioms trailOut_all
+#print axioms trailLaw_all
+#print axioms trailLaw_all_agrees_6
+#print axioms trailLaw_all_agrees_7
+
+
+/-! ## §5bk (2026-07-21) **`RegenLaw ∀k` — THE COMBINATION.**
+
+Written BY THE INTEGRATOR, not by either agent, as the decisive check that the two independently
+built halves actually compose.  §5bh closed the LEAD `∀k` (`leadLaw_all`), §5bj closed the TRAILING
+law `∀k` (`trailLaw_all`), and §5bi proved the ASSEMBLY `regenLaw_all_of_trailLaw_all`.  Neither
+agent ran this line; if the pieces did not fit, it would fail to elaborate here.
+
+**SCOPE — read this before quoting the result.**  `RegenLaw ∀k` is the CRUX of the `x2` programme,
+not its conclusion.  `x2` remains `[OPEN]`: `h_doub ∀g` additionally needs the `Θ(2^{2K})`
+doubling-phase assembly (T7), and the canonical families must still be tied to `init` (T9).
+No machine is decided by this section.  No label is upgraded. -/
+
+/-- **`RegenLaw k` HOLDS `∀ k ≥ 4`** — `regenLaw_all_of_trailLaw_all` (§5bi) discharged by
+`trailLaw_all` (§5bj).  This supersedes the per-level `regenLaw_4/5/6/7` as the general statement;
+those remain as independent groundings (and `assembly_agrees_7` re-derives `RegenLaw 7` by the
+assembly route WITHOUT `regenLaw_7`, so two independent routes agree at k=7). -/
+theorem regenLaw_closed : ∀ k, 4 ≤ k → RegenLaw k :=
+  regenLaw_all_of_trailLaw_all (fun k hk => trailLaw_all k (by omega))
+
+/-- The combination specialises on the nose to every previously-grounded level. -/
+theorem regenLaw_closed_agrees_4 : RegenLaw 4 := regenLaw_closed 4 (by decide)
+theorem regenLaw_closed_agrees_7 : RegenLaw 7 := regenLaw_closed 7 (by decide)
+/-- ...and reaches levels no `rfl` could: `k = 8` was UNGROUNDED before today. -/
+theorem regenLaw_closed_8 : RegenLaw 8 := regenLaw_closed 8 (by decide)
+theorem regenLaw_closed_100 : RegenLaw 100 := regenLaw_closed 100 (by decide)
+
+-- AXIOM AUDIT — the combination.  Must be `[propext, Quot.sound]`.
+#print axioms regenLaw_closed
+#print axioms regenLaw_closed_agrees_4
+#print axioms regenLaw_closed_agrees_7
+#print axioms regenLaw_closed_8
+#print axioms regenLaw_closed_100
+
 end X2
