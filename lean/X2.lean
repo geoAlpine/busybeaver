@@ -11051,4 +11051,312 @@ theorem trailLaw_7 : TrailLaw 7 := by
 
 
 
+
+/-! ## §5bh (2026-07-21) THE LEAD LAW `∀k` — **CLOSED** (problem `B`).
+
+§5be left `LeadLaw k` PROVEN at `k=6,7` (`leadOut_6`/`leadOut_7`, 154/241 chunked kernel
+steps) and `[OBSERVED]` at `k=8..11`, with `∀k` OPEN.  It is now a THEOREM for every
+`k ≥ 6` (`leadOut_all` / `leadLaw_all`).
+
+MEASURED FIRST (`x2lead_rec.py`, a simulator validated against `leadOut_6`/`leadOut_7`
+before use, every claim carrying a control that must fail).  The measurement killed the
+obvious attack: the lead trajectory NEVER visits an intermediate `regenIn j` for
+`4 < j < k`, so there is no `LeadLaw (k−1) → LeadLaw k` peel.  What it does instead:
+
+* the head NEVER moves left of its start — `regenIn k`'s own left word is never read,
+  which is the structural reason the lead is a PURE PREPEND;
+* it eats `descCascade (k−4)` one block at a time.  Peeling block `d` costs exactly
+  `3·2^{d+2} − 9` steps, advances `2^{d+2} − 1`, and PREPENDS the `ascMarker` layer at
+  `b = d+1`.  Summed over `d = k−4 … 1` plus a universal 100-step tail this is
+  `3·2^{k−1} − 9k + 112` — i.e. it DERIVES `leadRec_closed`, previously only a closed form.
+
+The block peel is not `d`-specific at all: it is one `∀m` law (`leadTransit`) about
+crossing a `1`-block of ODD length `2m+1` closed by `0 0`, in `6m+3` steps, depositing
+`0 0 1 (01)^m` on the left — `∀ p W Tail`, left word and tail FREE.  That is the single
+new `∀` primitive; none of the banked ones (`descent_glue_expl`, `carry_descent_fold`,
+`chewFold`, `dSweepTurn`, `sweepEF`, `braid_topgrind`, `trailCasc_*`) states it, because
+all of them constrain the left context that `leadTransit` leaves free.  It is proved by
+induction on `m` off a 6-step tile (`leadTile`), so nothing here is a large `rfl`.
+
+The induction runs on the GENERALIZED law `genLead` (free left word `W`, free right tail
+`S`), whose marker bookkeeping closes on the nose via `ascMarker_absorb`:
+`ascMarker 4 (n+1) W = ascMarker 4 n (ascLayer (n+4) ++ W)`.  `LeadLaw` is the
+instantiation `W := regenWord k ++ marker`, `S := zeros (2^{k−1}) ++ R`.
+
+`leadOut_all_agrees_6`/`_7` are ANTI-VACUITY controls: the `∀k` theorem specialises on the
+nose to the two independently kernel-proven cases.  No `sorry`, no `axiom`, no
+`native_decide`.  All `[propext, Quot.sound]`. -/
+
+
+/-- Component-wise form of the file's `steps_shiftPos` (§5aj), with the `Cfg` projections
+pre-reduced so it can be applied to an explicit config.  `n` stays a variable throughout, so
+nothing here reduces a `steps` run. -/
+theorem steps_shiftCfg (n : Nat) (s s' : St) (p q d : Int) (t t' : Tape) :
+    steps n ⟨s, p, t⟩ = some ⟨s', q, t'⟩ →
+      steps n ⟨s, p + d, t⟩ = some ⟨s', q + d, t'⟩ := by
+  intro h
+  have hx := steps_shiftPos d n ⟨s, p, t⟩
+  rw [h] at hx
+  exact hx
+
+/-- `pow01` commutes with one `0 1` tile. -/
+theorem pow01_shift : ∀ (m : Nat) (W : List Bool),
+    pow01 m ++ (false :: true :: W) = false :: true :: (pow01 m ++ W) := by
+  intro m
+  induction m with
+  | zero => intro W; rfl
+  | succ n ih =>
+    intro W
+    show false :: true :: (pow01 n ++ (false :: true :: W)) = _
+    rw [ih]
+    rfl
+
+/-- **THE 6-STEP TILE.** -/
+theorem leadTile (m : Nat) (p : Int) (W Tail : List Bool) :
+    steps 6 ⟨.E, p, ⟨W, false, false :: (ones (2 * m + 3) ++ (false :: false :: Tail))⟩⟩
+      = some ⟨.E, p + 2, ⟨false :: true :: W, false,
+          false :: (ones (2 * m + 1) ++ (false :: false :: Tail))⟩⟩ := by
+  have h3 : ones (2 * m + 3) = true :: true :: ones (2 * m + 1) := by
+    rw [show 2 * m + 3 = 2 + (2 * m + 1) from by omega, ones_add]; rfl
+  rw [h3]
+  have h : steps 6 (⟨.E, p, ⟨W, false, false :: ((true :: true :: ones (2 * m + 1))
+        ++ (false :: false :: Tail))⟩⟩ : Cfg)
+      = some ⟨.E, p + 1 + 1 + 1 - 1 - 1 + 1, ⟨false :: true :: W, false,
+          false :: (ones (2 * m + 1) ++ (false :: false :: Tail))⟩⟩ := rfl
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **THE ONES-BLOCK TRANSIT, `∀ m`** — the single new `∀` primitive. -/
+theorem leadTransit : ∀ (m : Nat) (p : Int) (W Tail : List Bool),
+    steps (6 * m + 3) ⟨.E, p, ⟨W, false, false :: (ones (2 * m + 1) ++ (false :: false :: Tail))⟩⟩
+      = some ⟨.E, p + (2 * m + 3), ⟨false :: false :: true :: (pow01 m ++ W), false,
+          false :: Tail⟩⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro p W Tail
+    show steps 3 _ = _
+    have h : steps 3 (⟨.E, p, ⟨W, false, false :: (ones (2 * 0 + 1)
+          ++ (false :: false :: Tail))⟩⟩ : Cfg)
+        = some ⟨.E, p + 1 + 1 + 1, ⟨false :: false :: true :: (pow01 0 ++ W), false,
+            false :: Tail⟩⟩ := rfl
+    rw [h]
+    exact congrArg some (cfgPos (by omega))
+  | succ n ih =>
+    intro p W Tail
+    rw [show 6 * (n + 1) + 3 = 6 + (6 * n + 3) from by omega,
+      show 2 * (n + 1) + 1 = 2 * n + 3 from by omega, steps_add,
+      leadTile n p W Tail, someBind, ih (p + 2) (false :: true :: W) Tail, pow01_shift n W]
+    exact congrArg some (cfgPos (by omega))
+
+/-! ### the 100-step floor seam, chunked at `p = 0` then translated. -/
+
+set_option maxRecDepth 100000 in
+theorem lt_0 (V S : List Bool) :
+    steps 20 ⟨.E, 0, ⟨[false, false, true, false] ++ V, false,
+      [false, true, false, false, false, false, false, false, false, false, false] ++ S⟩⟩
+    = some ⟨.A, 4, ⟨[false, true, false, true, false, false, true, false] ++ V, false,
+      [false, true, false, false, false, false, false] ++ S⟩⟩ := by rfl
+
+set_option maxRecDepth 100000 in
+theorem lt_1 (V S : List Bool) :
+    steps 20 ⟨.A, 4, ⟨[false, true, false, true, false, false, true, false] ++ V, false,
+      [false, true, false, false, false, false, false] ++ S⟩⟩
+    = some ⟨.D, 6, ⟨[true, true, true, true, false, true, false, false, true, false] ++ V, true,
+      [true, false, false, true, false] ++ S⟩⟩ := by rfl
+
+set_option maxRecDepth 100000 in
+theorem lt_2 (V S : List Bool) :
+    steps 20 ⟨.D, 6, ⟨[true, true, true, true, false, true, false, false, true, false] ++ V, true,
+      [true, false, false, true, false] ++ S⟩⟩
+    = some ⟨.E, 0, ⟨[true, false, true, false] ++ V, false,
+      [true, false, true, true, true, true, true, false, false, true, false] ++ S⟩⟩ := by rfl
+
+set_option maxRecDepth 100000 in
+theorem lt_3 (V S : List Bool) :
+    steps 20 ⟨.E, 0, ⟨[true, false, true, false] ++ V, false,
+      [true, false, true, true, true, true, true, false, false, true, false] ++ S⟩⟩
+    = some ⟨.E, 4, ⟨[true, true, true, true, true, true, true, false] ++ V, true,
+      [true, false, true, false, false, true, false] ++ S⟩⟩ := by rfl
+
+set_option maxRecDepth 100000 in
+theorem lt_4 (V S : List Bool) :
+    steps 20 ⟨.E, 4, ⟨[true, true, true, true, true, true, true, false] ++ V, true,
+      [true, false, true, false, false, true, false] ++ S⟩⟩
+    = some ⟨.E, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true] ++ V,
+      false, [false, true, false] ++ S⟩⟩ := by rfl
+
+/-- **THE 100-STEP TAIL at `p = 0`.** -/
+theorem leadTail0 (V S : List Bool) :
+    steps 100 ⟨.E, 0, ⟨false :: false :: true :: false :: V, false,
+        false :: (ones 1 ++ (zeros 9 ++ S))⟩⟩
+      = some ⟨.E, 8, ⟨ones 12 ++ V, false, false :: (ones 1 ++ (zeros 1 ++ S))⟩⟩ := by
+  show steps 100 ⟨.E, 0, ⟨[false, false, true, false] ++ V, false,
+      [false, true, false, false, false, false, false, false, false, false, false] ++ S⟩⟩
+    = some ⟨.E, 8, ⟨[true, true, true, true, true, true, true, true, true, true, true, true] ++ V,
+      false, [false, true, false] ++ S⟩⟩
+  rw [show (100 : Nat) = 20 + 80 from by decide, steps_add, lt_0, someBind]
+  rw [show (80 : Nat) = 20 + 60 from by decide, steps_add, lt_1, someBind]
+  rw [show (60 : Nat) = 20 + 40 from by decide, steps_add, lt_2, someBind]
+  rw [show (40 : Nat) = 20 + 20 from by decide, steps_add, lt_3, someBind]
+  exact lt_4 V S
+
+/-- **THE 100-STEP TAIL, `∀ p V S`** — the floor seam. -/
+theorem leadTail (p : Int) (V S : List Bool) :
+    steps 100 ⟨.E, p, ⟨false :: false :: true :: false :: V, false,
+        false :: (ones 1 ++ (zeros 9 ++ S))⟩⟩
+      = some ⟨.E, p + 8, ⟨ones 12 ++ V, false, false :: (ones 1 ++ (zeros 1 ++ S))⟩⟩ := by
+  have h := steps_shiftCfg 100 .E .E 0 8 p
+    ⟨false :: false :: true :: false :: V, false, false :: (ones 1 ++ (zeros 9 ++ S))⟩
+    ⟨ones 12 ++ V, false, false :: (ones 1 ++ (zeros 1 ++ S))⟩ (leadTail0 V S)
+  rw [show (0 : Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **`ascMarker` REGROUPING** — one layer moves from the OUTER count into the payload. -/
+theorem ascMarker_absorb : ∀ (n b : Nat) (m : List Bool),
+    ascMarker b (n + 1) m
+      = ascMarker b n (false :: false :: true :: (pow01 (2 ^ (b + n) - 2) ++ m)) := by
+  intro n
+  induction n with
+  | zero => intro b m; rfl
+  | succ j ih =>
+    intro b m
+    show false :: false :: true :: (pow01 (2 ^ b - 2) ++ ascMarker (b + 1) (j + 1) m) = _
+    rw [ih (b + 1) m, show b + 1 + j = b + (j + 1) from by omega]
+    rfl
+
+/-- **THE GENERALIZED LEAD LAW, `∀ n`.** -/
+theorem genLead : ∀ (n : Nat) (p : Int) (W S : List Bool),
+    steps (leadRec n) ⟨.E, p, ⟨W, false, false :: (descCascade (n + 2) ++ (zeros 9 ++ S))⟩⟩
+      = some ⟨.E, p + ((2 ^ (n + 5) : Nat) : Int) - ((n : Nat) : Int) - 2,
+          ⟨regenWord 4 ++ ascMarker 4 n W, false,
+            false :: (descCascade 0 ++ (zeros 1 ++ S))⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro p W S
+    have hc : descCascade (0 + 2) ++ (zeros 9 ++ S)
+        = ones (2 * 6 + 1) ++ (false :: false :: (ones (2 * 2 + 1) ++
+            (false :: false :: (descCascade 0 ++ (zeros 9 ++ S))))) := rfl
+    rw [show leadRec 0 = (6 * 6 + 3) + ((6 * 2 + 3) + 100) from by decide, hc, steps_add,
+      leadTransit 6 p W (ones (2 * 2 + 1) ++ (false :: false :: (descCascade 0 ++ (zeros 9 ++ S)))),
+      someBind, steps_add,
+      leadTransit 2 (p + (2 * ((6 : Nat) : Int) + 3)) (false :: false :: true :: (pow01 6 ++ W))
+        (descCascade 0 ++ (zeros 9 ++ S)), someBind]
+    have hT : (false :: false :: true :: (pow01 2 ++ (false :: false :: true :: (pow01 6 ++ W)))
+        : List Bool)
+        = false :: false :: true :: false ::
+            (true :: false :: true :: (false :: false :: true :: (pow01 6 ++ W))) := rfl
+    have hR : (false :: (descCascade 0 ++ (zeros 9 ++ S)) : List Bool)
+        = false :: (ones 1 ++ (zeros 9 ++ S)) := rfl
+    rw [hT, hR, leadTail (p + (2 * ((6 : Nat) : Int) + 3) + (2 * ((2 : Nat) : Int) + 3))
+        (true :: false :: true :: (false :: false :: true :: (pow01 6 ++ W))) S]
+    refine congrArg some ?_
+    have hl : (ones 12 ++ (true :: false :: true ::
+        (false :: false :: true :: (pow01 6 ++ W))) : List Bool)
+        = regenWord 4 ++ ascMarker 4 0 W := rfl
+    have hr : ((false : Bool) :: (ones 1 ++ (zeros 1 ++ S)) : List Bool)
+        = false :: (descCascade 0 ++ (zeros 1 ++ S)) := rfl
+    rw [hl, hr]
+    exact cfgPos (by push_cast; omega)
+  | succ j ih =>
+    intro p W S
+    obtain ⟨q, hq⟩ : ∃ q : Nat, 2 ^ (j + 4) = q + 2 := by
+      refine ⟨2 ^ (j + 4) - 2, ?_⟩
+      have h1 : (2 : Nat) ^ 1 ≤ 2 ^ (j + 4) := Nat.pow_le_pow_right (by decide) (by omega)
+      have : (2 : Nat) ^ 1 = 2 := by decide
+      omega
+    have h5 : (2 : Nat) ^ (j + 5) = 2 * q + 4 := by
+      have e : (2 : Nat) ^ (j + 5) = 2 ^ (j + 4) * 2 := by
+        rw [show j + 5 = (j + 4) + 1 from by omega, Nat.pow_succ]
+      omega
+    have h6 : (2 : Nat) ^ (j + 1 + 5) = 4 * q + 8 := by
+      have e : (2 : Nat) ^ (j + 1 + 5) = 2 ^ (j + 5) * 2 := by
+        rw [show j + 1 + 5 = (j + 5) + 1 from by omega, Nat.pow_succ]
+      omega
+    have hc : descCascade (j + 1 + 2) ++ (zeros 9 ++ S)
+        = ones (2 * q + 1) ++ (false :: false :: (descCascade (j + 2) ++ (zeros 9 ++ S))) := by
+      show (ones (2 ^ (j + 2 + 3) - 3) ++ (false :: false :: descCascade (j + 2)))
+          ++ (zeros 9 ++ S) = _
+      rw [show 2 ^ (j + 2 + 3) - 3 = 2 * q + 1 from by
+        rw [show j + 2 + 3 = j + 5 from by omega]; omega, List.append_assoc]
+      rfl
+    have hcost : leadRec (j + 1) = (6 * q + 3) + leadRec j := by
+      show leadRec j + 3 * 2 ^ (j + 5) - 9 = _
+      omega
+    rw [hcost, hc, steps_add,
+      leadTransit q p W (descCascade (j + 2) ++ (zeros 9 ++ S)), someBind,
+      ih (p + (2 * (q : Int) + 3)) (false :: false :: true :: (pow01 q ++ W)) S]
+    refine congrArg some ?_
+    have hm : ascMarker 4 j (false :: false :: true :: (pow01 q ++ W))
+        = ascMarker 4 (j + 1) W := by
+      rw [ascMarker_absorb j 4 W, show 4 + j = j + 4 from by omega,
+        show 2 ^ (j + 4) - 2 = q from by omega]
+    rw [hm, h5, h6]
+    exact cfgPos (by push_cast; omega)
+
+/-- **THE LEAD LAW `∀ k ≥ 6`, POSITION-GENERAL** — the level-`k` lead carries `regenIn k`
+to `regenIn 4` with the marker stack `ascMarker 4 (k−6)` over `regenIn k`'s own word,
+pad `2^{k−1}+1`, and `R` untouched.  `∀ p marker R`. -/
+theorem leadOut_all (k : Nat) (hk : 6 ≤ k) (p : Int) (marker R : List Bool) :
+    steps (leadSteps k) (regenIn k p (2 ^ (k - 1) + 9) marker R)
+      = some (regenIn 4 (p + 2 ^ (k - 1) - k + 4) (2 ^ (k - 1) + 1)
+          (ascMarker 4 (k - 6) (regenWord k ++ marker)) R) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have hz : zeros (2 ^ (n + 6 - 1) + 9) ++ R
+      = zeros 9 ++ (zeros (2 ^ (n + 6 - 1)) ++ R) := by
+    rw [show 2 ^ (n + 6 - 1) + 9 = 9 + 2 ^ (n + 6 - 1) from by omega, zeros_add,
+      List.append_assoc]
+  have hpad : zeros (2 ^ (n + 6 - 1) + 1) ++ R
+      = zeros 1 ++ (zeros (2 ^ (n + 6 - 1)) ++ R) := by
+    rw [show 2 ^ (n + 6 - 1) + 1 = 1 + 2 ^ (n + 6 - 1) from by omega, zeros_add,
+      List.append_assoc]
+  rw [regenIn_word, regenIn_word,
+    show leadSteps (n + 6) = leadRec n from by
+      show leadRec (n + 6 - 6) = _; rw [show n + 6 - 6 = n from by omega],
+    show n + 6 - 4 = n + 2 from by omega, hz,
+    genLead n p (regenWord (n + 6) ++ marker) (zeros (2 ^ (n + 6 - 1)) ++ R),
+    show n + 6 - 6 = n from by omega, hpad]
+  refine congrArg some ?_
+  refine cfgPos ?_
+  rw [show n + 6 - 1 = n + 5 from by omega]
+  push_cast
+  omega
+
+/-- **`LeadLaw k` FOR EVERY `k ≥ 6` — the `∀k` closure of problem B.** -/
+theorem leadLaw_all (k : Nat) (hk : 6 ≤ k) : LeadLaw k :=
+  ⟨0, fun marker R => leadOut_all k hk 0 marker R⟩
+
+/-- **CROSS-CHECK (anti-vacuity).**  The `∀k` law SPECIALISES to `leadOut_7`, which was
+proven independently by a 241-step chunked kernel `rfl`.  Two separately established
+objects agreeing on the nose. -/
+theorem leadOut_all_agrees_7 (marker R : List Bool) :
+    steps (leadSteps 7) (regenIn 7 0 (2 ^ 6 + 9) marker R)
+      = some (regenIn 4 61 (2 ^ 6 + 1) (ascMarker 4 1 (regenWord 7 ++ marker)) R) := by
+  have h := leadOut_all 7 (by decide) 0 marker R
+  rw [show ((0 : Int) + 2 ^ (7 - 1) - ((7 : Nat) : Int) + 4) = 61 from by decide] at h
+  exact h
+
+/-- **CROSS-CHECK (anti-vacuity).**  Same for `leadOut_6` (154-step chunked kernel `rfl`). -/
+theorem leadOut_all_agrees_6 (marker R : List Bool) :
+    steps (leadSteps 6) (regenIn 6 0 (2 ^ 5 + 9) marker R)
+      = some (regenIn 4 30 (2 ^ 5 + 1) (ascMarker 4 0 (regenWord 6 ++ marker)) R) := by
+  have h := leadOut_all 6 (by decide) 0 marker R
+  rw [show ((0 : Int) + 2 ^ (6 - 1) - ((6 : Nat) : Int) + 4) = 30 from by decide] at h
+  exact h
+
+-- AXIOM AUDIT — §5bh (the lead law `∀k`).  All `[propext, Quot.sound]`.
+#print axioms steps_shiftCfg
+#print axioms pow01_shift
+#print axioms leadTile
+#print axioms leadTransit
+#print axioms leadTail
+#print axioms ascMarker_absorb
+#print axioms genLead
+#print axioms leadOut_all
+#print axioms leadLaw_all
+#print axioms leadOut_all_agrees_7
+#print axioms leadOut_all_agrees_6
+
 end X2
