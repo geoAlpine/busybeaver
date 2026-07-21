@@ -37,7 +37,7 @@ exactly: discharge the 11 axioms of `lean/Completion.lean`.**
 | 3 | `NormalityPQ : Nat → Nat → Int → Prop` | **[OPEN] math — THE WALL** | the AEV Normality Conjecture 1.6 / Mahler 3/2 floor-mirror, per (p,q,seed); 13 instances across 3 places (×3/2@ℤ₂ ×9, ×4/3@ℤ₃ ×2, ×8/3@ℤ₃ ×2) |
 | 4 | `o7orbit : Nat → Nat` | data + **[OPEN]** math via `TwoPowerAvoidance` | thin-set/generalized-Collatz: o7's orbit never hits `2^k` |
 | 5 | `snOrbit : Nat → Nat` | data + **[OPEN]** math via `TwoPowerAvoidance` | same schema, Space Needle (different multipliers — NOT the same conjecture as o7) |
-| 6 | `o17_nonhalt : Prop` | **[OPEN] math** | gate-timing: no μ=5 gate ever branches to halting μ′=8; finite-state-ness REFUTED (Nerode 1,2,6,19,54,132) |
+| 6 | `o17_nonhalt : Prop` | **[OPEN] math** | gate-timing: no μ=5 gate ever branches to halting μ′=8; finite-state-ness `[OBSERVED]` non-finite (Nerode 1,2,6,19,54,132,298 — a ≥298-state lower bound is `[PROVEN]`, but a finite scan cannot refute finiteness; corrected 07-22) |
 | 7 | `holdouts1087_nonhalt : Prop` | **[ENGINEERING + OPEN]**, community-scale | the un-catalogued residual; NOT reducible to the named 17 (suite: 0/300 decided) |
 | 8 | `championSteps : Nat` | data | interface Nat (Kropitz-class ≈ 10↑↑15, no clean literal) |
 | 9 | `BB6 : Nat` | data | interface Nat |
