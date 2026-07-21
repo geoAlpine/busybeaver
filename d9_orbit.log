@@ -1,0 +1,16 @@
+  n=0 bits=4 t=0.0s
+  n=200000 bits=116997 t=2.3s
+  n=400000 bits=233989 t=8.5s
+  n=600000 bits=350982 t=19.0s
+  n=800000 bits=467974 t=33.5s
+  n=1000000 bits=584967 t=52.2s
+  n=1200000 bits=701959 t=74.2s
+  n=1400000 bits=818952 t=98.5s
+  n=1600000 bits=935944 t=125.5s
+  n=1800000 bits=1052937 t=159.4s
+  n=2000000 bits=1169929 t=201.1s
+  n=2200000 bits=1286922 t=249.1s
+  n=2400000 bits=1403914 t=297.0s
+identity checks=177 all_ok=True failures=0
+final: n=2500000 sumD=2499997 n+v2(c_n)-v2(c_0)=2499997
+induced steps J=1250979  mean D=1.998432  max D=22  time=323.5s

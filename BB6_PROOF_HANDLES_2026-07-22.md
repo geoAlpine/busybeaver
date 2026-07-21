@@ -108,7 +108,7 @@ analytic audience).
   larger J and larger k — a deviation would be the first internal anomaly in the corpus; continued
   compliance sharpens D2's constant.
 
-### D9. `[PROPOSED — untested, this document's only new idea]` Lacunary structure of the fatal cone
+### D9. ~~`[PROPOSED]` Lacunary structure of the fatal cone~~ — ❌ **CLOSED SAME DAY, PREMISE FALSE**
 The surviving adversary class is cap-legal E[K²]=∞ (`U0_EXCLUSION`): deep excursions can only be
 scheduled where the linearly-growing budget first permits — depth-K events are confined to indices
 ≳ K/log(p/q), and with the first-moment budget `ΣK ≤ N + O(1)` a divergent second moment forces the
@@ -117,6 +117,27 @@ have asked: restrict the D1/D2 character sums to the *deep-return time set* — 
 index sets, harmonic analysis has genuinely *unconditional* cancellation tools (Salem–Zygmund class).
 Sniff-test against the no-go fence: orbit-specific (reads the budget) ✓, excursion-level ✓,
 magnitude-reading (budget = archimedean size) ✓, a-priori (run-cap is proven) ✓, non-spectral ✓.
+> **❌ VERDICT 2026-07-22 (`D9_LACUNARY_PROBE_2026-07-22.md`): the premise is FALSE; D9 goes to the
+> trap list.** Three independent refutations. (1) **Arithmetic:** the first-moment budget caps
+> density(T_L) only harmonically at `2/L` — 600× looser than observed at L=13, and wrong in ORDER
+> for lacunarity (which needs O(log J) elements; observed |T₃| = 311 976). The budget contributes
+> nothing to the sparsity; the geometric tail does — and that is the (K)-side fact one wants to
+> prove. (2) **The implication runs BACKWARDS** (decisive, needs no orbit data): the budget-legal
+> `E[K²]=∞` adversary `P(D=d) ∝ d^{−2.478}` has T_L density `~L^{−1.478}`, up to **27× DENSER**
+> than geometric at L=12. A divergent second moment means deep returns are MORE frequent — the
+> surviving adversary is the LEAST lacunary budget-legal law, not the most. (3) **Empirical:** real
+> T_L is indistinguishable from iid-geometric surrogates (55 percentile tests, L=3…13, 4 outliers
+> vs 2.75 expected; dispersion ≈ 1.0 = Poisson). And restricted cancellation shows **zero** effect
+> (112 tests, mean z = 0.002) — worse, the FULL sums already cancel far beyond square root
+> (m=5: |S|/J = 6.8e−05) while restricted sums sit at the √ barrier, so restriction throws
+> cancellation away. Structural coup de grâce: Theorem E (D1) needs the FULL sum anyway.
+> This is D9's own stated risk (i) confirmed numerically — the time-set geometry holds no
+> information the budget sum didn't. **Two byproducts kept:** the budget identity in uniform form
+> `D_i := v₂(3c_i − 1)` at every c-step with a one-line telescoping proof, verified exactly at
+> 177/177 checkpoints to n = 2.5×10⁶; and the observed beyond-square-root cancellation of the full
+> low-modulus sums — which is the D1/Theorem-E quantity itself, with large margin, and belongs
+> with the D1/D2/D3 margins.
+
 Honest risks: (i) the adelic-budget no-go proved budget-counting is clustering-INDIFFERENT — this
 proposal must read the *time-set geometry*, not the budget sum, to differ; (ii) the excursion
 supermartingale no-go showed drift-indistinguishability — but that was for potentials of the depth
