@@ -74,11 +74,19 @@ internal, and requiring no new mathematics.
 
 Ordered by (verified) tractability:
 
-- **E1. Commit the o17 Nerode refutation. [ENGINEERING, smallest]** The Myhill–Nerode gate-state
-  analysis (index 1,2,6,19,54,132, no saturation; 0/112 scalar-residue exhaustion) was flagged
-  "verification suspended, uncommitted" in the 07-10 roadmap and has sat there since. Re-verify the
-  instrument (the 07-16 Track-B lesson: a broken lo/hi truncation survived one round of review),
-  then commit as a settled negative. It is a constraint any future o17 attack must respect.
+- **E1. o17 Nerode — ✅ DONE 2026-07-22 (`O17_NERODE_VERIFIED_2026-07-22.md`), and the premise
+  of this task was itself stale.** The roadmap flagged this work "verification suspended,
+  uncommitted"; in fact the document and both scripts were **committed 2026-07-10 in `e59df36`**.
+  What the re-verification delivered instead: a **from-scratch** gate oracle (the original uses a
+  fixed `bytearray` with *no* bounds check — a negative index would silently wrap) which **PASSED**
+  — all seven Lean `#eval` anchors, 0 mismatches on 780 configs, 0 of 390 861 calls hitting the cap.
+  The mathematics is SOUND; four bookkeeping defects fixed: the `## Reproduce` command was missing
+  `sufdig=2` (the default gives different numbers); "0/112" was the wrong count (really 882 triples,
+  now extended to 5 610, still 0 deciding); **§3's "refutes finiteness" was an overclaim, retracted
+  in place**; and the "ratios ≈2.5–3 ⇒ no saturation" reading is a **battery artifact** (widening
+  the battery lifts `54,132` to `81,260`), so future saturation claims must vary the battery.
+  **Net label change:** "any DFA computing `b` has ≥298 states" is now `[PROVEN]` as a finite
+  statement; **"no finite automaton exists" stays `[OBSERVED]`** and cannot be upgraded. o17 `[OPEN]`.
 
 - **E2. `champion_lower` → theorem. [ENGINEERING]** Verify the champion
   (`1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE`) halts, locally and rigorously. The obstacle is

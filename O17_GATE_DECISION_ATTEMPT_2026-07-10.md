@@ -1,5 +1,40 @@
 # o17 gate-decision attempt — the symbolic-mod tower extension, and the finite-state-vs-value crux, RESOLVED by test (2026-07-10)
 
+
+> ## ⚠ RE-VERIFICATION 2026-07-22 — analysis SOUND, four bookkeeping defects fixed
+>
+> Independently re-verified (`O17_NERODE_VERIFIED_2026-07-22.md`) with a **from-scratch** gate
+> oracle (dict tape over unbounded ℤ — note the original's fixed `bytearray` has *no* bounds check,
+> so a negative index would silently wrap; exact frontier tracking; transition table transcribed
+> from the machine-checked `lean/O17.lean`). **Instrument PASSED:** matches all seven Lean `#eval`
+> anchors, **0 mismatches on 780 configs**, and **0 of 390 861** oracle calls hit the 20M cap — the
+> 2026-07-16 truncation failure mode is NOT present here. The mathematics stands; o17 stays `[OPEN]`.
+>
+> **D1 — the `## Reproduce` command is wrong.** The recorded sequences need **`sufdig=2`**, not the
+> script default 3 (which yields `1,2,6,19,60,153`). Correct: `o17d_finite_state.py 5 3 3 2` and
+> `4 4 3 2` — these reproduce `1,2,6,19,54,132` and `1,2,7,25,77` exactly. The numbers are genuine.
+> **D2 — "0/112" matches no quantity** in the sweep; the real count is 882 `(base,order,M)` triples
+> (14 `(base,order)` settings). Extended to base ≤12 × M ≤256 = **5 610 triples, still 0 deciding**.
+> **D3 — §3's "a growing lower bound refutes finiteness" is INDEFENSIBLE** and contradicts this
+> document's own "Honest scope" paragraph. A 7-point scan cannot exclude a DFA of ≥299 states.
+> The commit message for `e59df36` ("finite-state-ness REFUTED") carries the same overclaim.
+> **CORRECTED LABELS:** "any DFA over `{0,1,2,3}` computing `b` has **≥298 states**" is `[PROVEN]`
+> as a finite statement (distinct signatures on a finite battery lower-bound the reachable states,
+> and the sequence extends to a 7th term **298**). **"No finite automaton exists" is `[OBSERVED]`
+> and cannot be upgraded** — per repo discipline a finite computation cannot certify an infinite
+> closure; a refutation needs unbounded growth, i.e. an argument about `F`, not a table.
+> **D4 — a caution this document misses.** At a *fixed* battery the measured count is capped by the
+> battery's resolving power and **must eventually flatten regardless of the truth**. The declining
+> ratios (3.17→2.84→2.44→2.26) read here as "≈2.5–3" are a **battery artifact**: widening the
+> battery to 156 lifts the same lengths from `54,132` to `81,260`. Future saturation claims must
+> vary the battery, not just the prefix length.
+>
+> Also: the halt fraction 605/780 = 77.6 % reproduces exactly, but it is **ensemble-specific**, not
+> a machine constant — on the other ensemble this analysis itself uses (len ≤5, dig 0..3) it is
+> **42.8 %**. And the roadmap's "検証保留 / uncommitted" flag on this work was **stale**: the
+> document and both scripts were committed 2026-07-10 in `e59df36`.
+
+
 *Task (ATTACK_PLAN §B3): decide o17 by extending its exact gate-to-gate map symbolically
 far beyond direct simulation (10^60+), testing whether the halting-relevant safety residue
 is eventually periodic or admits an invariant. Its wall was labelled "(K)-shaped timing"
@@ -80,7 +115,7 @@ Measured class count vs prefix length:
 
 **The Nerode index GROWS monotonically (ratio ≈ 2.5–3), no saturation.** The observed count
 is a *lower bound* on the true automaton size (a finite suffix battery can only under-count),
-so a growing lower bound **refutes finiteness**. ⟹ **b is NOT computed by any finite
+so a growing lower bound **refutes finiteness**.   ⚠ **[OVERCLAIM — RETRACTED 2026-07-22, see the banner at the top: a finite scan gives a finite lower bound (≥298 states) and CANNOT refute finiteness; this sentence is wrong.]** ⟹ **b is NOT computed by any finite
 automaton over the digit vector — the gate-state is genuinely unbounded.**
 
 This subsumes and strengthens every prior refutation (no window ≤5, no mod-q residue word):

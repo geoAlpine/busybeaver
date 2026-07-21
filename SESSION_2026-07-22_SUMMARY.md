@@ -123,9 +123,33 @@ quoting]`. **No theorem is affected** (`championSteps` is opaque, `champion_lowe
 `lake build Completion` re-verified green after the docstring edit. Not silently "corrected" —
 the repo's own discipline is to surface a contradiction, not to pick a side without evidence.
 
-## 9. E1 (o17 Nerode re-verify) — still running at write time
+## 9. E1 — o17 Nerode re-verify ✅ (`O17_NERODE_VERIFIED_2026-07-22.md`)
 
-Left to report separately.
+**The task's own premise was stale:** the roadmap flagged this work "verification suspended /
+uncommitted", but it was committed 2026-07-10 in `e59df36`. The re-verification was still worth it.
+
+**Instrument PASSED** — rebuilt from scratch (dict tape over unbounded ℤ; the original's fixed
+`bytearray` has *no* bounds check, so a negative index would silently wrap; transition table taken
+from the machine-checked `lean/O17.lean`): all seven Lean `#eval` anchors matched, **0 mismatches on
+780 configs**, **0 of 390 861** oracle calls hit the 20M cap. The 2026-07-16 truncation failure mode
+is not present. **The mathematics is sound; o17 stays `[OPEN]`.**
+
+Four bookkeeping defects, all fixed in place:
+- **D1** the `## Reproduce` command omits `sufdig=2`; the default yields `1,2,6,19,60,153` instead
+  of the recorded `1,2,6,19,54,132`. Verified: `o17d_finite_state.py 5 3 3 2` reproduces it exactly.
+- **D2** "0/112" matches nothing in the sweep — really 882 `(base,order,M)` triples; extended to
+  **5 610**, still **0 deciding settings**.
+- **D3** §3's *"a growing lower bound refutes finiteness"* is indefensible (the `e59df36` commit
+  message carries the same "REFUTED"). **Retracted in place.**
+- **D4** the "ratios ≈2.5–3 ⇒ no saturation" reading is a **battery artifact** — at a fixed battery
+  the count must eventually flatten regardless of the truth; widening to 156 lifts `54,132` to
+  `81,260`.
+
+**Label outcome:** "any DFA over `{0,1,2,3}` computing `b` has **≥298 states**" is now `[PROVEN]` as
+a finite statement (and the sequence extends to a 7th term, 298). **"No finite automaton exists"
+stays `[OBSERVED]`** — a finite computation cannot certify an infinite closure. The halt fraction
+77.6 % reproduces exactly but is **ensemble-specific** (42.8 % on the other ensemble used in the
+same analysis), not a machine constant.
 
 ---
 
