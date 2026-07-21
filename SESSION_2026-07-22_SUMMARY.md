@@ -201,3 +201,25 @@ Items 1–2 of the "recommended next" list below were then carried out in this s
    `regenLaw_closed`. If the gap episodes admit a `∀k` transport, **T7 closes the way `RegenLaw ∀k`
    did**.
 4. Owner decision still pending and untouched: **X1–X3 / D7** external hand-off.
+
+## 11. T7 deep-dive — the two rails are banked ∀-theorems; boundary measured to g=4 ✅
+
+Attacking the remaining T7 work led to the session's sharpest structural result.
+
+- **`gap(k) = 4^k − 3·2^k + 7` is `topGrindSteps(k)`** (`X2.lean:5291`) — the step count of
+  **`braid_topgrind`, proven `∀ N Lc p marker casc`** (`[propext, Quot.sound]`). It IS §3′'s
+  predicted `Θ(4^k)` top-block doubling, filed under the wrong obligation. So the doubling-phase
+  ladder is `regenIn k ─RegenLaw(exitSteps k)→ cascadeReg k ─braid_topgrind(topGrindSteps k)→
+  regenIn(k+1)`, and **both rails are already ∀-theorems** (`regenLaw_closed` + `braid_topgrind`).
+  Config-level verified at g=2 k=7: the gap OUT is literally `regenIn 8` with a freshly-built
+  `1^{2^8−3}` top block. **T7's bulk is an assembly of banked transports — the RegenLaw-closure
+  pattern repeating.** (`T7_LADDER_STRUCTURE_2026-07-22.md`)
+- **g=4 measurement (`T7_G4_2026-07-22.md`, my g=3 exit cross-check confirming its method):** the
+  interior law is exact across g=2,3,4 (every `exitSteps k`, every gap `= topGrindSteps k`, k≤13).
+  My earlier `+80`-on-`gap(11)` claim was **corrected**: the `+80` is in **g=3 rung-11's EXIT** and
+  **does not recur at g=4** — localized, unexplained, not a law correction. Coverage stable ~1/3.
+  Corrections to the record: `K(M1(g)) = g+8`, leading gap `0^21` (not `0^22`), head parity-split.
+- **Residual for T7:** (1) the `braid_topgrind` OUT → `regenIn(k+1)` seam as a `List` identity
+  (unwritten); (2) the assembly induction `∏_k [braid_topgrind_k ∘ regenLaw_k]`; (3) the entry
+  head / top-rung-exit / the g=3 `+80` (three small boundary objects); (4) the `∀g` step. **No new
+  transport is needed.**
