@@ -1,6 +1,16 @@
 # Busy Beaver — status (2026-06-21)
 
-> **CURRENT FRONTIER (2026-07-07): the BB(6) cryptid template/ledger campaign — see
+> **⚠ THIS FILE IS HISTORICAL (3-state monster stage, 2026-06-21). For the current frontier read
+> `ROADMAP_2026-07-19.md` — despite its name it is the LIVE master ledger, updated through
+> 2026-07-21. Start at its §7 "One-line status".**
+>
+> **Headline (2026-07-21):** in the `x2` track, `RegenLaw ∀k` — the crux, open since the project
+> began — is now a Lean theorem (`regenLaw_closed`, `[propext, Quot.sound]`, unchanged definition).
+> `x2` itself remains **`[OPEN]`**: two obligations stand, T7 (`h_doub ∀g`, the Θ(2^{2K})
+> doubling-phase assembly) and T9/Obligation H. **No machine is decided.** BB(6) is unaffected and
+> still behind the (K) wall.
+
+> **Superseded pointer (2026-07-07): the BB(6) cryptid template/ledger campaign — see
 > `CAMPAIGN_2026-07-06_TEMPLATE_LEDGER.md`** (master index: certified templates for o4/o3/o15/o18, all six
 > protections precisely formulated, the mirror-ladder unification, o18 one rewrite system from a candidate
 > decision). Chronology: `SESSION_2026-07-06_INDEX.md`. The (K)-kernel program: `BB6_FRAMEWORK_PACKAGE.md`.
