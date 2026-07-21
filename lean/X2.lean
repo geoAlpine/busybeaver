@@ -11359,4 +11359,346 @@ theorem leadOut_all_agrees_6 (marker R : List Bool) :
 #print axioms leadOut_all_agrees_7
 #print axioms leadOut_all_agrees_6
 
+
+/-! ## §5bi (2026-07-21) THE ASSEMBLY — lead ∘ interior ∘ floor ∘ trail **IS** `RegenLaw k`,
+and the closure `TrailLaw ∀k ⟹ RegenLaw ∀k`.
+
+**WHAT THIS SECTION ESTABLISHES.**  The three banked `∀k` legs — `leadOut_all` (§5bh),
+`interiorFold_lower_expl` (§5ar), `trailFloorRegen` (§5av) — plus `TrailLaw k` COMPOSE into
+`RegenLaw k`, `∀ k ≥ 7`, on the step budget `framingArith` (§5at) allots.  Combined with
+`regenLaw_4/5/6` and `carryExit_strong_frame_ge`, this gives `regenLaw_all_of_trailLaw_all`:
+**`(∀ k ≥ 7, TrailLaw k) → ∀ k ≥ 4, RegenLaw k`**.  `RegenLaw ∀k` is therefore no longer an
+independent object — it is EXACTLY `TrailLaw ∀k`, which is `trailLaw_6`/`trailLaw_7`'s `∀k`
+generalisation and the only residual.
+
+**THE THREE SEAMS, ALL CLOSED EXACTLY (no slack anywhere — the strongest evidence the
+factorisation is the real one).**
+
+  (1) MARKER.  `interiorFold`'s OUT marker `foldMarker (k−7) m` IS `TrailLaw`'s IN marker
+      `depStack k m`, `∀ k ≥ 7` (`foldMarker_eq_depStack`).  §5aw's docstring had only
+      claimed the two agree in WIDTH; they are in fact the SAME LIST.  The proof is
+      `depStackAux_snoc` (the deposit stack's innermost-rung peel) against `foldMarker`'s
+      push-inward recursion, with `ones_append_true` absorbing the `2^{j+7}−4 ⇝ 2^{j+7}−3`
+      seam cell at every rung.
+
+  (2) PAD.  The lead delivers `2^{k−1}+1` blanks; the interior fold consumes `2^3+9` as its
+      own pad and `2^{k−1}−48` inside `interiorPadTail` (`interiorPadTail_zeros`,
+      `ascR_zeros`), leaving EXACTLY 32 spare — and those 32 are then consumed EXACTLY, 16 by
+      `trailFloorRegen`'s `regenIn_pad` normalisation and 16 by `TrailLaw`'s FORCED `0^16`
+      pad (which `trailLaw_pad_forced` independently derived from tape lengths alone).
+      `32 = 16 + 16` with nothing left over.  `leadOut_is_interiorIn` states the seam.
+      NOTE the `∀R` uniformity is NOT broken here: `interiorPadTail` is purely blanks, so the
+      spare is absorbed by threading the fold's tail as `0^32 ++ R` — no blank-extendability
+      assumption on `R` is needed, and `R` comes back out untouched.
+
+  (3) ANCHOR.  This was the one real gap, and it is closed WITHOUT computing the interior's
+      anchor.  `interiorFold`'s `q'` is existential (§5ap), so the composite only yields
+      `∃P, … = some (cascadeReg k 1 P marker R)` — too weak for `RegenLaw`, whose `p` must be
+      uniform in `marker`/`R`.  `regenOut_anchor_forced` removes the need: `steps_left_mono`
+      and `steps_right_mono` (§5bf″) squeeze `P` from BOTH sides, and at the FORCED pad
+      `2^{k−1}+9` the two bounds MEET at exactly `−2^k`.  So ANY transport at all from
+      `regenIn k` to `cascadeReg k 1` on the same marker/tail must displace the anchor by
+      `−2^k` — geometry alone pins it, and the existential collapses.  This is the same weapon
+      `trailLaw_pad_forced` used, turned on the outer frame.
+
+**ANTI-VACUITY.**  `assembly_agrees_7` runs the assembly at `k = 7` from `regenLaw_4/5` and
+`trailLaw_7` ONLY (never `regenLaw_7`) and lands on `RegenLaw 7` — the same object §5an proved
+by the completely independent `regen7_factored` route.  `anchor_forced_nonvacuous` exhibits a
+real transport satisfying the squeeze's hypothesis.  `seam_pad_control_31` and
+`seam_marker_control_offby1` are MUST-FAIL controls: 31 spare blanks do NOT bridge the pad seam
+and `foldMarker 0 ≠ depStack 8`, so the positive seam groundings are measurements, not
+tautologies.  No `Prop` in this file was modified to make anything land.
+
+**WHAT REMAINS OPEN.**  `TrailLaw k` for `k ≥ 8` (PROVED at `k = 6, 7`); `regenLaw_8_of_trailLaw_8`
+grounds `k = 8` the moment `trailLaw_8` lands.  No `sorry`, no `axiom`, no `native_decide`, no
+Mathlib.  `[propext, Quot.sound]`. -/
+
+/-! ## PART 0 — geometry of `regenIn` (for the anchor squeeze). -/
+
+theorem regenIn_pos' (k : Nat) (p : Int) (z : Nat) (marker R : List Bool) :
+    (regenIn k p z marker R).pos = p := rfl
+
+theorem regenIn_left_length (k : Nat) (hk : 4 ≤ k) (p : Int) (z : Nat) (marker R : List Bool) :
+    (regenIn k p z marker R).tape.left.length + 2 = 2 ^ (k + 1) + marker.length := by
+  obtain ⟨e, rfl⟩ : ∃ e, k = e + 4 := ⟨k - 4, by omega⟩
+  show (ones (2 ^ (e + 4) - 3) ++ (false :: true :: false :: false :: true ::
+      (pow01 (2 ^ (e + 4 - 1) - 2) ++ marker))).length + 2 = _
+  rw [show e + 4 - 1 = e + 3 from by omega, List.length_append, ones_length]
+  simp only [List.length_cons, List.length_append, pow01_length]
+  have h3 : (2 : Nat) ^ (e + 3) = 2 ^ e * 8 := by rw [Nat.pow_add]
+  have h4 : (2 : Nat) ^ (e + 4) = 2 ^ e * 16 := by rw [Nat.pow_add]
+  have h5 : (2 : Nat) ^ (e + 4 + 1) = 2 ^ e * 32 := by
+    rw [show e + 4 + 1 = e + 5 from by omega, Nat.pow_add]
+  have hx : 1 ≤ (2 : Nat) ^ e := Nat.one_le_two_pow
+  omega
+
+theorem regenIn_right_length (k : Nat) (hk : 4 ≤ k) (p : Int) (z : Nat) (marker R : List Bool) :
+    (regenIn k p z marker R).tape.right.length + k + 2 = 2 ^ (k - 1) + z + R.length := by
+  obtain ⟨e, rfl⟩ : ∃ e, k = e + 4 := ⟨k - 4, by omega⟩
+  have hd := descCascade_length e
+  show (false :: (descCascade (e + 4 - 4) ++ (zeros z ++ R))).length + (e + 4) + 2 = _
+  rw [show e + 4 - 4 = e from by omega, show e + 4 - 1 = e + 3 from by omega]
+  simp only [List.length_cons, List.length_append, zeros_length]
+  omega
+
+/-- **THE ANCHOR IS FORCED.**  Any transport at all from `regenIn k` (forced pad) to
+`cascadeReg k 1` on the SAME marker/tail must displace the anchor by exactly `−2^k`. -/
+theorem regenOut_anchor_forced (k : Nat) (hk : 4 ≤ k) (n : Nat) (p P : Int)
+    (marker R : List Bool)
+    (h : steps n (regenIn k p (2 ^ (k - 1) + 9) marker R)
+      = some (cascadeReg k 1 P marker R)) :
+    P = p - 2 ^ k := by
+  have hL := steps_left_mono n _ _ h
+  have hR := steps_right_mono n _ _ h
+  rw [regenIn_pos', cascadeReg_pos] at hL hR
+  have hl1 := regenIn_left_length k hk p (2 ^ (k - 1) + 9) marker R
+  have hl2 := cascadeReg_left_length k 1 P marker R
+  have hr1 := regenIn_right_length k hk p (2 ^ (k - 1) + 9) marker R
+  have hr2 := cascadeReg_right_length k 1 hk P marker R
+  -- name the four lengths
+  obtain ⟨LI, hLI⟩ : ∃ t, (regenIn k p (2 ^ (k - 1) + 9) marker R).tape.left.length = t := ⟨_, rfl⟩
+  obtain ⟨RI, hRI⟩ : ∃ t, (regenIn k p (2 ^ (k - 1) + 9) marker R).tape.right.length = t := ⟨_, rfl⟩
+  obtain ⟨LO, hLO⟩ : ∃ t, (cascadeReg k 1 P marker R).tape.left.length = t := ⟨_, rfl⟩
+  obtain ⟨RO, hRO⟩ : ∃ t, (cascadeReg k 1 P marker R).tape.right.length = t := ⟨_, rfl⟩
+  rw [hLI] at hL hl1
+  rw [hLO] at hL hl2
+  rw [hRI] at hR hr1
+  rw [hRO] at hR hr2
+  -- powers, as one atom A = 2^(k-1)
+  have hk1 : (2 : Nat) ^ k = 2 * 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 1 := ⟨k - 1, by omega⟩
+    rw [show e + 1 - 1 = e from by omega, Nat.pow_succ]; omega
+  have hk2 : (2 : Nat) ^ (k + 1) = 2 * 2 ^ k := by rw [Nat.pow_succ]; omega
+  have hge : (4 : Nat) ≤ 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 3 := ⟨k - 3, by omega⟩
+    rw [show e + 3 - 1 = e + 2 from by omega]; exact four_le_pow e
+  have hki : ((2 : Int)) ^ k = ((2 ^ k : Nat) : Int) := by push_cast; rfl
+  rw [hki]
+  push_cast at hL hR ⊢
+  omega
+
+/-! ## PART 1 — SEAM (marker): `foldMarker (k−7) = depStack k`. -/
+
+theorem depStackAux_snoc : ∀ (n a : Nat) (m : List Bool),
+    depStackAux (n + 1) a m
+      = depStackAux n a (ones (2 ^ (a + n + 1) - 3) ++ (false :: true :: m)) := by
+  intro n
+  induction n with
+  | zero => intro a m; rfl
+  | succ n ih =>
+    intro a m
+    show ones (2 ^ (a + 1) - 3) ++ (false :: true :: depStackAux (n + 1) (a + 1) m) = _
+    rw [ih (a + 1) m, show a + 1 + n + 1 = a + (n + 1) + 1 from by omega]
+    rfl
+
+theorem foldMarker_eq_depStackAux : ∀ (j : Nat) (m : List Bool),
+    foldMarker j m = depStackAux (j + 1) 5 m := by
+  intro j
+  induction j with
+  | zero =>
+    intro m
+    show foldDepTail 0 ++ (ones (4 * (2 ^ 4 - 2) + 4) ++ (pow10 1 ++ (true :: m))) = _
+    show ones 60 ++ (true :: (false :: true :: m)) = _
+    rw [ones_append_true]
+    rfl
+  | succ j ih =>
+    intro m
+    have hnat : 4 * (2 ^ (j + 5) - 2) + 4 + 1 = 2 ^ (j + 7) - 3 := by
+      have hx : (2 : Nat) ^ (j + 7) = 2 ^ j * 128 := by rw [Nat.pow_add]
+      have hy : (2 : Nat) ^ (j + 5) = 2 ^ j * 32 := by rw [Nat.pow_add]
+      have h1 : 1 ≤ (2 : Nat) ^ j := Nat.one_le_two_pow
+      omega
+    show foldMarker j (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (pow10 1 ++ (true :: m))) = _
+    rw [ih, depStackAux_snoc (j + 1) 5 m, show 5 + (j + 1) + 1 = j + 7 from by omega]
+    show depStackAux (j + 1) 5
+        (ones (4 * (2 ^ (j + 5) - 2) + 4) ++ (true :: (false :: true :: m))) = _
+    rw [ones_append_true, hnat]
+
+/-- **SEAM (marker), `∀k ≥ 7`** — the interior fold's OUT marker IS `TrailLaw`'s IN marker. -/
+theorem foldMarker_eq_depStack (k : Nat) (hk : 7 ≤ k) (m : List Bool) :
+    foldMarker (k - 7) m = depStack k m := by
+  show _ = depStackAux (k - 6) 5 m
+  rw [foldMarker_eq_depStackAux, show (k - 7) + 1 = k - 6 from by omega]
+
+/-! ## PART 2 — SEAM (pad): the lead's OUT pad IS the interior's IN pad, 32 to spare. -/
+
+theorem ascR_zeros : ∀ (n b : Nat) (R : List Bool),
+    ascR b n R = zeros (2 ^ (b + n) - 2 ^ b) ++ R := by
+  intro n
+  induction n with
+  | zero => intro b R; rw [show b + 0 = b from by omega, Nat.sub_self]; rfl
+  | succ n ih =>
+    intro b R
+    show zeros (2 ^ b) ++ ascR (b + 1) n R = _
+    rw [ih (b + 1) R, ← List.append_assoc, ← zeros_add]
+    have h1 : (2 : Nat) ^ (b + 1) = 2 * 2 ^ b := by rw [Nat.pow_succ]; omega
+    have h3 : (2 : Nat) ^ (b + 1) ≤ 2 ^ (b + 1 + n) :=
+      Nat.pow_le_pow_right (by decide) (by omega)
+    rw [show 2 ^ b + (2 ^ (b + 1 + n) - 2 ^ (b + 1)) = 2 ^ (b + (n + 1)) - 2 ^ b from by
+      rw [show b + (n + 1) = b + 1 + n from by omega]; omega]
+
+theorem interiorPadTail_zeros : ∀ (n : Nat) (R : List Bool),
+    interiorPadTail (n + 1) R = zeros (2 ^ (n + 6) - 48) ++ R := by
+  intro n
+  induction n with
+  | zero => intro R; show ascR 4 1 R = _; rw [ascR_zeros]
+  | succ n ih =>
+    intro R
+    show ascR 4 (n + 2) (zeros 16 ++ interiorPadTail (n + 1) R) = _
+    rw [ih R, ascR_zeros, ← List.append_assoc, ← List.append_assoc, ← zeros_add, ← zeros_add]
+    have hx : (2 : Nat) ^ (n + 6) = 2 ^ n * 64 := by rw [Nat.pow_add]
+    have hz : (2 : Nat) ^ (4 + (n + 2)) = 2 ^ n * 64 := by
+      rw [show 4 + (n + 2) = n + 6 from by omega, Nat.pow_add]
+    have h1 : 1 ≤ (2 : Nat) ^ n := Nat.one_le_two_pow
+    have harith : 2 ^ (4 + (n + 2)) - 2 ^ 4 + 16 + (2 ^ (n + 6) - 48)
+        = 2 ^ (n + 1 + 6) - 48 := by
+      have hy : (2 : Nat) ^ (n + 1 + 6) = 2 ^ n * 128 := by
+        rw [show n + 1 + 6 = n + 7 from by omega, Nat.pow_add]
+      omega
+    rw [harith]
+
+/-- **SEAM (pad), `∀k ≥ 7`** — the lead's OUT config IS the interior fold's IN config.
+The lead delivers `2^{k−1}+1` blanks; the fold consumes `2^3+9` as its own pad and
+`2^{k−1}−48` inside `interiorPadTail`, leaving EXACTLY 32 spare. -/
+theorem leadOut_is_interiorIn (k : Nat) (hk : 7 ≤ k) (q : Int) (M R : List Bool) :
+    regenIn 4 q (2 ^ (k - 1) + 1) M R
+      = regenIn 4 q (2 ^ (4 - 1) + 9) M (interiorPadTail (k - 6) (zeros 32 ++ R)) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 7 := ⟨k - 7, by omega⟩
+  rw [show n + 7 - 6 = n + 1 from by omega, interiorPadTail_zeros n (zeros 32 ++ R),
+      ← List.append_assoc, ← zeros_add, regenIn_pad]
+  have hx : (2 : Nat) ^ (n + 6) = 2 ^ n * 64 := by rw [Nat.pow_add]
+  have h1 : 1 ≤ (2 : Nat) ^ n := Nat.one_le_two_pow
+  rw [show 2 ^ (4 - 1) + 9 + (2 ^ (n + 6) - 48 + 32) = 2 ^ (n + 7 - 1) + 1 from by
+    rw [show n + 7 - 1 = n + 6 from by omega]; omega]
+
+/-! ## PART 3 — THE ASSEMBLY. -/
+
+/-- **THE ASSEMBLY, `∀k ≥ 7`** — lead ∘ interior fold ∘ floor REGEN(4) ∘ trailing word
+`= RegenLaw k`, from the strictly-lower laws and `TrailLaw k`. -/
+theorem regenLaw_of_trailLaw (k : Nat) (hk : 7 ≤ k)
+    (hlow : ∀ m, 4 ≤ m → m ≤ k - 2 → RegenLaw m)
+    (htrail : TrailLaw k) : RegenLaw k := by
+  refine ⟨0, fun marker R => ?_⟩
+  have hcomp : ∃ P : Int, steps (exitSteps k) (regenIn k 0 (2 ^ (k - 1) + 9) marker R)
+      = some (cascadeReg k 1 P marker R) := by
+    obtain ⟨q', hfold⟩ := interiorFold_lower_expl (k - 6) (by omega)
+        (fun m hm hmle => hlow m hm (by omega))
+        ((0 : Int) + 2 ^ (k - 1) - (k : Int) + 4) (regenWord k ++ marker) (zeros 32 ++ R)
+    rw [show (k - 6) - 1 = k - 7 from by omega, foldMarker_eq_depStack k hk] at hfold
+    refine ⟨(q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44 - 2 ^ k, ?_⟩
+    have ht := htrail ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) marker R
+    rw [show ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) + 2 ^ k - (k : Int) - 44
+        = q' - 2 ^ 4 from by omega] at ht
+    -- lead, then the pad/marker seams, then the fold
+    rw [framingArith k hk, steps_add, steps_add, steps_add,
+        leadOut_all k (by omega) 0 marker R, someBind,
+        leadOut_is_interiorIn k hk _ _ R, hfold, someBind]
+    -- NOW the interior's IN tail is consumed; split the 32 spare blanks 16 + 16
+    rw [show (zeros 32 ++ R : List Bool) = zeros 16 ++ (zeros 16 ++ R) from by
+          rw [← List.append_assoc, ← zeros_add],
+        trailFloorRegen q' (depStack k (regenWord k ++ marker)) (zeros 16 ++ R), someBind]
+    exact ht
+  obtain ⟨P, hP⟩ := hcomp
+  rw [hP, regenOut_anchor_forced k (by omega) (exitSteps k) 0 P marker R hP]
+
+/-! ## PART 4 — GROUNDINGS AND CONTROLS. -/
+
+/-- **ANTI-VACUITY (the strongest available).**  The assembly, fed only `regenLaw_4/5` and the
+independently-proven `trailLaw_7`, REPRODUCES `RegenLaw 7` — which §5an proved by a completely
+different route (`regen7_factored`).  Two independent derivations of the same object. -/
+theorem assembly_agrees_7 : RegenLaw 7 :=
+  regenLaw_of_trailLaw 7 (by decide)
+    (fun m h4 h5 => by
+      have hm : m = 4 ∨ m = 5 := by omega
+      cases hm with
+      | inl h => subst h; exact regenLaw_4
+      | inr h => subst h; exact regenLaw_5)
+    trailLaw_7
+
+/-- **TARGET 2 — `RegenLaw 8` from `TrailLaw 8` alone.**  `k = 8` was previously UNGROUNDED.
+The lower laws `RegenLaw 4/5/6` are all proven, so the ONLY residual input is `TrailLaw 8`. -/
+theorem regenLaw_8_of_trailLaw_8 (htrail : TrailLaw 8) : RegenLaw 8 :=
+  regenLaw_of_trailLaw 8 (by decide)
+    (fun m h4 h6 => by
+      have hm : m = 4 ∨ m = 5 ∨ m = 6 := by omega
+      cases hm with
+      | inl h => subst h; exact regenLaw_4
+      | inr h =>
+        cases h with
+        | inl h => subst h; exact regenLaw_5
+        | inr h => subst h; exact regenLaw_6)
+    htrail
+
+/-- **THE CLOSURE** — `TrailLaw ∀k ⟹ RegenLaw ∀k`.  The strong induction over
+`carryExit_strong_frame_ge`: levels `4,5,6` are the proven bases, and every `k ≥ 7` is the
+assembly fed by the strictly-lower laws the strong IH supplies (`m ≤ k−2 < k`). -/
+theorem regenLaw_all_of_trailLaw_all (htrail : ∀ k, 7 ≤ k → TrailLaw k) :
+    ∀ k, 4 ≤ k → RegenLaw k := by
+  refine carryExit_strong_frame_ge (P := RegenLaw) ?_
+  intro n hn ih
+  have hcases : n = 4 ∨ n = 5 ∨ n = 6 ∨ 7 ≤ n := by omega
+  cases hcases with
+  | inl h => subst h; exact regenLaw_4
+  | inr h =>
+    cases h with
+    | inl h => subst h; exact regenLaw_5
+    | inr h =>
+      cases h with
+      | inl h => subst h; exact regenLaw_6
+      | inr h =>
+        exact regenLaw_of_trailLaw n h (fun m hm hmle => ih m hm (by omega)) (htrail n h)
+
+/-- CONTROL (non-vacuity of the anchor squeeze) — `regenOut_anchor_forced`'s hypothesis IS
+satisfiable: the independently-proven `RegenLaw 7` transport realises it, and its anchor is
+the `−2^k` the squeeze forces.  So the squeeze constrains real runs, not an empty family. -/
+theorem anchor_forced_nonvacuous (marker R : List Bool) :
+    ∃ P : Int, steps (exitSteps 7) (regenIn 7 0 (2 ^ (7 - 1) + 9) marker R)
+      = some (cascadeReg 7 1 P marker R) ∧ P = 0 - 2 ^ 7 :=
+  ⟨0 - 2 ^ 7, regenLaw_pos regenLaw_7 0 marker R, rfl⟩
+
+/-- CONTROL (POSITIVE) — the pad seam is EXACT at `k=7`: `2^6+1 = 17 + 16 + 32`. -/
+theorem seam_pad_ground_7 :
+    zeros (2 ^ (7 - 1) + 1) ++ ([] : List Bool)
+      = zeros (2 ^ (4 - 1) + 9) ++ interiorPadTail (7 - 6) (zeros 32 ++ ([] : List Bool)) := by
+  decide
+
+/-- CONTROL (**MUST FAIL** — and does): 31 spare blanks do NOT bridge the pad seam.  This is
+what makes `seam_pad_ground_7` a measurement rather than a tautology. -/
+theorem seam_pad_control_31 :
+    zeros (2 ^ (7 - 1) + 1) ++ ([] : List Bool)
+      ≠ zeros (2 ^ (4 - 1) + 9) ++ interiorPadTail (7 - 6) (zeros 31 ++ ([] : List Bool)) := by
+  decide
+
+/-- CONTROL (POSITIVE) — the marker seam at `k=7`. -/
+theorem seam_marker_ground_7 : foldMarker (7 - 7) ([] : List Bool) = depStack 7 [] := by decide
+
+set_option maxRecDepth 100000 in
+/-- CONTROL (POSITIVE) — the marker seam at `k=8` (the first TWO-rung case). -/
+theorem seam_marker_ground_8 : foldMarker (8 - 7) ([] : List Bool) = depStack 8 [] := by decide
+
+/-- CONTROL (**MUST FAIL** — and does): the marker seam is INDEX-EXACT.  `foldMarker 0` is the
+ONE-rung nest; it is not `depStack 8`'s two-rung nest. -/
+theorem seam_marker_control_offby1 : foldMarker 0 ([] : List Bool) ≠ depStack 8 [] := by decide
+
+-- AXIOM AUDIT
+#print axioms regenIn_left_length
+#print axioms regenIn_right_length
+#print axioms regenOut_anchor_forced
+#print axioms depStackAux_snoc
+#print axioms foldMarker_eq_depStackAux
+#print axioms foldMarker_eq_depStack
+#print axioms ascR_zeros
+#print axioms interiorPadTail_zeros
+#print axioms leadOut_is_interiorIn
+#print axioms regenLaw_of_trailLaw
+#print axioms assembly_agrees_7
+#print axioms regenLaw_8_of_trailLaw_8
+#print axioms regenLaw_all_of_trailLaw_all
+#print axioms anchor_forced_nonvacuous
+#print axioms seam_pad_ground_7
+#print axioms seam_pad_control_31
+#print axioms seam_marker_ground_7
+#print axioms seam_marker_ground_8
+#print axioms seam_marker_control_offby1
+
 end X2
