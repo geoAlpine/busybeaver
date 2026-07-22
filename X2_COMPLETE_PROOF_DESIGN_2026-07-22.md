@@ -173,6 +173,18 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   RETRACTED — it read the descIn START-combs (32 vs 16) as a single halving object, but the comb
   grows-resets-rebuilds. **D1 is back to the clean 5-lemma assembly**; the residual is just the
   descIn-level statement + the `∀`-levels fold (`headFold`), no new mechanism.
+- **✅ THE DESCENT RUNG IS COMPOSED IN LEAN — `descChew` + `descRung` (T7Head.lean, lake-green).**
+  Confirmed the 5-tile chain composes to the step: `descChew` = `descFold ∘ descTrans` (phase-1 chew
+  + boundary crossing, `6m+12` steps) proved by a single `rw` chain (the `descFold` OUT tail
+  `false::(1 1 1 0 0 1 1 X)` is EXACTLY the `descTrans` IN — no reconciliation needed); then
+  `descRung` = `descChew ∘ descFold2` (+ phase-2 rebuild, `6m+12+6m'` steps), also a clean `rw`
+  chain. Both `[propext, Quot.sound]`. So ONE full descent rung — chew the block `1^{2m}`, cross the
+  `1 1 1 0 0 1 1` boundary, rebuild the comb `pow10 m'` on the next block `1^{2m'}` — is now a single
+  proven theorem `descRung m m' p L Y`. **The 5 head primitives genuinely compose** (D1-refine6
+  vindicated: no odometer, just the chain). Remaining D1: instantiate `descRung` at the descIn
+  block/cascade sizes (`m = 2^{k-1}−3`, `m' = 2^{k-2}`, the descCascade recursion) to get
+  `descIn k → descIn (k−1)`, then fold `∀`-levels into `headFold`. The rung mechanics are DONE; only
+  the descIn arithmetic framing + the level-fold remain.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
