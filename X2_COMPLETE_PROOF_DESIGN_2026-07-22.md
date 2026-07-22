@@ -147,6 +147,17 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   "pure assembly" optimism: the tiles are the chew engine, but the level-drop's comb bookkeeping
   needs its own analysis (measure the comb's fate during a rung, then formalize). Calibration: the
   tiles were MEASURED (all hold); "descentStep = the 5-chain" was NARRATIVE (now shown incomplete).
+- **D1-refine₅ — the comb is a bounded `0^2`-delimited block that halves per level (an odometer).**
+  [MEASURED] tracked the comb through rung 6→5: the top block (`1^61`) is chewed into comb (growing
+  the left region), the head advances +95, and the LOCAL comb immediately left of the new `descIn 5`
+  head is `(01)^16` — bounded on its left by a `0 0` marker. So the descIn "comb `(01)^{2^{k-1}}`" is
+  a **fixed-size delimited block**, and the level-drop **halves it** (32→16). The block-chew (tiles)
+  ADDS comb, the odometer step HALVES it — net a descending odometer whose digit is the comb, LINEAR
+  (Θ(2^k)) not quadratic (so NOT a mirror of `braid_topgrind`'s Θ(4^k) ascent). **`descentStep` =
+  block-chew (the 5 tiles) ⊕ comb-odometer halving, coupled.** The 5 tiles are the chew half; the
+  comb-odometer is the second half, and its transport is the genuine remaining head object — a
+  linear descending odometer on the `(01)`-comb digit. This is the precise D1 residual: not fog, a
+  named mechanism (comb odometer), measured, awaiting its own tile+fold like `descTile`/`descFold`.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
