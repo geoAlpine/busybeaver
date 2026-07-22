@@ -197,6 +197,19 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   pin exactly (the phase-2 partial-chew count and the output's descIn reassembly). Honest status:
   the head's TILE + RUNG mechanics are fully proven (`descTile`…`descRung`, 7 theorems); the
   descIn-level `descentStep` is the remaining framing work.
+- **D1-refine₈ — the transition is LEVEL-DEPENDENT, so descentStep is not one fixed `descRung`.**
+  [MEASURED] rung 6→5 = 47 tiles (31 `descTile` phase-1 + 16 `descTile2` phase-2) + ~3 settle, and
+  its transition is only ~6 steps (`descTile` E,F,A,E,C,D → `descTile2` E,C,D,E,F,A switches
+  naturally, NO separate 12-step episode) — whereas rung 8→7's transition IS the 12-step `descTrans`
+  I proved. So the transition length depends on the level's block/cascade structure; the descIn rung
+  is a `descTile`-fold + `descTile2`-fold with a level-aware junction, not one fixed `descRung`.
+  **Honest scope revision:** the head's atomic + composed mechanics are fully proven (11 theorems
+  this session), but `descentStep` (descIn k → descIn (k−1)) is a genuinely level-dependent assembly
+  — the phase counts (`2^{k-1}−2` / `2^{k-2}` roughly), the junction, the settle, and the odd-block
+  remainders all scale with k, and pinning them is a focused settled formalization sub-task, not a
+  single composition. This is the true remaining shape of D1: mechanism DONE, level-aware framing
+  OPEN. Calibration held throughout — every over-eager framing (comb odometer; fixed descRung=rung;
+  fixed descTrans) was caught by measurement before being formalized wrong.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
