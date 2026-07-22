@@ -126,6 +126,16 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   ASSEMBLY: the phase-1→phase-2 transition (3 settle steps at the block end) + the `descIn k →
   descIn (k−1)` statement composing `descFold` (126 tiles) ∘ transition ∘ `descFold2` (64 tiles),
   then `headFold`. No new tile mechanics remain — every 6-step unit of the head is now a theorem.
+- **✅ THE TRANSITION IS ALSO GREEN — `descTrans` (T7Head.lean).** The phase-1→phase-2 bridge is a
+  fixed, level-independent 12-step episode:
+  `descTrans : steps 12 ⟨.E,p,⟨L,false, 0 1 1 1 0 0 1 1 ++ X⟩⟩ = ⟨.E,p+8,⟨(fixed 8-cell comb)::L, true, X⟩⟩`
+  — consumes the block-leftover `1 1 1`, the `0 0` separator and the next block's first `1 1`, lands
+  head-on-1. **So EVERY component of the head descent is now a proven theorem** (`[propext,
+  Quot.sound]`): `descTile`/`descFold` (phase 1) + `descTrans` (transition) + `descTile2`/`descFold2`
+  (phase 2). **The entire remaining D1 build is now a single composition** — state `descIn k →
+  descIn (k−1)` as `descFold ∘ descTrans ∘ descFold2` with the block/comb/cascade counts, then fold
+  `∀`-levels into `headFold`. No measurement, no new machine reasoning: pure Lean assembly of five
+  banked lemmas, the same shape as `ladderStep`/`ladderFold`.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
