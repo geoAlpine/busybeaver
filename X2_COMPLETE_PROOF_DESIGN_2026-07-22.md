@@ -61,6 +61,17 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   right `0 1^59` (not an E-milestone). Open D1 sub-task: identify the descent rung as a banked
   transport (candidate: a `sweepEF`/`chew` de-doubling composition). Top rung scales `~2^K`; odd-g
   head (53382 ≫ even) carries the `h_low` odd decoration.
+- **D1-refine₂ — the descent is LINEAR, so it is NOT the ascent inverted.** The rung cost
+  `9·(2^{k-1}−1)` is Θ(2^k) — LINEAR in the block. The ascent rung (`topGrindSteps k = 4^k−3·2^k+7`)
+  is Θ(4^k), QUADRATIC. So building level k (doubling, `braid_topgrind`) needs the quadratic
+  odometer, but CHEWING a block down one level is cheap and linear — the head is a genuinely
+  different, cheaper mechanism, not `ladderFold` reversed. Banked linear primitives that must compose
+  into the rung: `chewFold` (`6m` steps, block `1^{2m+3}→1^3`, deposits `pow10 m`) and `sweepEF`
+  (`2m` steps, comb↔block repack) — both `∀m`, `[propext, Quot.sound]`. The rung is a
+  chew+repack+turn round-trip; `8·2^{k-1}` (chewFold+sweepEF) ≈ the measured `9·2^{k-1}−9`, so the
+  exact composition is one chew + one sweep + a small turn per level. **Pinning that composition
+  (a `descentRung` lemma) + folding it (`headFold`) is the concrete remaining D1 build** — same
+  method as `ladderStep`/`ladderFold`, on cheaper (linear) primitives.
 
 ---
 
