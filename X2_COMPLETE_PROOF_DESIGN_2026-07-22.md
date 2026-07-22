@@ -185,6 +185,18 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   block/cascade sizes (`m = 2^{k-1}−3`, `m' = 2^{k-2}`, the descCascade recursion) to get
   `descIn k → descIn (k−1)`, then fold `∀`-levels into `headFold`. The rung mechanics are DONE; only
   the descIn arithmetic framing + the level-fold remain.
+- **D1-refine₇ — the descIn framing has boundary details `descRung` doesn't yet capture.** Checking
+  `descRung` against the real rung 6→5 (279 steps): `descRung`'s output tail `Y` begins with the
+  block REMAINDER (leading `1`s), but `descIn (k−1)` begins with a leading `0`; and the step count
+  splits as `279 = descRung(≈276) + 3 settle`, with phase-2 chewing the next block only PARTIALLY
+  (16 of its ~30 tiles). So `descRung` is the correct RUNG MECHANISM (proven) but is not yet framed
+  as `descIn k → descIn (k−1)`: the wrapper needs (a) the leading-`0` / left-comb accumulation, (b)
+  the exact `m = ?`/`m' = ?` at the descIn block sizes, (c) the 3-step settle, (d) the descCascade
+  level-drop `(k−2)→(k−3)` from the partial phase-2 chew. These are boundary/arithmetic details, not
+  new mechanism — but they are the genuine last mile of D1, and need one more measurement pass to
+  pin exactly (the phase-2 partial-chew count and the output's descIn reassembly). Honest status:
+  the head's TILE + RUNG mechanics are fully proven (`descTile`…`descRung`, 7 theorems); the
+  descIn-level `descentStep` is the remaining framing work.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
