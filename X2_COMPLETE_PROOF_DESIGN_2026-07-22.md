@@ -134,8 +134,19 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   Quot.sound]`): `descTile`/`descFold` (phase 1) + `descTrans` (transition) + `descTile2`/`descFold2`
   (phase 2). **The entire remaining D1 build is now a single composition** — state `descIn k →
   descIn (k−1)` as `descFold ∘ descTrans ∘ descFold2` with the block/comb/cascade counts, then fold
-  `∀`-levels into `headFold`. No measurement, no new machine reasoning: pure Lean assembly of five
-  banked lemmas, the same shape as `ladderStep`/`ladderFold`.
+  `∀`-levels into `headFold`. ~~pure Lean assembly of five banked lemmas~~
+- **⚠ D1-CORRECTION — the descIn composition is NOT a simple 5-lemma chain (comb halving).**
+  [MEASURED] `descIn k → descIn (k−1)` transforms: comb `(01)^{2^{k-1}} → (01)^{2^{k-2}}` (**HALVES**),
+  block `1^{2^k-3} → 1^{2^{k-1}-3}`, cascade `descCascade(k−2) → descCascade(k−3)`. Verified at
+  descIn 6→5 (comb 32→16) and 8→7 (128→64). **The tiles DEPOSIT comb (grow it), but the descIn comb
+  HALVES — so a comb-reorganization mechanism is present that the five chew tiles do not capture.**
+  The `descTile`/`descFold`/`descTrans`/`descTile2`/`descFold2` lemmas are correct and proven (the
+  chew of ONE block into comb), but `descentStep` is more than their linear composition: the head
+  must also consume/repack the pre-existing comb `(01)^{2^{k-1}}` to the left. **This is the honest
+  remaining D1 obstacle** — the comb transformation, unmeasured until now. Correction to the earlier
+  "pure assembly" optimism: the tiles are the chew engine, but the level-drop's comb bookkeeping
+  needs its own analysis (measure the comb's fate during a rung, then formalize). Calibration: the
+  tiles were MEASURED (all hold); "descentStep = the 5-chain" was NARRATIVE (now shown incomplete).
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
