@@ -158,6 +158,21 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   comb-odometer is the second half, and its transport is the genuine remaining head object — a
   linear descending odometer on the `(01)`-comb digit. This is the precise D1 residual: not fog, a
   named mechanism (comb odometer), measured, awaiting its own tile+fold like `descTile`/`descFold`.
+- **✅ D1-refine₆ — the "comb odometer" was an OVER-CORRECTION; the 5-tile chain DOES compose.**
+  [MEASURED 2026-07-23] the full local-comb trajectory through rung 6→5: phase 1 grows comb
+  **monotone +1/tile** `32→62` (31 `descTile`s chewing the top block, each adds one `(01)` pair —
+  exactly `descFold`); the transition resets the LOCAL count `62→0` (the head crosses past the comb,
+  which is left far-left — exactly `descTrans`); phase 2 rebuilds comb **monotone** `0→16` (16
+  `descTile2`s — exactly `descFold2`), landing `descIn 5`'s `(01)^{16} = (01)^{2^{k-2}}`. So there is
+  NO odometer: the comb grows monotonically within each phase (proven by `descFold`/`descFold2`), and
+  the descIn-to-descIn "halving" `2^{k-1} → 2^{k-2}` is just the target sizes — descIn k's local comb
+  and descIn (k−1)'s are DIFFERENT tape regions, each built by its phase, with all prior combs
+  accumulating far-left in the marker `M`. **`descentStep = descFold ∘ descTrans ∘ descFold2` is a
+  clean composition** (phase-1 ≈ `2^{k-1}−2` tiles, phase-2 ≈ `2^{k-2}` tiles), verified by the comb
+  counts. The earlier D1-CORRECTION / D1-refine₅ (comb odometer as a separate mechanism) is
+  RETRACTED — it read the descIn START-combs (32 vs 16) as a single halving object, but the comb
+  grows-resets-rebuilds. **D1 is back to the clean 5-lemma assembly**; the residual is just the
+  descIn-level statement + the `∀`-levels fold (`headFold`), no new mechanism.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
