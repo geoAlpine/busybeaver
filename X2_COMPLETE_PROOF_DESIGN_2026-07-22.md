@@ -15,6 +15,27 @@ does not touch BB(6); nothing here claims otherwise.
 
 ---
 
+## ✅ Progress 2026-07-22 (post-design, first attack: D2 + D3-start)
+
+- **D2 — odd-g premise audit DONE, FAVORABLE.** Re-ran the nesting audit at g=3 (all rungs).
+  Marker nesting `marker_k = layer_k ++ marker_{k+1}` EXACT for k=5…9; pad nesting
+  `z_k − z_{k+1} = 2^{k-1}` EXACT for **k=5…11** (deeper than g=2 — includes rungs 11,12). So the
+  interior nesting is **parity-robust** (holds g=2 AND g=3): **the `∀g` wiring needs NO parity split
+  for the interior.** Risk #1 downgraded. The g=3 rung-11 `+80` is NOT a nesting deviation — block
+  (`1^2045`) and pad both canonical there; it is a localized top-region span anomaly (does not recur
+  at g=4) for D4 to run down, not an interior obstruction.
+- **D3-start — the base is BLANK-framed.** Extracted `base_g` (the marker residual beyond the
+  `ascMarker` stack) at g=2/3/4: it begins with a long **zeros run** (≥40 bits measured, all `0`) at
+  every g. So `ladderFold`'s residual `marker'` is essentially blank tape, **not hidden structure** —
+  Risk #3 downgraded. `|base_g|` = 14344/12297/8202 (`base_g − base_{g+1} = 2^{g+9}−1`, tape geometry).
+  Full base structure beyond the zeros head still TBD (D3 continues).
+
+**Net:** the two risks most likely to hide work (odd-g nesting split; base = hidden bulk) both
+measured favorable on first contact. Remaining design front is D1 (head) → D3-finish/D4 (base+tail)
+→ D5 (`∀g`). Source: this session's g=3 nesting audit + base extraction (`x2t7_boundary.py` family).
+
+---
+
 ## 0. The gate (unchanged, GREEN)
 
 ```lean
@@ -135,15 +156,15 @@ discipline requires before any label changes.
 
 ## 4. Risk register (honest)
 
-1. **Odd-g anomaly (D2) is the live risk.** If odd generations carry non-canonical mid-ladder data,
-   `ladderFold` may need an odd-g variant (a second seam lemma), not just different constants.
-   Mitigation: D2 is cheap and scheduled first.
+1. ~~**Odd-g anomaly (D2) is the live risk.**~~ **DOWNGRADED 2026-07-22.** D2 ran: nesting is
+   parity-robust (marker+pad EXACT at g=2 AND g=3). No odd-g seam variant needed for the interior.
+   Residual: the g=3 rung-11 `+80` (canonical surrounding data; localized; a D4 item, not a blocker).
 2. **Head has no closed form yet** across even g (6 580 → 25 024 is not a clean recursion on two
    points). Mitigation: D1's episode decomposition replaces curve-fitting with structure — the
    `h_low` method, which worked twice.
-3. **Base reconciliation (D3) could be the hidden bulk** — if `base_g` does not reduce to `m1_spec`
-   frame data, D4's tail becomes a genuine transport. Watch item; measured base sizes (~16 k bits at
-   g=2) are large but the ladder already reproduces them exactly, so structure is expected.
+3. ~~**Base reconciliation (D3) could be the hidden bulk.**~~ **DOWNGRADED 2026-07-22.** D3-start:
+   `base_g` begins with a long zeros run at every g — it is blank frame, not more comb. Base is not
+   hidden bulk. Residual: pin the base's far structure + its `m1_spec` reconciliation (D3 continues).
 4. **Calibration discipline.** Today's score: measurements 100 % survived; every narrative
    extrapolation failed (⊕-unwired, +80-in-gap, M1(4) prediction, R≤3 scoring). **Every D-task above
    is scoped to measure before stating.** Forward-prediction controls (g=5/6) are built into D1/D5.
