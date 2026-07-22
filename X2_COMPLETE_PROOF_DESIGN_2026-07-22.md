@@ -117,6 +117,15 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   the phase-2 tile lemma + its fold + the transition + the descIn-level bookkeeping — a clean but
   multi-lemma build, all on the same `rfl`+`cfgPos` / tile+induction rails as `descTile`/`descFold`.
   The descent is now characterized to the individual machine step; no fog remains, only assembly.
+- **✅ BOTH descent tiles + folds now GREEN (T7Head.lean).** Built the phase-2 pair:
+  `descTile2 : steps 6 ⟨.E,p,⟨0::0::L, 1, 1::1::Y⟩⟩ = ⟨.E,p+2,⟨0::0::1::0::L, 1, Y⟩⟩` (head-on-1 chew,
+  twin of `descTile`), and `descFold2 : steps (6m) ⟨.E,p,⟨0::0::L,1,ones(2m)++Y⟩⟩ =
+  ⟨.E,p+2m,⟨0::0::(pow10 m ++ L),1,Y⟩⟩` (folded via `pow10_add`). **So all four descent primitives are
+  proven `[propext, Quot.sound]`:** `descTile`/`descFold` (phase 1, head-on-0, deposits `pow01`) and
+  `descTile2`/`descFold2` (phase 2, head-on-1, deposits `pow10`). The remaining D1 work is pure
+  ASSEMBLY: the phase-1→phase-2 transition (3 settle steps at the block end) + the `descIn k →
+  descIn (k−1)` statement composing `descFold` (126 tiles) ∘ transition ∘ `descFold2` (64 tiles),
+  then `headFold`. No new tile mechanics remain — every 6-step unit of the head is now a theorem.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
