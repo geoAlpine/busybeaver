@@ -132,11 +132,20 @@ magnitude-reading (budget = archimedean size) ✓, a-priori (run-cap is proven) 
 > (m=5: |S|/J = 6.8e−05) while restricted sums sit at the √ barrier, so restriction throws
 > cancellation away. Structural coup de grâce: Theorem E (D1) needs the FULL sum anyway.
 > This is D9's own stated risk (i) confirmed numerically — the time-set geometry holds no
-> information the budget sum didn't. **Two byproducts kept:** the budget identity in uniform form
+> information the budget sum didn't. **Byproduct kept:** the budget identity in uniform form
 > `D_i := v₂(3c_i − 1)` at every c-step with a one-line telescoping proof, verified exactly at
-> 177/177 checkpoints to n = 2.5×10⁶; and the observed beyond-square-root cancellation of the full
-> low-modulus sums — which is the D1/Theorem-E quantity itself, with large margin, and belongs
-> with the D1/D2/D3 margins.
+> 177/177 checkpoints to n = 2.5×10⁶.
+> **⚠ The second claimed byproduct ("beyond-√ cancellation of the full low-modulus sums") is
+> RECLASSIFIED AS A TRAP (D10 scaling probe, 2026-07-22, `d10_charscaling.py`).** Measured |S| at
+> five N-decades to 2.56×10⁶ for dyadic characters mod 2^{3..6} (the ones Theorem E actually needs)
+> AND odd moduli 5, 7: **everything sits at the CLT √ barrier** (at N=2.56M, √N_odd ≈ 1132; dyadic
+> |S| = 1104/1140/1520/383; growth exponents fluctuate around +0.5). The m=5 "beyond-√" reading was
+> a **√-scale random walk passing through a low point** (its |S| path: 38→117→169→635→62 — a walk,
+> not decay). No anomaly exists at either dyadic or coprime moduli; the corpus's "zero anomalies"
+> verdict stands, and the wall statement sharpens: **the quenched character sums — dyadic and
+> coprime alike — sit exactly at the unprovable-√ tier.** Method re-examination with today's data
+> therefore CLOSES the last apparently-open numerical signal rather than opening a new door: D1/D2/D3
+> remain the levers, external collaboration remains the only live path to the wall.
 
 Honest risks: (i) the adelic-budget no-go proved budget-counting is clustering-INDIFFERENT — this
 proposal must read the *time-set geometry*, not the budget sum, to differ; (ii) the excursion
