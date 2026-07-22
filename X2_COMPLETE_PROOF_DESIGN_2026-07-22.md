@@ -107,6 +107,16 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   `descCascade` `0^2` separators** — the traversal is uniform; the invariant just tracks the
   block/separator position. This is the single remaining head build (a `descFold` generalized from
   one `ones(2m)` block to the full `descCascade` traversal).
+- **D1-refine₄ — the rung is TWO-PHASE (correcting "pure descTile").** Tile-level trace of rung 8→7:
+  **phase 1 = 126 `descTile`s** (head-on-0, chewing the top block `1^253`: 126·2 = 252 ≈ 253), then a
+  transition, then **phase 2 = 64 tiles of a SECOND 6-step E-tile** (head-on-1, `0 0 [1] 1 1 → 0 0 1`
+  deposit comb `01`, +2). Both tiles deposit `01` / shrink block by 2 / advance +2 over 6 steps —
+  structurally twins, differing only in head offset (on the `0` vs on the `1`). Phase-2 count 64 = the
+  target-level comb width `2^6`. **So `descentStep` = descTile-fold (top block) ∘ phase-transition ∘
+  descTile2-fold (cascade traversal).** `descTile`+`descFold` cover phase 1 (proven). Remaining:
+  the phase-2 tile lemma + its fold + the transition + the descIn-level bookkeeping — a clean but
+  multi-lemma build, all on the same `rfl`+`cfgPos` / tile+induction rails as `descTile`/`descFold`.
+  The descent is now characterized to the individual machine step; no fog remains, only assembly.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
