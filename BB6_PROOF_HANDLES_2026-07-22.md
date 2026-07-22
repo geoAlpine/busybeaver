@@ -47,6 +47,18 @@ found its orbit values are NOT S-units ("no equation to apply"); the same may ki
 either way.
 
 ### D3. o4 first — the weakest open instance on the whole frontier (three stacked slacks)
+
+> **⊕ SHARPENED 2026-07-22 (D11, `d11_o4scaling.py`) — the o4 character sum reduces to a clean scalar.**
+> Applying D10's √-scaling method to the easy rung: `Re(S1(n))/n = (3/2)·freq{ρ=1} − 1/2` EXACTLY
+> (algebraic, verified match=Y at every N to 6.4×10⁵). So o4's analytic target `Re(S1)/n < 0.7`
+> **is literally `freq{ρ=1} < 0.8`** — the ledger non-fatality in one line. Measured `freq{ρ=1} =
+> 0.3336` (instrument: matches D8's 0.334033), giving `Re(S1)/n ≈ 0.0005`, **1519× inside the fatal
+> 0.7** and at the same √-tier as Antihydra. Combined with D8's summable-ruin (`Σ η^{3n} < ∞`,
+> Borel–Cantelli-CONVERGENT, not divergent), o4 is confirmed the strictly-easiest (K)-band instance:
+> the target is a clean scalar inequality, the margin is 1519×, and the required hypothesis is
+> BC-I-grade. Still (K) (no method proves any δ>0 for the seed orbit), but the sharpest possible
+> statement of the sharpest possible rung.
+
 The strategic clue, not just a target. o4's version of (K) is strictly milder than Antihydra's on
 three independently PROVEN axes:
 1. **Analytic slack:** decide o4 ⟺ `Re(S₁(n)) < 0.7·n` for seed-43 (`O4_EXPSUM`, re-verified:
