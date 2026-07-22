@@ -50,6 +50,18 @@ descent rung + top/bottom + parity) → D3-finish/D4 (base+tail) → D5 (`∀g`)
 now **symmetric**: `headFold (descend K→5) ∘ ladderFold (ascend 5→K+1) ∘ tail`. Source: this
 session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
 
+- **D1-refine — the head's descent-rung cost is `9·(2^{k-1}−1)`; the g=2 head accounts EXACTLY.**
+  The interior descent rung (chewing level k→k−1) costs `9·(2^{k-1}−1)` — exact at k=9,8,7,6
+  (2295, 1143, 567, 279). Full g=2 head accounting: `1681 (top: M6 entry 10→9) + 2295+1143+567+279
+  (rungs) + 615 (regenIn 5 entry) = 6 580` ✓ — a clean closed form, **risk #2 stays downgraded**.
+  **HONEST tempering [MEASURED]:** the detector shows the head does NOT pass through
+  `regenIn`/`cascadeReg` configs (only the final `regenIn 5` + one `cascadeReg 4`). So the descent is
+  a **distinct transport family, NOT the ascending ladder backwards** — `headFold` mirrors the SHAPE,
+  not the transport, and needs its OWN descent-rung lemma. The mid-rung boundary config is state C,
+  right `0 1^59` (not an E-milestone). Open D1 sub-task: identify the descent rung as a banked
+  transport (candidate: a `sweepEF`/`chew` de-doubling composition). Top rung scales `~2^K`; odd-g
+  head (53382 ≫ even) carries the `h_low` odd decoration.
+
 ---
 
 ## 0. The gate (unchanged, GREEN)
