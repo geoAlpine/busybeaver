@@ -94,6 +94,15 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   compose `descFold` (the `6m ≈ 6·2^{k-1}` chew) with the return sweep + level-drop (the residual
   `~3·2^{k-1}` of the measured `9·2^{k-1}−9`), then fold into `headFold`. **The head is now on the
   same rails as the interior** — a banked tile-fold (`descFold`) mirroring `sweepEF`/`ladderFold`.
+- **D1-refine₃ — the rung is PURE `descTile` (no return sweep), traversing the cascade.** Measured:
+  rung 8→7 (1143 steps) = **exactly 190 `descTile`s + 3 settle** (190·6+3=1143), all rightward chew,
+  head never returns. So `descentStep` is a `descFold`-family fold with NO separate return phase —
+  simpler than the "chew + sweep + turn" guess. The catch: the 190 tiles traverse the whole
+  `descCascade` structure (blocks separated by `0^2`), not one `ones(2m)` block, so the rung needs a
+  **cascade-traversal variant of `descFold`** (the tile applies across separators via the right
+  invariant). Tile-count per rung `= (9·(2^{k-1}−1)−3)/6` (190 at k=8). **Remaining D1: state the
+  descIn k → descIn (k−1) invariant that lets `descTile` fold over the cascade** — a single fold, no
+  return, the cleanest possible shape.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
