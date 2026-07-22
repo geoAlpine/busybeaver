@@ -102,7 +102,11 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   **cascade-traversal variant of `descFold`** (the tile applies across separators via the right
   invariant). Tile-count per rung `= (9·(2^{k-1}−1)−3)/6` (190 at k=8). **Remaining D1: state the
   descIn k → descIn (k−1) invariant that lets `descTile` fold over the cascade** — a single fold, no
-  return, the cleanest possible shape.
+  return, the cleanest possible shape. **Tile count per rung `= 3·2^{k-2}−2`** (382/190/94/46 at
+  k=9/8/7/6, all exact). `descTile` chews the `0 0 1 1` pattern, so it **naturally spans the
+  `descCascade` `0^2` separators** — the traversal is uniform; the invariant just tracks the
+  block/separator position. This is the single remaining head build (a `descFold` generalized from
+  one `ones(2m)` block to the full `descCascade` traversal).
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
