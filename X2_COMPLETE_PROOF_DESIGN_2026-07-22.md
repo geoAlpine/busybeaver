@@ -382,3 +382,72 @@ object" in the pre-07-22 ledgers, and it fell to banked theorems.
 *Design assembled 2026-07-22 from: T7_RECON / T7_GAPLAW / T7_LADDER_STRUCTURE / T7_G4 /
 T7_LADDER_LEAN / T7_BOUNDARY (all 2026-07-22), lean/T7Ladder.lean, and the 07-21 closure record.
 No machine is decided. No label is upgraded.*
+---
+
+## ★ RE-EXAMINED ROADMAP (2026-07-23) — after the full head campaign
+
+A careful re-analysis of everything measured (both days) yields a REVISED architecture and task
+order. The driving discovery: **the descent rung TOTALS are exactly uniform even though the
+internals are not.**
+
+### The decisive data points
+
+1. **Uniform rung law `[MEASURED, 4 levels exact]`:** `descIn k → descIn (k−1)` costs exactly
+   `9·(2^{k-1}−1)` at k = 9,8,7,6 — while the INTERNAL split varies per level (12-step junction at
+   8→7 vs ~6-step at 6→5; ±1 tile bookkeeping). **The law is well-posed at the descIn cut; only my
+   first internal decomposition was level-dependent.**
+2. **Top rung is special:** M6-entry → descIn (K−1) costs 1 681 at g=2 (≠ 9·255) — it belongs to
+   `topEntry(g)`, the genuinely g-dependent (parity-split) piece, NOT to the uniform family.
+   Accounting exact: `1 681 + Σ_{k=6..9} 9(2^{k-1}−1) + 615 = 6 580` ✓.
+3. **The middle is done** (`ladderToCascade`), the head mechanics are done (7 tile/fold/junction
+   theorems), nesting is parity-robust, the base is blank.
+
+### The methodological principle this campaign proved (use it everywhere)
+
+**Seam fiddliness is a property of WHERE YOU CUT, not of the machine.** `trailLaw` closed only after
+the right seam (`393 + trailCost + 7`) was found; `ladderStep` closed because `regenIn`/`cascadeReg`
+were the right cut; my descent troubles (fixed `descTrans`, comb odometer) were all artifacts of
+premature internal cuts. **Rule: state laws at cut points where the TOTALS are uniform (here:
+`descIn k`), and treat the interior as a per-level-provable black box — do not fix the internal
+decomposition in the statement.**
+
+### Revised architecture for `h_doub` (one generation)
+
+```
+M6(g) ──topEntry(g)──────▶ descIn (K(g)−1)     [g-dependent, parity-split — R3]
+      ──DescFold (K−1→5)──▶ descIn 5            [NEW LAW DescLaw k: uniform 9(2^{k-1}−1) — R1]
+      ──regenEntry(≈615)──▶ regenIn 5           [fixed episode — R2]
+      ──ladderToCascade───▶ cascadeReg (g+9)    [✅ PROVEN]
+      ──tail(g)───────────▶ M1(g+1)             [short 211/184/265 — R2]
+```
+
+### Revised tasks (replaces the D1-completion plan)
+
+- **R1 — `DescLaw k` (the head's RegenLaw-analogue), stated at the uniform cut.**
+  `DescLaw k : steps (9·(2^{k-1}−1)) (descIn k …) = some (descIn (k−1) …)`, proven per-k-generically
+  with the interior handled as `descFold`-family folds + a junction discharged by cases (NOT a fixed
+  12-step episode). Then `DescFold` = strong induction over k — the exact `regenLaw_closed` pattern.
+  All five tile/fold theorems + `descChew`/`descRung` are the proof's material.
+- **R2 — the two FIXED episodes:** `regenEntry` (descIn 5 → regenIn 5, ≈615 steps, level-free) and
+  `tail(g)` (cascadeReg(g+9) → M1(g+1), 211/184/265). Extract cell-exact, prove chunked-`rfl`+frame.
+- **R3 — `topEntry(g)`:** M6(g) → descIn (K−1). The ONLY genuinely g-dependent transport left;
+  parity-split (odd-g carries the h_low odd decoration). The h_low method (per-parity ∀TAIL chains).
+- **R4 — assemble `doubPhase g`** = topEntry ∘ DescFold ∘ regenEntry ∘ ladderToCascade ∘ tail;
+  anti-vacuity: must reproduce the measured 2 119 015 (g=2) / 8.43M (g=3) / 33.66M (g=4).
+- **R5 — obligation H** (families → init; `realizeM1_port`+`BlankNorm`; `probe_g01` staged).
+- **R6 — final assembly + cold-build audit + red-team.** (`x2_nonhalt` application is one `exact`.)
+
+### What changed vs the original D1–D7
+
+- D1's "finish descentStep by composing the five lemmas" → **R1's DescLaw at the uniform cut**
+  (the composition IS the material, but the statement lives at descIn totals, not at a fixed
+  internal chain).
+- D3 (base) is RESOLVED enough (blank-framed) to fold into R4's bookkeeping.
+- D4 (tail) merges with the new `regenEntry` into R2 (two fixed episodes).
+- D5's ∀g wiring narrows to R3+R4 (nesting already confirmed parity-robust).
+- Effort estimate UNCHANGED overall (h_low-arc scale); risk profile IMPROVED (all former unknowns
+  are now named, measured objects with uniform totals).
+
+**BB(6) side: unchanged by re-examination.** The wall stands (D10/D11 confirmed the √-tier on both
+Antihydra and o4); the levers are D1/D2/D3 of the handles doc; external collaboration remains the
+only live path. x2 is the only reachable complete proof and this roadmap is its build plan.
