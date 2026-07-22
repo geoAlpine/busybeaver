@@ -72,6 +72,21 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   exact composition is one chew + one sweep + a small turn per level. **Pinning that composition
   (a `descentRung` lemma) + folding it (`headFold`) is the concrete remaining D1 build** — same
   method as `ladderStep`/`ladderFold`, on cheaper (linear) primitives.
+- **D1-honest — the descent has NO clean E-milestone endpoints; `headFold` needs its own campaign.**
+  Measured the head's E-configs carrying block `2^k−3`: at each, `left-ones=0`, right `0 1^39` — the
+  head is AWAY from the block, weaving around it. So the descent is NOT a clean per-level milestone
+  chain (unlike the ascent, whose `regenIn`/`cascadeReg` endpoints came free from `RegenLaw`).
+  **Consequence: `headFold`'s Lean build needs the descent's config endpoints characterized first —
+  a measurement campaign, not a quick mirror of `ladderFold`.** This revises D1's effort UP (the
+  cost law `9·(2^{k-1}−1)` is clean, but the transport endpoints are not). Honest correction to the
+  earlier "headFold mirrors ladderFold" optimism.
+- **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
+  the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
+  marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
+  i.e. `ladderFold` (interior) ∘ `regenLaw_pos` (top REGEN rung). Non-vacuity: `ladderToCascade 5 · 3`
+  type-checks `regenIn 5 → cascadeReg 8`. **This is exactly the object D5's final assembly composes
+  between the head's `regenIn 5` and the tail's `cascadeReg (g+9)`** — the whole span from first
+  ladder rung to the tail's IN is now a single citable theorem.
 
 ---
 
