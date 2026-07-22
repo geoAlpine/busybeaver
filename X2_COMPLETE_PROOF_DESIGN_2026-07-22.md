@@ -30,9 +30,25 @@ does not touch BB(6); nothing here claims otherwise.
   Risk #3 downgraded. `|base_g|` = 14344/12297/8202 (`base_g − base_{g+1} = 2^{g+9}−1`, tape geometry).
   Full base structure beyond the zeros head still TBD (D3 continues).
 
-**Net:** the two risks most likely to hide work (odd-g nesting split; base = hidden bulk) both
-measured favorable on first contact. Remaining design front is D1 (head) → D3-finish/D4 (base+tail)
-→ D5 (`∀g`). Source: this session's g=3 nesting audit + base extraction (`x2t7_boundary.py` family).
+- **D1-start — the HEAD is a DESCENDING CHEW-LADDER, the mirror of the ascending one.** Traced the
+  g=2 head (6 580 steps, M6(2)→regenIn 5): the big block collapses stair-step through **exactly the
+  levels `2^k−3` for k = 10,9,8,7,6,5** (1021→509→253→125→61→29), one "chew" per level. So the head
+  is NOT a monolithic block-chew and NOT fog — it is a **descending ladder from level `K(g)=g+8`
+  down to 5**, structurally the mirror of the (proven) ascending `ladderFold`. Per-rung descent costs
+  1681 / 2295 / 1143 / 567 / 279 (levels 10→9…6→5): the interior obeys a **clean recursion
+  `cost_k = 2·cost_{k-1} + 9`** (2295=2·1143+9, 1143=2·567+9, 567=2·279+9, all exact); only the top
+  rung (the M6 entry, 10→9 = 1681) is special, and a final 615-step entry lands `regenIn 5`. **So the
+  head's "no closed form" flag is downgraded** — there IS clean per-rung structure; D1 likely closes
+  as a `headFold` (a `∀`-fold of a banked descent chew rung — `ecombChewFold` / `descent_glue`
+  family), the mirror of `ladderFold`. Full config-level rung identification + the special
+  top/bottom + parity (odd-g head 53382 ≫ even) remain (D1 continues).
+
+**Net:** the three risks most likely to hide work (odd-g nesting split; base = hidden bulk; head =
+formless) ALL measured favorable on first contact — nesting is parity-robust, the base is blank-
+framed, and the head is a clean descending mirror-ladder. Remaining front: D1-finish (identify the
+descent rung + top/bottom + parity) → D3-finish/D4 (base+tail) → D5 (`∀g`). The design's shape is
+now **symmetric**: `headFold (descend K→5) ∘ ladderFold (ascend 5→K+1) ∘ tail`. Source: this
+session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
 
 ---
 
@@ -159,9 +175,10 @@ discipline requires before any label changes.
 1. ~~**Odd-g anomaly (D2) is the live risk.**~~ **DOWNGRADED 2026-07-22.** D2 ran: nesting is
    parity-robust (marker+pad EXACT at g=2 AND g=3). No odd-g seam variant needed for the interior.
    Residual: the g=3 rung-11 `+80` (canonical surrounding data; localized; a D4 item, not a blocker).
-2. **Head has no closed form yet** across even g (6 580 → 25 024 is not a clean recursion on two
-   points). Mitigation: D1's episode decomposition replaces curve-fitting with structure — the
-   `h_low` method, which worked twice.
+2. ~~**Head has no closed form yet.**~~ **DOWNGRADED 2026-07-22.** D1-start: the head is a descending
+   chew-ladder (levels K→5) with a clean per-rung recursion `cost_k = 2·cost_{k-1}+9` — the mirror of
+   `ladderFold`, not a formless total. Residual: identify the descent rung as a banked transport +
+   the special top/bottom + the odd-g decoration (odd head ≫ even).
 3. ~~**Base reconciliation (D3) could be the hidden bulk.**~~ **DOWNGRADED 2026-07-22.** D3-start:
    `base_g` begins with a long zeros run at every g — it is blank frame, not more comb. Base is not
    hidden bulk. Residual: pin the base's far structure + its `m1_spec` reconciliation (D3 continues).
