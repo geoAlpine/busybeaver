@@ -84,6 +84,16 @@ session's g=2/3 audits + head trace (`x2t7_boundary.py` / head-trace family).
   **`headFold` is back on the buildable path** — the endpoints exist; the remaining D1 work is to
   identify the `descIn k → descIn (k−1)` transport as a `chewFold`/`sweepEF` composition (measured
   cost `9·2^{k-1}−9`) and prove `descentStep` + fold it, exactly the `ladderStep`/`ladderFold` method.
+- **✅ D1 CORE BUILT — `descTile` + `descFold` (lean/T7Head.lean, lake-green, `[propext,Quot.sound]`).**
+  Traced the descent rung cell-for-cell: it is a **6-step E-tile `descTile`** repeated —
+  `steps 6 ⟨.E, p, ⟨L, false, 0::1::1::X⟩⟩ = ⟨.E, p+2, ⟨0::1::L, false, 0::X⟩⟩` (chews `1 1`→ deposits
+  comb `0 1`, the mirror-direction of `sweepEF_tile`). Folded `∀m`:
+  **`descFold : steps (6m) ⟨.E, p, ⟨L, false, 0::(ones(2m) ++ Y)⟩⟩ = ⟨.E, p+2m, ⟨pow01 m ++ L, false,
+  0::Y⟩⟩`** — the descent chew fold, the head analogue of `sweepEF`, proven by tile+length induction.
+  This is the CORE of the descent rung. Remaining for `descentStep` (`descIn k → descIn (k−1)`):
+  compose `descFold` (the `6m ≈ 6·2^{k-1}` chew) with the return sweep + level-drop (the residual
+  `~3·2^{k-1}` of the measured `9·2^{k-1}−9`), then fold into `headFold`. **The head is now on the
+  same rails as the interior** — a banked tile-fold (`descFold`) mirroring `sweepEF`/`ladderFold`.
 - **✅ NEW THEOREM `ladderToCascade` (T7Ladder.lean, lake-green, `[propext, Quot.sound]`).** Packages
   the maximal proven MIDDLE of the doubling phase into one lemma: from `regenIn b` with nested
   marker/pad, `ladderSteps b n + exitSteps (b+n)` steps reach `cascadeReg (b+n) 1 q' marker' R''` —
