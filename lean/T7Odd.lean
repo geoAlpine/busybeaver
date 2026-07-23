@@ -90,3 +90,38 @@ example : 161 + 46782 = 46943 := by decide
 
 #print axioms carry46
 #print axioms carryFold46
+
+/-! ### The `(10)^10` crossing — the odd branch's one remaining fixed episode -/
+
+/-- **`cross17`** — the 17-step episode between `rUnitsFold` and the carry fold: crosses the
+odd `M6`'s `(10)^10` block, builds the `ones 14 · 0 0 · 1` register the carry tile runs on,
+and hands over `1 0 1 0 1 · 1^b`.  Consumes ONE block cell.  The head only moves RIGHT
+(excursion 0 left / 17 right), so `L` is genuinely free. -/
+theorem cross17 (p : Int) (b : Nat) (L R : List Bool) :
+    steps 17 ⟨.E, p, ⟨L, false, pow01 10 ++ (false :: (ones (b + 1) ++ R))⟩⟩
+      = some ⟨.E, p + 17, ⟨ones 14 ++ (false :: false :: true :: L), false,
+          true :: false :: true :: false :: true :: (ones b ++ R)⟩⟩ := by
+  have h0 : steps 17 (⟨.E, (0:Int), ⟨L, false,
+      pow01 10 ++ (false :: (ones (b + 1) ++ R))⟩⟩ : Cfg)
+      = some ⟨.E, (17:Int), ⟨ones 14 ++ (false :: false :: true :: L), false,
+          true :: false :: true :: false :: true :: (ones b ++ R)⟩⟩ := by
+    rw [show ones (b + 1) = true :: ones b from by
+          rw [show b + 1 = 1 + b from by omega, ones_add]; rfl]
+    rfl
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **`crossCarry`** — `cross17 ∘ carryFold46`: the odd branch's whole `Θ(2^g)` middle, from
+the `(10)^10` block to the exhausted carry register. -/
+theorem crossCarry (n : Nat) (p : Int) (b : Nat) (L R : List Bool) :
+    steps (17 + 46 * n) ⟨.E, p, ⟨L, false, pow01 10 ++ (false :: (ones (2 * n + b + 1) ++ R))⟩⟩
+      = some ⟨.E, p + 17 + 2 * (n : Int),
+          ⟨ones 14 ++ (false :: false :: (pow10 n ++ (true :: L))), false,
+           true :: false :: true :: false :: true :: (ones b ++ R)⟩⟩ := by
+  rw [steps_add, cross17 p (2 * n + b) L R, someBind,
+      carryFold46 n (p + 17) b (true :: L) R]
+
+#print axioms cross17
+#print axioms crossCarry
