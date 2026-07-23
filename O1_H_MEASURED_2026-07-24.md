@@ -114,3 +114,55 @@ mathematical unknown; that is now understood to be *low* risk (O1). But **O2's b
 larger unknown** that the review did not price, because the odd `topEntry` had only ever been
 measured as a *cost* (the closed form), never as a *structure*. Its discovery needs its own
 measurement campaign.
+
+---
+
+## O2 (continued) — the odd bulk IS a uniform 46-step fold. **Structure FOUND.**
+
+The "unmapped 99.7 %" is not unmapped after all — it is one macro-tile, repeated.
+
+### The odd decomposition
+
+```
+M6(g) --P1(88)--> --T(11)--> --rUnitsFold(15g)--> --cross(17)-->
+      --fold46 × (2^{g+7}−7)--> --eChewFold × (2^{g+5}+1)--> descIn(g+6)
+```
+
+with the **46-step macro-tile** (measured at g=3, rel 161 → 207 and uniform thereafter):
+
+* consumes 2 cells of the big block, advances `+2`
+* head excursion 16 cells LEFT / 6 RIGHT — it walks into the `ones 14` register and back
+* the left marker gets an odometer-style update; the right's `1 0 1 0 1` prefix is restored
+
+Uniformity is exact: `block = 2035 − 2n` at `rel = 161 + 46n` holds at **every** 46-aligned
+sample from `n = 0` to `n ≈ 867` (checked at rel 4 117 / 20 081 / 40 043 among others), and the
+tail phase is the already-proven `eChewTile` (6 steps, block −2, comb +1 — visible at
+rel 48 431 → 48 485, comb 247 → 256).
+
+### `[M4]` The arithmetic closes against the INDEPENDENTLY-CONFIRMED closed form
+
+```
+88 + 11 + 15g + 17 + 46·(2^{g+7}−7) + 6·(2^{g+5}+1)  =  6080·2^g + 15g − 200
+```
+
+| g | 1 | 3 | 5 | 7 |
+|---|---|---|---|---|
+| decomposition | 11 975 | 48 485 | 194 435 | 778 145 |
+| closed form | 11 975 | 48 485 | 194 435 | 778 145 |
+
+**Exact at all four.** The closed form was confirmed out-of-sample at g=7 *before* any of this
+structure was measured, so this is a genuine cross-check, not a fit.
+
+### Consequence — O2's risk collapses
+
+The odd branch reuses `p1t` (88+11) and `rUnitsFold` verbatim, ends with the proven
+`eChewFold`, and needs exactly **two new objects**: the 17-step `cross` (fixed, `(10)^10`
+crossing) and the **46-step macro-tile + its `∀n` fold**. Both are M3′/M3 shapes the toolkit
+already handles.
+
+**Revised risk table** (superseding the "second larger unknown" note above, same day):
+
+| obligation | risk before | risk now |
+|---|---|---|
+| O2 odd `topEntry` | large discovery | **one tile + one fold** (M3′), arithmetic verified |
+| O3 odd top → tail | low (O1) | low |
