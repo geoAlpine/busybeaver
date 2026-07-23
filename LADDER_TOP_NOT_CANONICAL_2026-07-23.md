@@ -40,9 +40,17 @@ are fine, and g=4's own top fails:
 
 | config | step | left comb | required | verdict |
 |---|---|---|---|---|
-| `cascadeReg 10` (mid, g=4) | 11 885 391 | 511 | 510 | canonical |
-| `cascadeReg 11` (mid, g=4) | 13 466 968 | 1023 | 1022 | canonical |
+| `cascadeReg 9` (mid, g=4) | 17 795 150 … | 255 | 254 | canonical |
+| `cascadeReg 10` (mid, g=4) | 11 885 391 / 18 192 215 … | 511 | 510 | canonical |
+| `cascadeReg 11` (mid, g=4) | 13 466 968 / 38 667 616 | 1023 | 1022 | canonical |
+| `cascadeReg 12` (mid, g=4) | 19 777 889 | 2047 | 2046 | canonical |
 | `cascadeReg 13` (top, g=4) | 44 986 730 | **1** | 4094 | **NOT canonical** |
+
+**The g=4 scan is now complete** (`x2r4_top.py`, every `cascadeReg k ≥ 9` in
+`[M1(4), M1(5)]`): levels 9, 10, 11, **12** are canonical and only the top, 13 = g+9, is not.
+So the rule **"canonical through g+8, the top g+9 is not"** holds at both g=2 and g=4.
+Every canonical hit has comb exactly `need + 1`, i.e. `Lc = 1` — corroborating
+`ladderToCascade`'s `cascadeReg (b+n) 1`.
 
 **Corroboration from the earlier session.** `x2t7_boundary.py` (2026-07-22) already printed
 `k=11: FAILED to parse regenIn 11 shape at step 2315814 (instrument problem?)` and recorded
@@ -80,9 +88,8 @@ rung dynamically; only its endpoints are outside the `regenIn`/`cascadeReg` fami
 
 ## 4. Honest limits
 
-- Measured at g=2 (full phase) and at three configs inside g=4. The "canonical up to g+8,
-  top not canonical" rule has two generations behind it; a scan of g=4's `cascadeReg k≥9`
-  is running to pin the exact last canonical level there.
+- Measured at g=2 (full phase) and at g=4 (full scan of `cascadeReg k ≥ 9`). The
+  "canonical through g+8, top g+9 not canonical" rule has two generations behind it.
 - Nothing here says `ladderToCascade` is wrong — it is green and true; the finding is about
   **where the orbit is**, not about the theorem.
 - No machine decided. No label upgraded. `x2` remains `[OPEN]`.
