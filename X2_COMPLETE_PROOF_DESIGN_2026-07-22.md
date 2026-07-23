@@ -475,3 +475,29 @@ integer-multiplier frontier machines, each a candidate for the same milestone-tr
 **It does NOT transfer to the (K) 14**: those need single-orbit FREQUENCY statements, and the
 no-structure theorems prove transport-style certificates cannot reach them. Post-x2 plan: sweep the
 island with this toolkit (new decidable territory, shrinks the 1104), while (K) stays external.
+### ★ R1 BREAKTHROUGH (2026-07-23) — DescLaw has a UNIFORM decomposition (no junction case-split)
+
+Entering the complete-proof path (per `METHODS_2026-07-23.md`, R1). M0 (measure the arithmetic
+before choosing the proof shape) produced a decisive simplification:
+
+**`DescLaw k = descChew(2^{k-1}−3) ∘ descFold2(2^{k-2}−1) ∘ settle(3)`**, and the total is
+```
+6(2^{k-1}−3) + 12  +  6(2^{k-2}−1)  +  3  =  9·2^{k-1} − 9  =  9(2^{k-1}−1)   EXACT, ∀k.
+```
+Verified k=6 (186+90+3=279) and k=8 (762+378+3=1143), both matching the measured rung totals.
+
+**This RETRACTS D1-refine₈ (the "level-dependent transition").** That was a mis-split — the
+transition IS the 12-step `descTrans` at every level (inside `descChew`); my earlier "~6-step
+junction at k=6" read the wrong phase boundary. The decomposition is **level-uniform**:
+`m = 2^{k-1}−3`, `m' = 2^{k-2}−1`, `settle = 3`, always. **So R1 route (A) needs NO finite
+junction case-split** — the strong induction is clean, exactly the `regenLaw_closed` shape.
+
+`descChew` and `descFold2` are proven (`[propext, Quot.sound]`). Remaining for `DescLaw`:
+1. **`settle` (3 steps):** phase-2 end (head-on-1 on `ones(29) 0^2 …`) → `descIn (k−1)` (head-on-0 on
+   the leading `0`). Measured E,C,D,E; small fixed episode, `rfl`+`cfgPos`.
+2. **The reassembly:** the LEFT (`descChew`'s 8-cell deposit + `descFold2`'s `pow10 m'` + the comb)
+   must equal `pow01 (2^{k-2}) ++ M'`, and the RIGHT must equal `descIn (k−1)`'s
+   `0 · ones(2^{k-1}−3) · 0^2 · descCascade(k−3) · TAIL'`. `List` identities (`pow10`↔`pow01`, the
+   marker accumulation, the odd-block split `ones(2^k−3) = ones(2m) ++ ones(3)`).
+Then `DescFold` = strong induction over k. **R1 is now a bounded, uniform build** — no per-level
+mechanism, `descIn` defined, decomposition exact.
