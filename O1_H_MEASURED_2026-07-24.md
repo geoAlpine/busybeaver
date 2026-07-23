@@ -68,3 +68,49 @@ specified* task rather than an open one.
 | O4 | odd assembly | open |
 | H | families → init | **padding law measured (`k=16`)**; padded `h_low` unproven |
 | F | fire + audit | open |
+
+---
+
+## O2 — the odd `topEntry`: head shared with even, bulk UNMAPPED `[MEASURED, g=3]`
+
+Odd `M6 g` right = `0 · (10)^4 · 1^9 · 00 · rUnits g · (10)^10 · 1^{2^{g+8}−13} · m1casc(g+6)(g+7)`
+(vs even: `rUnits (g+1)`, then `1 0 0`, then `1^{2^{g+8}−3}`).
+
+**`[PREDICTED → CONFIRMED]` (M4).** From the confirmed odd `topEntry(g) = 6080·2^g + 53g + 105`
+minus `h_low_odd`'s `N(g) = 305 + 38g`, the `M6 → entry` span should be `6080·2^g + 15g − 200`,
+i.e. **48 485 at g=3**, entry at 2 900 995. Stated before the run; the measured `descIn 9` entry
+is at exactly 2 900 995. ✓
+
+### Good news — the opening is IDENTICAL to the even branch
+
+| phase | odd (g=3) | even |
+|---|---|---|
+| P1 | rel 0…88, 4 cycles of 22, blocks 9,7,5,3,1 | **same** |
+| T | rel 88…99, 11 steps | **same** |
+| `rUnitsFold` | rel 99…144, 15 steps/block, `g` blocks | **same tile**, `g` vs `g+1` blocks |
+
+So `p1t` (99 steps) and `rUnitsFold` apply to the odd branch **verbatim** — the first 144 of the
+48 485 steps are already proven machinery.
+
+### The finding — the odd bulk passes through NO known family
+
+Scanning rel 144 … 48 485 for `descIn` / `regenIn` / `cascadeReg` at **full shape**:
+
+```
+1 known-family config found — and it is the endpoint itself (descIn 9 @ rel 48 485).
+```
+
+The remaining **48 341 steps** (99.7 % of the odd `topEntry`) traverse configurations in none
+of the established families. Where the even branch crossed `1 0 0` in 3 steps and then chewed
+one big block (`eChewFold`, 1 536 steps at g=2), the odd branch crosses `(10)^10` and then does
+something ~30× larger that has not been characterised.
+
+**This is the real content of O2/O3**, and it is a *discovery* task of the same kind as the even
+4-phase decomposition was — not an assembly task. O1's result (the ladder is canonical at odd g)
+does **not** cover it: the unmapped stretch is inside `topEntry`, before the ladder.
+
+**Honest revision to the strategy review.** O3 (odd ladder-top → tail) was priced as the one
+mathematical unknown; that is now understood to be *low* risk (O1). But **O2's bulk is a second,
+larger unknown** that the review did not price, because the odd `topEntry` had only ever been
+measured as a *cost* (the closed form), never as a *structure*. Its discovery needs its own
+measurement campaign.
