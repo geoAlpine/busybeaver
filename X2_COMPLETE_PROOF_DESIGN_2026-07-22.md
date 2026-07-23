@@ -451,3 +451,27 @@ M6(g) ──topEntry(g)──────▶ descIn (K(g)−1)     [g-dependent,
 **BB(6) side: unchanged by re-examination.** The wall stands (D10/D11 confirmed the √-tier on both
 Antihydra and o4); the levers are D1/D2/D3 of the handles doc; external collaboration remains the
 only live path. x2 is the only reachable complete proof and this roadmap is its build plan.
+### R1 proof method (settled 2026-07-23) — three routes, ranked
+
+Phase counts are exact functions of k (`[MEASURED]`: k=8 split `126+64 = (2^{k-1}−2)+2^{k-2}` exact
+on both; k=6 has a `+1` in the junction slot; totals `3·2^{k-2}−2` always exact):
+
+- **(A) PRIMARY — strong induction with a finite junction case-split.** State `DescLaw k` at the
+  uniform cut (`9·(2^{k-1}−1)` total). Prove the interior per level as
+  `descFold (2^{k-1}−2 ∓ junction) ∘ (junction cases) ∘ descFold2 (2^{k-2})` — the junction has 2–3
+  shapes (the ±1 slot), a FINITE case analysis, not a per-level bespoke proof. Then `DescFold` by
+  the `carryExit_strong_frame` pattern. All material proven (7 tile/fold theorems).
+- **(B) CONTROLS — chunked `rfl` groundings at k=5..8** (279/567/1143/2295 steps — trivially
+  kernel-checkable) as anti-vacuity anchors, exactly like `regenLaw_4/5/6` grounded the closure.
+- **(C) FALLBACK — move the cut.** If the junction case-split resists, re-cut at phase-2-start
+  (head-on-1 on the fresh block); the cut-point principle says some cut makes the junction uniform.
+
+### Post-x2: where the toolkit transfers (and where it does NOT)
+
+The T7 campaign built a reusable Lean toolkit — tile+fold+strong-induction over self-similar
+cascade machines (`descTile`-family, `ladderFold`-family, the cut-point principle). **It transfers
+to the carry-TRANSPARENT island (~5–8 machines, `CARRY_DICHOTOMY_2026-07-11`)** — the other
+integer-multiplier frontier machines, each a candidate for the same milestone-transport decision.
+**It does NOT transfer to the (K) 14**: those need single-orbit FREQUENCY statements, and the
+no-structure theorems prove transport-style certificates cannot reach them. Post-x2 plan: sweep the
+island with this toolkit (new decidable territory, shrinks the 1104), while (K) stays external.
