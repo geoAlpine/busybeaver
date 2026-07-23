@@ -97,12 +97,16 @@ theorem headToLadder (n : Nat) (p : Int) (marker' R'' : List Bool) :
         (ladderPad 5 n ++ R'')]
   exact hlad
 
-/-- **THE EVEN SPINE** — `headToLadder ∘ topRungToMilestone`, `∀ n ∀ j`.  The ENTIRE even
-doubling phase below `topEntry`, as one theorem: from the descent's entry `descIn (n+4)`
-(marker = the top-rung word over the frame odometer's register, tail = the ladder pads) all
-the way onto the next milestone's frame.
+/-- **`evenSpine`** — `headToLadder ∘ topRungToMilestone`, `∀ n ∀ j`.  GREEN and TRUE.
 
-On the real orbit `n = g+3` and `j = g−1`; both are left free here — S3/S4 instantiate. -/
+⚠ **OFF-ORBIT marker (retraction 2026-07-24, `EVENSPINE_OFFORBIT_2026-07-24.md`).**  The
+marker instantiated below threads `tailLaw`'s IN-register backward as an inert free variable.
+Measurement shows the real orbit's `descIn` marker is 10 cells shorter and structurally
+different: the frame register's `1^9` block is ACTIVE (chewed by `headLaw`, rebuilt near the
+tail), not an inert marker.  So this theorem does NOT compose with `topEntry` on the orbit as
+written — the step counts are right (see the `decide`s), but the config-level marker is a
+family the orbit never visits.  Kept for the step-count identities and as the interface to
+redo with the active-register model.  `headToLadder` (general in `marker'`) is unaffected. -/
 theorem evenSpine (n j : Nat) (p : Int) (L R : List Bool) :
     ∃ q, steps ((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n))
           + (topGrindSteps (5 + n) + exitSteps (5 + n + 1) + 74 + (27 * j + 110)))
