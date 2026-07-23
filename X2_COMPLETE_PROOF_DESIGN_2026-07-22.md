@@ -501,3 +501,16 @@ junction case-split** — the strong induction is clean, exactly the `regenLaw_c
    marker accumulation, the odd-block split `ones(2^k−3) = ones(2m) ++ ones(3)`).
 Then `DescFold` = strong induction over k. **R1 is now a bounded, uniform build** — no per-level
 mechanism, `descIn` defined, decomposition exact.
+
+**✅ R1 MECHANISM FULLY BUILT (2026-07-23) — `settle` + `descLevel` green.** `settle` (the 3-step
+head-1→head-0 reposition, `[propext,Quot.sound]`) and `descLevel = descRung ∘ settle` (the complete
+`descIn`-to-`descIn` rung: chew + cross + phase-2 rebuild + settle, in `6m+12+6(m'+1)+3` steps,
+ending head-on-0) are now proven. **So the ENTIRE machine content of one `DescLaw` rung is a single
+theorem `descLevel m m' p L Y`.** All 9 head theorems `[propext,Quot.sound]`, no `sorry`. Remaining
+for `DescLaw`: purely the `descIn` ARITHMETIC FRAMING — instantiate `descLevel` at
+`m = 2^{k-1}−3`, `m'+1 = 2^{k-2}` (so `m' = 2^{k-2}−1`), split the odd block
+`ones(2^k−3) = ones(2m) ++ ones(3)`, and show the `descLevel` output's LEFT (`false::true::false::
+pow10(2^{k-2}−1)::…`) and RIGHT (`false::Y`) reassemble into `descIn (k−1)`'s
+`pow01(2^{k-2}) ++ M'` / `0 · ones(2^{k-1}−3) · 0^2 · descCascade(k−3) · TAIL'`. List/arithmetic
+identities only — no machine steps. Then `DescFold` = strong induction. **The head is now proven to
+the rung; only the descIn `List`-framing wrapper + the k-induction remain.**
