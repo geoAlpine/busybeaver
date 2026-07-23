@@ -81,3 +81,109 @@ example : 88 + 11 + (15 * (8 + 1) + 3) + 6 * 2 ^ 14 = 384 * 2 ^ 8 + 15 * 8 + 117
 
 #print axioms eChewTile
 #print axioms eChewFold
+
+/-! ### S3 phase 2 — the `rUnits` fold -/
+
+/-- **The `rUnits` chew tile** (15 steps): head `E` on the `0` before a `1^5 · 0 0` unit;
+consumes the unit, deposits `0 0 1 0 1 0 1` on the left, advances `+7`.  `L` and `Y` untouched
+(read window is the `1^5 0 0` block).  Read off the canonical `M6 2` orbit (steps 99 → 114). -/
+theorem rUnitsTile (p : Int) (L Y : List Bool) :
+    steps 15 ⟨.E, p, ⟨L, false, false :: (ones 5 ++ (false :: false :: Y))⟩⟩
+      = some ⟨.E, p + 7,
+          ⟨false :: false :: true :: false :: true :: false :: true :: L, false, false :: Y⟩⟩ := by
+  have h0 : steps 15 (⟨.E, (0:Int), ⟨L, false,
+        false :: (ones 5 ++ (false :: false :: Y))⟩⟩ : Cfg)
+      = some ⟨.E, (7:Int),
+          ⟨false :: false :: true :: false :: true :: false :: true :: L, false,
+           false :: Y⟩⟩ := rfl
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- The left deposit of `n` `rUnits` tiles: `n` copies of `0 0 1 0 1 0 1`. -/
+def rUnitsDep : Nat → List Bool → List Bool
+  | 0, L => L
+  | n + 1, L => false :: false :: true :: false :: true :: false :: true :: rUnitsDep n L
+
+/-- `rUnitsDep` absorbs one leading deposit block into its count. -/
+theorem rUnitsDep_absorb : ∀ (n : Nat) (L : List Bool),
+    rUnitsDep n (false :: false :: true :: false :: true :: false :: true :: L)
+      = rUnitsDep (n + 1) L := by
+  intro n
+  induction n with
+  | zero => intro L; rfl
+  | succ n ih => intro L; show _ :: _ :: _ :: _ :: _ :: _ :: _ :: rUnitsDep n _ = _; rw [ih]; rfl
+
+/-- **The `rUnits` FOLD, `∀n`** — `n` tiles = `15n` steps consume `rUnits n` from the front of
+the right, deposit `rUnitsDep n` on the left, advance `+7n`.  `S3`'s parity/`g`-dependent core
+(the real orbit runs `n = g+1`). -/
+theorem rUnitsFold : ∀ (n : Nat) (p : Int) (L Y : List Bool),
+    steps (15 * n) ⟨.E, p, ⟨L, false, false :: (rUnits n ++ Y)⟩⟩
+      = some ⟨.E, p + 7 * (n : Int), ⟨rUnitsDep n L, false, false :: Y⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro p L Y
+    show steps (15 * 0) ⟨.E, p, ⟨L, false, false :: (rUnits 0 ++ Y)⟩⟩ = _
+    show some (⟨.E, p, ⟨L, false, false :: Y⟩⟩ : Cfg) = _
+    refine congrArg some ?_
+    show (⟨.E, p, ⟨L, false, _⟩⟩ : Cfg) = ⟨.E, p + 7 * ((0:Nat):Int), ⟨L, false, _⟩⟩
+    refine cfgPos ?_
+    push_cast; omega
+  | succ n ih =>
+    intro p L Y
+    rw [show 15 * (n + 1) = 15 + 15 * n from by omega, steps_add,
+        show (rUnits (n + 1) ++ Y : List Bool)
+          = ones 5 ++ (false :: false :: (rUnits n ++ Y)) from by
+            show (ones 5 ++ (false :: false :: rUnits n)) ++ Y = _
+            rw [List.append_assoc]; rfl,
+        rUnitsTile p L (rUnits n ++ Y), someBind,
+        ih (p + 7) (false :: false :: true :: false :: true :: false :: true :: L) Y,
+        rUnitsDep_absorb n L]
+    refine congrArg some ?_
+    show (⟨.E, _, ⟨rUnitsDep (n + 1) L, false, _⟩⟩ : Cfg) = ⟨.E, _, ⟨rUnitsDep (n + 1) L, false, _⟩⟩
+    refine cfgPos (by push_cast; omega)
+
+-- ANTI-VACUITY (METHODS M4): rUF cost 15(g+1) at the measured lengths (g=2,4,6): 45/75/105.
+example : 15 * (2 + 1) = 45 := by decide
+example : 15 * (4 + 1) = 75 := by decide
+example : 15 * (6 + 1) = 105 := by decide
+
+#print axioms rUnitsTile
+#print axioms rUnitsFold
+
+/-! ### S3 phases 1+2 fixed prefix (P1 ∘ T) — 99 steps, g-independent -/
+
+private theorem p1tc0 (REST : List Bool) :
+    steps 25 ⟨.E, 0, ⟨[false], false, [false, true, false, true, false, true, false, true, false, true, true, true, true, true, true, true, true, true, false, false] ++ REST⟩⟩
+      = some ⟨.E, 5, ⟨[false, false, true, false, true, false], false, [true, false, true, false, true, false, true, true, true, true, true, true, true, false, false] ++ REST⟩⟩ := by rfl
+
+private theorem p1tc1 (REST : List Bool) :
+    steps 25 ⟨.E, 5, ⟨[false, false, true, false, true, false], false, [true, false, true, false, true, false, true, true, true, true, true, true, true, false, false] ++ REST⟩⟩
+      = some ⟨.F, 10, ⟨[true, true, true, false, false, true, false, true, false, true, false], true, [false, true, false, true, true, true, true, true, false, false] ++ REST⟩⟩ := by rfl
+
+private theorem p1tc2 (REST : List Bool) :
+    steps 25 ⟨.F, 10, ⟨[true, true, true, false, false, true, false, true, false, true, false], true, [false, true, false, true, true, true, true, true, false, false] ++ REST⟩⟩
+      = some ⟨.E, 15, ⟨[true, true, true, true, true, true, false, false, true, false, true, false, true, false, true, false], false, [true, true, true, false, false] ++ REST⟩⟩ := by rfl
+
+private theorem p1tc3 (REST : List Bool) :
+    steps 24 ⟨.E, 15, ⟨[true, true, true, true, true, true, false, false, true, false, true, false, true, false, true, false], false, [true, true, true, false, false] ++ REST⟩⟩
+      = some ⟨.E, 19, ⟨[true, true, true, true, true, true, true, true, false, false, true, false, true, false, true, false, true, false, true, false], false, [false] ++ REST⟩⟩ := by rfl
+
+/-- **`p1t`** — the fixed 99-step opening of `topEntry` (P1 ∘ T), `g`-independent, `∀ REST`. -/
+theorem p1t (p : Int) (REST : List Bool) :
+    steps 99 ⟨.E, p, ⟨[false], false,
+        false :: (pow10 4 ++ (ones 9 ++ (false :: false :: REST)))⟩⟩
+      = some ⟨.E, p + 19, ⟨[true, true, true, true, true, true, true, true, false, false, true, false, true, false, true, false, true, false, true, false], false, [false] ++ REST⟩⟩ := by
+  have h0 : steps 99 ⟨.E, 0, ⟨[false], false, [false, true, false, true, false, true, false, true, false, true, true, true, true, true, true, true, true, true, false, false] ++ REST⟩⟩ = some ⟨.E, 19, ⟨[true, true, true, true, true, true, true, true, false, false, true, false, true, false, true, false, true, false, true, false], false, [false] ++ REST⟩⟩ := by
+    rw [show (99:Nat) = 25 + (25 + (25 + 24)) from by decide, steps_add, p1tc0 REST, someBind,
+        steps_add, p1tc1 REST, someBind, steps_add, p1tc2 REST, someBind]
+    exact p1tc3 REST
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  show steps 99 ⟨.E, p, ⟨[false], false, [false, true, false, true, false, true, false, true, false, true, true, true, true, true, true, true, true, true, false, false] ++ REST⟩⟩ = _
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms p1t
