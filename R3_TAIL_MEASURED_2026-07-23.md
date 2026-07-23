@@ -44,16 +44,8 @@ Eight generations of raw data:
 | 7 | odd | `descIn 13` | 15 | 14 | 778 716 | `1^20` then `0010101010…` |
 | 8 | even | `descIn 15` | 16 | 15 | 99 112 | `0010010101…` |
 
-- **even g: entry = `descIn (K−1)`.** Confirmed at g=2 and g=4.
-- **odd g: entry = `descIn (K−2)`.** Confirmed at g=1 and g=3 — one level LOWER than
-  the even family, and the whole approach costs ~6× more.
-- **The comb is exact at every entry**: `(01)^{2^{k−1}}` — 64/256/256/1024 at k=7/9/9/11.
-  `descIn` is the right cut; `headLaw` applies verbatim once the entry is reached.
-- **The odd decoration is visible in the marker**: odd g's marker begins with a run of
-  exactly **twenty 1s** at BOTH g=1 and g=3; even g's begins with the nested comb prefix
-  `001001010100101010010101`, which extends by one layer from g=2 to g=4 (as the ladder
-  nesting predicts). This is the same phenomenon that forced `h_low_even`/`h_low_odd`.
-
+- **even g: entry = `descIn (K−1)`** (g=2,4,6,8); **odd g: entry = `descIn (K−2)`**
+  (g=1,3,5,7) — one level LOWER, and the approach costs ~6× more.
 - **The comb is exact at every one of the eight entries**: `(01)^{2^{k−1}}` = 64 / 256 /
   256 / 512 / 1024 / 4096 / 4096 / 16384. So `descIn` is the right cut at every generation
   and `headLaw` applies verbatim once the entry is reached.
@@ -72,8 +64,11 @@ The design doc recorded 211 / 184\* / 265 at g=2/3/4 with g=3 flagged "does not 
 cleanly". The irregularity was **the cut, not the machine** (METHODS M2). At the right cut:
 
 ```
-tail(g)  =  <entry: parity-dependent>  ∘  (g−1) × frameDigit(27 steps)  ∘  fixedEnd(110)
+tail(g)  =  <entry: parity-dependent>  ∘  (g−1) × frameDigit(27)  ∘  turn(35)  ∘  fixedEnd(75)
 ```
+
+(The `110` below is `turn(35) + fixedEnd(75)`. It was first written as a single 110-step
+`fixedEnd`; Lean refused that statement and the split was corrected — totals unaffected.)
 
 `frameDigit` count, measured: g=1 → **0**, g=2 → **1**, g=3 → **2**, g=4 → **3**. Count = `g−1`.
 
@@ -81,7 +76,7 @@ tail(g)  =  <entry: parity-dependent>  ∘  (g−1) × frameDigit(27 steps)  ∘
 g=4 *before* looking: predicted 3 stages, measured exactly 3
 (44 986 804 → 831 → 858 → 885, three `+27`s).
 
-**`fixedEnd` is bit-for-bit the same at all four generations** — `+35, +6, +6, +6, +6, +51`
+**`turn ∘ fixedEnd` is bit-for-bit the same at all four generations** — `+35, +6, +6, +6, +6, +51`
 = 110 steps, with the identical comb progression 5→6→7→8→9 and the identical local shapes
 `0^1 1^8 0^8 …` → `0^1 1^6 …` → `0^1 1^4 …` → `0^1 1^2 …` → `0^9 1^1 …` → `M1(g+1)`.
 
@@ -89,7 +84,7 @@ g=4 *before* looking: predicted 3 stages, measured exactly 3
 
 | g | ladder-top shape | into the odometer |
 |---|---|---|
-| 1 (odd) | `0^13 1^1021 0^2 1^509 …` — **not** a canonical `cascadeReg` | directly (`+35` to `fixedEnd`) |
+| 1 (odd) | `0^13 1^1021 0^2 1^509 …` — **not** a canonical `cascadeReg` | directly (0 frame digits) |
 | 2 (even) | `cascadeReg 11` = `0^3 1^2045 0^2 1^1021 …` | 74-step block chew, then `+29` to the `0^7 1^1` config |
 | 3 (odd) | `0^13 1^4093 0^2 1^2045 …` — **not** a canonical `cascadeReg` | directly |
 | 4 (even) | `cascadeReg 13`-shaped `0^3 1^8189 …` | block chew, then `+29` to `0^7 1^1` |
