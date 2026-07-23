@@ -1,6 +1,6 @@
 name = "runstructure"
 version = "0.1.0"
-defaultTargets = ["RunStructure", "Template", "Suffix", "O3", "Mirror", "O18", "O2", "O17", "Completion", "X2", "BlankNorm", "HInit", "T7Ladder", "T7Head", "T7DLaw", "T7E1", "T7E2", "T7Tail"]
+defaultTargets = ["RunStructure", "Template", "Suffix", "O3", "Mirror", "O18", "O2", "O17", "Completion", "X2", "BlankNorm", "HInit", "T7Ladder", "T7Head", "T7DLaw", "T7E1", "T7E2", "T7Tail", "T7RegenGen"]
 
 [[lean_lib]]
 name = "RunStructure"
@@ -55,3 +55,6 @@ name = "T7E2"
 
 [[lean_lib]]
 name = "T7Tail"
+
+[[lean_lib]]
+name = "T7RegenGen"
