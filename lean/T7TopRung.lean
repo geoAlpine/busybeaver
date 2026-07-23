@@ -387,3 +387,107 @@ theorem topRung (k : Nat) (hk : 4 ≤ k) (p : Int) (U R : List Bool) :
 example : topGrindSteps 10 = 1045511 := by decide
 example : exitSteps 11 = 536066 := by decide
 example : topGrindSteps 10 + exitSteps 11 = 1581577 := by decide
+
+/-! ### S2 — the 74-step seam `topRung` OUT → `tailLaw` IN
+
+MEASURED (`x2s2_seam.py`) at g=2 (2 851 880 → 2 851 954) and g=4 (44 986 730 → 44 986 804):
+74 steps at both, endpoints agreeing across generations well beyond the head's reach, so the
+episode is level-free.  Head excursion is 11 cells left and 9 right, against exactly that much
+concrete tape — so `X` and `Z` are never read and the `∀ X Z` statement is provable, not merely
+true at `[]` (METHODS M3′ step 2). -/
+
+private theorem s2c0 (X Z : List Bool) :
+    steps 25 ⟨.E, 0, ⟨[false, true, false, false, true, false, true, false, true, false, false] ++ X, false, [false, false, false, true, true, true, true, true, true] ++ Z⟩⟩
+      = some ⟨.E, 7, ⟨[true, true, true, true, true, true, true, true, true, false, false, true, false, true, false, true, false, false] ++ X, true, [true, true] ++ Z⟩⟩ := by rfl
+
+private theorem s2c1 (X Z : List Bool) :
+    steps 25 ⟨.E, 7, ⟨[true, true, true, true, true, true, true, true, true, false, false, true, false, true, false, true, false, false] ++ X, true, [true, true] ++ Z⟩⟩
+      = some ⟨.C, 6, ⟨[true, true, true, true, true, true, true, true, true, false, true, false, true, false, true, false, false] ++ X, true, [false, true, false] ++ Z⟩⟩ := by rfl
+
+private theorem s2c2 (X Z : List Bool) :
+    steps 24 ⟨.C, 6, ⟨[true, true, true, true, true, true, true, true, true, false, true, false, true, false, true, false, false] ++ X, true, [false, true, false] ++ Z⟩⟩
+      = some ⟨.E, -10, ⟨[false] ++ X, false, [false, false, false, false, false, false, false, true, false, true, false, true, false, true, false, true, false, true, false] ++ Z⟩⟩ := by rfl
+
+/-- **S2 — the ladder-top → tail seam, ∀ position, ∀ left tail, ∀ right tail.**  74 steps. -/
+theorem seam74 (p : Int) (X Z : List Bool) :
+    steps 74 ⟨.E, p, ⟨[false, true, false, false, true, false, true, false, true, false, false]
+        ++ X, false, [false, false, false, true, true, true, true, true, true] ++ Z⟩⟩
+      = some ⟨.E, p - 10, ⟨[false] ++ X, false, [false, false, false, false, false, false, false, true, false, true, false, true, false, true, false, true, false, true, false] ++ Z⟩⟩ := by
+  have h0 : steps 74 ⟨.E, 0, ⟨[false, true, false, false, true, false, true, false, true, false, false] ++ X, false, [false, false, false, true, true, true, true, true, true] ++ Z⟩⟩ = some ⟨.E, -10, ⟨[false] ++ X, false, [false, false, false, false, false, false, false, true, false, true, false, true, false, true, false, true, false, true, false] ++ Z⟩⟩ := by
+    rw [show (74:Nat) = 25 + (25 + 24) from by decide, steps_add, s2c0 X Z, someBind,
+        steps_add, s2c1 X Z, someBind]
+    exact s2c2 X Z
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms seam74
+
+/-- **`topRungSeam`** — `topRung ∘ seam74`.  The ladder's last rung and the 74-step seam, composed:
+from the canonical `cascadeReg k` (with the degenerate layer `0 0 1` and the seam's fixed 9-cell
+marker prefix) to exactly `tailLaw`'s IN shape. -/
+theorem topRungSeam (k : Nat) (hk : 4 ≤ k) (p : Int) (X R : List Bool) :
+    steps (topGrindSteps k + exitSteps (k + 1) + 74)
+        (cascadeReg k 1 p
+          (false :: false :: true ::
+            (false :: false :: true :: false :: true :: false :: true :: false :: false :: X))
+          (zeros (2 ^ k) ++ R))
+      = some ⟨.E, p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int) - 2 ^ (k + 1) - 10,
+          ⟨false :: X, false,
+            [false, false, false, false, false, false, false, true, false, true, false, true,
+             false, true, false, true, false, true, false]
+            ++ (ones (2 ^ (k + 1) - 9) ++ (false :: false ::
+                  (descCascade (k - 2) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩ := by
+  have h9 : (9 : Nat) ≤ 2 ^ (k + 1) := by
+    have h : (2:Nat) ^ 4 ≤ 2 ^ (k + 1) := Nat.pow_le_pow_right (by decide) (by omega)
+    have : (2:Nat) ^ 4 = 16 := by decide
+    omega
+  rw [steps_add,
+      topRung k hk p
+        (false :: false :: true :: false :: true :: false :: true :: false :: false :: X) R,
+      someBind]
+  show steps 74 ⟨.E, _, ⟨pow01 1 ++ _, false,
+      false :: false :: false :: (ones (2 ^ (k + 1) - 3) ++ (false :: false ::
+        (descCascade (k + 1 - 3) ++ (false :: false :: (zeros 7 ++ R)))))⟩⟩ = _
+  rw [show (2:Nat) ^ (k + 1) - 3 = 6 + (2 ^ (k + 1) - 9) from by omega, ones_add,
+      show k + 1 - 3 = k - 2 from by omega]
+  exact seam74 _ X
+    (ones (2 ^ (k + 1) - 9) ++ (false :: false ::
+      (descCascade (k - 2) ++ (false :: false :: (zeros 7 ++ R)))))
+
+#print axioms topRungSeam
+
+/-- The right tail `seam74` hands to `tailLaw`, as a function of the level and the outer tail. -/
+def seamZ (k : Nat) (R : List Bool) : List Bool :=
+  [false, false, false, true, false, true, false, true, false, true, false, true, false, true,
+   false] ++ (ones (2 ^ (k + 1) - 9) ++ (false :: false ::
+      (descCascade (k - 2) ++ (false :: false :: (zeros 7 ++ R)))))
+
+/-- **`topRungToMilestone`** — `topRung ∘ seam74 ∘ tailLaw`, `∀k ∀j`.  From the ladder's last
+canonical `cascadeReg k` all the way onto the next milestone's frame: the whole exit of the
+doubling phase, in `topGrindSteps k + exitSteps (k+1) + 74 + (27j + 110)` steps. -/
+theorem topRungToMilestone (k j : Nat) (hk : 4 ≤ k) (p : Int) (L R : List Bool) :
+    steps (topGrindSteps k + exitSteps (k + 1) + 74 + (27 * j + 110))
+        (cascadeReg k 1 p
+          (false :: false :: true ::
+            (false :: false :: true :: false :: true :: false :: true :: false :: false ::
+              frameL j (turnWord ++ (endWord ++ (zeros 11 ++ L)))))
+          (zeros (2 ^ k) ++ R))
+      = some ⟨.E, p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int) - 2 ^ (k + 1) - 10
+              - 7 * (j : Int) - 26,
+          ⟨zeros 10 ++ L, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false :: frameZ j (seamZ k R))))⟩⟩ := by
+  rw [steps_add,
+      topRungSeam k hk p (frameL j (turnWord ++ (endWord ++ (zeros 11 ++ L)))) R, someBind]
+  exact tailLaw j _ L (seamZ k R)
+
+-- ANTI-VACUITY (METHODS M4): the composed exit cost at g=2 (k = g+8 = 10, j = g−1 = 1) must be
+-- the MEASURED cascadeReg 10 @1 270 303 → M1(3) @2 852 091 = 1 581 788 steps.
+example : topGrindSteps 10 + exitSteps 11 + 74 + (27 * 1 + 110) = 1581788 := by decide
+-- and at g=4 (k = 12, j = 3): cascadeReg 12 @44 986 730 is 74 steps before the tail odometer,
+-- whose own start was measured at 44 986 804; the tail then costs 27·3 + 110 = 191.
+example : 74 + (27 * 3 + 110) = 265 := by decide
+
+#print axioms seamZ
+#print axioms topRungToMilestone
