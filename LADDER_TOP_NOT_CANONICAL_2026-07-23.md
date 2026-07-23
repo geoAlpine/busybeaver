@@ -86,3 +86,68 @@ rung dynamically; only its endpoints are outside the `regenIn`/`cascadeReg` fami
 - Nothing here says `ladderToCascade` is wrong — it is green and true; the finding is about
   **where the orbit is**, not about the theorem.
 - No machine decided. No label upgraded. `x2` remains `[OPEN]`.
+
+---
+
+# ADDENDUM (same day) — the gap reduces to ONE generalization of an already-proven theorem
+
+## 5. `topRung` decomposed exactly
+
+The g=2 top rung, `cascadeReg 10 @1 270 303 → cascadeReg-11-shape @2 851 880`, splits at the
+intermediate config @2 315 814 into two pieces whose costs are **exactly** the library's own
+closed forms:
+
+| piece | measured | library | status |
+|---|---|---|---|
+| `cascadeReg 10 → (regenIn 11 with an empty comb)` | 1 045 511 | `topGrindSteps 10` = 1 045 511 | **`cascadeReg_topgrind` is ∀ marker — it ALREADY applies at the top** |
+| `(regenIn 11, empty comb) → cascadeReg-11-shape` | 536 066 | `exitSteps 11` = 536 066 | needs `RegenLaw` with a free comb |
+| total | 1 581 577 | | |
+
+The intermediate config is `regenIn 11` **with the comb `pow01 1022` absent** — which is
+exactly the shape `cascadeReg_topgrind`'s ∀-marker OUT produces when the marker's next
+ladder layer `0 0 1 (01)^{2^k−2}` has degenerated to `0 0 1` (measured: at the ladder top the
+marker's layer carries `pow01 0`).
+
+## 6. The comb is CARRIED, never READ `[MEASURED]`
+
+During the 536 066-step REGEN segment the head descends **exactly 2 049 cells** into the left
+— the length of `ones(2^11−3) ++ [0,1,0,0,1]` — and **never enters the comb region**.
+
+And the comb count is conserved +1: `regenIn`'s comb `pow01 a` becomes `cascadeReg`'s
+`pow01 (a+1)`. Canonical: `a = 2^{k−1}−2 → 2^{k−1}−1 = 1 + (2^{k−1}−2)` ✓. At the top:
+`a = 0 → 1` — and the measured top OUT comb is **1**. Exactly.
+
+## 7. `RegenLawGen` — stated, and TRUE at five levels
+
+```lean
+def regenInGen (k) (p) (z) (T R) : Cfg :=
+  ⟨.E, p, ⟨ones (2^k − 3) ++ (false::true::false::false::true:: T), false,
+      false :: (descCascade (k−4) ++ (zeros z ++ R))⟩⟩
+def cascadeRegGen (k) (p) (T R) : Cfg :=
+  ⟨.E, p, ⟨pow01 1 ++ T, false, <cascadeReg k's right>⟩⟩
+
+RegenLawGen k :  steps (exitSteps k) (regenInGen k p (2^{k−1}+9) T R)
+                   = some (cascadeRegGen k (p − 2^k) T R)      -- ∀ T
+```
+
+`regenIn`'s fixed comb `pow01 (2^{k−1}−2) ++ marker` is replaced by a single free tail `T`.
+
+**Verified `true` by `#eval`** at k = 4, 5, 6, 7, 8 with `T := []` (the degenerate case the
+ladder top presents) and with arbitrary non-empty `T`; and the CONTROL that the existing
+`RegenLaw` is exactly the instance `T := pow01 (2^{k−1}−2) ++ marker` also evaluates `true`.
+So `RegenLawGen` is a strict generalization that specializes to the proven law.
+
+## 8. The target, precisely
+
+```
+topRung k  =  cascadeReg_topgrind k   [PROVEN, ∀ marker]
+            ∘ RegenLawGen (k+1)       [TRUE at 5 levels, UNPROVEN ∀k]
+```
+
+So the ~75 % of the doubling phase that has no theorem reduces to **one generalization of
+`regenLaw_closed` in a single parameter** — the comb count — which the measurement says the
+machine never reads. That is an `X2.lean`-scale refactor (the proof chain
+`regenLaw_all_of_trailLaw_all ∘ trailLaw_all` must be re-run with the comb free), not a new
+mathematical obstacle.
+
+**Not proven. `#eval` at five levels is evidence, not a theorem.** No label is upgraded.
