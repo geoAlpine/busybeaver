@@ -470,3 +470,18 @@ theorem leadOut_allGenW (k : Nat) (hk : 6 ≤ k) (p : Int) (W R : List Bool) :
   omega
 
 #print axioms leadOut_allGenW
+
+/-! ### The last gap, stated precisely
+
+`regenLawGenC_ge7` (the exit REGEN `∀ comb`) is now a pure assembly of GREEN parts:
+
+  `leadOut_allGenW` ∘ `interiorFold_lower_expl` ∘ `trailFloorRegen` ∘ `trailOut_allGenC`
+
+split by `framingArith k hk` with `+ 4*c` on the trailing chunk.  The one piece still to write is
+the **anchor** — the `c`-analogue of `regenOutGen_anchor_forced`, which pins the OUT position to
+`p − 2^k − 2c`.  That proof is the same tape-length argument, needing four length lemmas
+(`regenInGenW`/`cascadeRegGenC`, left and right); the extra `pow10 c` on the IN left and
+`zeros (2c)` on the OUT right are what shift the displacement by `−2c`.
+
+With that anchor, `regenLawGenC_ge7` closes, `topRungLc_of_regenLawGenLc` (already GREEN) loses
+its hypothesis, and the odd branch is unconditional. -/
