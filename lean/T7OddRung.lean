@@ -435,3 +435,38 @@ theorem trailOut_allGenC (k : Nat) (hk : 6 ≤ k) (c : Nat) (p : Int) (U R : Lis
 
 #print axioms zeros_comm3
 #print axioms trailOut_allGenC
+
+/-- `regenInGen` with the REGEN word's tail freed. -/
+def regenInGenW (k : Nat) (p : Int) (z : Nat) (W R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨regenWordW k W, false, false :: (descCascade (k - 4) ++ (zeros z ++ R))⟩⟩
+
+/-- **`leadOut_allGenW`** — `leadOut_allGen` with the tail freed; `genLead` already carries the
+REGEN word as an opaque argument, so the generalisation is free. -/
+theorem leadOut_allGenW (k : Nat) (hk : 6 ≤ k) (p : Int) (W R : List Bool) :
+    steps (leadSteps k) (regenInGenW k p (2 ^ (k - 1) + 9) W R)
+      = some (regenIn 4 (p + 2 ^ (k - 1) - k + 4) (2 ^ (k - 1) + 1)
+          (ascMarker 4 (k - 6) (regenWordW k W)) R) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have hz : zeros (2 ^ (n + 6 - 1) + 9) ++ R
+      = zeros 9 ++ (zeros (2 ^ (n + 6 - 1)) ++ R) := by
+    rw [show 2 ^ (n + 6 - 1) + 9 = 9 + 2 ^ (n + 6 - 1) from by omega, zeros_add,
+      List.append_assoc]
+  have hpad : zeros (2 ^ (n + 6 - 1) + 1) ++ R
+      = zeros 1 ++ (zeros (2 ^ (n + 6 - 1)) ++ R) := by
+    rw [show 2 ^ (n + 6 - 1) + 1 = 1 + 2 ^ (n + 6 - 1) from by omega, zeros_add,
+      List.append_assoc]
+  show steps (leadSteps (n + 6)) ⟨.E, p, ⟨regenWordW (n + 6) W, false,
+      false :: (descCascade (n + 6 - 4) ++ (zeros (2 ^ (n + 6 - 1) + 9) ++ R))⟩⟩ = _
+  rw [regenIn_word,
+    show leadSteps (n + 6) = leadRec n from by
+      show leadRec (n + 6 - 6) = _; rw [show n + 6 - 6 = n from by omega],
+    show n + 6 - 4 = n + 2 from by omega, hz,
+    genLead n p (regenWordW (n + 6) W) (zeros (2 ^ (n + 6 - 1)) ++ R),
+    show n + 6 - 6 = n from by omega, hpad]
+  refine congrArg some ?_
+  refine cfgPos ?_
+  rw [show n + 6 - 1 = n + 5 from by omega]
+  push_cast
+  omega
+
+#print axioms leadOut_allGenW
