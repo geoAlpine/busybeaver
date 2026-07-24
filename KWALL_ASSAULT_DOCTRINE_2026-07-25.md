@@ -226,3 +226,17 @@ rank-2 構造が floor を生き延びる事実は新しい。`route22_kernel_in
 
 安価・中価格の内部攻撃面は本作戦でほぼ掃き終えた。以後の内部フロンティアは実質
 **「包囲（Tier 0）＋生成器 1 発（#18）＋新数学建設（Tier 2）」**に収束する。
+
+## X. o17 odometer-attack verdict (2026-07-25) — (b) new characterization, no crack
+
+Tick-successor IS finite-state (bounded crossing number 9, 38-symbol alphabet) [MEASURED] — the
+Mahler no-gos genuinely do not transfer. BUT each odometer *decidability* weapon is blocked by a
+pinned mechanism: the orbit is DISSIPATIVE (leftward Cauchy, not recurrent), the LSB alphabet
+ESCAPES every bound (no finite-base adic/skew model), and the gate (halt-eligible) times are
+TOWER-SPARSE (steps 5,22,44,101,314,724,2005,1072566, then NONE to 2e11; ratio >=186000x). ANS
+pumping kill: an infinite ANS-recognizable set cannot have gap ratios -> inf, so "marker never
+becomes even" is not Buchi-Bruyere decidable. o17 stays (K), a genuinely new hardness cell.
+Verdict: tool1 -> (b), tools 2/3/4/5 -> (c). route18_o17_{numeration,tickpasses,crossings}.py.
+
+**Campaign final (11 attacks): 0 machines moved impossible->possible; 2 kernels final (Mahler +
+o17); each flank now has a conjecture-free / pinned-mechanism witness.**
