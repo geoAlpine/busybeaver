@@ -485,3 +485,120 @@ the **anchor** — the `c`-analogue of `regenOutGen_anchor_forced`, which pins t
 
 With that anchor, `regenLawGenC_ge7` closes, `topRungLc_of_regenLawGenLc` (already GREEN) loses
 its hypothesis, and the odd branch is unconditional. -/
+
+/-! ### Tape-length lemmas for the `W`/`C` shapes, and the `c`-anchor -/
+
+theorem regenInGenW_left_length (k : Nat) (hk : 4 ≤ k) (p : Int) (z : Nat) (W R : List Bool) :
+    (regenInGenW k p z W R).tape.left.length + 3 = 2 ^ k + 1 + W.length := by
+  have h4 : (4 : Nat) ≤ 2 ^ k := by
+    have h1 : (2:Nat)^2 ≤ 2^k := Nat.pow_le_pow_right (by decide) (by omega)
+    have h2 : (2:Nat)^2 = 4 := by decide
+    omega
+  show (ones (2 ^ k - 3) ++ (false :: W)).length + 3 = _
+  rw [List.length_append, ones_length,
+      show (false :: W).length = 1 + W.length from by simp only [List.length_cons]; omega]
+  omega
+
+theorem regenInGenW_right_length (k : Nat) (hk : 4 ≤ k) (p : Int) (z : Nat) (W R : List Bool) :
+    (regenInGenW k p z W R).tape.right.length + k + 2 = 2 ^ (k - 1) + z + R.length :=
+  regenIn_right_length k hk p z [] R
+
+theorem cascadeRegGenC_left_length (k : Nat) (p : Int) (c : Nat) (U R : List Bool) :
+    (cascadeRegGenC k p c U R).tape.left.length = 2 + U.length := by
+  show (pow01 1 ++ U).length = _
+  rw [List.length_append, pow01_length]
+
+theorem cascadeRegGenC_right_length (k : Nat) (hk : 4 ≤ k) (p : Int) (c : Nat) (U R : List Bool) :
+    (cascadeRegGenC k p c U R).tape.right.length + k = 2 ^ (k + 1) + 7 + R.length + 2 * c := by
+  have h := cascadeRegGen_right_length k hk p U R
+  show (zeros (2 * c) ++ (cascadeRegGen k p U R).tape.right).length + k = _
+  rw [List.length_append, zeros_length]
+  omega
+
+/-- **`regenOutGenC_anchor_forced`** — the `c`-analogue of `regenOutGen_anchor_forced`: the extra
+`pow10 c` on the IN left and `zeros (2c)` on the OUT right shift the forced anchor by `−2c`. -/
+theorem regenOutGenC_anchor_forced (k : Nat) (hk : 4 ≤ k) (n c : Nat) (p P : Int)
+    (U R : List Bool)
+    (h : steps n (regenInGenW k p (2 ^ (k - 1) + 9)
+          (pow10 c ++ (true :: false :: false :: true :: U)) R)
+        = some (cascadeRegGenC k P c U R)) :
+    P = p - 2 ^ k - 2 * (c : Int) := by
+  have hL := steps_left_mono n _ _ h
+  have hR := steps_right_mono n _ _ h
+  have hp1 : (regenInGenW k p (2 ^ (k - 1) + 9)
+      (pow10 c ++ (true :: false :: false :: true :: U)) R).pos = p := rfl
+  have hp2 : (cascadeRegGenC k P c U R).pos = P := rfl
+  rw [hp1, hp2] at hL hR
+  have hW : (pow10 c ++ (true :: false :: false :: true :: U) : List Bool).length
+      = 2 * c + 4 + U.length := by
+    rw [List.length_append, pow10_length]
+    simp only [List.length_cons]
+    omega
+  have hl1 := regenInGenW_left_length k hk p (2 ^ (k - 1) + 9)
+    (pow10 c ++ (true :: false :: false :: true :: U)) R
+  rw [hW] at hl1
+  have hl2 := cascadeRegGenC_left_length k P c U R
+  have hr1 := regenInGenW_right_length k hk p (2 ^ (k - 1) + 9)
+    (pow10 c ++ (true :: false :: false :: true :: U)) R
+  have hr2 := cascadeRegGenC_right_length k hk P c U R
+  obtain ⟨LI, hLI⟩ : ∃ t, (regenInGenW k p (2 ^ (k - 1) + 9)
+    (pow10 c ++ (true :: false :: false :: true :: U)) R).tape.left.length = t := ⟨_, rfl⟩
+  obtain ⟨RI, hRI⟩ : ∃ t, (regenInGenW k p (2 ^ (k - 1) + 9)
+    (pow10 c ++ (true :: false :: false :: true :: U)) R).tape.right.length = t := ⟨_, rfl⟩
+  obtain ⟨LO, hLO⟩ : ∃ t, (cascadeRegGenC k P c U R).tape.left.length = t := ⟨_, rfl⟩
+  obtain ⟨RO, hRO⟩ : ∃ t, (cascadeRegGenC k P c U R).tape.right.length = t := ⟨_, rfl⟩
+  rw [hLI] at hL hl1
+  rw [hLO] at hL hl2
+  rw [hRI] at hR hr1
+  rw [hRO] at hR hr2
+  have hk1 : (2 : Nat) ^ k = 2 * 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 1 := ⟨k - 1, by omega⟩
+    rw [show e + 1 - 1 = e from by omega, Nat.pow_succ]; omega
+  have hk2 : (2 : Nat) ^ (k + 1) = 2 * 2 ^ k := by rw [Nat.pow_succ]; omega
+  have hge : (4 : Nat) ≤ 2 ^ (k - 1) := by
+    obtain ⟨e, rfl⟩ : ∃ e, k = e + 3 := ⟨k - 3, by omega⟩
+    rw [show e + 3 - 1 = e + 2 from by omega]; exact four_le_pow e
+  have hki : ((2 : Int)) ^ k = ((2 ^ k : Nat) : Int) := by push_cast; rfl
+  rw [hki]
+  push_cast at hL hR ⊢
+  omega
+
+#print axioms regenOutGenC_anchor_forced
+
+/-- **`regenLawGenC_ge7`** — THE EXIT REGEN, `∀ comb`.  `c = 0` is `regenLawGen_ge7`;
+`c = Lc − 1` is the odd branch.  Assembly:
+`leadOut_allGenW ∘ interiorFold ∘ trailFloorRegen ∘ trailOut_allGenC`, split by `framingArith`
+with `+4c` on the trailing chunk, anchored by `regenOutGenC_anchor_forced`. -/
+theorem regenLawGenC_ge7 (k : Nat) (hk : 7 ≤ k) (c : Nat) (U R : List Bool) :
+    steps (exitSteps k + 4 * c)
+        (regenInGenW k 0 (2 ^ (k - 1) + 9) (pow10 c ++ (true :: false :: false :: true :: U)) R)
+      = some (cascadeRegGenC k (0 - 2 ^ k - 2 * (c : Int)) c U R) := by
+  have hcomp : ∃ P : Int, steps (exitSteps k + 4 * c)
+      (regenInGenW k 0 (2 ^ (k - 1) + 9)
+        (pow10 c ++ (true :: false :: false :: true :: U)) R)
+      = some (cascadeRegGenC k P c U R) := by
+    obtain ⟨q', hfold⟩ := interiorFold_lower_expl (k - 6) (by omega)
+        (fun m hm _ => regenLaw_closed m hm)
+        ((0 : Int) + 2 ^ (k - 1) - (k : Int) + 4)
+        (regenWordW k (pow10 c ++ (true :: false :: false :: true :: U))) (zeros 32 ++ R)
+    rw [show (k - 6) - 1 = k - 7 from by omega, foldMarker_eq_depStack k hk] at hfold
+    refine ⟨(q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44 - 2 ^ k - 2 * (c : Int), ?_⟩
+    have ht := trailOut_allGenC k (by omega) c ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) U R
+    rw [show ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) + 2 ^ k - (k : Int) - 44
+        = q' - 2 ^ 4 from by omega] at ht
+    rw [show exitSteps k + 4 * c
+        = leadSteps k + interiorFoldSteps (k - 6) + exitSteps 4 + (trailSteps k + 4 * c) from by
+          rw [framingArith k hk]; omega,
+      steps_add, steps_add, steps_add,
+      leadOut_allGenW k (by omega) 0 (pow10 c ++ (true :: false :: false :: true :: U)) R,
+      someBind, leadOut_is_interiorIn k hk _ _ R, hfold, someBind]
+    rw [show (zeros 32 ++ R : List Bool) = zeros 16 ++ (zeros 16 ++ R) from by
+          rw [← List.append_assoc, ← zeros_add],
+      trailFloorRegen q'
+        (depStack k (regenWordW k (pow10 c ++ (true :: false :: false :: true :: U))))
+        (zeros 16 ++ R), someBind]
+    exact ht
+  obtain ⟨P, hP⟩ := hcomp
+  rw [hP, regenOutGenC_anchor_forced k (by omega) (exitSteps k + 4 * c) c 0 P U R hP]
+
+#print axioms regenLawGenC_ge7
