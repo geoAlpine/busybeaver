@@ -794,3 +794,13 @@ example : 9 + 1 - 3 = 7 := by decide                   -- the cascade index `k+1
 example : 2 ^ (11 + 1) - 3 = 4093 := by decide
 example : 2 ^ (8 + 3) - 3 = 2045 := by decide
 example : 11 + 1 - 3 = 9 := by decide
+
+-- ANTI-VACUITY (METHODS M4): the head+ladder spans, MEASURED, so any future `oddSpine`
+-- restatement must reproduce them.
+--   even g=2: descIn 9 @734 759 -> cReg 10 @1 270 303
+--   odd  g=3: descIn 9 @2 900 995 -> cReg 11 @5 018 196   (one rung higher, hence longer)
+example : 1270303 - 734759 = 535544 := by decide
+example : 5018196 - 2900995 = 2117201 := by decide
+-- the odd span is NOT the even span plus one bare rung: exitSteps 10 + topGrindSteps 10 differs.
+example : exitSteps 10 + topGrindSteps 10 = 1181961 := by decide
+example : 2117201 - 535544 = 1581657 := by decide
