@@ -41,16 +41,33 @@ ask sharply: **is there a (K)-tagged machine whose carry is BOUNDED for a struct
 specific to the machine (not orbit statistics)?** Such a machine would be TEMPLATE-class despite
 involving 3 — a real impossible→possible move. Candidates (agents testing now):
 
-- **o17 (odometer, digit-step 3).** A base-≈3 *counter*, not a `⌊μc⌋` map. Odometer carries
-  MIGHT be bounded per the "single-separator invariant" (separators stay single) — if that invariant
-  is provable by a **bounded/local** argument, o17's carry is transparent and o17 is template-class.
-  If the invariant needs orbit-specific digit statistics, o17 is genuinely (K). [AGENT A — pending]
+- **o17 (odometer, digit-step 3).** [AGENT A — DONE → (c), CONJECTURE-FREE no-transport proof.]
+  Re-derived cell-for-cell. o17 is a uniquely-ergodic ISOMETRIC base-3 carrying odometer (no
+  Mahler `⌊μc⌋` kernel — the "≈×8" tag was an in-flight carry-buffer artifact). **Halt = left-
+  frontier overflow (marker block becomes even), NOT an interior `00` gap** (corrects the old
+  spec). The single-separator invariant IS bounded-provable but is **irrelevant to halting** — the
+  chain "single-separator ⟹ no `00` ⟹ non-halt" breaks at the 2nd arrow (transient multi-`0` gaps
+  occur in halters AND non-halters). **Decisive [PROVEN, conjecture-free]:** the family
+  `C(3j) = 0^∞[A0]1^{3j}0^∞` shares an IDENTICAL bounded left-window yet has non-monotone halt fate
+  (halters {2,4,5,7,8,…} vs non-halters {1,3,6,9,…} interleaved, no modulus). So halt is provably
+  NOT a bounded-window / transparent-carry function ⟹ **no x2-style exact transport can exist.**
+  o17 is (K) by a DIFFERENT mechanism than Mahler: a carry-overflow / marker-parity halt whose
+  fate depends on the whole unbounded Collatz-irregular digit string (carry opaque at the TOP digit).
+  `route_o17_reverify.py`, `route_o17_locality.py`.
 - **o10 (nested refill) / o15 (parity-irregular).** The OUTER refill/collision layer might be
   transparent even though the inner `μ=3/2`/`8/3` layer is not — IF the halt predicate touches only
   the outer layer. [AGENT B — pending]
-- **Eventual-transparency (Antihydra seed 8).** Does the orbit eventually enter a bounded-carry
-  regime, or admit a transport off a provably-FINITE exceptional set? The heavy-tailed depth
-  (`E[K²]` open) is the suspected obstruction. [AGENT C — pending]
+- **Eventual-transparency (Antihydra seed 8).** [AGENT C — DONE → (c), with a sharp new pin.]
+  The transparent regime EXISTS and is PROVEN: within each odd run of length `K` the orbit is an
+  exact bounded-carry template segment `c_j = 1 + 3^j·2^{K−j}·m` (Countdown lemma). The ONLY
+  unpredictable event is the renewal draw `K′ = v₂(3h−1)` (needs unbounded 2-adic lookahead). The
+  finite-`E` crux: `E(D*) = {renewals with K′>D*}` has density `→ 2^{−D*} > 0`, so **E is positive-
+  density = INFINITE, never finite** — a finite-certificate hybrid is the wrong shape. "Eventual
+  bounded carry (E finite)" ⟺ orbit eventually avoids `{v₂(c−1)>D*}` ⟺ the (K) kernel itself,
+  (K)-equivalent in BOTH directions. `route18_depth_process.py`, `route18_transparency_crux.py`.
+  This sharpens the boundary: the transparent segments (odd runs) never merge into an eventual
+  regime because the giant-draw exceptions recur at fixed positive frequency `2^{−D*}` at every
+  depth — exactly the `E[K²]<∞` / single-orbit-equidistribution gap.
 
 ## Honest prior and value
 
