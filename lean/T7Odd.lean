@@ -303,3 +303,83 @@ example : 46949 + 6 * 2 ^ 8 = 6080 * 2 ^ 3 + 15 * 3 - 200 := by decide
 example : 6 * 2 ^ (3 + 5) = 6 * 2 ^ 8 := by decide
 
 #print axioms topEntryOdd
+
+/-! ### The odd branch's landing — `eChewFold` onto `descIn (g+6)` -/
+
+/-- **`odDdescIn`** — the final `eChewFold`: `descCascade (2h+8)`'s leading block
+`2^{2h+10}−3` splits as `2·2^{2h+8} + (2^{2h+9}−3)`, so chewing `2^{2h+8}` tiles leaves exactly
+`descIn (2h+9)`'s block with comb `pow01 (2^{2h+8})`. -/
+theorem odDdescIn (h : Nat) (LL TT : List Bool) :
+    steps (6 * 2 ^ (2 * h + 8)) (odD h LL TT)
+      = some (descIn (2 * h + 9)
+          (-5 + 19 + 7 * ((2 * h + 3 : Nat) : Int) + 17
+            + 2 * ((2 ^ (2 * h + 3 + 7) - 7 : Nat) : Int) + 6
+            + 2 * ((2 ^ (2 * h + 8) : Nat) : Int))
+          (ones 20 ++ (false :: false ::
+            (pow10 (2 ^ (2 * h + 3 + 7) - 7) ++ (true :: rUnitsDep (2 * h + 3) (p1tL ++ LL)))))
+          TT) := by
+  have hsplit : (2 : Nat) ^ (2 * h + 10) - 3
+      = 2 * 2 ^ (2 * h + 8) + (2 ^ (2 * h + 9) - 3) := by
+    have e10 : (2:Nat)^(2*h+10) = 4 * 2^(2*h+8) := by
+      rw [show 2*h+10 = (2*h+8)+2 from by omega, Nat.pow_add,
+          show (2:Nat)^2 = 4 from rfl, Nat.mul_comm]
+    have e9 : (2:Nat)^(2*h+9) = 2 * 2^(2*h+8) := by
+      rw [show 2*h+9 = (2*h+8)+1 from by omega, Nat.pow_add,
+          show (2:Nat)^1 = 2 from rfl, Nat.mul_comm]
+    have h8 : 4 ≤ (2:Nat)^(2*h+8) := by
+      have : (2:Nat)^2 ≤ 2^(2*h+8) := Nat.pow_le_pow_right (by decide) (by omega)
+      omega
+    omega
+  show steps (6 * 2 ^ (2 * h + 8))
+      ⟨.E, -5 + 19 + 7 * ((2 * h + 3 : Nat) : Int) + 17
+          + 2 * ((2 ^ (2 * h + 3 + 7) - 7 : Nat) : Int) + 6,
+        ⟨ones 20 ++ (false :: false ::
+          (pow10 (2 ^ (2 * h + 3 + 7) - 7) ++ (true :: rUnitsDep (2 * h + 3) (p1tL ++ LL)))), false,
+         false :: (descCascade (2 * h + 8) ++ TT)⟩⟩ = _
+  rw [show descCascade (2 * h + 8)
+        = ones (2 ^ (2 * h + 10) - 3) ++ (false :: false :: descCascade (2 * h + 7)) from by
+          rw [show 2 * h + 8 = (2 * h + 7) + 1 from by omega, descCascade,
+              show 2 * h + 7 + 3 = 2 * h + 10 from by omega],
+      List.append_assoc, hsplit]
+  show steps (6 * 2 ^ (2*h+8)) ⟨.E, _, ⟨_, false,
+      false :: (ones (2 * 2 ^ (2*h+8) + (2 ^ (2*h+9) - 3)) ++
+        (false :: false :: (descCascade (2*h+7) ++ TT)))⟩⟩ = _
+  rw [eChewFold (2 ^ (2*h+8))
+        (-5 + 19 + 7 * ((2 * h + 3 : Nat) : Int) + 17
+          + 2 * ((2 ^ (2 * h + 3 + 7) - 7 : Nat) : Int) + 6)
+        (2 ^ (2*h+9) - 3)
+        (ones 20 ++ (false :: false ::
+          (pow10 (2 ^ (2*h+3+7) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))))
+        (false :: false :: (descCascade (2*h+7) ++ TT))]
+  refine congrArg some ?_
+  show (⟨.E, _, ⟨pow01 (2 ^ (2*h+8)) ++ _, false,
+      false :: (ones (2 ^ (2*h+9) - 3) ++
+        (false :: false :: (descCascade (2*h+7) ++ TT)))⟩⟩ : Cfg)
+    = ⟨.E, _, ⟨pow01 (2 ^ (2*h+9 - 1)) ++ _, false,
+        false :: (ones (2 ^ (2*h+9) - 3) ++
+          (false :: false :: (descCascade (2*h+9 - 2) ++ TT)))⟩⟩
+  rw [show 2*h+9-1 = 2*h+8 from by omega, show 2*h+9-2 = 2*h+7 from by omega]
+
+/-- **`topEntryOddFull`** — `M6(g) → descIn(g+6)`, every odd `g = 2h+3`, in
+`99 + 15g + (17 + 46(2^{g+7}−7)) + 6 + 6·2^{g+5}` steps `= 6080·2^g + 15g − 200`. -/
+theorem topEntryOddFull (h : Nat) (LL TT : List Bool) :
+    steps ((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+           + 6 * 2 ^ (2 * h + 8))
+        (odA h LL TT)
+      = some (descIn (2 * h + 9)
+          (-5 + 19 + 7 * ((2 * h + 3 : Nat) : Int) + 17
+            + 2 * ((2 ^ (2 * h + 3 + 7) - 7 : Nat) : Int) + 6
+            + 2 * ((2 ^ (2 * h + 8) : Nat) : Int))
+          (ones 20 ++ (false :: false ::
+            (pow10 (2 ^ (2 * h + 3 + 7) - 7) ++ (true :: rUnitsDep (2 * h + 3) (p1tL ++ LL)))))
+          TT) := by
+  rw [steps_add, topEntryOdd h LL TT, someBind]
+  exact odDdescIn h LL TT
+
+-- ANTI-VACUITY (M4): at g=3 the total IS the confirmed odd closed form / measured entry.
+example : (99 + (15 * (2 * 0 + 3) + ((17 + 46 * (2 ^ (2 * 0 + 3 + 7) - 7)) + 6)))
+    + 6 * 2 ^ (2 * 0 + 8) = 48485 := by decide
+example : (48485 : Nat) = 6080 * 2 ^ 3 + 15 * 3 - 200 := by decide
+
+#print axioms odDdescIn
+#print axioms topEntryOddFull
