@@ -653,3 +653,69 @@ example : topGrindSteps 9 + (exitSteps 10 + 4 * 5) = 397085 := by decide
 example : topGrindSteps 11 + (exitSteps 12 + 4 * 5) = 6310941 := by decide
 -- and `c = 0` reproduces the even `topRung`'s cost exactly.
 example : topGrindSteps 10 + (exitSteps 11 + 4 * 0) = 1581577 := by decide
+
+/-! ### `oddTopRungToMilestone` — the odd rung composed with the tail -/
+
+/-- `frameL j (turnWord ++ X)` always begins with `true`; this is its tail. -/
+def frameLV : Nat → List Bool → List Bool
+  | 0, X => [false, true, false, true, true, true, true, true, true, true, true, true,
+             false, false] ++ X
+  | j + 1, X => false :: true :: false :: true :: false :: false :: frameL j (turnWord ++ X)
+
+theorem frameL_turnWord (j : Nat) (X : List Bool) :
+    frameL j (turnWord ++ X) = true :: frameLV j X := by
+  cases j with
+  | zero => rfl
+  | succ j => rfl
+
+/-- The right residue the odd rung hands to `tailLaw` (`c ≥ 1`, so `2c+3 ≥ 5 > 4`). -/
+def oddSeamZ (k c : Nat) (R : List Bool) : List Bool :=
+  zeros (2 * c - 1) ++ (ones (2 ^ (k + 1) - 3) ++ (false :: false ::
+    (descCascade (k + 1 - 3) ++ (false :: false :: (zeros 7 ++ R)))))
+
+theorem zeros_split3 (c : Nat) (hc : 1 ≤ c) (X : List Bool) :
+    (zeros (2 * c) ++ (false :: false :: false :: X) : List Bool)
+      = zeros 4 ++ (zeros (2 * c - 1) ++ X) := by
+  have h1 : (zeros (2 * c) ++ (false :: false :: false :: X) : List Bool)
+      = zeros (2 * c + 3) ++ X := by
+    show zeros (2 * c) ++ (zeros 3 ++ X) = _
+    rw [← List.append_assoc, ← zeros_add]
+  have h2 : (zeros 4 ++ (zeros (2 * c - 1) ++ X) : List Bool) = zeros (2 * c + 3) ++ X := by
+    rw [← List.append_assoc, ← zeros_add, show 4 + (2 * c - 1) = 2 * c + 3 from by omega]
+  rw [h1, h2]
+
+theorem oddSeamZ_split (k c : Nat) (hc : 1 ≤ c) (R : List Bool) :
+    (zeros (2 * c) ++ (false :: false :: false ::
+      (ones (2 ^ (k + 1) - 3) ++ (false :: false ::
+        (descCascade (k + 1 - 3) ++ (false :: false :: (zeros 7 ++ R))))))
+      : List Bool)
+      = zeros 4 ++ oddSeamZ k c R :=
+  zeros_split3 c hc _
+
+/-- **`oddTopRungToMilestone`** — `oddTopRung ∘ tailLaw`, `∀k ∀j ∀c ≥ 1`: from the odd canonical
+`cascadeReg k (c+1)` all the way onto the next milestone's frame.  The even branch needs `seam74`
+here because at `c = 0` the rung leaves only `zeros 3`, one short of `tailLaw`'s `zeros 4`; the odd
+branch's `c ≥ 1` leaves `zeros (2c+3) ≥ zeros 5`, so `tailLaw` fires directly. -/
+theorem oddTopRungToMilestone (k j c : Nat) (hk : 6 ≤ k) (hc : 1 ≤ c) (p : Int) (L R : List Bool) :
+    steps (topGrindSteps k + (exitSteps (k + 1) + 4 * c) + (27 * j + 110))
+        (cascadeReg k (c + 1) p
+          (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L)))
+          (zeros (2 ^ k) ++ R))
+      = some ⟨.E, (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)) - 2 ^ (k + 1)
+              - 2 * (c : Int) - 7 * (j : Int) - 26,
+          ⟨zeros 10 ++ L, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ j (oddSeamZ k c R))))⟩⟩ := by
+  rw [steps_add, oddTopRung k hk c p (frameLV j (endWord ++ (zeros 11 ++ L))) R, someBind]
+  show steps (27 * j + 110)
+      (⟨.E, _, ⟨pow01 1 ++ frameLV j (endWord ++ (zeros 11 ++ L)), false,
+        zeros (2 * c) ++ (false :: false :: false :: _)⟩⟩ : Cfg) = _
+  rw [show (pow01 1 ++ frameLV j (endWord ++ (zeros 11 ++ L)) : List Bool)
+        = false :: frameL j (turnWord ++ (endWord ++ (zeros 11 ++ L))) from by
+          rw [frameL_turnWord]; rfl,
+      oddSeamZ_split k c hc R]
+  exact tailLaw j _ L (oddSeamZ k c R)
+
+#print axioms frameL_turnWord
+#print axioms oddSeamZ_split
+#print axioms oddTopRungToMilestone
