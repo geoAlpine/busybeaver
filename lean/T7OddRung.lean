@@ -284,3 +284,58 @@ theorem foldOut_is_comb_on_suffixIn (n : Nat) (M : List Bool) :
 #print axioms combChewE
 #print axioms combChewEFold
 #print axioms foldOut_is_comb_on_suffixIn
+
+/-! ### Freeing the REGEN word's tail — the keystone for `trailOut_allGen_Lc`
+
+`regenWordGen k U = ones (2^k−3) ++ (false :: (1 0 0 1 · U))` fixes a 4-cell tail.  Freeing that
+tail to an arbitrary word `W` generalises the whole nest/seam chain, and the `Lc` word is then the
+instance `W := pow10 (Lc−1) ++ (1 0 0 1 · U)` (`foldOut_is_comb_on_suffixIn`). -/
+
+/-- `regenWordGen` with its 4-cell tail freed. -/
+def regenWordW (k : Nat) (W : List Bool) : List Bool := ones (2 ^ k - 3) ++ (false :: W)
+
+theorem regenWordW_eq (k : Nat) (U : List Bool) :
+    regenWordW k (true :: false :: false :: true :: U) = regenWordGen k U := rfl
+
+theorem nest_depStackAuxW : ∀ (n a : Nat) (W : List Bool),
+    trailNest (ascBlocks (a + 1) (n + 1)) W
+      = true :: depStackAux n a (regenWordW (a + n + 1) W) := by
+  intro n
+  induction n with
+  | zero =>
+    intro a W
+    show true :: (ones (2 ^ (a + 1) - 3) ++ (false :: W)) = true :: (regenWordW (a + 0 + 1) W)
+    rw [show a + 0 + 1 = a + 1 from by omega]
+    rfl
+  | succ j ih =>
+    intro a W
+    have hx : a + (j + 1) = a + 1 + j := by omega
+    show true :: (ones (2 ^ (a + 1) - 3) ++ (false ::
+        trailNest (ascBlocks (a + 1 + 1) (j + 1)) W))
+      = true :: depStackAux (j + 1) a (regenWordW (a + (j + 1) + 1) W)
+    show _ = true :: (ones (2 ^ (a + 1) - 3) ++ (false :: true ::
+        depStackAux j (a + 1) (regenWordW (a + (j + 1) + 1) W)))
+    rw [hx, ih (a + 1) W]
+
+/-- `nest_depStackGen` with the tail freed. -/
+theorem nest_depStackW (k : Nat) (hk : 6 ≤ k) (W : List Bool) :
+    trailNest (trailBlocks (k - 4)) W
+      = true :: (ones 29 ++ (false :: true :: depStack k (regenWordW k W))) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have h := nest_depStackAuxW n 5 W
+  rw [show (5 : Nat) + n = n + 5 from by omega] at h
+  rw [show n + 5 + 1 = n + 6 from by omega] at h
+  rw [trailBlocks_eq_ascBlocks, show n + 6 - 4 = n + 2 from by omega]
+  show true :: (ones (2 ^ 5 - 3) ++ (false :: trailNest (ascBlocks (5 + 1) (n + 1)) _)) = _
+  rw [h]
+  rfl
+
+/-- `trailSeam_leftGen` with the tail freed. -/
+theorem trailSeam_leftW (k : Nat) (hk : 6 ≤ k) (W : List Bool) :
+    (false :: true :: (ones 29 ++ (false :: true :: depStack k (regenWordW k W))) : List Bool)
+      = false :: trailNest (trailBlocks (k - 4)) W := by
+  rw [nest_depStackW k hk W]
+
+#print axioms nest_depStackAuxW
+#print axioms nest_depStackW
+#print axioms trailSeam_leftW
