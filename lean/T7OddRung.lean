@@ -602,3 +602,54 @@ theorem regenLawGenC_ge7 (k : Nat) (hk : 7 ≤ k) (c : Nat) (U R : List Bool) :
   rw [hP, regenOutGenC_anchor_forced k (by omega) (exitSteps k + 4 * c) c 0 P U R hP]
 
 #print axioms regenLawGenC_ge7
+
+/-- `regenLawGenC_ge7` at an arbitrary start position. -/
+theorem regenLawGenC_closed (k : Nat) (hk : 7 ≤ k) (c : Nat) (p : Int) (U R : List Bool) :
+    steps (exitSteps k + 4 * c)
+        (regenInGenW k p (2 ^ (k - 1) + 9) (pow10 c ++ (true :: false :: false :: true :: U)) R)
+      = some (cascadeRegGenC k (p - 2 ^ k - 2 * (c : Int)) c U R) := by
+  have h0 := regenLawGenC_ge7 k hk c U R
+  have hs := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at hs
+  show steps (exitSteps k + 4 * c) ⟨.E, p, _⟩ = _
+  rw [hs]
+  exact congrArg some (cfgPos (by omega))
+
+/-- The `Lc`-indexed REGEN entry IS the `c`-indexed one, `Lc = c + 1`. -/
+theorem regenInGenLc_eq_W (k : Nat) (p : Int) (z c : Nat) (U R : List Bool) :
+    regenInGenLc k p z (c + 1) U R
+      = regenInGenW k p z (pow10 c ++ (true :: false :: false :: true :: U)) R := by
+  show (⟨.E, p, ⟨ones (2 ^ k - 3) ++ (pow01 (c + 1) ++ (false :: false :: true :: U)), false, _⟩⟩
+    : Cfg) = ⟨.E, p, ⟨ones (2 ^ k - 3) ++ (false ::
+      (pow10 c ++ (true :: false :: false :: true :: U))), false, _⟩⟩
+  rw [pow10_cons_pow01 c (false :: false :: true :: U)]
+  rfl
+
+/-- The `Lc`-indexed landing IS the `c`-indexed one, `Lc = c + 1`. -/
+theorem cascadeRegGenLc_eq_C (k : Nat) (p : Int) (c : Nat) (U R : List Bool) :
+    cascadeRegGenLc k p (c + 1) U R = cascadeRegGenC k p c U R := rfl
+
+/-- **`oddTopRung`** — THE ODD TOP RUNG, UNCONDITIONAL.  `c = 0` (`Lc = 1`) is the even
+`topRung`'s content; `c = 5` (`Lc = 6`) is the odd branch, whose cost
+`topGrindSteps k + exitSteps (k+1) + 20` is the MEASURED one at both generations. -/
+theorem oddTopRung (k : Nat) (hk : 6 ≤ k) (c : Nat) (p : Int) (U R : List Bool) :
+    steps (topGrindSteps k + (exitSteps (k + 1) + 4 * c))
+        (cascadeReg k (c + 1) p (false :: false :: true :: U) (zeros (2 ^ k) ++ R))
+      = some (cascadeRegGenC (k + 1)
+          ((p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)) - 2 ^ (k + 1)
+            - 2 * (c : Int)) c U R) := by
+  rw [steps_add, topgrind_meets_regenLc k (by omega) (c + 1) p U R, someBind,
+      regenInGenLc_eq_W (k + 1) _ (2 ^ k + 9) c U R,
+      show (2 : Nat) ^ k + 9 = 2 ^ (k + 1 - 1) + 9 from by
+        rw [show k + 1 - 1 = k from by omega]]
+  exact regenLawGenC_closed (k + 1) (by omega) c _ U R
+
+#print axioms regenLawGenC_closed
+#print axioms oddTopRung
+
+-- ANTI-VACUITY (METHODS M4): at the odd branch `c = 5` (`Lc = 6`) the rung cost is the MEASURED
+-- one -- g=1 (k=9): 260615 + 136450 + 20 = 397085; g=3 (k=11): 4188167 + 2122754 + 20 = 6311085.
+example : topGrindSteps 9 + (exitSteps 10 + 4 * 5) = 397085 := by decide
+example : topGrindSteps 11 + (exitSteps 12 + 4 * 5) = 6310941 := by decide
+-- and `c = 0` reproduces the even `topRung`'s cost exactly.
+example : topGrindSteps 10 + (exitSteps 11 + 4 * 0) = 1581577 := by decide
