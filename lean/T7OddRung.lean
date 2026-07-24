@@ -93,3 +93,23 @@ example : 4 * (6 - 1) = 20 := by decide
 example : 2 * (6 - 1) = 10 := by decide
 example : exitSteps 10 + 4 * (6 - 1) = 136470 := by decide
 example : exitSteps 12 + 4 * (6 - 1) = 2122774 := by decide
+
+/-! ### The odd top-rung → milestone COST LAW  (M4 anti-vacuity, both generations)
+
+With the `Lc` law measured, the whole odd exit chain has a closed cost:
+
+  `topGrindSteps k + (exitSteps (k+1) + 4*(Lc-1)) + (27*(g-1) + 110)`,  `k = g+8`, `Lc = 6`
+
+i.e. `cascadeReg_topgrind_Lc` ∘ `regenLawGen_Lc` ∘ `tailLaw`.  Both on-orbit odd generations
+pin it exactly, against the instrument's milestone anchors:
+
+* `g = 1`: `cReg9 @335 538 → M1(2) @732 733` = 397 195 steps.
+* `g = 3`: `cReg11 @5 018 196 → M1(4) @11 329 301` = 6 311 105 steps.
+
+Any exponent slip in the eventual `regenLawGen_Lc` build breaks these `decide`s (METHODS M9). -/
+example : topGrindSteps 9 + (exitSteps 10 + 4 * (6 - 1)) + (27 * 0 + 110) = 397195 := by decide
+example : topGrindSteps 11 + (exitSteps 12 + 4 * (6 - 1)) + (27 * 2 + 110) = 6311105 := by decide
+
+-- and the two milestone spans they must equal, stated independently of the formula:
+example : 732733 - 335538 = 397195 := by decide
+example : 11329301 - 5018196 = 6311105 := by decide
