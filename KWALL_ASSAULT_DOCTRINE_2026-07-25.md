@@ -15,7 +15,7 @@ BB(6) の未決 17 機のうち **(K) クラス ~14 機**。相互還元済み�
 |---|---|---|---|
 | **Mahler 核** | 単一軌道の `⌊μⁿ⌋ mod p` 等分布、`μ=2^a/3^b` | Antihydra・o10-inner（μ=3/2, p=2）、o15・o18（μ=8/3, p=3）、o4（×4/3 skew-shift、2026-07-25 #16 で同型確定） | o4-first スカラー `φ(43) < 4/5`（実測 0.3339） |
 | **o17 核** | 等長 base-3 carrying odometer の carry-overflow halt（marker 偶奇） | o17 | 「marker が偶にならない」∀-文 |
-| （保留） | o10-outer / o15-outer 層の透明性 | o10, o15 | Agent B 実行中 |
+| ~~（保留）~~ | o10-outer / o15-outer 層 → **両方 (c) 確定**（07-25）：外層は内側 Mahler 軌道の桁列の読出座標（乗数≠基数）で不透明を構造的に継承。o15 は順序依存 halt（同 multiset・逆運命）で有界要約不可を実証 | o10, o15 | ATTACK_TRANSPARENCY |
 
 ### 「到達不可」の厳密な意味
 「原理的に証明不能」ではない。**試行した全ての内部手法クラスに proven no-go が立ち、残る唯一の
@@ -38,7 +38,8 @@ BB(6) の未決 17 機のうち **(K) クラス ~14 機**。相互還元済み�
 | 6 | 既存 rigidity/equidist 全フレームワーク | Coverage no-go：rank≥2／unipotent／UE／a.e.／deg≥2 — 全仮定が本作用で不成立 | RANK1_AMENABLE_EQUIDISTRIBUTION |
 | 7 | 有限例外集合ハイブリッド（eventual transparency） | `E(D*)` の密度 → `2^{−D*} > 0` = 無限。「E 有限」⟺ (K) 双方向 | route18 (07-25) |
 | 8 | 有界窓／透明-carry 輸送（odometer 側） | o17 族 C(3j)：同一有界窓・異 halt 運命（modulus なし）— conjecture-free | route_o17 (07-25) |
-| 9 | carry の基数変換による透明化 | 2・3 同時透明化不可（乗法独立）= Furstenberg 障害の carry 側 | ATTACK_TRANSPARENCY (07-25) |
+| 9 | carry の基数変換による透明化 | 2・3 同時透明化不可（乗法独立）= Furstenberg 障害の carry 側。判別基準の精密形：**乗数=基数**（木が自己生成 ⟹ ∀-輸送）vs **乗数≠基数**（外層=内側桁列の読出座標 ⟹ 不透明を継承）— 増大 arity 再帰自体は判別基準でない（x2 も持つ） | ATTACK_TRANSPARENCY (07-25) |
+| 9b | 外層/入れ子層の分離（o10 refill・o15 collision） | o10：halt 集合が内側 `⌈3m/2⌉` パリティ列そのもの＋reseed も内側決定（二重継承）。o15：depth 依存（period-3 breaker）＋順序依存 halt（同 multiset 逆運命）で有界窓/可換要約が不可 | o10o15/o15_transport_probe.py (07-25) |
 | 10 | 公開分散探索・community 動員 | 方針除外（数学的理由ではない — 明示記録） | オーナー決定 07-07 |
 
 **墓標総数：** ATTACK_CATALOG 50 項中、墓標 11＋割愛記録 16＋今週閉鎖 4（#16/#17/#21/#30）＋
