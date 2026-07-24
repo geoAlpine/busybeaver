@@ -113,3 +113,110 @@ example : topGrindSteps 11 + (exitSteps 12 + 4 * (6 - 1)) + (27 * 2 + 110) = 631
 -- and the two milestone spans they must equal, stated independently of the formula:
 example : 732733 - 335538 = 397195 := by decide
 example : 11329301 - 5018196 = 6311105 := by decide
+
+/-! ### The topgrind→REGEN seam, `∀ Lc`  (the list algebra the odd branch needs)
+
+`cascadeReg_topgrind_Lc`'s OUT left is `ones (4N+4) ++ (pow10 Lc ++ (true :: marker))`.  With
+`marker = 0 0 1 :: U` this must BE the `Lc`-form of `regenInGen`'s left,
+`ones (2^{k+1}−3) ++ (pow01 Lc ++ (0 0 1 :: U))`.  Two unconditional identities do it; at
+`Lc = 1` they collapse to the `hL` step inside the even `topRung`. -/
+
+/-- `(1 0)^Lc · 1 · M = 1 · (0 1)^Lc · M` — the comb re-phases around the absorbed `1`. -/
+theorem pow10_cons_pow01 : ∀ (Lc : Nat) (M : List Bool),
+    pow10 Lc ++ (true :: M) = true :: (pow01 Lc ++ M) := by
+  intro Lc
+  induction Lc with
+  | zero => intro M; rfl
+  | succ Lc ih =>
+    intro M
+    show true :: false :: (pow10 Lc ++ (true :: M)) = _
+    rw [ih M]
+    rfl
+
+/-- The absorbed-`1` form: `ones n · (1 0)^Lc · 1 · M = ones (n+1) · (0 1)^Lc · M`. -/
+theorem ones_pow10_absorb (n Lc : Nat) (M : List Bool) :
+    ones n ++ (pow10 Lc ++ (true :: M)) = ones (n + 1) ++ (pow01 Lc ++ M) := by
+  rw [pow10_cons_pow01 Lc M, ones_append_true]
+
+#print axioms pow10_cons_pow01
+#print axioms ones_pow10_absorb
+
+-- CONTROL (METHODS M4): at `Lc = 1` this is exactly the even `topRung`'s `hL` shape,
+-- `1 0 1 · M  ↦  0 1 · M` after the `ones` absorb.
+example (M : List Bool) : pow10 1 ++ (true :: M) = true :: (false :: true :: M) := by
+  exact pow10_cons_pow01 1 M
+-- and a genuinely odd instance, `Lc = 6`: twelve comb cells re-phase.
+example (M : List Bool) :
+    pow10 6 ++ (true :: M) = true :: (pow01 6 ++ M) := pow10_cons_pow01 6 M
+
+/-- `regenInGen`, with the comb length freed: `Lc = 1` is `regenInGen` on the nose. -/
+def regenInGenLc (k : Nat) (p : Int) (z Lc : Nat) (T R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨ones (2 ^ k - 3) ++ (pow01 Lc ++ (false :: false :: true :: T)), false,
+      false :: (descCascade (k - 4) ++ (zeros z ++ R))⟩⟩
+
+/-- `regenInGenLc … 1 …` IS `regenInGen`. -/
+theorem regenInGenLc_one (k : Nat) (p : Int) (z : Nat) (T R : List Bool) :
+    regenInGenLc k p z 1 T R = regenInGen k p z T R := rfl
+
+/-- **`topgrind_meets_regenLc`** — the odd branch's first seam, `∀ Lc`: the `∀Lc` topgrind lands
+exactly on the `∀Lc` REGEN entry one level up.  At `Lc = 1` this is the interior step of the even
+`topRung`; at `Lc = 6` it is the odd branch's. -/
+theorem topgrind_meets_regenLc (k : Nat) (hk : 4 ≤ k) (Lc : Nat) (p : Int) (U R : List Bool) :
+    steps (topGrindSteps k)
+        (cascadeReg k Lc p (false :: false :: true :: U) (zeros (2 ^ k) ++ R))
+      = some (regenInGenLc (k + 1) (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int))
+                (2 ^ k + 9) Lc U R) := by
+  rw [cascadeReg_topgrind_Lc k hk Lc p (false :: false :: true :: U) (zeros (2 ^ k) ++ R)]
+  refine congrArg some ?_
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have e1 : 4 * (2 ^ (m + 4 - 1) - 2) + 4 + 1 = 2 ^ (m + 4 + 1) - 3 := by
+    have hm : 1 ≤ 2 ^ m := Nat.one_le_two_pow
+    have h1 : 2 ^ (m + 4 - 1) = 2 ^ m * 8 := by
+      rw [show m + 4 - 1 = m + 3 from by omega, Nat.pow_add]
+    have h2 : 2 ^ (m + 4 + 1) = 2 ^ m * 32 := by
+      rw [show m + 4 + 1 = m + 5 from by omega, Nat.pow_add]
+    omega
+  show (⟨.E, _, ⟨ones (4 * (2 ^ (m + 4 - 1) - 2) + 4)
+      ++ (pow10 Lc ++ (true :: (false :: false :: true :: U))), false,
+      false :: (descCascade (m + 4 - 3) ++
+        (false :: false :: (zeros 7 ++ (zeros (2 ^ (m + 4)) ++ R))))⟩⟩ : Cfg) = _
+  rw [ones_pow10_absorb _ Lc (false :: false :: true :: U), e1,
+      zeros_pad (m + 4) R, show m + 4 - 3 = m + 4 + 1 - 4 from by omega]
+  rfl
+
+#print axioms topgrind_meets_regenLc
+
+/-- `cascadeRegGen` with the `Lc` law's surplus right-hand zeros; `Lc = 1` is `cascadeRegGen`. -/
+def cascadeRegGenLc (k : Nat) (p : Int) (Lc : Nat) (T R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨pow01 1 ++ T, false,
+      zeros (2 * (Lc - 1)) ++ (false :: false :: false :: (ones (2 ^ k - 3) ++ (false :: false ::
+        (descCascade (k - 3) ++ (false :: false :: (zeros 7 ++ R))))))⟩⟩
+
+theorem cascadeRegGenLc_one (k : Nat) (p : Int) (T R : List Bool) :
+    cascadeRegGenLc k p 1 T R = cascadeRegGen k p T R := rfl
+
+/-- **THE ODD TOP RUNG, MODULO ONE LEMMA.**  Given the `∀Lc` REGEN law — the single remaining
+odd-branch obligation, whose shape is fixed by the MEASURED `Lc` law (`span = exitSteps k +
+4(Lc−1)`, `zeros = 2Lc+1`, `x2r1_lcsweep.py`) — the odd top rung composes on the nose:
+`cascadeReg_topgrind_Lc ∘ regenLawGen_Lc`.  Stating it this way is a real theorem (a hypothesis,
+not a `sorry`) and discharges the M7/M8 audit: every register lines up cell-for-cell. -/
+theorem topRungLc_of_regenLawGenLc
+    (H : ∀ (k' : Nat), 4 ≤ k' → ∀ (Lc' : Nat) (p' : Int) (U' R' : List Bool),
+        steps (exitSteps k' + 4 * (Lc' - 1)) (regenInGenLc k' p' (2 ^ (k' - 1) + 9) Lc' U' R')
+          = some (cascadeRegGenLc k' (p' - 2 ^ k' - 2 * ((Lc' - 1 : Nat) : Int)) Lc' U' R'))
+    (k : Nat) (hk : 4 ≤ k) (Lc : Nat) (p : Int) (U R : List Bool) :
+    steps (topGrindSteps k + (exitSteps (k + 1) + 4 * (Lc - 1)))
+        (cascadeReg k Lc p (false :: false :: true :: U) (zeros (2 ^ k) ++ R))
+      = some (cascadeRegGenLc (k + 1)
+          ((p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)) - 2 ^ (k + 1)
+            - 2 * ((Lc - 1 : Nat) : Int)) Lc U R) := by
+  rw [steps_add, topgrind_meets_regenLc k hk Lc p U R, someBind]
+  exact H (k + 1) (by omega) Lc _ U R
+
+#print axioms cascadeRegGenLc_one
+#print axioms topRungLc_of_regenLawGenLc
+
+-- CONTROL (METHODS M4): at `Lc = 1` the composed cost is the even `topRung`'s, and at `Lc = 6`
+-- it is the MEASURED odd cost — `topGrindSteps 9 + exitSteps 10 + 20` at g=1 (k=9).
+example : topGrindSteps 10 + (exitSteps 11 + 4 * (1 - 1)) = 1581577 := by decide
+example : topGrindSteps 9 + (exitSteps 10 + 4 * (6 - 1)) = 397085 := by decide
