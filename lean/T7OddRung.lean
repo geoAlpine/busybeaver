@@ -1,4 +1,5 @@
 import T7TopRung
+import T7Spine
 open X2
 
 set_option maxRecDepth 40000
@@ -719,3 +720,41 @@ theorem oddTopRungToMilestone (k j c : Nat) (hk : 6 ≤ k) (hc : 1 ≤ c) (p : I
 #print axioms frameL_turnWord
 #print axioms oddSeamZ_split
 #print axioms oddTopRungToMilestone
+
+/-! ### `oddSpine` — the odd branch's `headToLadder ∘ oddTopRungToMilestone` -/
+
+/-- **The `Lc` parameter is absorbable into the marker.**  `cascadeReg`'s left is
+`pow01 (Lc + (2^{k−1}−2)) ++ marker`, so raising `Lc` by `c` is the same as prepending `pow01 c`
+to the marker.  This is why the ladder (which always delivers `Lc = 1`) can feed the odd top
+rung: the odd branch's extra comb rides in the marker. -/
+theorem cascadeReg_Lc_absorb (k c : Nat) (p : Int) (M R : List Bool) :
+    cascadeReg k (c + 1) p M R = cascadeReg k 1 p (pow01 c ++ M) R := by
+  show (⟨.E, p, ⟨pow01 ((c + 1) + (2 ^ (k - 1) - 2)) ++ M, false, _⟩⟩ : Cfg)
+     = ⟨.E, p, ⟨pow01 (1 + (2 ^ (k - 1) - 2)) ++ (pow01 c ++ M), false, _⟩⟩
+  rw [← List.append_assoc, ← pow01_add,
+      show 1 + (2 ^ (k - 1) - 2) + c = (c + 1) + (2 ^ (k - 1) - 2) from by omega]
+
+/-- **`oddSpine`** — the odd mirror of `evenSpine`: `headToLadder ∘ oddTopRungToMilestone`,
+`∀n ≥ 1 ∀j ∀c ≥ 1`.  The odd branch's extra comb travels in the marker (`pow01 c ++ …`), so the
+ladder is the SAME machine as the even branch's; only the top rung and the tail entry differ. -/
+theorem oddSpine (n j c : Nat) (hn : 1 ≤ n) (hc : 1 ≤ c) (p : Int) (L R : List Bool) :
+    ∃ q, steps ((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n))
+          + (topGrindSteps (5 + n) + (exitSteps (5 + n + 1) + 4 * c) + (27 * j + 110)))
+        (descIn (n + 4) p
+          (pow01 c ++ (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 n ++ (zeros (2 ^ (5 + n)) ++ R)))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (5 + n) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := headToLadder n p
+    (pow01 c ++ (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))
+    (zeros (2 ^ (5 + n)) ++ R)
+  refine ⟨(q1 + 5 + 2 * ((2 ^ (5 + n - 1) - 2 : Nat) : Int)) - 2 ^ (5 + n + 1)
+      - 2 * (c : Int) - 7 * (j : Int) - 26, ?_⟩
+  rw [steps_add, h1, someBind, ← cascadeReg_Lc_absorb (5 + n) c q1
+    (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L)))
+    (zeros (2 ^ (5 + n)) ++ R)]
+  exact oddTopRungToMilestone (5 + n) j c (by omega) hc q1 L R
+
+#print axioms cascadeReg_Lc_absorb
+#print axioms oddSpine
