@@ -780,3 +780,17 @@ example : (false :: false :: true :: frameLV 0 ([] : List Bool)).take 14
 example : ([false, false, true, false, false, true, false, true, false, true, false, false]
     : List Bool).take 4 ≠ [false, false, true, false].take 4 ∨
     ([false, false, true, false, false, true] : List Bool)[4]! = false := by decide
+
+-- ANTI-VACUITY (METHODS M4): the odd tail entry's RIGHT side, against the MEASURED orbit.
+-- `x2r1_oddseam.py` reads the g=1 tail-top (@732 623) as  0^13 1^1021 0^2 1^509 0^2 ...
+-- `tailLaw`'s IN is `zeros 4 ++ oddSeamZ k c R`, and at g=1 (k = 9, c = 5) that is
+--   zeros 4 ++ zeros (2*5-1) ++ ones (2^10-3) ++ 0 0 :: descCascade 7 ++ …
+-- = 0^13 1^1021 0^2 1^509 …  — every count below is forced by the definitions.
+example : 4 + (2 * 5 - 1) = 13 := by decide            -- the leading blanks
+example : 2 ^ (9 + 1) - 3 = 1021 := by decide          -- the block `ones (2^{k+1}-3)`
+example : 2 ^ (6 + 3) - 3 = 509 := by decide           -- `descCascade 7`'s first block
+example : 9 + 1 - 3 = 7 := by decide                   -- the cascade index `k+1-3`
+-- and the g=3 instance (k = 11, c = 5), whose tail-top was measured as 0^13 1^4093 0^2 1^2045:
+example : 2 ^ (11 + 1) - 3 = 4093 := by decide
+example : 2 ^ (8 + 3) - 3 = 2045 := by decide
+example : 11 + 1 - 3 = 9 := by decide
