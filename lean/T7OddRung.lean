@@ -339,3 +339,99 @@ theorem trailSeam_leftW (k : Nat) (hk : 6 ≤ k) (W : List Bool) :
 #print axioms nest_depStackAuxW
 #print axioms nest_depStackW
 #print axioms trailSeam_leftW
+
+/-- Three explicit blanks commute past a `zeros` block. -/
+theorem zeros_comm3 (m : Nat) (Z : List Bool) :
+    (false :: false :: false :: (zeros m ++ Z) : List Bool)
+      = zeros m ++ (false :: false :: false :: Z) := by
+  show zeros 3 ++ (zeros m ++ Z) = _
+  rw [← List.append_assoc, ← zeros_add, show 3 + m = m + 3 from by omega, zeros_add,
+      List.append_assoc]
+  rfl
+
+/-- `cascadeRegGen` carrying `c` extra pairs of right-hand blanks (`c = Lc − 1`). -/
+def cascadeRegGenC (k : Nat) (p : Int) (c : Nat) (T R : List Bool) : Cfg :=
+  ⟨.E, p, ⟨pow01 1 ++ T, false,
+      zeros (2 * c) ++ (false :: false :: false :: (ones (2 ^ k - 3) ++ (false :: false ::
+        (descCascade (k - 3) ++ (false :: false :: (zeros 7 ++ R))))))⟩⟩
+
+/-- **`trailOut_allGenC`** — `trailOut_allGen` with the comb freed: the trailing phase carries
+`c` extra comb pairs, costing `4c` extra steps and depositing `2c` extra blanks.  `c = 0` is
+`trailOut_allGen`; `c = 5` (`Lc = 6`) is the odd branch. -/
+theorem trailOut_allGenC (k : Nat) (hk : 6 ≤ k) (c : Nat) (p : Int) (U R : List Bool) :
+    steps (trailSteps k + 4 * c)
+        (cascadeReg 4 1 (p + 2 ^ k - (k : Int) - 44)
+          (depStack k (regenWordW k (pow10 c ++ (true :: false :: false :: true :: U))))
+          (zeros 16 ++ R))
+      = some (cascadeRegGenC k (p - 2 ^ k - 2 * (c : Int)) c U R) := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have hsteps : trailSteps (n + 6) + 4 * c
+      = 393 + (trailCost (trailBlocks (n + 2)) + (4 * c + 7)) := by
+    have h := trailSteps_eq_trailCost (n + 6) (by omega)
+    rw [show n + 6 - 4 = n + 2 from by omega] at h
+    omega
+  rw [hsteps, steps_add]
+  rw [show cascadeReg 4 1 (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+        (depStack (n + 6) (regenWordW (n + 6)
+          (pow10 c ++ (true :: false :: false :: true :: U)))) (zeros 16 ++ R)
+      = ⟨.E, p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44,
+          ⟨pow01 7 ++ depStack (n + 6) (regenWordW (n + 6)
+            (pow10 c ++ (true :: false :: false :: true :: U))), false,
+            false :: false :: false :: (ones 13 ++ (false :: false ::
+              (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩ from rfl,
+    trailPrefix (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+      (depStack (n + 6) (regenWordW (n + 6)
+        (pow10 c ++ (true :: false :: false :: true :: U)))) R,
+    someBind]
+  rw [trailSeam_leftW (n + 6) (by omega) (pow10 c ++ (true :: false :: false :: true :: U)),
+      show n + 6 - 4 = n + 2 from by omega]
+  rw [steps_add,
+    trailFoldPos (trailBlocks (n + 2))
+      (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19)
+      (pow10 c ++ (true :: false :: false :: true :: U))
+      (descCascade 2 ++ (zeros 9 ++ R)),
+    someBind, trailBlocks_length]
+  rw [show trailCasc (trailBlocks (n + 2)) (descCascade 2 ++ (zeros 9 ++ R))
+      = descCascade (n + 4) ++ (zeros 9 ++ R) from by
+        rw [trailCasc_append, trailCasc_descCascade, show 2 + (n + 2) = n + 4 from by omega]]
+  rw [steps_add, foldOut_is_comb_on_suffixIn c (true :: false :: false :: true :: U),
+    combChewEFold c _ (true :: false :: false :: true :: U) _, someBind,
+    trailSuffix _ U (zeros (2 * c) ++ (descCascade (n + 4) ++ (zeros 9 ++ R)))]
+  refine congrArg some ?_
+  have hleft : (false :: true :: U : List Bool) = pow01 1 ++ U := rfl
+  have hright : (false :: false :: false ::
+        (zeros (2 * c) ++ (descCascade (n + 4) ++ (zeros 9 ++ R))) : List Bool)
+      = zeros (2 * c) ++ (false :: false :: false :: (ones (2 ^ (n + 6) - 3) ++ (false :: false ::
+          (descCascade (n + 6 - 3) ++ (false :: false :: (zeros 7 ++ R)))))) := by
+    rw [zeros_comm3 (2 * c) (descCascade (n + 4) ++ (zeros 9 ++ R))]
+    refine congrArg (fun t => zeros (2 * c) ++ t) ?_
+    have hc := cascadeReg_collapse (n + 6) (by omega)
+    rw [show n + 6 - 3 = n + 3 from by omega, show n + 6 - 2 = n + 4 from by omega] at hc
+    rw [show n + 6 - 3 = n + 3 from by omega, ← hc, List.append_assoc]
+    rfl
+  show (⟨.E, _, ⟨_, false, _⟩⟩ : Cfg) = cascadeRegGenC (n + 6) _ c U R
+  rw [show cascadeRegGenC (n + 6) (p - 2 ^ (n + 6) - 2 * (c : Int)) c U R
+      = ⟨.E, p - 2 ^ (n + 6) - 2 * (c : Int), ⟨pow01 1 ++ U, false,
+          zeros (2 * c) ++ (false :: false :: false :: (ones (2 ^ (n + 6) - 3) ++ (false :: false ::
+            (descCascade (n + 6 - 3) ++ (false :: false :: (zeros 7 ++ R))))))⟩⟩ from rfl]
+  rw [hleft, hright]
+  refine cfgPos ?_
+  have ht := trailCost_trailBlocks (n + 2)
+  rw [show n + 2 + 5 = n + 7 from by omega] at ht
+  have h7 : (2 : Nat) ^ (n + 7) = 2 * 2 ^ (n + 6) := by
+    rw [show n + 7 = (n + 6) + 1 from by omega, Nat.pow_succ]; omega
+  have hge : (32 : Nat) ≤ 2 ^ (n + 6) := by
+    have h1 : (2 : Nat) ^ 5 ≤ 2 ^ (n + 6) := Nat.pow_le_pow_right (by decide) (by omega)
+    have h2 : (2 : Nat) ^ 5 = 32 := by decide
+    omega
+  obtain ⟨T, hT⟩ : ∃ T, trailCost (trailBlocks (n + 2)) = T := ⟨_, rfl⟩
+  obtain ⟨P, hP⟩ : ∃ P, (2 : Nat) ^ (n + 6) = P := ⟨_, rfl⟩
+  rw [hT] at ht
+  rw [hP] at h7 hge
+  have hPi : ((2 : Int)) ^ (n + 6) = (P : Int) := by rw [← hP]; push_cast; rfl
+  rw [hT, hPi]
+  push_cast
+  omega
+
+#print axioms zeros_comm3
+#print axioms trailOut_allGenC
