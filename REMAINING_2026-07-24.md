@@ -49,3 +49,26 @@ mechanism — the last genuine discovery was the odd carry fold (`carryFold46`),
 x2 remains one of the 17 named BB(6) cryptids; closing it decides ONE machine and validates the
 template method for the carry-transparent island (~5–8 more).  BB(6) itself stays behind the
 (K) wall (14 machines = external normality mathematics), untouched by any of this.
+
+---
+
+## O4 item 1 refined (2026-07-24) — the odd seam is a DISTINCT episode, not `seam74`
+
+Attacking `oddTopRungSeam` under M8/M7, the marker algebra is now exact:
+
+* The odd `cReg11` marker is `0 0 · frameL 2 X`, which IS `0 0 1 · U` with
+  `U = 0 1 0 1 0 0 · frameL 1 X` (Lean `rfl`).  So **`topRung` (∀U) fires on the odd cReg11
+  directly** — the top-grind rung is shared with the even branch verbatim.
+* But `seam74` requires the post-`topRung` left to be `0 1 · U` with
+  `U = 0 0 1 0 1 0 1 0 0 · X` (its 9-cell seam).  The odd `U = 0 1 0 1 0 0 · frameL 1 X`
+  begins `0 1`, not `0 0` — **`seam74` does NOT fire on the odd register.**
+
+So the odd top→tail seam is a *different* fixed episode than the even 74-step `seam74`.  It
+must be measured on its own (its endpoints bracket the odd `topRung` OUT and the odd
+`frameFold` tail-IN) and built by M3′, then composed `topRung ∘ oddSeam ∘ tailLaw` into
+`oddTopRungToMilestone`.  `topRung` and `tailLaw` are reused; only `oddSeam` is new — a
+single fixed episode, the odd counterpart of `seam74`.
+
+**Net:** item 1 splits into `oddSeam` (measure + M3′, ~`seam74`-scale) then a 3-line
+composition.  Still no new *fold* or *mechanism* — the odd branch's only Θ-scale novelty
+(`carryFold46`) remains done.  The residue is one more fixed episode plus assembly.
