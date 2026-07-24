@@ -65,3 +65,20 @@ theorem hlow_to_phase (k : Nat) (TAIL : List Bool) :
   rwa [show ([] ++ zeros 16 : List Bool) = zeros 16 from by rw [List.nil_append]] at h
 
 #print axioms hlow_to_phase
+
+/-- **H lower bound** — the surviving-blank count is `≥ 10` (`steps_left_mono`: the left edge
+`|left| − pos` cannot shrink, so `16 ≤ 6 + j`).  With `hlow_padded`'s `j ≤ 16` this brackets
+`j ∈ [10, 16]`; the exact `j = 10` (measured) needs the matching upper bound. -/
+theorem hlow_j_ge (k : Nat) (TAIL : List Bool) (j : Nat)
+    (h : steps (267 + 38 * (2 * k + 2))
+        ⟨.E, 0, ⟨[] ++ zeros 16, false,
+          zeros 21 ++ (uUnits (2 * k + 1) ++ (true :: (zeros 10 ++ TAIL)))⟩⟩
+      = some ⟨.E, -5, ⟨[false] ++ zeros j, false,
+          false :: pow10 4 ++ ones 9 ++ false :: false ::
+            (rUnits (2 * k + 3) ++ (true :: false :: false :: TAIL))⟩⟩) : 10 ≤ j := by
+  have hm := steps_left_mono _ _ _ h
+  simp only [List.length_append, zeros_length, List.length_cons, List.length_nil] at hm
+  push_cast at hm
+  omega
+
+#print axioms hlow_j_ge
