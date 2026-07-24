@@ -220,3 +220,67 @@ theorem topRungLc_of_regenLawGenLc
 -- it is the MEASURED odd cost — `topGrindSteps 9 + exitSteps 10 + 20` at g=1 (k=9).
 example : topGrindSteps 10 + (exitSteps 11 + 4 * (1 - 1)) = 1581577 := by decide
 example : topGrindSteps 9 + (exitSteps 10 + 4 * (6 - 1)) = 397085 := by decide
+
+/-! ### The comb chew at the FOLD→SUFFIX phase  (`E`/cur-`1` anchor)
+
+`combChew` above is the same physical 4-step cycle read at the `D`/cur-`0` phase.  The insertion
+point inside `trailOut` is entered from `trailFoldPos` at the `E`/cur-`1` phase, so the tile is
+re-anchored here.  MEASURED at g=1, steps 732 612 → 732 616 (the fold→suffix window).  The left
+prefix is **three** cells `0 1 0`, not two: the fourth step branches on the third cell. -/
+theorem combChewE (p : Int) (X Y : List Bool) :
+    steps 4 ⟨.E, p, ⟨false :: true :: false :: X, true, Y⟩⟩
+      = some ⟨.E, p - 2, ⟨false :: X, true, false :: false :: Y⟩⟩ := by
+  have h0 : steps 4 ⟨.E, (0 : Int), ⟨false :: true :: false :: X, true, Y⟩⟩
+      = some ⟨.E, (-2 : Int), ⟨false :: X, true, false :: false :: Y⟩⟩ := by rfl
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+/-- `pow01 n ++ (false :: M)` always starts with `false` — the side condition `combChewE` needs. -/
+theorem pow01_false_head (n : Nat) (M : List Bool) :
+    ∃ X, pow01 n ++ (false :: M) = false :: X := by
+  cases n with
+  | zero => exact ⟨M, rfl⟩
+  | succ m => exact ⟨true :: (pow01 m ++ (false :: M)), rfl⟩
+
+/-- **`combChewEFold`** — `n` comb pairs at the fold→suffix phase: `4n` steps, `pow01 n` consumed,
+`zeros (2n)` deposited, `−2n`.  `trailFoldPos`'s OUT left is `false :: (pow10 (Lc−1) ++ M)`
+`= pow01 (Lc−1) ++ (false :: M)`, and with `M = 1 0 0 1 · U` the residue `false :: M` is exactly
+`trailSuffix`'s IN left — so this folds the whole `Lc` surplus into place. -/
+theorem combChewEFold : ∀ (n : Nat) (p : Int) (M Y : List Bool),
+    steps (4 * n) ⟨.E, p, ⟨pow01 n ++ (false :: M), true, Y⟩⟩
+      = some ⟨.E, p - 2 * (n : Int), ⟨false :: M, true, zeros (2 * n) ++ Y⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro p M Y
+    show steps 0 _ = _
+    exact congrArg some (by rw [show p - 2 * ((0:Nat) : Int) = p from by omega]; rfl)
+  | succ n ih =>
+    intro p M Y
+    obtain ⟨X, hX⟩ := pow01_false_head n M
+    show steps (4 * (n + 1)) ⟨.E, p, ⟨false :: true :: (pow01 n ++ (false :: M)), true, Y⟩⟩ = _
+    rw [show 4 * (n + 1) = 4 + 4 * n from by omega, steps_add, hX, combChewE p X Y, someBind,
+        ← hX, ih (p - 2) M (false :: false :: Y)]
+    refine congrArg some ?_
+    have hz : zeros (2 * n) ++ (false :: false :: Y) = zeros (2 * (n + 1)) ++ Y := by
+      rw [show 2 * (n + 1) = 2 * n + 2 from by omega, zeros_add, List.append_assoc]
+      rfl
+    have hp : p - 2 - 2 * ((n : Nat) : Int) = p - 2 * (((n + 1 : Nat)) : Int) := by
+      push_cast; omega
+    rw [hz, hp]
+
+/-- `trailFold`'s OUT left, re-read as a `pow01` comb sitting on `trailSuffix`'s IN left. -/
+theorem foldOut_is_comb_on_suffixIn (n : Nat) (M : List Bool) :
+    (false :: (pow10 n ++ M) : List Bool) = pow01 n ++ (false :: M) := by
+  induction n generalizing M with
+  | zero => rfl
+  | succ n ih =>
+    show (false :: (true :: false :: (pow10 n ++ M)) : List Bool) = _
+    show _ = false :: true :: (pow01 n ++ (false :: M))
+    rw [← ih M]
+
+#print axioms combChewE
+#print axioms combChewEFold
+#print axioms foldOut_is_comb_on_suffixIn
