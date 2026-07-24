@@ -758,3 +758,25 @@ theorem oddSpine (n j c : Nat) (hn : 1 ≤ n) (hc : 1 ≤ c) (p : Int) (L R : Li
 
 #print axioms cascadeReg_Lc_absorb
 #print axioms oddSpine
+
+/-- The odd `topEntry` marker, re-phased: the `pow10` comb moves across the absorbed `1`.
+Pure `pow10_cons_pow01` under a context; needed for the odd E2 bridge. -/
+theorem oddMarker_rephase (N : Nat) (M : List Bool) :
+    (ones 20 ++ (false :: false :: (pow10 N ++ (true :: M))) : List Bool)
+      = ones 20 ++ (false :: false :: true :: (pow01 N ++ M)) := by
+  rw [pow10_cons_pow01 N M]
+
+#print axioms oddMarker_rephase
+
+-- ANTI-VACUITY (METHODS M4): `oddTopRungToMilestone`'s IN marker, cell-for-cell against the
+-- MEASURED g=1 orbit.  `x2r1_lcparity.py` reads the cells past the comb at the g=1 top rung
+-- (cReg9 @335 538, Lc = 6) as  0 0 1 0 1 0 1 1 1 1 1 1 1 1  — which is exactly
+-- `0 0 1 :: frameLV 0 X`.  (A 9-cell `seam74` prefix, as the EVEN branch carries, would read
+-- 0 0 1 0 0 1 0 1 0 1 0 0 here and is refuted by the measurement.)
+example : (false :: false :: true :: frameLV 0 ([] : List Bool)).take 14
+    = [false, false, true, false, true, false, true,
+       true, true, true, true, true, true, true] := by decide
+-- and the even branch's 9-cell seam really does differ at cell 3 (the control that should fail):
+example : ([false, false, true, false, false, true, false, true, false, true, false, false]
+    : List Bool).take 4 ≠ [false, false, true, false].take 4 ∨
+    ([false, false, true, false, false, true] : List Bool)[4]! = false := by decide
