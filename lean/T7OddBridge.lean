@@ -367,3 +367,111 @@ theorem hlowDoubOdd_trim (h : Nat) (R : List Bool) :
 
 #print axioms hlowDoubEven_trim
 #print axioms hlowDoubOdd_trim
+
+/-! ## F item 2 — the CROSS-GENERATION frame identity
+
+The OUT frame of one milestone must BE the IN frame of the next.  The key is that `uUnits`'
+repetition unit `1 0^6` IS `frameZ`'s: `frameZ (j+1) Z = frameZ j (0^5 ++ 1 0 :: Z)`, and
+`1 0 :: 0^5` re-associates to `1 :: 0^6`.  So the whole frame block collapses to `uUnits`. -/
+
+theorem uUnits_snoc : ∀ k : Nat, uUnits k ++ (true :: zeros 6) = uUnits (k + 1) := by
+  intro k
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    show ((true :: zeros 6) ++ uUnits k) ++ (true :: zeros 6) = (true :: zeros 6) ++ uUnits (k + 1)
+    rw [List.append_assoc, ih]
+
+/-- **The frame block IS a `uUnits` block.** -/
+theorem uUnits_frameZ : ∀ (j : Nat) (Z : List Bool),
+    true :: (zeros 6 ++ (true :: false :: frameZ j Z)) = uUnits (j + 1) ++ (true :: false :: Z) := by
+  intro j
+  induction j with
+  | zero => intro Z; rfl
+  | succ j ih =>
+    intro Z
+    show true :: (zeros 6 ++ (true :: false :: frameZ j (zeros 5 ++ (true :: false :: Z)))) = _
+    rw [ih (zeros 5 ++ (true :: false :: Z))]
+    show uUnits (j + 1) ++ (true :: (zeros 6 ++ (true :: false :: Z))) = _
+    rw [show (true :: (zeros 6 ++ (true :: false :: Z)) : List Bool)
+          = (true :: zeros 6) ++ (true :: false :: Z) from rfl,
+        ← List.append_assoc, uUnits_snoc]
+
+#print axioms uUnits_snoc
+#print axioms uUnits_frameZ
+
+def oddPadTail (h : Nat) (R : List Bool) : List Bool :=
+  zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2 ^ (5 + (2*h+5))) ++ (zeros (2 ^ (5 + (2*h+5) + 1)) ++ R)))
+
+theorem oddPadR_split (h : Nat) (R : List Bool) :
+    oddPadR h R = zeros 25 ++ oddPadTail h R := rfl
+
+/-- **EVEN OUT seam = ODD IN seam.**  The even milestone's `seamZ` tail, with one leading `0` from
+the frame block, IS the odd low phase's `0^4 (10)^6 1^4 …` entry word. -/
+theorem evenSeam_oddIn (h : Nat) (R : List Bool) :
+    false :: seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)
+      = zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)) := by
+  have hp : (2:Nat) ^ 11 ≤ 2 ^ (2*h+3+8) := Nat.pow_le_pow_right (by omega) (by omega)
+  have h2048 : (2:Nat) ^ 11 = 2048 := by decide
+  have hones : ones (2 ^ (2*h+3+8) - 9) = ones 4 ++ ones (2 ^ (2*h+3+8) - 13) := by
+    rw [← ones_add, show 4 + (2 ^ (2*h+3+8) - 13) = 2 ^ (2*h+3+8) - 9 from by omega]
+  have hz : (zeros 7 ++ (zeros 16 ++ oddPadTail h R) : List Bool)
+      = zeros 23 ++ oddPadTail h R := by rw [← List.append_assoc, ← zeros_add]
+  show false :: (_ ++ (ones (2 ^ (5 + (2*h+5) + 1) - 9) ++ (false :: false ::
+      (descCascade (5 + (2*h+5) - 2) ++ (false :: false ::
+        (zeros 7 ++ (zeros 16 ++ oddPadTail h R))))))) = _
+  rw [show 5 + (2*h+5) + 1 = 2*h+3+8 from by omega,
+      show 5 + (2*h+5) - 2 = 2*h+8 from by omega, hones, hz]
+  show _ = zeros 4 ++ (pow10 6 ++ (ones 4 ++ (ones (2 ^ (2*h+3+8) - 13) ++
+      (false :: false :: (descCascade (2*h+8) ++ (zeros 25 ++ oddPadTail h R))))))
+  rfl
+
+#print axioms evenSeam_oddIn
+
+/-- **EVEN OUT frame IS the ODD IN frame** — the cross-generation milestone identity, even→odd. -/
+theorem evenOut_is_oddIn (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+1) (seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)))))
+      = zeros 21 ++ (uUnits (2*h+2) ++
+          (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R))))) := by
+  rw [uUnits_frameZ (2*h+1) _, show 2*h+1+1 = 2*h+2 from by omega]
+  show zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (false :: seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)))) = _
+  rw [evenSeam_oddIn h R]
+
+def evenPadTail (h : Nat) (R : List Bool) : List Bool :=
+  zeros 16 ++ (ladderPad 5 (2*h+5) ++ (zeros (2 ^ (5 + (2*h+5))) ++ R))
+
+theorem evenPadR_split (h : Nat) (R : List Bool) :
+    evenPadR h R = zeros 25 ++ evenPadTail h R := rfl
+
+/-- **ODD OUT seam = EVEN IN seam.** -/
+theorem oddSeam_evenIn (h : Nat) (R : List Bool) :
+    false :: oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)
+      = zeros 10 ++ evenLowFrame (h+1) R := by
+  have hz : (zeros 7 ++ (zeros 16 ++ evenPadTail (h+1) R) : List Bool)
+      = zeros 23 ++ evenPadTail (h+1) R := by rw [← List.append_assoc, ← zeros_add]
+  show false :: (zeros (2*5-1) ++ (ones (2 ^ (5 + (2*h+5) + 1 + 1) - 3) ++ (false :: false ::
+      (descCascade (5 + (2*h+5) + 1 + 1 - 3) ++ (false :: false ::
+        (zeros 7 ++ (zeros 16 ++ evenPadTail (h+1) R))))))) = _
+  rw [show 5 + (2*h+5) + 1 + 1 = 2*(h+1)+2+8 from by omega,
+      show 2*(h+1)+2+8 - 3 = 2*(h+1)+7 from by omega, hz]
+  show _ = zeros 10 ++ (ones (2 ^ (2*(h+1)+2+8) - 3) ++ (false :: false ::
+      (descCascade (2*(h+1)+7) ++ (zeros 25 ++ evenPadTail (h+1) R))))
+  rfl
+
+/-- **ODD OUT frame IS the EVEN IN frame** — the cross-generation milestone identity, odd→even. -/
+theorem oddOut_is_evenIn (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)))))
+      = zeros 21 ++ (uUnits (2*(h+1)+1) ++
+          (true :: (zeros 10 ++ evenLowFrame (h+1) R))) := by
+  rw [uUnits_frameZ (2*h+2) _, show 2*h+2+1 = 2*(h+1)+1 from by omega]
+  show zeros 21 ++ (uUnits (2*(h+1)+1) ++
+    (true :: (false :: oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)))) = _
+  rw [oddSeam_evenIn h R]
+
+#print axioms evenOut_is_oddIn
+#print axioms oddSeam_evenIn
+#print axioms oddOut_is_evenIn
