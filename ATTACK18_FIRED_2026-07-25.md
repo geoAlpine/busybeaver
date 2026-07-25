@@ -37,8 +37,17 @@ Layer 1 kills seed-uniform bounds with the counterexample `−14` (`φ = 1`), wh
 point**.  Complement: if every high-`φ` integer seed is eventually periodic, then
 "aperiodic integer seed ⟹ `φ < 4/5`" is a **different** target statement that `−14` does not refute.
 
-First sweep (seeds `−60 … 120`, 181 seeds): **exactly one seed has `φ > 0.60` — `−14`, `φ = 1.0000`,
-and it is periodic.  Zero aperiodic high-`φ` seeds.**  A `±2·10⁵` sweep is running.
+Full sweep, **400 001 integer seeds in `[−2·10⁵, 2·10⁵]`** (`attack18_seedsweep.py`):
+
+    eventually periodic (cycle within 2000 steps)  :  5   —  {−14, −9, −7, −3, −1}
+    φ > 0.60                                       :  1   —  −14 only, φ = 1.0000
+    φ > 0.60 AND aperiodic                         :  0
+    max φ over aperiodic seeds (sampled)           :  0.2182
+
+So **the exceptional set inside `ℤ` is five explicit integers**, and **every aperiodic seed tested
+has `φ ≤ 0.2182`** — against the fatal threshold `4/5`, and below `φ(43) = 0.334`.  The complement
+statement becomes "for every integer seed outside `{−14, −9, −7, −3, −1}`, `φ < 4/5`", which `−14`
+does **not** refute.
 
 **Honest reading.**  Even if the exceptional set inside `ℤ` is exactly the periodic points, proving
 "aperiodic ⟹ `φ < 4/5`" is still a statement about specific orbits, and layer 2's multifractal
