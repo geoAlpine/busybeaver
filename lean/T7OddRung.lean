@@ -1088,3 +1088,46 @@ theorem oddTopRungO (k : Nat) (hk : 6 ≤ k) (p : Int) (T R : List Bool) :
   exact oddE2Tile q1 T (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))
 
 #print axioms oddTopRungO
+
+/-- `oddTopRungO`'s OUT IS a canonical `cascadeReg (k+1) (c+1)` once the comb is read out of its
+free tail.  Uses `foldOut_is_comb_on_suffixIn` to re-phase and `cascadeReg_collapse` on the right. -/
+theorem oddTopRungO_out_cascadeReg (k m c : Nat) (hk : 4 ≤ k)
+    (hm : 10 + m = (c + 1) + (2 ^ k - 2)) (q : Int) (N R : List Bool) :
+    (⟨.E, q, ⟨pow01 10 ++ (false :: (pow10 m ++ (false :: N))), false,
+      false :: false :: false :: (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))⟩⟩ : Cfg)
+      = cascadeReg (k + 1) (c + 1) q (false :: false :: N) R := by
+  have hleft : (pow01 10 ++ (false :: (pow10 m ++ (false :: N))) : List Bool)
+      = pow01 ((c + 1) + (2 ^ (k + 1 - 1) - 2)) ++ (false :: false :: N) := by
+    rw [foldOut_is_comb_on_suffixIn m (false :: N), ← List.append_assoc, ← pow01_add,
+        show k + 1 - 1 = k from by omega, hm]
+  have hright : (false :: false :: false :: (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))
+      : List Bool)
+      = false :: false :: false :: (ones (2 ^ (k + 1) - 3) ++ (false :: false ::
+          (descCascade (k + 1 - 3) ++ (false :: false :: (zeros 7 ++ R))))) := by
+    have hc := cascadeReg_collapse (k + 1) (by omega)
+    rw [← hc, List.append_assoc]
+    rfl
+  show (⟨.E, q, ⟨_, false, _⟩⟩ : Cfg) = _
+  rw [hleft, hright]
+  rfl
+
+#print axioms oddTopRungO_out_cascadeReg
+
+/-! ### Remaining: `oddRungToMilestone` = `oddTopRungO ∘ oddTopRungToMilestone`
+
+Both halves are GREEN and the connecting bridge `oddTopRungO_out_cascadeReg` is GREEN; the
+composition itself did not elaborate on the first attempt (an argument-shape mismatch at the
+`oddTopRungToMilestone` application) and was removed rather than left with `sorryAx`.
+
+The algebra that must line up, all of it already verified on paper and by the measured orbit:
+
+* left:  `pow01 10 ++ (false :: (pow10 m ++ (false :: N)))` `= pow01 (10+m) ++ (false :: false :: N)`
+  and `10 + m = (c+1) + (2^k − 2)` makes that `cascadeReg (k+1) (c+1)`'s comb (at g=3: `c = 5`,
+  comb `1028 = 6 + (2^10 − 2)`, matching the MEASURED `combL` at `cReg 11`).
+* right: `descCascade (k+1−2) ++ zeros 9 ++ R` `=` `cascadeReg (k+1)`'s right, by
+  `cascadeReg_collapse` and `0 0 :: zeros 7 = zeros 9`.
+* `R`-slot: `oddTopRungToMilestone` consumes `zeros (2^{k+1}) ++ R`, which is exactly what
+  `oddTopRungO` is handed.
+
+With that composition the odd branch reaches the milestone, and `doubPhaseOdd` is
+`topEntryOddFull ∘ headToLadder ∘ ⟨this⟩`. -/
