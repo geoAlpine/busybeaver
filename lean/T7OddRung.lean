@@ -1156,3 +1156,32 @@ theorem oddRungToMilestone (k m c j : Nat) (hk : 6 ≤ k) (hc : 1 ≤ c)
   exact oddTopRungToMilestone (k + 1) j c (by omega) hc q1 L R
 
 #print axioms oddRungToMilestone
+
+/-- **`oddSpineFull`** — THE ODD SPINE, end to end: `headToLadder n ∘ oddRungToMilestone (5+n)`,
+`∀n ≥ 1 ∀m ∀c ≥ 1 ∀j` with `10 + m = (c+1) + (2^{5+n} − 2)`.  From the odd descent entry
+`descIn (n+4)` — whose marker `ones 20 ++ …` is the MEASURED one — all the way onto the next
+milestone's frame.  Every part GREEN. -/
+theorem oddSpineFull (n m c j : Nat) (hn : 1 ≤ n) (hc : 1 ≤ c)
+    (hm : 10 + m = (c + 1) + (2 ^ (5 + n) - 2)) (p : Int) (L R : List Bool) :
+    ∃ q, steps (((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n)))
+          + ((topGrindSteps (5 + n) + exitSteps (5 + n + 1) + 80)
+             + (topGrindSteps (5 + n + 1) + (exitSteps (5 + n + 1 + 1) + 4 * c)
+                + (27 * j + 110))))
+        (descIn (n + 4) p
+          (ones 20 ++ (false :: false ::
+            (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 n ++
+            (zeros (2 ^ (5 + n)) ++ (zeros (2 ^ (5 + n + 1)) ++ R))))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (5 + n + 1) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := headToLadder n p
+    (ones 20 ++ (false :: false ::
+      (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+    (zeros (2 ^ (5 + n)) ++ (zeros (2 ^ (5 + n + 1)) ++ R))
+  obtain ⟨q2, h2⟩ := oddRungToMilestone (5 + n) m c j (by omega) hc hm q1 L R
+  refine ⟨q2, ?_⟩
+  rw [steps_add, h1, someBind]
+  exact h2
+
+#print axioms oddSpineFull
