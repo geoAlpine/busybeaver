@@ -325,10 +325,20 @@ theorem steps_lunpad_zeros : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) 
 
 #print axioms steps_lunpad_zeros
 
+/-- A list that leaves a `zeros` block when a `zeros` block is appended IS a `zeros` block. -/
+theorem zeros_cancel_right (a b : Nat) (X : List Bool) (h : X ++ zeros b = zeros a) :
+    X = zeros (a - b) := by
+  have hlen : X.length + b = a := by
+    have hl := congrArg List.length h
+    simpa [zeros_length] using hl
+  refine List.append_cancel_right (bs := zeros b) ?_
+  rw [← zeros_add, show a - b + b = a from by omega]
+  exact h
+
 /-- **Obligation H (even), TRIMMED to the canonical `left = []` form.**  This is the shape the
 `M1` milestone family has, so this is the form the F assembly consumes. -/
 theorem hlowDoubEven_trim (h : Nat) (R : List Bool) :
-    ∃ (L' : List Bool) (q : Int),
+    ∃ (m : Nat) (q : Int),
       steps ((267 + 38*(2*h+2))
           + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
              + ((descTotal (2 * h + 5) + 415)
@@ -337,17 +347,19 @@ theorem hlowDoubEven_trim (h : Nat) (R : List Bool) :
                    + (27 * (2 * h + 1) + 110)))))
           ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
             (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
-        = some ⟨.E, q, ⟨L', false,
+        = some ⟨.E, q, ⟨zeros m, false,
             zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
               frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
-  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubEven h R
-  rw [show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
-  obtain ⟨L', i, _, _, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
-  exact ⟨L', q, htrim⟩
+  obtain ⟨j, q, hj10, _, hrun⟩ := hlowDoubEven h R
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
 
 /-- **Obligation H (odd), TRIMMED to the canonical `left = []` form.** -/
 theorem hlowDoubOdd_trim (h : Nat) (R : List Bool) :
-    ∃ (L' : List Bool) (q : Int),
+    ∃ (m : Nat) (q : Int),
       steps ((419 + 76*h)
           + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
                + 6 * 2 ^ (2 * h + 8))
@@ -357,13 +369,15 @@ theorem hlowDoubOdd_trim (h : Nat) (R : List Bool) :
                      + (27 * (2*h+2) + 110))))))
           ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
             (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
-        = some ⟨.E, q, ⟨L', false,
+        = some ⟨.E, q, ⟨zeros m, false,
             zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
               frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
-  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubOdd h R
-  rw [show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
-  obtain ⟨L', i, _, _, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
-  exact ⟨L', q, htrim⟩
+  obtain ⟨j, q, hj10, _, hrun⟩ := hlowDoubOdd h R
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
 
 #print axioms hlowDoubEven_trim
 #print axioms hlowDoubOdd_trim
@@ -546,21 +560,70 @@ def MOdd (h : Nat) (R : List Bool) : Cfg :=
 /-- **THE EVEN CYCLE** — `MEven h → MOdd h` in `costEven h` steps, right tape landing EXACTLY on
 the next milestone's; only the left boundary blanks and the translation remain to normalize. -/
 theorem cycleEven (h : Nat) (R : List Bool) :
-    ∃ (L' : List Bool) (q : Int),
+    ∃ (m : Nat) (q : Int),
       steps (costEven h) (MEven h (zeros 16 ++ oddPadTail h R))
-        = some ⟨.E, q, ⟨L', false, zeros 21 ++ (uUnits (2*h+2) ++
+        = some ⟨.E, q, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+2) ++
             (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩ := by
-  obtain ⟨L', q, hrun⟩ := hlowDoubEven_trim h (zeros 16 ++ oddPadTail h R)
-  exact ⟨L', q, by rw [← evenOut_is_oddIn h R]; exact hrun⟩
+  obtain ⟨m, q, hrun⟩ := hlowDoubEven_trim h (zeros 16 ++ oddPadTail h R)
+  exact ⟨m, q, by rw [← evenOut_is_oddIn h R]; exact hrun⟩
 
 /-- **THE ODD CYCLE** — `MOdd h → MEven (h+1)`. -/
 theorem cycleOdd (h : Nat) (R : List Bool) :
-    ∃ (L' : List Bool) (q : Int),
+    ∃ (m : Nat) (q : Int),
       steps (costOdd h) (MOdd h (zeros 16 ++ evenPadTail (h+1) R))
-        = some ⟨.E, q, ⟨L', false, zeros 21 ++ (uUnits (2*(h+1)+1) ++
+        = some ⟨.E, q, ⟨zeros m, false, zeros 21 ++ (uUnits (2*(h+1)+1) ++
             (true :: (zeros 10 ++ evenLowFrame (h+1) R)))⟩⟩ := by
-  obtain ⟨L', q, hrun⟩ := hlowDoubOdd_trim h (zeros 16 ++ evenPadTail (h+1) R)
-  exact ⟨L', q, by rw [← oddOut_is_evenIn h R]; exact hrun⟩
+  obtain ⟨m, q, hrun⟩ := hlowDoubOdd_trim h (zeros 16 ++ evenPadTail (h+1) R)
+  exact ⟨m, q, by rw [← oddOut_is_evenIn h R]; exact hrun⟩
 
 #print axioms cycleEven
 #print axioms cycleOdd
+
+/-! ## Tools for the final chain -/
+
+/-- **Invariant non-halting** — no explicit milestone family (hence no choice) is needed: a
+predicate preserved by one nonempty halt-free segment already forbids halting.  Strong induction
+via a fuel bound `B`. -/
+theorem nonhalt_of_invariant_aux (P : Cfg → Prop)
+    (hstep : ∀ c, P c → ∃ n, 1 ≤ n ∧ ∃ c', P c' ∧ steps n c = some c') :
+    ∀ (B N : Nat), N ≤ B → ∀ c, P c → steps N c ≠ none := by
+  intro B
+  induction B with
+  | zero =>
+    intro N hN c _
+    rw [show N = 0 from by omega]
+    intro h
+    rw [show steps 0 c = some c from rfl] at h
+    exact absurd h (by simp)
+  | succ B ih =>
+    intro N hN c hc
+    obtain ⟨n, hn1, c', hc', hrun⟩ := hstep c hc
+    by_cases hle : N ≤ n
+    · exact steps_prefix_ne_none hrun hle
+    · have e : N = n + (N - n) := by omega
+      rw [e, steps_add, hrun]
+      exact ih (N - n) (by omega) c' hc'
+
+theorem nonhalt_of_invariant (P : Cfg → Prop)
+    (hstep : ∀ c, P c → ∃ n, 1 ≤ n ∧ ∃ c', P c' ∧ steps n c = some c')
+    (c : Cfg) (hc : P c) : ∀ N : Nat, steps N c ≠ none :=
+  fun N => nonhalt_of_invariant_aux P hstep N N (Nat.le_refl N) c hc
+
+/-- the ladder pad is one explicit block of blanks -/
+def padLen (b : Nat) : Nat → Nat
+  | 0 => 0
+  | n + 1 => 2 ^ b + padLen (b + 1) n
+
+theorem ladderPad_zeros : ∀ (n b : Nat), ladderPad b n = zeros (padLen b n) := by
+  intro n
+  induction n with
+  | zero => intro b; rfl
+  | succ n ih =>
+    intro b
+    show zeros (2 ^ b) ++ ladderPad (b + 1) n = _
+    rw [ih (b + 1)]
+    show _ = zeros (2 ^ b + padLen (b + 1) n)
+    rw [zeros_add]
+
+#print axioms nonhalt_of_invariant
+#print axioms ladderPad_zeros
