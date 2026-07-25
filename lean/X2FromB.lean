@@ -64,10 +64,38 @@ Not "matches the shape" — literally equal as configurations, at both `h = 0` a
 
 def initB : Cfg := ⟨.B, 0, ⟨[], false, []⟩⟩
 
+/-- the `B`-orbit's ODD-type low-phase tail: `2^(2h+10)` where `x2`'s `MOdd h` has `2^(2h+11)` -/
+def oddLowFrameB (h : Nat) (R : List Bool) : List Bool :=
+  ones (2 ^ (2*h+10) - 13) ++ (false :: false :: (descCascade (2*h+7) ++ R))
+
+/-- the `B`-orbit's odd-type milestone (`uUnits (2h)`, where `x2`'s `MOdd h` has `uUnits (2h+2)`) -/
+def MOddB (h : Nat) (R : List Bool) : Cfg :=
+  ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrameB h R)))))⟩⟩
+
+/-- **the ODD low phase also applies VERBATIM, for `h ≥ 1`.**  `h_low_odd_core k` needs
+`uUnits (2k+2)`, and the `B`-orbit's odd-type at `h` has `uUnits (2h)` — so `k = h-1` matches, and
+the lemma is `∀ FRAME`. -/
+theorem hlowBodd_core (h : Nat) (R : List Bool) :
+    steps (419 + 76*h) (MOddB (h+1) R)
+      = some ⟨.E, -5, ⟨[false], false,
+          false :: pow10 4 ++ ones 9 ++ false :: false ::
+            (rUnits (2*h+3) ++ (pow10 10 ++ oddLowFrameB (h+1) R))⟩⟩ := by
+  have e : 2*(h+1) = 2*h+2 := by omega
+  show steps (419 + 76*h) ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*(h+1)) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrameB (h+1) R)))))⟩⟩ = _
+  rw [e]
+  exact h_low_odd_core h (oddLowFrameB (h+1) R)
+
+#print axioms hlowBodd_core
+
 -- Recorded as a MEASUREMENT, not a theorem: `native_decide` would add `Lean.ofReduceBool`
 -- (trusting the compiler), which this development does not use.  The corresponding THEOREM will be
 -- the chunked-`rfl` entry segment, exactly as `T7Entry.entryM12` is for the `A`-orbit.
 #eval ((steps 2866581 initB) == some ⟨.E, -33, ⟨zeros 1, false, (MEvenB 0 (zeros 1)).tape.right⟩⟩,
-       (steps 45042285 initB) == some ⟨.E, -45, ⟨zeros 1, false, (MEvenB 1 (zeros 1)).tape.right⟩⟩)
+       (steps 45042285 initB) == some ⟨.E, -45, ⟨zeros 1, false, (MEvenB 1 (zeros 1)).tape.right⟩⟩,
+       (steps 727067 initB) == some ⟨.E, -27, ⟨zeros 1, false, (MOddB 0 (zeros 1)).tape.right⟩⟩,
+       (steps 11302995 initB) == some ⟨.E, -39, ⟨zeros 1, false, (MOddB 1 (zeros 1)).tape.right⟩⟩)
+-- all four TRUE: the B-orbit's even- AND odd-type milestones are exactly MEvenB/MOddB h (zeros 1)
 
 end FromB
