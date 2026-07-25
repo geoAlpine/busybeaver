@@ -900,3 +900,51 @@ measured and ready (positions relative to the IN head, `dpos`):
 
 Writing the four chunk lemmas (each ~20 steps, `rfl`-affordable) and composing with `steps_add`
 closes it, and with it the odd branch — every other part is already GREEN and on-orbit. -/
+
+private theorem oe2c0 (T R : List Bool) :
+    steps 20 ⟨.D, (0 : Int), ⟨ones 15 ++ (false :: false :: T), true,
+        ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, (-16 : Int), ⟨false :: T, false,
+        false :: (ones 20 ++ (false :: false :: R))⟩⟩ := by rfl
+
+private theorem oe2c1 (T R : List Bool) :
+    steps 20 ⟨.E, (-16 : Int), ⟨false :: T, false,
+        false :: (ones 20 ++ (false :: false :: R))⟩⟩
+      = some ⟨.A, (-8 : Int), ⟨pow01 4 ++ (false :: T), true,
+        ones 13 ++ (false :: false :: R)⟩⟩ := by rfl
+
+private theorem oe2c2 (T R : List Bool) :
+    steps 20 ⟨.A, (-8 : Int), ⟨pow01 4 ++ (false :: T), true,
+        ones 13 ++ (false :: false :: R)⟩⟩
+      = some ⟨.C, (-2 : Int), ⟨pow01 7 ++ (false :: T), false,
+        false :: (ones 6 ++ (false :: false :: R))⟩⟩ := by rfl
+
+private theorem oe2c3 (T R : List Bool) :
+    steps 20 ⟨.C, (-2 : Int), ⟨pow01 7 ++ (false :: T), false,
+        false :: (ones 6 ++ (false :: false :: R))⟩⟩
+      = some ⟨.E, (4 : Int), ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by rfl
+
+/-- **`oddE2Tile`** — THE LAST ODD-SPECIFIC OBJECT.  80 steps, head `+4`: the `ones 15` on the
+left and the `ones 5` on the right are consumed, `pow01 10` is laid down on the left and `0 0 0`
+on the right; the deep tail `R` and the comb tail `T` are untouched.  This is what absorbs the odd
+branch's `ones 20` marker prefix and hands the top rung its canonical comb.
+MEASURED at g=3, steps 5 018 116 → 5 018 196, cell-for-cell; built by M3′ in four 20-step tiles. -/
+theorem oddE2Tile (p : Int) (T R : List Bool) :
+    steps 80 ⟨.D, p, ⟨ones 15 ++ (false :: false :: T), true,
+        ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, p + 4, ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by
+  have h0 : steps 80 ⟨.D, (0 : Int), ⟨ones 15 ++ (false :: false :: T), true,
+      ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, (4 : Int), ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by
+    rw [show (80 : Nat) = 20 + (20 + (20 + 20)) from by decide, steps_add, oe2c0 T R, someBind,
+        steps_add, oe2c1 T R, someBind, steps_add, oe2c2 T R, someBind]
+    exact oe2c3 T R
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms oddE2Tile
