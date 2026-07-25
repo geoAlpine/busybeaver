@@ -78,9 +78,20 @@ certified suite is a subset of the community decider class (0/300 decided), so t
 internally reducible to the named 17."*
 
 `x2` is **not** one of the 17 named cryptids (its spec is absent from `catalogue_finish.py`'s named
-list; `X2_FRONTIER_MAP_2026-07-11.md` records it as drawn from the 1104-holdout frontier).  So:
+list).  **VERIFIED (2026-07-25) by the novelty oracle `bb6_holdouts.py`**, which matches up to TNF
+plus left–right reversal against `_bbdata/bb6_holdouts_1104.txt` (April 2026, 1104 canonical
+classes):
+
+    x2 canonical = 1LB0LC_1LD---_1LE0RD_0RF1RC_0LA1LC_0LC1RF
+    is_holdout(x2) = True
+
+(all 18 named cryptids also return `True`, so the oracle is not vacuously accepting).  So:
 
 > **This decides one member of the 1087 residual block — the first, unconditionally, in Lean.**
+
+**Caveat kept explicit:** the 1104 list is the curated April-2026 snapshot; newer/larger community
+lists exist.  Membership is asserted against that snapshot, nothing more, and no external claim is
+made.
 
 It does not decide any of the 17 named cryptids, and it does not touch `(K)`.  What it does is
 convert the template method from a design into a **worked, audited end-to-end example**, and it is
