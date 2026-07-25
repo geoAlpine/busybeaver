@@ -3,7 +3,11 @@
 Machine `C = 1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD`, blank tape.
 A member of the 1104-holdout residual, found by the pre-flight screen.
 
-**LABEL HELD until the cold build passes.**
+**AUDIT COMPLETE — PASSED.**  Cold full build from scratch: **73/73, `sorryAx` 0,
+`Classical.choice` 0**.
+
+> ### `C` DOES NOT HALT FROM THE BLANK TAPE.  [PROVEN]
+> Machine-checked, unconditional, Mathlib-free.  **The second of the 1104 holdouts decided.**
 
 ## The theorem
 
@@ -57,8 +61,23 @@ A member of the 1104-holdout residual, found by the pre-flight screen.
 
 and `hsplitB` (axiom-free `rfl`) certifies the entry landing.
 
-## Outstanding
+## Audit result
 
-* **Cold full build from scratch** — running.  Until it passes, the result is not audited.
+    cold full build from scratch : 73/73, sorryAx 0, Classical.choice 0
+    C_machine_nonhalt            : [propext, Quot.sound]
+    stepC_rl, stepsC_rl          : AXIOM-FREE  (the relabelling is Lean-checked, not asserted)
+    table read back              : 1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD  = C's spec
 
-**No label upgraded in this file.**
+**LABEL UPGRADED: `C` = [PROVEN non-halting].**  Audit of record: this file.
+
+## What the two decisions cost, side by side
+
+| | `x2` | `C` |
+|---|---|---|
+| new dynamics | the whole development | **ZERO** |
+| Lean theorems written | ~370 (T7 series) + `TapeCalc` 41 | **41** in `X2FromB` + 3 in `CIso` |
+| entry segment | 732 733 steps, 8 chunks | 2 866 581 steps, 29 chunks |
+
+`C` is `x2`'s own transition graph started in `x2`'s state `B`, so the whole `x2` development
+applied — but only because every lemma was `∀` in the indices that differ.  That is the
+transferable lesson, not the machine.

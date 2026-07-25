@@ -3,3 +3,7 @@ deep census: 1104 entries, 30000000 steps, aggregated by GRAPH
   ...200/1104  graphs so far 196
   ...300/1104  graphs so far 289
   ...500/1104  graphs so far 467
+  ...700/1104  graphs so far 620
+  ...800/1104  graphs so far 693
+  ...900/1104  graphs so far 762
+  ...1000/1104  graphs so far 831
