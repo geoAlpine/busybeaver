@@ -50,3 +50,27 @@ The recurrence is the doubler signature with a linear correction, as `x2`'s is:
 > `x2`'s graph, and two more candidates are under test with the screen only 45 % done.
 
 **No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
+
+
+## Update 2 — E and F CONFIRMED; the island has FOUR graphs
+
+Both decisive `4·10⁸` runs came back clean, stable under every cluster threshold, no phase change:
+
+| | spec | epoch widths | `w →` | `t →` |
+|---|---|---|---|---|
+| **D** | `1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_1LD---` | 185, 422, 893, 1832, 3707, 7454, 14945, 29924 | **2.0023** (from above) | **4.005** |
+| **E** | `1RB0RE_0RC0RA_1LD0RF_1LA0LD_1RA0LC_1RC---` | 125, 290, 617, 1268, 2567, 5162, 10349, 20720 | **2.0021** (from above) | **4.007** |
+| **F** | `1RB0LE_1RC0RF_0RD0RB_1RE0RC_1LA0LA_1RA---` | 435, 829, 1609, 3151, 6227, 12357, 24605, 49071 | **1.9944** (from below) | **3.989** |
+| `x2` | `1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE` | 267, 526, 1044, 2074, 4128, 8230, 16428, 32818 | **1.9977** (from below) | **3.992** |
+
+All four have **distinct graph-canonical forms**, all four are in the 1104 list, and all four show
+seven consecutive epochs converging monotonically to `(2, 4)`.
+
+> **The template island is real and multi-graph.**  This reverses the pessimistic reading of
+> `ROADMAP_2026-07-25_v2.md` §1 entirely: it is not one graph, it is at least four, with the deep
+> screen only 72 % complete.
+
+Phase B therefore has **three genuinely new targets (D, E, F)** plus `C` (`x2`'s own graph from
+state `B`, already specified in `CANDC_SPEC_2026-07-25.md`).
+
+**No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
