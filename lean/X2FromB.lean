@@ -259,3 +259,208 @@ theorem evenSeamB_oddInB (h : Nat) (R : List Bool) :
 
 #print axioms evenSeamB_oddInB
 end FromB
+
+namespace FromB
+/-! ## The `B`-orbit ODD entry — the same five `∀` lemmas, re-indexed
+
+`x2`'s odd chain uses `p1tLL`, `rUnitsFold`, `crossCarry`, `odTurn`, `eChewFold`, all fully `∀`.
+The `B`-orbit's odd-type `M6` is `x2`'s `odA` with the block exponent and cascade index each `+1`
+and `rUnits` unchanged, so the chain re-instantiates. -/
+
+def odA_B (h : Nat) (LL R : List Bool) : Cfg :=
+  ⟨.E, -5, ⟨[false] ++ LL, false,
+    false :: (pow10 4 ++ (ones 9 ++ (false :: false ::
+      (rUnits (2*h+3) ++ (pow10 10 ++
+        (ones (2 ^ (2*h+12) - 13) ++
+          (false :: false :: (descCascade (2*h+9) ++ R))))))))⟩⟩
+
+def odB_B (h : Nat) (LL R : List Bool) : Cfg :=
+  ⟨.E, -5 + 19, ⟨p1tL ++ LL, false,
+    false :: (rUnits (2*h+3) ++ (pow10 10 ++
+      (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R)))))⟩⟩
+
+def odC_B (h : Nat) (LL R : List Bool) : Cfg :=
+  ⟨.E, -5 + 19 + 7 * ((2*h+3 : Nat) : Int),
+    ⟨rUnitsDep (2*h+3) (p1tL ++ LL), false,
+     false :: (pow10 10 ++
+       (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R))))⟩⟩
+
+def odD_B (h : Nat) (LL R : List Bool) : Cfg :=
+  ⟨.E, -5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+      + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int) + 6,
+    ⟨ones 20 ++ (false :: false ::
+      (pow10 (2 ^ (2*h+11) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))), false,
+     false :: (descCascade (2*h+9) ++ R)⟩⟩
+
+theorem odAB_B (h : Nat) (LL R : List Bool) : steps 99 (odA_B h LL R) = some (odB_B h LL R) := by
+  unfold odA_B odB_B
+  exact p1tLL (-5) LL (rUnits (2*h+3) ++ (pow10 10 ++
+    (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R)))))
+
+theorem odBC_B (h : Nat) (LL R : List Bool) :
+    steps (15 * (2*h+3)) (odB_B h LL R) = some (odC_B h LL R) := by
+  unfold odB_B odC_B
+  exact rUnitsFold (2*h+3) (-5 + 19) (p1tL ++ LL)
+    (pow10 10 ++ (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R))))
+
+theorem odCcarry_B (h : Nat) (LL R : List Bool) :
+    steps (17 + 46 * (2 ^ (2*h+11) - 7)) (odC_B h LL R)
+      = some ⟨.E, -5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+              + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int),
+          ⟨ones 14 ++ (false :: false ::
+            (pow10 (2 ^ (2*h+11) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))),
+           false,
+           true :: false :: true :: false :: true ::
+             (false :: false :: (descCascade (2*h+9) ++ R))⟩⟩ := by
+  have hsplit : (2 : Nat) ^ (2*h+12) - 13 = 2 * (2 ^ (2*h+11) - 7) + 0 + 1 := by
+    have e : (2:Nat)^(2*h+12) = 2 * 2^(2*h+11) := by
+      rw [show 2*h+12 = (2*h+11)+1 from by omega, Nat.pow_add,
+          show (2:Nat)^1 = 2 from rfl, Nat.mul_comm]
+    have h7 : 8 ≤ (2:Nat)^(2*h+11) := by
+      have : (2:Nat)^3 ≤ 2^(2*h+11) := Nat.pow_le_pow_right (by decide) (by omega)
+      omega
+    omega
+  unfold odC_B
+  rw [show (false :: (pow10 10 ++
+        (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R)))))
+      = pow01 10 ++ (false ::
+        (ones (2 ^ (2*h+12) - 13) ++ (false :: false :: (descCascade (2*h+9) ++ R))))
+      from false_pow10_tail 10 _,
+      hsplit,
+      crossCarry (2 ^ (2*h+11) - 7) _ 0
+        (rUnitsDep (2*h+3) (p1tL ++ LL))
+        (false :: false :: (descCascade (2*h+9) ++ R))]
+  rfl
+
+theorem odCD_B (h : Nat) (LL R : List Bool) :
+    steps ((17 + 46 * (2 ^ (2*h+11) - 7)) + 6) (odC_B h LL R) = some (odD_B h LL R) := by
+  rw [steps_add, odCcarry_B h LL R, someBind]
+  unfold odD_B
+  exact odTurn _ 0 _ (descCascade (2*h+9) ++ R)
+
+#print axioms odCcarry_B
+#print axioms odCD_B
+end FromB
+
+namespace FromB
+theorem odDdescIn_B (h : Nat) (LL R : List Bool) :
+    steps (6 * 2 ^ (2*h+9)) (odD_B h LL R)
+      = some (descIn (2*h+10)
+          (-5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+            + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int) + 6
+            + 2 * ((2 ^ (2*h+9) : Nat) : Int))
+          (ones 20 ++ (false :: false ::
+            (pow10 (2 ^ (2*h+11) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))))
+          R) := by
+  have hsplit : (2 : Nat) ^ (2*h+11) - 3 = 2 * 2 ^ (2*h+9) + (2 ^ (2*h+10) - 3) := by
+    have e11 : (2:Nat)^(2*h+11) = 4 * 2^(2*h+9) := by
+      rw [show 2*h+11 = (2*h+9)+2 from by omega, Nat.pow_add,
+          show (2:Nat)^2 = 4 from rfl, Nat.mul_comm]
+    have e10 : (2:Nat)^(2*h+10) = 2 * 2^(2*h+9) := by
+      rw [show 2*h+10 = (2*h+9)+1 from by omega, Nat.pow_add,
+          show (2:Nat)^1 = 2 from rfl, Nat.mul_comm]
+    have h9 : 4 ≤ (2:Nat)^(2*h+9) := by
+      have : (2:Nat)^2 ≤ 2^(2*h+9) := Nat.pow_le_pow_right (by decide) (by omega)
+      omega
+    omega
+  unfold odD_B
+  rw [show descCascade (2*h+9)
+        = ones (2 ^ (2*h+11) - 3) ++ (false :: false :: descCascade (2*h+8)) from by
+          rw [show 2*h+9 = (2*h+8) + 1 from by omega, descCascade,
+              show 2*h+8+3 = 2*h+11 from by omega],
+      List.append_assoc, hsplit]
+  show steps (6 * 2 ^ (2*h+9)) ⟨.E, _, ⟨_, false,
+      false :: (ones (2 * 2 ^ (2*h+9) + (2 ^ (2*h+10) - 3)) ++
+        (false :: false :: (descCascade (2*h+8) ++ R)))⟩⟩ = _
+  rw [eChewFold (2 ^ (2*h+9))
+        (-5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+          + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int) + 6)
+        (2 ^ (2*h+10) - 3)
+        (ones 20 ++ (false :: false ::
+          (pow10 (2 ^ (2*h+11) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))))
+        (false :: false :: (descCascade (2*h+8) ++ R))]
+  refine congrArg some ?_
+  show (⟨.E, _, ⟨pow01 (2 ^ (2*h+9)) ++ _, false,
+      false :: (ones (2 ^ (2*h+10) - 3) ++
+        (false :: false :: (descCascade (2*h+8) ++ R)))⟩⟩ : Cfg)
+    = ⟨.E, _, ⟨pow01 (2 ^ (2*h+10 - 1)) ++ _, false,
+        false :: (ones (2 ^ (2*h+10) - 3) ++
+          (false :: false :: (descCascade (2*h+10 - 2) ++ R)))⟩⟩
+  rw [show 2*h+10-1 = 2*h+9 from by omega, show 2*h+10-2 = 2*h+8 from by omega]
+
+/-- **the `B`-orbit ODD doubling-phase entry** — lands in the SAME `descIn (2h+10)` as the even
+one, exactly as `x2`'s two entries both land in `descIn (2h+9)`. -/
+theorem topEntryOddB (h : Nat) (LL R : List Bool) :
+    steps ((99 + (15 * (2*h+3) + ((17 + 46 * (2 ^ (2*h+11) - 7)) + 6))) + 6 * 2 ^ (2*h+9))
+        (odA_B h LL R)
+      = some (descIn (2*h+10)
+          (-5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+            + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int) + 6
+            + 2 * ((2 ^ (2*h+9) : Nat) : Int))
+          (ones 20 ++ (false :: false ::
+            (pow10 (2 ^ (2*h+11) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ LL)))))
+          R) := by
+  rw [steps_add, steps_add, odAB_B h LL R, someBind, steps_add, odBC_B h LL R, someBind,
+      odCD_B h LL R, someBind]
+  exact odDdescIn_B h LL R
+
+#print axioms odDdescIn_B
+#print axioms topEntryOddB
+end FromB
+
+namespace FromB
+/-- `oddMarkerBridge` generalised in the `pow10` count — its proof only ever used `oddE2Marker`,
+which is `∀ N`. -/
+theorem oddMarkerBridgeN (N h : Nat) (L : List Bool) :
+    pow10 N ++ (true :: rUnitsDep (2*h+3) (p1tL ++ (zeros 10 ++ L)))
+      = pow10 (N + 1) ++ (false :: true :: frameLV ((2*h+1) + 1) (endWord ++ (zeros 11 ++ L))) := by
+  rw [rUnitsDep_frameL h (zeros 10 ++ L), ← List.append_assoc (zeros 1), zeros_1_10,
+      frameL_turnWord (2*h+1) (endWord ++ (zeros 11 ++ L)),
+      ← oddE2Marker N (2*h+1) (endWord ++ (zeros 11 ++ L))]
+  rfl
+
+/-- the side condition of `oddSpineFull` at `n = 2h+6`, `m = (2^(2h+11) − 7) + 1` again FORCES
+`c = 5` — the same value `x2`'s odd branch has. -/
+theorem oddC_forcedB (h c : Nat)
+    (hm : 10 + ((2 ^ (2*h+11) - 7) + 1) = (c + 1) + (2 ^ (5 + (2*h+6)) - 2)) : c = 5 := by
+  have e : (5 + (2*h+6)) = (2*h+11) := by omega
+  rw [e] at hm
+  have hp : (2:Nat) ^ (2*h+11) ≥ 2 ^ 11 := Nat.pow_le_pow_right (by omega) (by omega)
+  have h2048 : (2:Nat) ^ 11 = 2048 := by decide
+  omega
+
+/-- **the `B`-orbit ODD doubling phase** — `topEntryOddB ∘ oddSpineFull` at `n = 2h+6`, `c = 5`,
+`j = 2h+2`, all forced. -/
+theorem doubPhaseOddB (h : Nat) (L R : List Bool) :
+    ∃ q, steps (((99 + (15 * (2*h+3) + ((17 + 46 * (2 ^ (2*h+11) - 7)) + 6))) + 6 * 2 ^ (2*h+9))
+          + (((descTotal (2*h+6) + 415) + (ladderSteps 5 (2*h+6) + exitSteps (5 + (2*h+6))))
+             + ((topGrindSteps (5 + (2*h+6)) + exitSteps (5 + (2*h+6) + 1) + 80)
+                + (topGrindSteps (5 + (2*h+6) + 1) + (exitSteps (5 + (2*h+6) + 1 + 1) + 4 * 5)
+                   + (27 * (2*h+2) + 110)))))
+        (odA_B h (zeros 10 ++ L)
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2*h+6) ++
+            (zeros (2 ^ (5 + (2*h+6))) ++ (zeros (2 ^ (5 + (2*h+6) + 1)) ++ R))))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ (2*h+2) (oddSeamZ (5 + (2*h+6) + 1) 5 R))))⟩⟩ := by
+  have hm : 10 + ((2 ^ (2*h+11) - 7) + 1) = (5 + 1) + (2 ^ (5 + (2*h+6)) - 2) := by
+    have e : (5 + (2*h+6)) = (2*h+11) := by omega
+    rw [e]
+    have hp : (2:Nat) ^ (2*h+11) ≥ 2 ^ 11 := Nat.pow_le_pow_right (by omega) (by omega)
+    have h2048 : (2:Nat) ^ 11 = 2048 := by decide
+    omega
+  obtain ⟨q, hq⟩ := oddSpineFull (2*h+6) ((2 ^ (2*h+11) - 7) + 1) 5 (2*h+2) (by omega) (by omega)
+    hm (-5 + 19 + 7 * ((2*h+3 : Nat) : Int) + 17
+        + 2 * ((2 ^ (2*h+11) - 7 : Nat) : Int) + 6
+        + 2 * ((2 ^ (2*h+9) : Nat) : Int)) L R
+  refine ⟨q, ?_⟩
+  have en : 2*h+6+4 = 2*h+10 := by omega
+  rw [en] at hq
+  rw [steps_add, topEntryOddB h (zeros 10 ++ L) _, someBind,
+      oddMarkerBridgeN (2 ^ (2*h+11) - 7) h L]
+  exact hq
+
+#print axioms oddMarkerBridgeN
+#print axioms oddC_forcedB
+#print axioms doubPhaseOddB
+end FromB
