@@ -93,3 +93,42 @@ stable under every cluster threshold tried (`gap > 0.25t / 1.0t / 2.0t`).  Using
    so machines with long epochs were missed.  The 57 single-ratio rejects also deserve a re-run.
 
 **No machine decided.  No label upgraded.  Push to the (public) origin remains HELD.**
+
+---
+
+## 4. Phase-B entry state for candidate C (MEASURED)
+
+`C = 1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD`
+
+**Two alignment errors were made and corrected while measuring this; only the verified facts follow.**
+
+1. **C is a `(2, 4)` doubler**, like `x2`: width ratios `2.023, 1.985, 1.987, 1.993, 1.994, 1.995,
+   1.997, 1.998`, time ratios `→ 3.985`.  Stable under every cluster threshold.
+2. **C's epoch widths are `x2`'s minus 7** — `130, 263, 522, 1037, 2067, 4121, 8223, 16421, 32811`
+   vs `136, 267, 526, 1044, 2074, 4128, 8230, 16428, 32818` (constant `−7` from epoch 4 on).
+3. **The milestone MARKER words are the same family, offset by ONE epoch of phase.**
+   `C`'s epoch `k+1` right tape equals `x2`'s epoch `k` right tape over ≥ 39 cells (RLE-identical)
+   and over 542–1061 cells in a long window:
+
+       x2 @188 098 (w 1044) : 0^21 1 0^4 1 0 1 0 1 0 1 0 1 0 ...
+       C  @727 066 (w 2067) : 0^21 1 0^4 1 0 1 0 1 0 1 0 1 0 ...     identical
+       x2 @732 732 (w 2074) : 0^21 1 0^6 1 0^9 ...
+       C  @2 866 580 (w 4121): 0^21 1 0^6 1 0^9 ...                  identical
+
+   At MATCHED epoch indices they diverge after 4–36 cells — the phase offset is real.
+4. Milestone state: `x2` is in `D`, `C` is in `C`; milestone head positions `x2 −20, −26, −32, −38`
+   (uniform `−6`), `C −19, −22, −28, −34` (uniform `−6` from the 2nd on).
+
+**What this means for Phase B.**  The machine-specific layer of the `x2` proof is a finite word
+algebra on the marker combs (`pow10`, `pow01`, `ones`, `frameZ`, `uUnits`, the two seam identities).
+`C`'s milestones are drawn from **that same word family**.  So the port is:
+
+* reuse `TapeCalc` wholesale (already machine-independent);
+* reuse the word-algebra lemmas, re-indexed by the one-epoch phase offset and the `−7` width offset;
+* re-measure only the tile step counts (they differ: `x2` milestones at `52 132 / 188 098 /
+  732 732 / 2 852 090`, `C` at `49 469 / 192 508 / 727 066 / 2 866 580`).
+
+That is the cheapest possible Phase-B target, and it is the direct test of whether the template
+method generalises at all.
+
+**No machine decided.  No label upgraded.  Push HELD.**
