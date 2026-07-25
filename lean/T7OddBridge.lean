@@ -1,4 +1,5 @@
 import T7OddRung
+import BlankNorm
 import T7E2Bridge
 import T7Odd
 open X2
@@ -87,3 +88,75 @@ theorem doubPhaseOdd_cost0 :
                    + (27 * (2*0+2) + 110)))) = 8476791 := by decide
 
 #print axioms doubPhaseOdd_cost0
+
+/-! ## Obligation H (odd branch) — R5 dissolves
+
+`doubPhaseOdd` is `∀ L` in the left tail.  So the low phase's surviving-blank count `j` does NOT
+have to be pinned to `10`: any `j ≥ 10` feeds the phase with `L := zeros (j - 10)`.  The bracket
+`hlow_j_ge`(≥10) + `steps_lpad_zeros`(≤16) is therefore already sufficient, and the "pin `j = 10`"
+item (R5) is not needed for the odd branch at all. -/
+
+/-- the doubling phase's right-hand pad register -/
+def oddPadR (h : Nat) (R : List Bool) : List Bool :=
+  zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2 ^ (5 + (2*h+5))) ++ (zeros (2 ^ (5 + (2*h+5) + 1)) ++ R))))
+
+/-- the low phase's free `FRAME` instantiated to what `odA` needs -/
+def oddLowFrame (h : Nat) (R : List Bool) : List Bool :=
+  ones (2 ^ (2*h+3+8) - 13) ++ (false :: false :: (descCascade (2*h+8) ++ oddPadR h R))
+
+/-- `h_low_odd_core` with `FRAME` set to the doubling phase's register: the OUT is `odA h [] _`. -/
+theorem hlowOdd_core' (h : Nat) (R : List Bool) :
+    steps (419 + 76*h)
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+          (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+      = some (odA h [] (oddPadR h R)) :=
+  h_low_odd_core h (oddLowFrame h R)
+
+#print axioms hlowOdd_core'
+
+/-- padded odd low phase: `zeros m` of left boundary blanks, `j ≤ m` survive. -/
+theorem hlowOdd_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (419 + 76*h)
+          ⟨.E, 0, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some (odA h (zeros j) (oddPadR h R)) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ := steps_lpad_zeros (419 + 76*h) .E 0 [] false _ (hlowOdd_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **Obligation H (odd) — the low phase meets `doubPhaseOdd`, unconditional in `h`.**
+`zeros 16` of left boundary blanks are supplied; `j ∈ [10, 16]` of them survive; the doubling
+phase absorbs the surplus into its free left tail.  No exact `j` is required. -/
+theorem hlowDoubOdd (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((419 + 76*h)
+          + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+               + 6 * 2 ^ (2 * h + 8))
+            + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+               + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+                  + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+                     + (27 * (2*h+2) + 110))))))
+          ⟨.E, 0, ⟨zeros 16, false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowOdd_padded h R 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [odA, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseOdd h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms hlowOdd_padded
+#print axioms hlowDoubOdd
