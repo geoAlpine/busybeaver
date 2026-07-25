@@ -102,3 +102,21 @@ and this is a **lower bound** — the screen runs `2·10⁷` steps and demands `
 machines with long epochs are missed entirely.
 
 **No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
+
+## Final tally — the two screens union to TEN graphs
+
+    strict (2,4) screen @2e7 : 7 graphs
+    deep per-graph census @3e7 : 7 graphs
+    UNION                     : 10 distinct transparent graphs   (only 4 in common)
+
+New from the census:
+
+    1RB0LD_1LC0RA_1RA1LB_1LA1LE_1RF0LC_---0RE   w=2.0043  t=3.781
+    1RB0LA_0RC1RD_0LD1RE_1LA0RB_0RD1RF_1RB---   w=1.9751  t=3.983
+    1RB0LC_1LC0RB_0LD1LA_0RA1LE_0LA1LF_1LC---   w=1.9751  t=3.983
+
+> **That the two screens agree on only 4 of their 7 is itself the finding**: each budget/criterion
+> combination misses machines the other catches.  **10 is a LOWER BOUND** and the island is larger
+> than either screen alone reports.  557 of the 909 graphs are still unresolved at `3·10⁷`.
+
+**Decided so far: `x2` and `C`.  Push HELD.**
