@@ -82,8 +82,12 @@ Sampling head position and max-reach at 28 equally-spaced fractions of one epoch
   `512 = 2⁹` — **that is the LADDER**, and `C` has the same rungs.
 * Both epochs END at head offset `−2`.
 * The fine structure (`dpos` inside each plateau) DIFFERS: `x2` marches monotonically right where
-  `C` oscillates.  So the **tile step counts are genuinely different** and must be re-measured;
-  what ports is the skeleton and the word algebra, not the tile arithmetic.
+  `C` oscillates.
+
+  **CORRECTION (measured after the above was written).**  I inferred from the differing `dpos`
+  wiggle that "the tile step counts are genuinely different and must be re-measured".  **That was
+  wrong.**  Measuring the plateau ARRIVAL TIMES and the spans between them shows the tile
+  arithmetic largely ports — see the next section.
 
 ### Honest scope of the port
 
@@ -92,7 +96,33 @@ Sampling head position and max-reach at 28 equally-spaced fractions of one epoch
 | `TapeCalc` (boundaries, translation, monotonicity, non-halting) | **verbatim** — already machine-independent |
 | word algebra (`m1casc`, `uUnits`, `pow10`, `pow01`, `ones`, `frameZ`) | **verbatim, re-indexed** by the one-epoch phase and the `−6/−7` offset |
 | phase skeleton (descent → ladder → top rung → tail; ladder step `2⁹`) | **same shape**, re-indexed |
-| tile step counts and the fine trajectory | **must be re-measured** — this is the real work |
+| tile step counts | **largely SHARED** — see the plateau-span measurement below |
+| the fine trajectory inside a plateau | differs (`x2` monotone, `C` oscillating) |
 | entry segment, audit | same method as `x2` |
+
+**No machine decided. No label upgraded. Push HELD.**
+
+
+## The tile SPANS are shared (MEASURED — and this corrects the paragraph above)
+
+Plateau arrival times over 6·10⁶ steps, and the spans between consecutive plateaus:
+
+| | `x2` | `C` |
+|---|---|---|
+| reach levels | 1530, 1658, 1786, 2554, 2810, 3066, 3322, 3578, 4602, 5114, 5626, 6138 | 1527, 1655, 1783, 2551, 2807, 3063, 3319, 3575, 4599, 5111, 5623, 6135 |
+| offset | — | **constant `−3`** |
+| spans | 25032, 271624, 25032, 141660, **99464**, **296576**, **99464**, 1084024, **99464**, 586708, **396040**, **1183488**, **396040** | 271544, **25032**, **99464**, 62380, **99464**, **296576**, **99464**, 1084104, **99464**, 545884, **396040**, **1183488**, **396040** |
+
+**`25032`, `99464`, `296576`, `396040`, `1183488` appear in BOTH, exactly.**  Only the entry/exit
+spans differ (`271624 ↔ 271544`, `1084024 ↔ 1084104`, `586708 ↔ 545884`, `141660 ↔ 62380`).
+
+So the corrected scope of the port is:
+
+* the LADDER tile constants are **shared with `x2`** — the `exitSteps` / `topGrindSteps`-style
+  library ports rather than being re-derived;
+* what must be re-measured is the **entry and exit episodes** (the spans that differ), i.e. the
+  analogue of `x2`'s low phase / topEntry / seam, not the ladder itself.
+
+That is a much smaller job than the previous paragraph claimed.
 
 **No machine decided. No label upgraded. Push HELD.**
