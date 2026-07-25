@@ -963,3 +963,44 @@ theorem trailSuffixOdd (p : Int) (M Y : List Bool) :
   exact congrArg some (cfgPos (by omega))
 
 #print axioms trailSuffixOdd
+
+/-- **`trailOut_allGenO`** — the trailing phase with an `ones`-run tail (the odd branch's).
+Same `trailSteps k` as the even/comb versions; `trailSeam_leftW` and `trailFoldPos` are reused
+verbatim, and only the ending differs (`trailSuffixOdd` for `trailSuffix`).  Its OUT is
+`oddE2Tile`'s IN. -/
+theorem trailOut_allGenO (k : Nat) (hk : 6 ≤ k) (p : Int) (M R : List Bool) :
+    ∃ q, steps (trailSteps k)
+        (cascadeReg 4 1 (p + 2 ^ k - (k : Int) - 44)
+          (depStack k (regenWordW k (ones 21 ++ M))) (zeros 16 ++ R))
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have hsteps : trailSteps (n + 6) = 393 + (trailCost (trailBlocks (n + 2)) + 7) := by
+    have h := trailSteps_eq_trailCost (n + 6) (by omega)
+    rw [show n + 6 - 4 = n + 2 from by omega] at h
+    omega
+  refine ⟨(p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19)
+      - ((trailCost (trailBlocks (n + 2)) : Nat) : Int) + 2 * (((n + 2 : Nat)) : Int) - 7, ?_⟩
+  rw [hsteps, steps_add]
+  rw [show cascadeReg 4 1 (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+        (depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M))) (zeros 16 ++ R)
+      = ⟨.E, p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44,
+          ⟨pow01 7 ++ depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M)), false,
+            false :: false :: false :: (ones 13 ++ (false :: false ::
+              (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩ from rfl,
+    trailPrefix (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+      (depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M))) R,
+    someBind]
+  rw [trailSeam_leftW (n + 6) (by omega) (ones 21 ++ M), show n + 6 - 4 = n + 2 from by omega]
+  rw [steps_add,
+    trailFoldPos (trailBlocks (n + 2))
+      (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19) (ones 21 ++ M)
+      (descCascade 2 ++ (zeros 9 ++ R)),
+    someBind, trailBlocks_length]
+  rw [show trailCasc (trailBlocks (n + 2)) (descCascade 2 ++ (zeros 9 ++ R))
+      = descCascade (n + 4) ++ (zeros 9 ++ R) from by
+        rw [trailCasc_append, trailCasc_descCascade, show 2 + (n + 2) = n + 4 from by omega],
+    trailSuffixOdd _ M (descCascade (n + 4) ++ (zeros 9 ++ R)),
+    show n + 6 - 2 = n + 4 from by omega]
+
+#print axioms trailOut_allGenO
