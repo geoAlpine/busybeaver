@@ -160,3 +160,124 @@ theorem hlowDoubOdd (h : Nat) (R : List Bool) :
 
 #print axioms hlowOdd_padded
 #print axioms hlowDoubOdd
+
+/-! ## The even branch, made `∀ L` — and obligation H (even)
+
+`doubPhaseEven` is stated at the FIXED left tail `zeros 10`.  Its two ingredients
+(`topEntryEvenLT`, `evenSpine`) are both `∀`, so the `∀ L` restatement is immediate — and with it
+the same R5-dissolving argument works on the even branch too. -/
+
+/-- **`doubPhaseEven` with a free left tail.** -/
+theorem doubPhaseEvenL (h : Nat) (L R : List Bool) :
+    ∃ q : Int,
+      steps ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110))))
+          (ttA h (zeros 10 ++ L)
+            (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+              (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))))
+        = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨q, hq⟩ := evenSpine (2 * h + 5) (2 * h + 1) (teP h) L R
+  refine ⟨q, ?_⟩
+  rw [steps_add,
+      topEntryEvenLT h (zeros 10 ++ L)
+        (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+          (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))),
+      someBind, tlM_spineMk h (zeros 10 ++ L), ← List.append_assoc, zeros_1_10]
+  show steps _ (descIn (2 * h + 5 + 4) (teP h) _ _) = _
+  exact hq
+
+/-- the even doubling phase's right-hand pad register -/
+def evenPadR (h : Nat) (R : List Bool) : List Bool :=
+  zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+    (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))
+
+/-- the even low phase's free `TAIL` instantiated to what `ttA` needs -/
+def evenLowFrame (h : Nat) (R : List Bool) : List Bool :=
+  ones (2 ^ (2*h+2+8) - 3) ++ teTailT h (evenPadR h R)
+
+/-- `h_low_even_core` with `TAIL` set to the doubling phase's register: the OUT is `ttA h [] _`. -/
+theorem hlowEven_core' (h : Nat) (R : List Bool) :
+    steps (267 + 38*(2*h+2))
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+          (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+      = some (ttA h [] (evenPadR h R)) :=
+  h_low_even_core h (evenLowFrame h R)
+
+/-- padded even low phase. -/
+theorem hlowEven_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (267 + 38*(2*h+2))
+          ⟨.E, 0, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some (ttA h (zeros j) (evenPadR h R)) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ := steps_lpad_zeros (267 + 38*(2*h+2)) .E 0 [] false _ (hlowEven_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **Obligation H (even) — the low phase meets `doubPhaseEvenL`, unconditional in `h`.** -/
+theorem hlowDoubEven (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((267 + 38*(2*h+2))
+          + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110)))))
+          ⟨.E, 0, ⟨zeros 16, false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowEven_padded h R 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [ttA, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseEvenL h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms doubPhaseEvenL
+#print axioms hlowEven_core'
+#print axioms hlowDoubEven
+
+/-! ## M4 anti-vacuity for both obligation-H compositions
+
+MEASURED milestone steps (`x2r2_sim`, instrument anchors green): `M1(2) @732733`,
+`M6(2) @733076`, `M1(3) @2852091`, `M6(3) @2852510`, `M1(4) @11329301` — each in state `E` with
+right `0^21 1 0^6 …` (M1) resp. the `M6` frame.  So
+
+    M1(2) -> M1(3) = 2 119 358      M1(3) -> M1(4) = 8 477 210
+
+and both composed costs hit those spans exactly. -/
+
+theorem hlowDoubEven_cost0 :
+    (267 + 38*(2*0+2))
+      + ((99 + (15 * (2 * 0 + 2 + 1) + (3 + 6 * 2 ^ (2 * 0 + 2 + 6))))
+         + ((descTotal (2 * 0 + 5) + 415)
+            + (ladderSteps 5 (2 * 0 + 5) + exitSteps (5 + (2 * 0 + 5)))
+            + (topGrindSteps (5 + (2 * 0 + 5)) + exitSteps (5 + (2 * 0 + 5) + 1) + 74
+               + (27 * (2 * 0 + 1) + 110)))) = 2119358 := by decide
+
+theorem hlowDoubOdd_cost0 :
+    (419 + 76*0)
+      + (((99 + (15 * (2 * 0 + 3) + ((17 + 46 * (2 ^ (2 * 0 + 3 + 7) - 7)) + 6)))
+           + 6 * 2 ^ (2 * 0 + 8))
+        + (((descTotal (2*0+5) + 415) + (ladderSteps 5 (2*0+5) + exitSteps (5 + (2*0+5))))
+           + ((topGrindSteps (5 + (2*0+5)) + exitSteps (5 + (2*0+5) + 1) + 80)
+              + (topGrindSteps (5 + (2*0+5) + 1) + (exitSteps (5 + (2*0+5) + 1 + 1) + 4 * 5)
+                 + (27 * (2*0+2) + 110))))) = 8477210 := by decide
+
+#print axioms hlowDoubEven_cost0
+#print axioms hlowDoubOdd_cost0
