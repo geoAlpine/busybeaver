@@ -783,3 +783,117 @@ theorem steps_rpad_zeros_absorb : ∀ (k n : Nat) (s : St) (p : Int) (L : List B
     rwa [List.append_assoc, zeros_snoc] at habs
 
 #print axioms steps_rpad_zeros_absorb
+
+/-! ## Pinning the milestone translation `q` — no refactor needed
+
+The cycles are `∀ R` in the trailing tail, and `R` sits at the very END of the right tape.  So the
+`R = [false]` instance is the `R = []` instance with one trailing pad — and `steps_rpad_dich` then
+FORCES the riding branch (the absorbed branch would need `Rout = Rout ++ [false]`).  Riding carries
+the frontier equality, so `q` is pinned by two list LENGTHS. -/
+
+theorem evenPadR_app (h : Nat) (X : List Bool) : evenPadR h X = evenPadR h [] ++ X := by
+  simp [evenPadR, List.append_assoc]
+
+theorem oddPadR_app (h : Nat) (X : List Bool) : oddPadR h X = oddPadR h [] ++ X := by
+  simp [oddPadR, oddPadTail, List.append_assoc]
+
+theorem oddPadTail_app (h : Nat) (X : List Bool) : oddPadTail h X = oddPadTail h [] ++ X := by
+  simp [oddPadTail, List.append_assoc]
+
+theorem evenPadTail_app (h : Nat) (X : List Bool) : evenPadTail h X = evenPadTail h [] ++ X := by
+  simp [evenPadTail, List.append_assoc]
+
+theorem MEven_right_app (h : Nat) (X : List Bool) :
+    (MEven h X).tape.right = (MEven h []).tape.right ++ X := by
+  show zeros 21 ++ (uUnits (2*h+1) ++ (true :: (zeros 10 ++ evenLowFrame h X))) = _
+  simp [MEven, evenLowFrame, teTailT, evenPadR_app h X, List.append_assoc]
+
+theorem MOdd_right_app (h : Nat) (X : List Bool) :
+    (MOdd h X).tape.right = (MOdd h []).tape.right ++ X := by
+  show zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h X))))) = _
+  simp [MOdd, oddLowFrame, oddPadR_app h X, List.append_assoc]
+
+#print axioms MEven_right_app
+#print axioms MOdd_right_app
+
+/-- **`q` IS PINNED** (even cycle): the milestone translation equals the difference of two list
+lengths.  Proof: the `R = [false]` instance of `cycleEven` is the `R = []` instance with one
+trailing pad, and the absorbed branch of `steps_rpad_dich` would force `Rout = Rout ++ [false]`.
+So the pad RIDES, and riding carries exactly the frontier equality. -/
+theorem cycleEven_pos (h : Nat) (m : Nat) (q : Int)
+    (hrun : steps (costEven h)
+        ⟨.E, 0, ⟨[], false, (MEven h (zeros 16 ++ oddPadTail h [])).tape.right⟩⟩
+      = some ⟨.E, q, ⟨zeros m, false, (MOdd h []).tape.right⟩⟩) :
+    ((MOdd h []).tape.right.length : Int) + q
+      = ((MEven h (zeros 16 ++ oddPadTail h [])).tape.right.length : Int) := by
+  have hin : (MEven h (zeros 16 ++ oddPadTail h [false])).tape.right
+      = (MEven h (zeros 16 ++ oddPadTail h [])).tape.right ++ [false] := by
+    rw [MEven_right_app h (zeros 16 ++ oddPadTail h [false]),
+        MEven_right_app h (zeros 16 ++ oddPadTail h []),
+        oddPadTail_app h [false]]
+    rw [← List.append_assoc, ← List.append_assoc, ← List.append_assoc]
+  obtain ⟨m1, q1, h1⟩ := cycleEven h [false]
+  rcases steps_rpad_dich (costEven h) .E 0 [] false
+      ((MEven h (zeros 16 ++ oddPadTail h [])).tape.right) hrun with ⟨_, hf⟩ | habs
+  · exact hf
+  · exfalso
+    have h1' : steps (costEven h)
+        ⟨.E, 0, ⟨[], false,
+          (MEven h (zeros 16 ++ oddPadTail h [])).tape.right ++ [false]⟩⟩
+        = some ⟨.E, q1, ⟨zeros m1, false, (MOdd h []).tape.right ++ [false]⟩⟩ := by
+      rw [← hin, ← MOdd_right_app h [false]]
+      exact h1
+    have hEq := Option.some.inj (habs.symm.trans h1')
+    injection hEq with _ _ e3
+    injection e3 with _ _ e6
+    have hl := congrArg List.length e6
+    rw [List.length_append, show ([false] : List Bool).length = 1 from rfl] at hl
+    omega
+
+#print axioms cycleEven_pos
+
+/-- **`q` IS PINNED** (odd cycle). -/
+theorem cycleOdd_pos (h : Nat) (m : Nat) (q : Int)
+    (hrun : steps (costOdd h)
+        ⟨.E, 0, ⟨[], false, (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right⟩⟩
+      = some ⟨.E, q, ⟨zeros m, false, (MEven (h+1) []).tape.right⟩⟩) :
+    ((MEven (h+1) []).tape.right.length : Int) + q
+      = ((MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right.length : Int) := by
+  have hin : (MOdd h (zeros 16 ++ evenPadTail (h+1) [false])).tape.right
+      = (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right ++ [false] := by
+    rw [MOdd_right_app h (zeros 16 ++ evenPadTail (h+1) [false]),
+        MOdd_right_app h (zeros 16 ++ evenPadTail (h+1) []),
+        evenPadTail_app (h+1) [false]]
+    rw [← List.append_assoc, ← List.append_assoc, ← List.append_assoc]
+  obtain ⟨m1, q1, h1⟩ := cycleOdd h [false]
+  rcases steps_rpad_dich (costOdd h) .E 0 [] false
+      ((MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right) hrun with ⟨_, hf⟩ | habs
+  · exact hf
+  · exfalso
+    have h1' : steps (costOdd h)
+        ⟨.E, 0, ⟨[], false,
+          (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right ++ [false]⟩⟩
+        = some ⟨.E, q1, ⟨zeros m1, false, (MEven (h+1) []).tape.right ++ [false]⟩⟩ := by
+      rw [← hin, ← MEven_right_app (h+1) [false]]
+      exact h1
+    have hEq := Option.some.inj (habs.symm.trans h1')
+    injection hEq with _ _ e3
+    injection e3 with _ _ e6
+    have hl := congrArg List.length e6
+    rw [List.length_append, show ([false] : List Bool).length = 1 from rfl] at hl
+    omega
+
+#print axioms cycleOdd_pos
+
+set_option maxRecDepth 400000 in
+/-- **M4 anti-vacuity for the pinned translation.**  `cycleEven_pos`/`cycleOdd_pos` say
+`q = |IN right| − |OUT right|`.  At `h = 0` both evaluate to `−6` — exactly the MEASURED milestone
+translation (`M1(2) @−31`, `M1(3) @−37`, `M1(4) @−43`).  Checked by `#eval` for `h = 0,1,2`. -/
+theorem cycle_q_h0 :
+    ((MEven 0 (zeros 16 ++ oddPadTail 0 [])).tape.right.length : Int)
+      - ((MOdd 0 []).tape.right.length : Int) = -6
+    ∧ ((MOdd 0 (zeros 16 ++ evenPadTail 1 [])).tape.right.length : Int)
+      - ((MEven 1 []).tape.right.length : Int) = -6 := ⟨rfl, rfl⟩
+
+#print axioms cycle_q_h0
