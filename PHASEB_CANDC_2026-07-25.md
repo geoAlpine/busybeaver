@@ -126,3 +126,34 @@ So the corrected scope of the port is:
 That is a much smaller job than the previous paragraph claimed.
 
 **No machine decided. No label upgraded. Push HELD.**
+
+## The epoch spans differ from `x2`'s by an alternating `±≈10·2^k` (MEASURED)
+
+Milestones over 5·10⁷ steps, both machines:
+
+| k | `x2` t | `x2` w | `C` t | `C` w | Δw | `x2` span | `C` span | **Δspan** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 8 | 52 132 | 526 | 49 469 | 522 | −4 | 38 463 | 34 907 | **−3 556** |
+| 9 | 188 098 | 1044 | 192 508 | 1037 | **−7** | 135 966 | 143 039 | **+7 073** |
+| 10 | 732 732 | 2074 | 727 066 | 2067 | **−7** | 544 634 | 534 558 | **−10 076** |
+| 11 | 2 852 090 | 4128 | 2 866 580 | 4121 | **−7** | 2 119 358 | 2 139 514 | **+20 156** |
+| 12 | 11 329 300 | 8230 | 11 302 994 | 8223 | **−7** | 8 477 210 | 8 436 414 | **−40 796** |
+| 13 | 44 986 994 | 16428 | 45 042 284 | 16421 | **−7** | 33 657 694 | 33 739 290 | **+81 596** |
+
+* **width offset is a constant `−7`** from `k = 9` on;
+* **the span difference alternates in sign and doubles**: `−3556, +7073, −10076, +20156, −40796,
+  +81596` — dividing by `2^k` gives `−13.9, +13.8, −9.84, +9.84, −9.96, +9.96`, converging to
+  `±10`;
+* **the alternation has period 2 — the even/odd epoch parity**, which is exactly `x2`'s own
+  even/odd doubling-phase split.
+
+`x2`'s `k = 11` span is `2 119 358 = costEven 0` and `k = 12` is `8 477 210 = costOdd 0` (both
+already `decide`-certified in `T7OddBridge`).  So:
+
+> **`C`'s cost formulas have the same shape as `x2`'s `costEven` / `costOdd`, plus ONE
+> parity-dependent `≈ 10·2^k` term.**
+
+The Lean cost definitions therefore port with a single extra summand, to be pinned by re-measuring
+the entry/exit episodes.
+
+**No machine decided. No label upgraded. Push HELD.**
