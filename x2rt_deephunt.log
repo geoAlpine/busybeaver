@@ -1,0 +1,28 @@
+[ANOMALY] gap L=4 not in [6, 10, 18] at step=345
+[ANOMALY] gap L=8 not in [6, 10, 18] at step=1212
+[ANOMALY] gap L=14 not in [6, 10, 18] at step=4453
+[ANOMALY] gap L=22 not in [6, 10, 18] at step=52159
+[ANOMALY] gap L=14 not in [6, 10, 18] at step=52223
+[wall budget 1500.0s reached]
+
+=== HUNT DONE: step=2317000000000 halted=False generations=15 milestones=96 elapsed=1500s ===
+distinct E-met gap lengths (L>=3) ever: [4, 6, 8, 10, 14, 18, 22]
+gap==3 events: 0   ODD gaps: 0   non-[6, 10, 18] gaps: 5
+per-generation gap multiset (L>=3):
+  gen#  1 (odd ): [4]  <<< DEVIATION
+  gen#  2 (even): [8]  <<< DEVIATION
+  gen#  3 (odd ): [6, 14]  <<< DEVIATION
+  gen#  4 (even): [6, 14, 22]  <<< DEVIATION
+  gen#  5 (odd ): [10, 18]
+  gen#  6 (even): [6, 10, 18]
+  gen#  7 (odd ): [10, 18]
+  gen#  8 (even): [6, 10, 18]
+  gen#  9 (odd ): [10, 18]
+  gen# 10 (even): [6, 10, 18]
+  gen# 11 (odd ): [10, 18]
+  gen# 12 (even): [6, 10, 18]
+  gen# 13 (odd ): [10, 18]
+  gen# 14 (even): [6, 10, 18]
+  gen# 15 (odd ): [10, 18]
+
+No gap==3, no odd gap, no halt found in this envelope.
