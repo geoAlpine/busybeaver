@@ -948,3 +948,18 @@ theorem oddE2Tile (p : Int) (T R : List Bool) :
   exact congrArg some (cfgPos (by omega))
 
 #print axioms oddE2Tile
+
+/-- **`trailSuffixOdd`** — the odd analogue of `trailSuffix`: the same 7-step, `E`/cur-`1` phase,
+but with an `ones 21` run where the even branch has `0 0 1`.  It lands EXACTLY on `oddE2Tile`'s IN.
+MEASURED at g=3, steps 5 018 109 → 5 018 116. -/
+theorem trailSuffixOdd (p : Int) (M Y : List Bool) :
+    steps 7 ⟨.E, p, ⟨false :: (ones 21 ++ M), true, Y⟩⟩
+      = some ⟨.D, p - 7, ⟨ones 15 ++ M, true, ones 5 ++ (false :: false :: Y)⟩⟩ := by
+  have h0 : steps 7 ⟨.E, (0 : Int), ⟨false :: (ones 21 ++ M), true, Y⟩⟩
+      = some ⟨.D, (-7 : Int), ⟨ones 15 ++ M, true, ones 5 ++ (false :: false :: Y)⟩⟩ := by rfl
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms trailSuffixOdd
