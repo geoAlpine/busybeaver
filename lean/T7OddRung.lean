@@ -804,3 +804,75 @@ example : 5018196 - 2900995 = 2117201 := by decide
 -- the odd span is NOT the even span plus one bare rung: exitSteps 10 + topGrindSteps 10 differs.
 example : exitSteps 10 + topGrindSteps 10 = 1181961 := by decide
 example : 2117201 - 535544 = 1581657 := by decide
+
+/-! ### `oddSpine`, restated over the ORBIT'S route  (`headToLadder ∘ topRung ∘ oddTopRungToMilestone`)
+
+MEASURED at g=3: `descIn 9 → cascadeReg 10 → cReg 11 → milestone`, every span a library constant
+(`R1_ODDSEAM` §RESIDUE 2). The odd branch's extra comb rides in the marker (`cascadeReg_Lc_absorb`),
+so `headToLadder` and `topRung` — both GREEN, both parity-free — carry it untouched. -/
+
+/-- `topRung`'s OUT IS `cascadeReg (k+1) (c+1)` once the comb is read out of the free tail. -/
+theorem cascadeRegGen_eq_cascadeReg (k c : Nat) (hk : 1 ≤ k) (p : Int) (M R : List Bool) :
+    cascadeRegGen (k + 1) p (pow01 (c + (2 ^ k - 2)) ++ M) R
+      = cascadeReg (k + 1) (c + 1) p M R := by
+  have h2 : (2 : Nat) ≤ 2 ^ k := by
+    have h : (2:Nat) ^ 1 ≤ 2 ^ k := Nat.pow_le_pow_right (by decide) (by omega)
+    simpa using h
+  show (⟨.E, p, ⟨pow01 1 ++ (pow01 (c + (2 ^ k - 2)) ++ M), false, _⟩⟩ : Cfg)
+     = ⟨.E, p, ⟨pow01 ((c + 1) + (2 ^ (k + 1 - 1) - 2)) ++ M, false, _⟩⟩
+  rw [← List.append_assoc, ← pow01_add, show k + 1 - 1 = k from by omega,
+      show 1 + (c + (2 ^ k - 2)) = (c + 1) + (2 ^ k - 2) from by omega]
+
+/-- **`oddHeadToTop`** — the orbit's route from the odd descent entry to the odd top rung:
+`headToLadder n ∘ topRung (5+n)`, `∀n ≥ 4 ∀c`.  Both halves are pre-existing GREEN ∀-theorems;
+the odd branch's comb `pow01 c` simply travels in the marker. -/
+theorem oddHeadToTop (n c : Nat) (hn : 4 ≤ n) (p : Int) (M R : List Bool) :
+    ∃ q, steps (((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n)))
+          + (topGrindSteps (5 + n) + exitSteps (5 + n + 1)))
+        (descIn (n + 4) p
+          (false :: false :: true :: (pow01 (c + (2 ^ (5 + n) - 2)) ++ M))
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 n ++ (zeros (2 ^ (5 + n)) ++ R)))))
+      = some (cascadeReg (5 + n + 1) (c + 1) q M R) := by
+  obtain ⟨q1, h1⟩ := headToLadder n p
+    (false :: false :: true :: (pow01 (c + (2 ^ (5 + n) - 2)) ++ M))
+    (zeros (2 ^ (5 + n)) ++ R)
+  refine ⟨q1 + 5 + 2 * ((2 ^ (5 + n - 1) - 2 : Nat) : Int) - 2 ^ (5 + n + 1), ?_⟩
+  rw [steps_add, h1, someBind,
+      topRung (5 + n) (by omega) q1 (pow01 (c + (2 ^ (5 + n) - 2)) ++ M) R]
+  exact congrArg some (cascadeRegGen_eq_cascadeReg (5 + n) c (by omega) _ M R)
+
+#print axioms cascadeRegGen_eq_cascadeReg
+#print axioms oddHeadToTop
+
+/-- **`oddSpineOrbit`** — the odd spine over the ORBIT'S route, `∀n ≥ 4 ∀j ∀c ≥ 1`:
+`headToLadder n ∘ topRung (5+n) ∘ oddTopRungToMilestone (5+n+1)`.  Every part pre-existing GREEN;
+the odd branch's comb `pow01 c` rides in the marker throughout (`cascadeReg_Lc_absorb`). -/
+theorem oddSpineOrbit (n j c : Nat) (hn : 4 ≤ n) (hc : 1 ≤ c) (p : Int) (L R : List Bool) :
+    ∃ q, steps ((((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n)))
+          + (topGrindSteps (5 + n) + exitSteps (5 + n + 1)))
+          + (topGrindSteps (5 + n + 1) + (exitSteps (5 + n + 1 + 1) + 4 * c) + (27 * j + 110)))
+        (descIn (n + 4) p
+          (false :: false :: true :: (pow01 (c + (2 ^ (5 + n) - 2)) ++
+            (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L)))))
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 n ++
+            (zeros (2 ^ (5 + n)) ++ (zeros (2 ^ (5 + n + 1)) ++ R))))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (5 + n + 1) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := oddHeadToTop n c hn p
+    (false :: false :: true :: frameLV j (endWord ++ (zeros 11 ++ L)))
+    (zeros (2 ^ (5 + n + 1)) ++ R)
+  refine ⟨(q1 + 5 + 2 * ((2 ^ (5 + n + 1 - 1) - 2 : Nat) : Int)) - 2 ^ (5 + n + 1 + 1)
+      - 2 * (c : Int) - 7 * (j : Int) - 26, ?_⟩
+  rw [steps_add, h1, someBind]
+  exact oddTopRungToMilestone (5 + n + 1) j c (by omega) hc q1 L R
+
+#print axioms oddSpineOrbit
+
+-- ANTI-VACUITY (METHODS M4): at g=3 the orbit's route is n = 5, c = 5, j = g−1 = 2, and every
+-- span is the MEASURED one (`R1_ODDSEAM` §RESIDUE 2):
+--   descIn 9 @2 900 995 → cascadeReg 10 @3 436 619 → cReg 11 @5 018 196 → M1(4) @11 329 301.
+example : topGrindSteps 10 + exitSteps 11 = 1581577 := by decide          -- cascadeReg 10 → cReg 11
+example : 5018196 - 3436619 = 1581577 := by decide                        -- and that IS measured
+example : topGrindSteps 11 + (exitSteps 12 + 4 * 5) + (27 * 2 + 110) = 6311105 := by decide
+example : 11329301 - 5018196 = 6311105 := by decide                       -- cReg 11 → milestone
