@@ -1031,3 +1031,60 @@ theorem regenLawGenO_ge7 (k : Nat) (hk : 7 ≤ k) (M R : List Bool) :
   exact ht
 
 #print axioms regenLawGenO_ge7
+
+/-- `regenLawGenO_ge7` at an arbitrary start position. -/
+theorem regenLawGenO_closed (k : Nat) (hk : 7 ≤ k) (p : Int) (M R : List Bool) :
+    ∃ q, steps (exitSteps k) (regenInGenW k p (2 ^ (k - 1) + 9) (ones 21 ++ M) R)
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨q0, h0⟩ := regenLawGenO_ge7 k hk M R
+  refine ⟨q0 + p, ?_⟩
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  show steps (exitSteps k) ⟨.E, p, _⟩ = _
+  rw [h]
+
+/-- **`topgrind_meets_regenO`** — the odd branch's first seam with the `ones 20` marker: the
+`∀marker` topgrind lands exactly on the `ones`-run REGEN entry one level up. -/
+theorem topgrind_meets_regenO (k : Nat) (hk : 4 ≤ k) (p : Int) (M R : List Bool) :
+    steps (topGrindSteps k)
+        (cascadeReg k 1 p (ones 20 ++ M) (zeros (2 ^ k) ++ R))
+      = some (regenInGenW (k + 1) (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int))
+                (2 ^ k + 9) (ones 21 ++ M) R) := by
+  rw [cascadeReg_topgrind k hk p (ones 20 ++ M) (zeros (2 ^ k) ++ R)]
+  refine congrArg some ?_
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have e1 : 4 * (2 ^ (m + 4 - 1) - 2) + 4 + 1 = 2 ^ (m + 4 + 1) - 3 := by
+    have hm : 1 ≤ 2 ^ m := Nat.one_le_two_pow
+    have h1 : 2 ^ (m + 4 - 1) = 2 ^ m * 8 := by
+      rw [show m + 4 - 1 = m + 3 from by omega, Nat.pow_add]
+    have h2 : 2 ^ (m + 4 + 1) = 2 ^ m * 32 := by
+      rw [show m + 4 + 1 = m + 5 from by omega, Nat.pow_add]
+    omega
+  show (⟨.E, _, ⟨ones (4 * (2 ^ (m + 4 - 1) - 2) + 4) ++ (pow10 1 ++ (true :: (ones 20 ++ M))),
+      false, false :: (descCascade (m + 4 - 3) ++
+        (false :: false :: (zeros 7 ++ (zeros (2 ^ (m + 4)) ++ R))))⟩⟩ : Cfg) = _
+  rw [ones_pow10_absorb _ 1 (ones 20 ++ M), e1,
+      zeros_pad (m + 4) R, show m + 4 - 3 = m + 4 + 1 - 4 from by omega]
+  rfl
+
+#print axioms regenLawGenO_closed
+#print axioms topgrind_meets_regenO
+
+/-- **`oddTopRungO`** — the odd top rung with the `ones 20` marker, all the way to `oddE2Tile`'s
+OUT (the canonical `cascadeReg`-shaped landing).  `topgrind ∘ odd exit REGEN ∘ oddE2Tile`. -/
+theorem oddTopRungO (k : Nat) (hk : 6 ≤ k) (p : Int) (T R : List Bool) :
+    ∃ q, steps (topGrindSteps k + exitSteps (k + 1) + 80)
+        (cascadeReg k 1 p (ones 20 ++ (false :: false :: T)) (zeros (2 ^ k) ++ R))
+      = some ⟨.E, q, ⟨pow01 10 ++ (false :: T), false,
+          false :: false :: false ::
+            (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := regenLawGenO_closed (k + 1) (by omega)
+    (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)) (false :: false :: T) R
+  refine ⟨q1 + 4, ?_⟩
+  rw [steps_add, steps_add, topgrind_meets_regenO k (by omega) p (false :: false :: T) R,
+      someBind, show (2 : Nat) ^ k + 9 = 2 ^ (k + 1 - 1) + 9 from by
+        rw [show k + 1 - 1 = k from by omega], h1, someBind]
+  exact oddE2Tile q1 T (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))
+
+#print axioms oddTopRungO
