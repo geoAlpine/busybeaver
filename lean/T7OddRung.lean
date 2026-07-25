@@ -876,3 +876,27 @@ example : topGrindSteps 10 + exitSteps 11 = 1581577 := by decide          -- cas
 example : 5018196 - 3436619 = 1581577 := by decide                        -- and that IS measured
 example : topGrindSteps 11 + (exitSteps 12 + 4 * 5) + (27 * 2 + 110) = 6311105 := by decide
 example : 11329301 - 5018196 = 6311105 := by decide                       -- cReg 11 → milestone
+
+/-! ### The odd E2 tile — MEASURED, awaiting an M3′ chunked build
+
+The last odd-specific object is an 80-step episode (g=3, steps 5 018 116 → 5 018 196, head `+4`).
+Its statement is fixed by measurement:
+
+```
+steps 80 ⟨.D, p, ⟨ones 15 ++ (false :: false :: T), true, ones 5 ++ (false :: false :: R)⟩⟩
+  = some ⟨.E, p + 4, ⟨pow01 10 ++ (false :: T), false, false :: false :: false :: R⟩⟩
+```
+
+A one-shot `rfl` does NOT close it — 80 steps over these lists exceeds 4 000 000 heartbeats.
+It needs the standard M3′ chunking (as `seam74` uses: 25 + 25 + 24). The intermediates are
+measured and ready (positions relative to the IN head, `dpos`):
+
+```
++20  st=E  dpos=−16  cur=0  L=0 1 0 1 0 1 …      R=0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
++40  st=A  dpos=− 8  cur=1  L=0 1 0 1 0 1 …      R=1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1
++60  st=C  dpos=− 2  cur=0  L=0 1 0 1 0 1 …      R=0 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1
++80  st=E  dpos=+ 4  cur=0  L=0 1 0 1 0 1 …      R=0 0 0 1 1 1 1 1 1 1 1 1 1
+```
+
+Writing the four chunk lemmas (each ~20 steps, `rfl`-affordable) and composing with `steps_add`
+closes it, and with it the odd branch — every other part is already GREEN and on-orbit. -/
