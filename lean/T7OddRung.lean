@@ -1131,3 +1131,28 @@ The algebra that must line up, all of it already verified on paper and by the me
 
 With that composition the odd branch reaches the milestone, and `doubPhaseOdd` is
 `topEntryOddFull ∘ headToLadder ∘ ⟨this⟩`. -/
+
+/-- **`oddRungToMilestone`** — the odd branch from the `ones 20` marker onto the next milestone's
+frame: `oddTopRungO ∘ oddTopRungToMilestone`, `∀k ≥ 6 ∀j ∀c ≥ 1`.  Every part GREEN. -/
+theorem oddRungToMilestone (k m c j : Nat) (hk : 6 ≤ k) (hc : 1 ≤ c)
+    (hm : 10 + m = (c + 1) + (2 ^ k - 2)) (p : Int) (L R : List Bool) :
+    ∃ q, steps ((topGrindSteps k + exitSteps (k + 1) + 80)
+          + (topGrindSteps (k + 1) + (exitSteps (k + 1 + 1) + 4 * c) + (27 * j + 110)))
+        (cascadeReg k 1 p
+          (ones 20 ++ (false :: false ::
+            (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+          (zeros (2 ^ k) ++ (zeros (2 ^ (k + 1)) ++ R)))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (k + 1) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := oddTopRungO k hk p
+    (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))
+    (zeros (2 ^ (k + 1)) ++ R)
+  refine ⟨(q1 + 5 + 2 * ((2 ^ (k + 1 - 1) - 2 : Nat) : Int)) - 2 ^ (k + 1 + 1)
+      - 2 * (c : Int) - 7 * (j : Int) - 26, ?_⟩
+  rw [steps_add, h1, someBind,
+      oddTopRungO_out_cascadeReg k m c (by omega) hm q1
+        (true :: frameLV j (endWord ++ (zeros 11 ++ L))) (zeros (2 ^ (k + 1)) ++ R)]
+  exact oddTopRungToMilestone (k + 1) j c (by omega) hc q1 L R
+
+#print axioms oddRungToMilestone
