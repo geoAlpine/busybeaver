@@ -1,3 +1,7 @@
+> **SUPERSEDED IN PART — see `PHASEB_CORRECTION_2026-07-25.md`.**  Candidate `C` is `x2`'s own
+> transition graph with the states cyclically renamed, started in `x2`'s state `B`.  Every
+> measurement below stands; the framing of `C` as a NEW machine does not.
+
 # Phase B — candidate C, foundation and first measurements (2026-07-25)
 
 `C = 1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD`, a member of the 1104-holdout residual selected by
