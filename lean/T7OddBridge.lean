@@ -897,3 +897,129 @@ theorem cycle_q_h0 :
       - ((MEven 1 []).tape.right.length : Int) = -6 := ⟨rfl, rfl⟩
 
 #print axioms cycle_q_h0
+
+/-! ## F — the chain
+
+Key simplification: non-halting needs, for each `N`, ONE finite chain of `≥ N` halt-free steps.
+The chain's END config is irrelevant.  So the milestone tails never have to close into an infinite
+nest — a depth-`d` chain carries a depth-`d` tail and bottoms out at `[]`. -/
+
+/-- lift a cycle (stated at pos `0`, left `[]`) to any translation and any block of left blanks -/
+theorem liftCycle {n : Nat} {R Rout : List Bool} {q : Int} {m1 : Nat}
+    (h : steps n ⟨.E, 0, ⟨[], false, R⟩⟩ = some ⟨.E, q, ⟨zeros m1, false, Rout⟩⟩)
+    (p : Int) (m : Nat) :
+    ∃ m2 : Nat, steps n ⟨.E, p, ⟨zeros m, false, R⟩⟩
+      = some ⟨.E, q + p, ⟨zeros m2, false, Rout⟩⟩ := by
+  obtain ⟨j, _, hp⟩ := steps_lpad_zeros n .E 0 [] false R h m
+  rw [List.nil_append] at hp
+  have hs := steps_pos_shift (d := p) hp
+  rw [show (0:Int) + p = p from by omega] at hs
+  exact ⟨m1 + j, by rw [zeros_add]; exact hs⟩
+
+/-- the depth-`d` milestone tail: one even cycle + one odd cycle per level, bottoming out at `[]` -/
+def tailE : Nat → Nat → List Bool
+  | _, 0 => []
+  | h, d + 1 => zeros 16 ++ oddPadTail h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))
+
+#print axioms liftCycle
+
+/-- **THE CHAIN.**  A depth-`d` chain of milestone cycles, unconditional in `h`, from
+`MEven h (tailE h d)` (translated and with any block of left blanks) through `2d` cycles.  Cost
+`≥ d`, which is all the non-halting argument needs. -/
+theorem chainE : ∀ (d h : Nat) (p : Int) (m : Nat),
+    ∃ (n m' : Nat) (q : Int), d ≤ n ∧
+      steps n ⟨.E, p, ⟨zeros m, false, (MEven h (tailE h d)).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros m', false, (MEven (h + d) []).tape.right⟩⟩ := by
+  intro d
+  induction d with
+  | zero => intro h p m; exact ⟨0, m, p, Nat.le_refl 0, rfl⟩
+  | succ d ih =>
+    intro h p m
+    obtain ⟨m1, q1, hc1⟩ := cycleEven h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))
+    obtain ⟨m2, hE⟩ := liftCycle hc1 p m
+    obtain ⟨m3, q2, hc2⟩ := cycleOdd h (tailE (h+1) d)
+    obtain ⟨m4, hO⟩ := liftCycle hc2 (q1 + p) m2
+    obtain ⟨n5, m5, q5, hn5, h5⟩ := ih (h+1) (q2 + (q1 + p)) m4
+    refine ⟨costEven h + (costOdd h + n5), m5, q5, ?_, ?_⟩
+    · simp only [costEven, costOdd]; omega
+    · have hE' : steps (costEven h)
+          ⟨.E, p, ⟨zeros m, false, (MEven h (tailE h (d+1))).tape.right⟩⟩
+        = some ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOdd h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))).tape.right⟩⟩ := hE
+      have hO' : steps (costOdd h)
+          ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOdd h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))).tape.right⟩⟩
+        = some ⟨.E, q2 + (q1 + p), ⟨zeros m4, false,
+            (MEven (h+1) (tailE (h+1) d)).tape.right⟩⟩ := hO
+      rw [show h + (d+1) = h + 1 + d from by omega,
+          steps_add, hE', someBind, steps_add, hO', someBind]
+      exact h5
+
+#print axioms chainE
+
+/-- every pad register is one block of blanks -/
+theorem oddPadTail_zeros (h : Nat) :
+    oddPadTail h [] = zeros (16 + (padLen 5 (2*h+5) + (2^(5+(2*h+5)) + 2^(5+(2*h+5)+1)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2^(5+(2*h+5))) ++ (zeros (2^(5+(2*h+5)+1)) ++ []))) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add, ← zeros_add]
+
+theorem evenPadTail_zeros (h : Nat) :
+    evenPadTail h [] = zeros (16 + (padLen 5 (2*h+5) + 2^(5+(2*h+5)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+5) ++ (zeros (2^(5+(2*h+5))) ++ [])) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add]
+
+/-- the depth-`d` tail is one block of blanks -/
+theorem tailE_zeros : ∀ (d h : Nat), ∃ t : Nat, tailE h d = zeros t := by
+  intro d
+  induction d with
+  | zero => intro h; exact ⟨0, rfl⟩
+  | succ d ih =>
+    intro h
+    obtain ⟨t, ht⟩ := ih (h+1)
+    refine ⟨16 + ((16 + (padLen 5 (2*h+5) + (2^(5+(2*h+5)) + 2^(5+(2*h+5)+1))))
+        + (16 + ((16 + (padLen 5 (2*(h+1)+5) + 2^(5+(2*(h+1)+5)))) + t))), ?_⟩
+    show zeros 16 ++ oddPadTail h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d)) = _
+    rw [oddPadTail_app h, evenPadTail_app (h+1), ht,
+        oddPadTail_zeros h, evenPadTail_zeros (h+1),
+        ← zeros_add, ← zeros_add, ← zeros_add, ← zeros_add]
+
+#print axioms tailE_zeros
+
+/-- **THE MILESTONE FAMILY NEVER HALTS** — unconditional.  For every `N` a depth-`N` chain gives
+`≥ N` halt-free steps from `MEven 0 []`; the chain's over-provisioned tail is one block of blanks,
+so `steps_runpad_zeros` brings it down to the trimmed milestone. -/
+theorem milestone_nonhalt : ∀ N : Nat, steps N (MEven 0 []) ≠ none := by
+  intro N
+  obtain ⟨t, ht⟩ := tailE_zeros N 0
+  obtain ⟨n, m', q, hn, hrun⟩ := chainE N 0 0 0
+  have hrun' : steps n ⟨.E, 0, ⟨[], false, (MEven 0 ([]:List Bool)).tape.right ++ zeros t⟩⟩
+      = some ⟨.E, q, ⟨zeros m', false, (MEven (0 + N) ([]:List Bool)).tape.right⟩⟩ := by
+    rw [← ht, ← MEven_right_app 0 (tailE 0 N)]
+    exact hrun
+  obtain ⟨R', i, _, _, htrim⟩ :=
+    steps_runpad_zeros t n .E 0 [] false ((MEven 0 ([]:List Bool)).tape.right) hrun'
+  exact steps_prefix_ne_none htrim hn
+
+/-- **x2 NEVER HALTS, given only the entry segment.**  `hsplit` says the canonical milestone right
+tape is the reached one plus a block of blanks (a finite list identity); `hentry` is the concrete
+`init → M1(2)` run.  Everything else is unconditional. -/
+theorem x2_nonhalt_of_entry (n0 : Nat) (p0 : Int) (tl k : Nat) (Rreal : List Bool)
+    (hsplit : (MEven 0 ([]:List Bool)).tape.right = Rreal ++ zeros k)
+    (hentry : steps n0 init = some ⟨.E, p0, ⟨zeros tl, false, Rreal⟩⟩) :
+    ∀ N : Nat, steps N init ≠ none := by
+  intro N
+  obtain ⟨t, ht⟩ := tailE_zeros N 0
+  obtain ⟨n, m', q, hn, hrun⟩ := chainE N 0 p0 tl
+  have hrun' : steps n ⟨.E, p0, ⟨zeros tl, false, Rreal ++ zeros (k + t)⟩⟩
+      = some ⟨.E, q, ⟨zeros m', false, (MEven (0 + N) ([]:List Bool)).tape.right⟩⟩ := by
+    rw [zeros_add, ← List.append_assoc, ← hsplit, ← ht, ← MEven_right_app 0 (tailE 0 N)]
+    exact hrun
+  obtain ⟨R', i, _, _, htrim⟩ :=
+    steps_runpad_zeros (k + t) n .E p0 (zeros tl) false Rreal hrun'
+  have hfull : steps (n0 + n) init = some ⟨.E, q, ⟨zeros m', false, R'⟩⟩ := by
+    rw [steps_add, hentry, someBind]; exact htrim
+  exact steps_prefix_ne_none hfull (by omega)
+
+#print axioms milestone_nonhalt
+#print axioms x2_nonhalt_of_entry
