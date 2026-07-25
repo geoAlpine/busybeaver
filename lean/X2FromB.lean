@@ -464,3 +464,346 @@ theorem doubPhaseOddB (h : Nat) (L R : List Bool) :
 #print axioms oddC_forcedB
 #print axioms doubPhaseOddB
 end FromB
+
+namespace FromB
+/-- the `B`-orbit's even-side pad register -/
+def evenPadTailB (h : Nat) (R : List Bool) : List Bool :=
+  zeros 16 ++ (ladderPad 5 (2*h+6) ++ (zeros (2 ^ (5 + (2*h+6))) ++ R))
+
+/-- **`B`-orbit ODD-OUT seam = EVEN-IN seam.** -/
+theorem oddSeamB_evenInB (h : Nat) (R : List Bool) :
+    false :: oddSeamZ (5 + (2*h+6) + 1) 5 (zeros 16 ++ evenPadTailB (h+1) R)
+      = zeros 10 ++ lowFrameB (h+1) (zeros 25 ++ evenPadTailB (h+1) R) := by
+  have hz : (zeros 7 ++ (zeros 16 ++ evenPadTailB (h+1) R) : List Bool)
+      = zeros 23 ++ evenPadTailB (h+1) R := by rw [← List.append_assoc, ← zeros_add]
+  show false :: (zeros (2*5-1) ++ (ones (2 ^ (5 + (2*h+6) + 1 + 1) - 3) ++ (false :: false ::
+      (descCascade (5 + (2*h+6) + 1 + 1 - 3) ++ (false :: false ::
+        (zeros 7 ++ (zeros 16 ++ evenPadTailB (h+1) R))))))) = _
+  rw [show 5 + (2*h+6) + 1 + 1 = 2*(h+1)+11 from by omega,
+      show 2*(h+1)+11 - 3 = 2*(h+1)+8 from by omega, hz]
+  show _ = zeros 10 ++ (ones (2 ^ (2*(h+1)+11) - 3) ++ (false :: false ::
+      (descCascade (2*(h+1)+8) ++ (zeros 25 ++ evenPadTailB (h+1) R))))
+  rfl
+
+#print axioms oddSeamB_evenInB
+end FromB
+
+namespace FromB
+/-! ## Obligation H for the `B`-orbit -/
+
+theorem hlowB_core' (h : Nat) (R : List Bool) :
+    steps (267 + 38*(2*h+2)) (MEvenB h R) = some (ttA_B h [] R) := hlowB_core h R
+
+theorem hlowB_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (267 + 38*(2*h+2))
+          ⟨.E, 0, ⟨zeros m, false, (MEvenB h R).tape.right⟩⟩
+        = some (ttA_B h (zeros j) R) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ :=
+    steps_lpad_zeros (267 + 38*(2*h+2)) .E 0 [] false _ (hlowB_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **obligation H (even), `B`-orbit** — the padded low phase meets `doubPhaseB`. -/
+theorem hlowDoubB (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((267 + 38*(2*h+2))
+          + ((99 + (15 * (2*h+3) + (3 + 6 * 2 ^ (2*h+9))))
+             + ((descTotal (2*h+6) + 415)
+                + (ladderSteps 5 (2*h+6) + exitSteps (5 + (2*h+6)))
+                + (topGrindSteps (5 + (2*h+6)) + exitSteps (5 + (2*h+6) + 1) + 74
+                   + (27 * (2*h+1) + 110)))))
+          ⟨.E, 0, ⟨zeros 16, false,
+            (MEvenB h (zeros 25 ++ evenPadTailB h R)).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+1) (seamZ (5 + (2*h+6)) R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowB_padded h (zeros 25 ++ evenPadTailB h R) 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [ttA_B, MEvenB, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseB h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms hlowB_padded
+#print axioms hlowDoubB
+end FromB
+
+namespace FromB
+def oddPadRB (h : Nat) (R : List Bool) : List Bool := zeros 25 ++ oddPadTailB h R
+
+theorem hlowBodd_core' (h : Nat) (R : List Bool) :
+    steps (419 + 76*h) (MOddB (h+1) R) = some (odA_B h [] R) := hlowBodd_core h R
+
+theorem hlowBodd_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (419 + 76*h) ⟨.E, 0, ⟨zeros m, false, (MOddB (h+1) R).tape.right⟩⟩
+        = some (odA_B h (zeros j) R) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ :=
+    steps_lpad_zeros (419 + 76*h) .E 0 [] false _ (hlowBodd_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **obligation H (odd), `B`-orbit** -/
+theorem hlowDoubOddB (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((419 + 76*h)
+          + (((99 + (15 * (2*h+3) + ((17 + 46 * (2 ^ (2*h+11) - 7)) + 6))) + 6 * 2 ^ (2*h+9))
+            + (((descTotal (2*h+6) + 415) + (ladderSteps 5 (2*h+6) + exitSteps (5 + (2*h+6))))
+               + ((topGrindSteps (5 + (2*h+6)) + exitSteps (5 + (2*h+6) + 1) + 80)
+                  + (topGrindSteps (5 + (2*h+6) + 1) + (exitSteps (5 + (2*h+6) + 1 + 1) + 4 * 5)
+                     + (27 * (2*h+2) + 110))))))
+          ⟨.E, 0, ⟨zeros 16, false, (MOddB (h+1) (oddPadRB h R)).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+2) (oddSeamZ (5 + (2*h+6) + 1) 5 R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowBodd_padded h (oddPadRB h R) 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [odA_B, MOddB, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseOddB h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms hlowDoubOddB
+end FromB
+
+namespace FromB
+/-! ## The cross-generation frame identities and the cycles -/
+
+theorem evenOutB_is_oddInB (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+1) (seamZ (5 + (2*h+6)) (zeros 16 ++ oddPadTailB h R)))))
+      = (MOddB (h+1) (oddPadRB h R)).tape.right := by
+  rw [uUnits_frameZ (2*h+1) _, show 2*h+1+1 = 2*(h+1) from by omega]
+  show zeros 21 ++ (uUnits (2*(h+1)) ++
+    (true :: (false :: seamZ (5 + (2*h+6)) (zeros 16 ++ oddPadTailB h R)))) = _
+  rw [evenSeamB_oddInB h R]
+  rfl
+
+theorem oddOutB_is_evenInB (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+2) (oddSeamZ (5 + (2*h+6) + 1) 5 (zeros 16 ++ evenPadTailB (h+1) R)))))
+      = (MEvenB (h+1) (zeros 25 ++ evenPadTailB (h+1) R)).tape.right := by
+  rw [uUnits_frameZ (2*h+2) _, show 2*h+2+1 = 2*(h+1)+1 from by omega]
+  show zeros 21 ++ (uUnits (2*(h+1)+1) ++
+    (true :: (false :: oddSeamZ (5 + (2*h+6) + 1) 5 (zeros 16 ++ evenPadTailB (h+1) R)))) = _
+  rw [oddSeamB_evenInB h R]
+  rfl
+
+#print axioms evenOutB_is_oddInB
+#print axioms oddOutB_is_evenInB
+end FromB
+
+namespace FromB
+def costBEven (h : Nat) : Nat :=
+  (267 + 38*(2*h+2))
+    + ((99 + (15 * (2*h+3) + (3 + 6 * 2 ^ (2*h+9))))
+       + ((descTotal (2*h+6) + 415)
+          + (ladderSteps 5 (2*h+6) + exitSteps (5 + (2*h+6)))
+          + (topGrindSteps (5 + (2*h+6)) + exitSteps (5 + (2*h+6) + 1) + 74
+             + (27 * (2*h+1) + 110))))
+
+def costBOdd (h : Nat) : Nat :=
+  (419 + 76*h)
+    + (((99 + (15 * (2*h+3) + ((17 + 46 * (2 ^ (2*h+11) - 7)) + 6))) + 6 * 2 ^ (2*h+9))
+      + (((descTotal (2*h+6) + 415) + (ladderSteps 5 (2*h+6) + exitSteps (5 + (2*h+6))))
+         + ((topGrindSteps (5 + (2*h+6)) + exitSteps (5 + (2*h+6) + 1) + 80)
+            + (topGrindSteps (5 + (2*h+6) + 1) + (exitSteps (5 + (2*h+6) + 1 + 1) + 4 * 5)
+               + (27 * (2*h+2) + 110)))))
+
+/-- **THE `B`-ORBIT EVEN CYCLE** — `MEvenB h → MOddB (h+1)`, trimmed to `left = []`. -/
+theorem cycleBEven (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps (costBEven h)
+          ⟨.E, 0, ⟨[], false,
+            (MEvenB h (zeros 25 ++ evenPadTailB h (zeros 16 ++ oddPadTailB h R))).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros m, false, (MOddB (h+1) (oddPadRB h R)).tape.right⟩⟩ := by
+  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubB h (zeros 16 ++ oddPadTailB h R)
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      evenOutB_is_oddInB h R] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ [] _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
+
+/-- **THE `B`-ORBIT ODD CYCLE** — `MOddB (h+1) → MEvenB (h+1)`. -/
+theorem cycleBOdd (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps (costBOdd h)
+          ⟨.E, 0, ⟨[], false,
+            (MOddB (h+1) (oddPadRB h (zeros 16 ++ evenPadTailB (h+1) R))).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros m, false,
+            (MEvenB (h+1) (zeros 25 ++ evenPadTailB (h+1) R)).tape.right⟩⟩ := by
+  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubOddB h (zeros 16 ++ evenPadTailB (h+1) R)
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      oddOutB_is_evenInB h R] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ [] _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
+
+#print axioms cycleBEven
+#print axioms cycleBOdd
+end FromB
+
+
+namespace FromB
+/-! ## The chain
+
+The recursion is on the INNER argument, so that each cycle's OUT is literally the next cycle's IN:
+
+    argInner h 0     = []
+    argInner h (d+1) = 0^16 ++ oddPadTailB h (0^16 ++ evenPadTailB (h+1) (argInner (h+1) d))
+    argB h d         = 0^25 ++ evenPadTailB h (argInner h d)
+
+even cycle at `h` : MEvenB h (argB h (d+1))  →  MOddB (h+1) (oddPadRB h …)
+odd  cycle at `h` : that very config          →  MEvenB (h+1) (argB (h+1) d)
+-/
+
+def argInner : Nat → Nat → List Bool
+  | _, 0 => []
+  | h, d + 1 => zeros 16 ++ oddPadTailB h (zeros 16 ++ evenPadTailB (h+1) (argInner (h+1) d))
+
+def argB (h d : Nat) : List Bool := zeros 25 ++ evenPadTailB h (argInner h d)
+
+theorem liftB {n : Nat} {R Rout : List Bool} {q : Int} {m1 : Nat}
+    (h : steps n ⟨.E, 0, ⟨[], false, R⟩⟩ = some ⟨.E, q, ⟨zeros m1, false, Rout⟩⟩)
+    (p : Int) (m : Nat) :
+    ∃ m2 : Nat, steps n ⟨.E, p, ⟨zeros m, false, R⟩⟩
+      = some ⟨.E, q + p, ⟨zeros m2, false, Rout⟩⟩ := by
+  obtain ⟨j, _, hp⟩ := steps_lpad_zeros n .E 0 [] false R h m
+  rw [List.nil_append] at hp
+  have hs := steps_pos_shift (d := p) hp
+  rw [show (0:Int) + p = p from by omega] at hs
+  exact ⟨m1 + j, by rw [zeros_add]; exact hs⟩
+
+set_option maxHeartbeats 4000000 in
+/-- **THE `B`-ORBIT CHAIN** — depth `d`, `2d` cycles, cost `≥ d`. -/
+theorem chainB : ∀ (d h : Nat) (p : Int) (m : Nat),
+    ∃ (n m' : Nat) (q : Int), d ≤ n ∧
+      steps n ⟨.E, p, ⟨zeros m, false, (MEvenB h (argB h d)).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros m', false, (MEvenB (h + d) (argB (h + d) 0)).tape.right⟩⟩ := by
+  intro d
+  induction d with
+  | zero => intro h p m; exact ⟨0, m, p, Nat.le_refl 0, rfl⟩
+  | succ d ih =>
+    intro h p m
+    obtain ⟨m1, q1, hc1⟩ := cycleBEven h (zeros 16 ++ evenPadTailB (h+1) (argInner (h+1) d))
+    obtain ⟨m2, hE⟩ := liftB hc1 p m
+    obtain ⟨m3, q2, hc2⟩ := cycleBOdd h (argInner (h+1) d)
+    obtain ⟨m4, hO⟩ := liftB hc2 (q1 + p) m2
+    obtain ⟨n5, m5, q5, hn5, h5⟩ := ih (h+1) (q2 + (q1 + p)) m4
+    refine ⟨costBEven h + (costBOdd h + n5), m5, q5, ?_, ?_⟩
+    · simp only [costBEven, costBOdd]; omega
+    · have hE' : steps (costBEven h)
+          ⟨.E, p, ⟨zeros m, false, (MEvenB h (argB h (d+1))).tape.right⟩⟩
+        = some ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOddB (h+1) (oddPadRB h
+              (zeros 16 ++ evenPadTailB (h+1) (argInner (h+1) d)))).tape.right⟩⟩ := hE
+      have hO' : steps (costBOdd h)
+          ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOddB (h+1) (oddPadRB h
+              (zeros 16 ++ evenPadTailB (h+1) (argInner (h+1) d)))).tape.right⟩⟩
+        = some ⟨.E, q2 + (q1 + p), ⟨zeros m4, false,
+            (MEvenB (h+1) (argB (h+1) d)).tape.right⟩⟩ := hO
+      rw [show h + (d+1) = h + 1 + d from by omega,
+          steps_add, hE', someBind, steps_add, hO', someBind]
+      exact h5
+
+#print axioms liftB
+#print axioms chainB
+end FromB
+
+namespace FromB
+/-! ## From the chain to non-halting -/
+
+theorem evenPadTailB_app (h : Nat) (X : List Bool) :
+    evenPadTailB h X = evenPadTailB h [] ++ X := by
+  simp [evenPadTailB, List.append_assoc]
+
+theorem oddPadTailB_app (h : Nat) (X : List Bool) :
+    oddPadTailB h X = oddPadTailB h [] ++ X := by
+  simp [oddPadTailB, List.append_assoc]
+
+theorem lowFrameB_app (h : Nat) (X : List Bool) :
+    lowFrameB h X = lowFrameB h [] ++ X := by
+  simp [lowFrameB, teTailB, List.append_assoc]
+
+theorem MEvenB_right_app (h : Nat) (X : List Bool) :
+    (MEvenB h X).tape.right = (MEvenB h []).tape.right ++ X := by
+  show zeros 21 ++ (uUnits (2*h+1) ++ (true :: (zeros 10 ++ lowFrameB h X))) = _
+  simp [MEvenB, lowFrameB_app h X, List.append_assoc]
+
+theorem evenPadTailB_zeros (h : Nat) :
+    evenPadTailB h [] = zeros (16 + (padLen 5 (2*h+6) + 2 ^ (5 + (2*h+6)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+6) ++ (zeros (2 ^ (5 + (2*h+6))) ++ [])) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add]
+
+theorem oddPadTailB_zeros (h : Nat) :
+    oddPadTailB h [] = zeros (16 + (padLen 5 (2*h+6)
+      + (2 ^ (5 + (2*h+6)) + 2 ^ (5 + (2*h+6) + 1)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+6) ++
+    (zeros (2 ^ (5 + (2*h+6))) ++ (zeros (2 ^ (5 + (2*h+6) + 1)) ++ []))) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add, ← zeros_add]
+
+theorem argInner_zeros : ∀ (d h : Nat), ∃ t : Nat, argInner h d = zeros t := by
+  intro d
+  induction d with
+  | zero => intro h; exact ⟨0, rfl⟩
+  | succ d ih =>
+    intro h
+    obtain ⟨t, ht⟩ := ih (h+1)
+    refine ⟨16 + ((16 + (padLen 5 (2*h+6) + (2 ^ (5 + (2*h+6)) + 2 ^ (5 + (2*h+6) + 1))))
+        + (16 + ((16 + (padLen 5 (2*(h+1)+6) + 2 ^ (5 + (2*(h+1)+6)))) + t))), ?_⟩
+    show zeros 16 ++ oddPadTailB h (zeros 16 ++ evenPadTailB (h+1) (argInner (h+1) d)) = _
+    rw [oddPadTailB_app h, evenPadTailB_app (h+1), ht,
+        oddPadTailB_zeros h, evenPadTailB_zeros (h+1),
+        ← zeros_add, ← zeros_add, ← zeros_add, ← zeros_add]
+
+/-- `argB h d` is a blank block of size at least `25` -- the `25` matters for the entry seam. -/
+theorem argB_zeros (h d : Nat) : ∃ t : Nat, argB h d = zeros (25 + t) := by
+  obtain ⟨t, ht⟩ := argInner_zeros d h
+  refine ⟨(16 + (padLen 5 (2*h+6) + 2 ^ (5 + (2*h+6)))) + t, ?_⟩
+  show zeros 25 ++ evenPadTailB h (argInner h d) = _
+  rw [evenPadTailB_app h, ht, evenPadTailB_zeros h, ← zeros_add, ← zeros_add]
+
+/-- **`C` NEVER HALTS, given only the entry segment** — `C`'s non-halting is `x2`'s `step` never
+halting from `⟨B, 0, blank⟩`, and this reduces it to one finite concrete run.  `hsplit` says the
+reached right tape is the canonical milestone word plus `k ≤ 25` blanks. -/
+theorem C_nonhalt_of_entry (n0 : Nat) (p0 : Int) (tl k : Nat) (Rreal : List Bool)
+    (hk : k ≤ 25)
+    (hsplit : (MEvenB 0 ([]:List Bool)).tape.right ++ zeros k = Rreal)
+    (hentry : steps n0 initB = some ⟨.E, p0, ⟨zeros tl, false, Rreal⟩⟩) :
+    ∀ N : Nat, steps N initB ≠ none := by
+  intro N
+  obtain ⟨t, ht⟩ := argB_zeros 0 N
+  obtain ⟨n, m', q, hn, hrun⟩ := chainB N 0 p0 tl
+  have hrun' : steps n ⟨.E, p0, ⟨zeros tl, false, Rreal ++ zeros (25 + t - k)⟩⟩
+      = some ⟨.E, q, ⟨zeros m', false, (MEvenB (0 + N) (argB (0 + N) 0)).tape.right⟩⟩ := by
+    rw [← hsplit, List.append_assoc, ← zeros_add,
+        show k + (25 + t - k) = 25 + t from by omega,
+        ← ht, ← MEvenB_right_app 0 (argB 0 N)]
+    exact hrun
+  obtain ⟨R', i, _, _, htrim⟩ :=
+    steps_runpad_zeros (25 + t - k) n .E p0 (zeros tl) false Rreal hrun'
+  have hfull : steps (n0 + n) initB = some ⟨.E, q, ⟨zeros m', false, R'⟩⟩ := by
+    rw [steps_add, hentry, someBind]; exact htrim
+  exact steps_prefix_ne_none hfull (by omega)
+
+#print axioms argB_zeros
+#print axioms C_nonhalt_of_entry
+end FromB
