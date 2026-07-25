@@ -59,3 +59,40 @@ already measured (`PREFLIGHT` §4).
 4. Entry segment + audit, as for `x2`.
 
 **No machine decided. No label upgraded. Push HELD.**
+
+## The epoch SKELETON is `x2`'s, offset by a constant 6 (MEASURED)
+
+Sampling head position and max-reach at 28 equally-spaced fractions of one epoch
+(`x2` 732 733 → 2 852 091, `C` 727 066 → 2 866 580):
+
+| fraction | `x2` max-reach | `C` max-reach | diff |
+|---|---|---|---|
+| 0.04 | 2329 | 2323 | 6 |
+| 0.07–0.18 | 2585 | 2579 | 6 |
+| 0.21 | 2841 | 2835 | 6 |
+| 0.29–0.71 | 3097 | 3091 | 6 |
+| 0.79 | 3353 | 3347 | 6 |
+| 0.82–0.93 | 3609 | 3603 | 6 |
+| 0.96 | 3865 | 3859 | 6 |
+| 1.00 | 4121 | 4115 | 6 |
+
+* **The plateau skeleton is identical** — same number of plateaus, at the same fractions of the
+  epoch, with max-reach differing by exactly `6` throughout.
+* The plateau levels `2585, 3097, 3609, 4121` are an arithmetic progression of step
+  `512 = 2⁹` — **that is the LADDER**, and `C` has the same rungs.
+* Both epochs END at head offset `−2`.
+* The fine structure (`dpos` inside each plateau) DIFFERS: `x2` marches monotonically right where
+  `C` oscillates.  So the **tile step counts are genuinely different** and must be re-measured;
+  what ports is the skeleton and the word algebra, not the tile arithmetic.
+
+### Honest scope of the port
+
+| layer | portability |
+|---|---|
+| `TapeCalc` (boundaries, translation, monotonicity, non-halting) | **verbatim** — already machine-independent |
+| word algebra (`m1casc`, `uUnits`, `pow10`, `pow01`, `ones`, `frameZ`) | **verbatim, re-indexed** by the one-epoch phase and the `−6/−7` offset |
+| phase skeleton (descent → ladder → top rung → tail; ladder step `2⁹`) | **same shape**, re-indexed |
+| tile step counts and the fine trajectory | **must be re-measured** — this is the real work |
+| entry segment, audit | same method as `x2` |
+
+**No machine decided. No label upgraded. Push HELD.**
