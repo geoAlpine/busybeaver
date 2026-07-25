@@ -23,3 +23,30 @@ a long run.
 * So `D` is currently the **only live test** of whether the template method leaves `x2`'s graph.
 
 **No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
+
+
+## Update — the island is NOT one graph
+
+**`D` CONFIRMED at 4·10⁸ steps.**  R side: `ws = 185, 422, 893, 1832, 3707, 7454, 14945, 29924`;
+`w = 2.2811, 2.1161, 2.0515, 2.0235, 2.0108, 2.0050, 2.0023` and
+`t = 4.735, 4.352, 4.109, 4.051, 4.021, 4.010, 4.005` — **seven consecutive epochs converging
+MONOTONICALLY to `(2, 4)`**, with no phase change, unlike `A` and `B`.
+The recurrence is the doubler signature with a linear correction, as `x2`'s is:
+
+    D  : w(k+1) = 2·w(k) + (52, 49, 46, 43, 40, 37, 34)      — decreasing by 3
+    x2 : w(k+1) = 2·w(k) − (8, 8, 14, 20, 26, 32, 38)        — decreasing by 6
+
+**The deep screen has returned 4 hits in the first 500 of 1104, on 4 DISTINCT transition graphs:**
+
+| | spec | status |
+|---|---|---|
+| 1 | `1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE` | `x2` — calibration |
+| 2 | `1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_1LD---` | **`D`, CONFIRMED at 4·10⁸** |
+| 3 | `1RB0RE_0RC0RA_1LD0RF_1LA0LD_1RA0LC_1RC---` | **`E`, decisive run in progress** |
+| 4 | `1RB0LE_1RC0RF_0RD0RB_1RE0RC_1LA0LA_1RA---` | **`F`, decisive run in progress** |
+
+> **This overturns the reading in `ROADMAP_2026-07-25_v2.md` §1** that the island might be a single
+> graph.  It is not: `D` alone settles that the `(2,4)` template class contains a machine outside
+> `x2`'s graph, and two more candidates are under test with the screen only 45 % done.
+
+**No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
