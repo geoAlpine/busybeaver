@@ -1004,3 +1004,30 @@ theorem trailOut_allGenO (k : Nat) (hk : 6 ≤ k) (p : Int) (M R : List Bool) :
     show n + 6 - 2 = n + 4 from by omega]
 
 #print axioms trailOut_allGenO
+
+/-- **`regenLawGenO_ge7`** — THE ODD EXIT REGEN.  Same assembly as `regenLawGenC_ge7`
+(`leadOut_allGenW ∘ interiorFold ∘ trailFloorRegen ∘ trailOut`), with the `ones`-run trailing
+phase substituted.  Its OUT is `oddE2Tile`'s IN. -/
+theorem regenLawGenO_ge7 (k : Nat) (hk : 7 ≤ k) (M R : List Bool) :
+    ∃ q, steps (exitSteps k) (regenInGenW k 0 (2 ^ (k - 1) + 9) (ones 21 ++ M) R)
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨q', hfold⟩ := interiorFold_lower_expl (k - 6) (by omega)
+      (fun m hm _ => regenLaw_closed m hm)
+      ((0 : Int) + 2 ^ (k - 1) - (k : Int) + 4)
+      (regenWordW k (ones 21 ++ M)) (zeros 32 ++ R)
+  rw [show (k - 6) - 1 = k - 7 from by omega, foldMarker_eq_depStack k hk] at hfold
+  obtain ⟨qt, ht⟩ := trailOut_allGenO k (by omega)
+    ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) M R
+  rw [show ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) + 2 ^ k - (k : Int) - 44
+      = q' - 2 ^ 4 from by omega] at ht
+  refine ⟨qt, ?_⟩
+  rw [framingArith k hk, steps_add, steps_add, steps_add,
+      leadOut_allGenW k (by omega) 0 (ones 21 ++ M) R, someBind,
+      leadOut_is_interiorIn k hk _ _ R, hfold, someBind]
+  rw [show (zeros 32 ++ R : List Bool) = zeros 16 ++ (zeros 16 ++ R) from by
+        rw [← List.append_assoc, ← zeros_add],
+      trailFloorRegen q' (depStack k (regenWordW k (ones 21 ++ M))) (zeros 16 ++ R), someBind]
+  exact ht
+
+#print axioms regenLawGenO_ge7
