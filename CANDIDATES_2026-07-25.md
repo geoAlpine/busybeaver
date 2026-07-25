@@ -74,3 +74,31 @@ Phase B therefore has **three genuinely new targets (D, E, F)** plus `C` (`x2`'s
 state `B`, already specified in `CANDC_SPEC_2026-07-25.md`).
 
 **No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
+
+
+## Update 3 — deep screen COMPLETE; G/H/I judged
+
+The `2·10⁷` strict-`(2,4)` screen finished: **8 hits over 1104, on SEVEN distinct graphs.**
+Decisive `4·10⁸` runs on the last three:
+
+| | spec | `w →` | `t →` | verdict |
+|---|---|---|---|---|
+| **H** | `1RB0RE_0RC0RA_1LD1RE_1LA0LD_1RA0LF_1LD---` | 1.9974 | **4.005** | **CONFIRMED** (stable at both thresholds) |
+| **G** | `1RB0LA_1RC0RE_0RD---_1LA0LD_1LD1RF_1RA1LB` | 1.9984 | 3.918 (still climbing 3.63→3.92) | **PROBABLE** |
+| **I** | `1RB0LA_1RC0RE_0RD---_1LA1LF_1LD1RF_1RA1LB` | 1.9984 | 3.925 (same) | **PROBABLE** |
+
+`G` and `I` have **identical width sequences** `244, 352, 640, 1264, 2464, 4912, 9760, 19504` (their
+specs differ only in the `D` row) and a clean 2-periodic doubler recurrence — `w(k+1) = 2w(k) − 16`
+and `−64` alternating.  Their time ratio is converging to `4` monotonically but had not arrived at
+`4·10⁸`; they need a longer run or a coarser epoch grouping.
+
+### Island tally
+
+    CONFIRMED distinct graphs : x2, D, E, F, H      = 5
+    PROBABLE                  : G, I                = 2
+    1104 entries covered      : >= 8   (x2's graph accounts for 2: x2 itself and C)
+
+and this is a **lower bound** — the screen runs `2·10⁷` steps and demands `>= 4` epoch clusters, so
+machines with long epochs are missed entirely.
+
+**No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
