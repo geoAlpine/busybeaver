@@ -281,3 +281,89 @@ theorem hlowDoubOdd_cost0 :
 
 #print axioms hlowDoubEven_cost0
 #print axioms hlowDoubOdd_cost0
+
+/-! ## The REVERSE left-boundary congruence (`steps_lunpad_zeros`)
+
+`steps_lpad_zeros` lifts a run from the trimmed config to the padded one.  The F assembly needs
+the OTHER direction: a milestone's OUT left carries leftover boundary blanks, and the next
+generation's IN is stated on the TRIMMED (`left = []`) canonical family.  `steps_cltail` is a
+genuine bisimulation, so the reverse holds — this is its iterated form.
+
+(Belongs in `BlankNorm.lean`; kept here so the rebuild stays local.) -/
+theorem steps_lunpad_zeros : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L'' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L ++ zeros k, hd, R⟩⟩ = some ⟨s', p', ⟨L'', hd', R'⟩⟩ →
+    ∃ (L' : List Bool) (i : Nat), i ≤ k ∧ L'' = L' ++ zeros i ∧
+      steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L'' hd' R' hrun
+    refine ⟨L'', 0, Nat.le_refl 0,
+      by rw [show (zeros 0 : List Bool) = [] from rfl, List.append_nil], ?_⟩
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil] at hrun
+  | succ k ih =>
+    intro n s p L hd R s' p' L'' hd' R' hrun
+    have hpad : L ++ zeros (k + 1) = (L ++ zeros k) ++ [false] := by
+      rw [← zeros_snoc, List.append_assoc]
+    rw [hpad] at hrun
+    have hc : cltail ⟨s, p, ⟨L ++ zeros k, hd, R⟩⟩ ⟨s, p, ⟨(L ++ zeros k) ++ [false], hd, R⟩⟩ :=
+      ⟨rfl, rfl, rfl, rfl, Or.inr rfl⟩
+    rcases steps_cltail n _ _ hc with ⟨_, h2⟩ | ⟨d1, d2, hd1, hd2, hdr⟩
+    · rw [hrun] at h2; simp at h2
+    · have hd2' : d2 = ⟨s', p', ⟨L'', hd', R'⟩⟩ := Option.some.inj (hd2.symm.trans hrun)
+      subst hd2'
+      rcases d1 with ⟨s1, p1, ⟨l1, h1, r1⟩⟩
+      obtain ⟨hst, hpos, hhh, hrr, hll⟩ := hdr
+      dsimp only at hst hpos hhh hrr hll
+      subst hst; subst hpos; subst hhh; subst hrr
+      obtain ⟨L', i, hik, hLi, hrun'⟩ := ih n s p L hd R hd1
+      rcases hll with h | h
+      · exact ⟨L', i, Nat.le_succ_of_le hik, by rw [← h] at hLi; exact hLi, hrun'⟩
+      · refine ⟨L', i + 1, Nat.succ_le_succ hik, ?_, hrun'⟩
+        rw [h, hLi, List.append_assoc, zeros_snoc]
+
+#print axioms steps_lunpad_zeros
+
+/-- **Obligation H (even), TRIMMED to the canonical `left = []` form.**  This is the shape the
+`M1` milestone family has, so this is the form the F assembly consumes. -/
+theorem hlowDoubEven_trim (h : Nat) (R : List Bool) :
+    ∃ (L' : List Bool) (q : Int),
+      steps ((267 + 38*(2*h+2))
+          + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110)))))
+          ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some ⟨.E, q, ⟨L', false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubEven h R
+  rw [show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, _, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨L', q, htrim⟩
+
+/-- **Obligation H (odd), TRIMMED to the canonical `left = []` form.** -/
+theorem hlowDoubOdd_trim (h : Nat) (R : List Bool) :
+    ∃ (L' : List Bool) (q : Int),
+      steps ((419 + 76*h)
+          + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+               + 6 * 2 ^ (2 * h + 8))
+            + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+               + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+                  + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+                     + (27 * (2*h+2) + 110))))))
+          ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some ⟨.E, q, ⟨L', false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
+  obtain ⟨j, q, _, _, hrun⟩ := hlowDoubOdd h R
+  rw [show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, _, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨L', q, htrim⟩
+
+#print axioms hlowDoubEven_trim
+#print axioms hlowDoubOdd_trim
