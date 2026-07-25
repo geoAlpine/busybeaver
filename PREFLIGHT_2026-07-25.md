@@ -70,6 +70,19 @@ calibration is *inside* the screen.
 **Candidate C's width sequence tracks `x2`'s to within 5–7 cells at every epoch** — the 1104 list is
 deduplicated up to TNF + left–right reversal, so it is not `x2` relabelled; it is a close sibling.
 
+### 3b. Deep check at 10⁸–4·10⁸ steps — and a sharper signature
+
+`x2`'s control run gives the exact doubler fingerprint: **width ratio → 2 AND time ratio → 4**
+(`w = 1.970, 1.985, 1.987, 1.990, 1.994, 1.996`; `t = 3.81, 3.61, 3.90, 3.89, 3.97, 3.97`),
+stable under every cluster threshold tried (`gap > 0.25t / 1.0t / 2.0t`).  Using `(2, 4)` instead of
+`2` alone is the sharper test.
+
+| candidate | verdict |
+|---|---|
+| **C** `1RB---_0LC1LD_0RD1LC_1RE0LB_0RF1RD_1RA0RD` | **CONFIRMED.**  `w = 2.023, 1.985, 1.987, 1.993, 1.994, 1.995, 1.997, 1.998`; `t → 3.985`.  Widths `130, 263, 522, 1037, 2067, 4121, 8223, 16421, 32811` — **exactly `x2`'s minus 7** from the 4th epoch on.  **Prime Phase-B target.** |
+| **A** `1RB0LF_1LC0LD_1RD1LB_---1RE_0RA1RE_1LA0LE` | **plausible, not clean.**  On the R side with a coarser threshold `w = 2.000, 2.017, 2.162, 2.028, 1.975, 2.078`, `t = 5.27, 5.10, 4.08, 4.20, 3.99, 4.04` — the `(≈2, ≈4)` signature is there but the epoch structure is two-phase and the detector splits it.  Secondary target. |
+| **B** `1RB0RD_1RC1RB_1LD0LA_1LE0RA_0LF---_0LA0LC` | **REFUTED at longer runs.**  A run of `≈2` ratios is followed by `w = 4.681`, `t = 26.14` — a genuine phase change, not a doubler. |
+
 ## 4. What this changes
 
 1. **The named 19 are the `(K)` hard core** — confirmed by direct measurement, not extrapolation.
