@@ -627,3 +627,159 @@ theorem ladderPad_zeros : ∀ (n b : Nat), ladderPad b n = zeros (padLen b n) :=
 
 #print axioms nonhalt_of_invariant
 #print axioms ladderPad_zeros
+
+/-! ## `steps_rpad_dichotomy` — the exact right-boundary congruence
+
+The right frontier `|right| + pos` is unchanged by `mvL` and by `mvR` on a nonempty `right`, and
+advances by exactly `1` on `mvR` from an EMPTY `right` — which is precisely the step that absorbs a
+trailing pad.  So "pad absorbed" and "frontier advanced" are the same event. -/
+
+theorem rpadR (L : List Bool) (b : Bool) (R : List Bool) (p : Int) :
+    ( mvR ⟨L, b, R ++ [false]⟩
+        = ⟨(mvR ⟨L, b, R⟩).left, (mvR ⟨L, b, R⟩).head, (mvR ⟨L, b, R⟩).right ++ [false]⟩
+      ∧ (((mvR ⟨L, b, R⟩).right.length : Int) + (p + 1) = (R.length : Int) + p) )
+    ∨ mvR ⟨L, b, R ++ [false]⟩ = mvR ⟨L, b, R⟩ := by
+  cases R with
+  | nil => exact Or.inr rfl
+  | cons x r =>
+    refine Or.inl ⟨rfl, ?_⟩
+    show ((r.length : Int)) + (p + 1) = (((x :: r).length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+
+theorem rpadL (L : List Bool) (b : Bool) (R : List Bool) (p : Int) :
+    mvL ⟨L, b, R ++ [false]⟩
+        = ⟨(mvL ⟨L, b, R⟩).left, (mvL ⟨L, b, R⟩).head, (mvL ⟨L, b, R⟩).right ++ [false]⟩
+      ∧ (((mvL ⟨L, b, R⟩).right.length : Int) + (p - 1) = (R.length : Int) + p) := by
+  cases L with
+  | nil =>
+    refine ⟨rfl, ?_⟩
+    show (((b :: R).length : Int)) + (p - 1) = ((R.length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+  | cons y l =>
+    refine ⟨rfl, ?_⟩
+    show (((b :: R).length : Int)) + (p - 1) = ((R.length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+
+#print axioms rpadR
+#print axioms rpadL
+
+/-- **Step-level right-pad dichotomy.**  Either both halt, or the step is taken by both and the
+pad either RIDES (with the frontier unchanged) or is ABSORBED (the two configs become equal). -/
+theorem step_rpad (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool) :
+    (step ⟨s, p, ⟨L, hd, R⟩⟩ = none ∧ step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = none) ∨
+    (∃ (s' : St) (p' : Int) (t : Tape),
+        step ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', t⟩ ∧
+        ( (step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩
+              = some ⟨s', p', ⟨t.left, t.head, t.right ++ [false]⟩⟩
+             ∧ ((t.right.length : Int) + p' = (R.length : Int) + p))
+        ∨ step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', t⟩ )) := by
+  cases s <;> cases hd <;>
+    first
+      | exact Or.inl ⟨rfl, rfl⟩
+      | (rcases rpadR L true R p with ⟨h1, h2⟩ | h1
+         · exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+             show (some ⟨_, p + 1, mvR ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl), h2⟩⟩
+         · exact Or.inr ⟨_, _, _, rfl, Or.inr (by
+             show (some ⟨_, p + 1, mvR ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl)⟩)
+      | (rcases rpadR L false R p with ⟨h1, h2⟩ | h1
+         · exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+             show (some ⟨_, p + 1, mvR ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl), h2⟩⟩
+         · exact Or.inr ⟨_, _, _, rfl, Or.inr (by
+             show (some ⟨_, p + 1, mvR ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl)⟩)
+      | (obtain ⟨h1, h2⟩ := rpadL L true R p
+         exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+           show (some ⟨_, p - 1, mvL ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+           rw [h1]
+           rfl), h2⟩⟩)
+      | (obtain ⟨h1, h2⟩ := rpadL L false R p
+         exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+           show (some ⟨_, p - 1, mvL ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+           rw [h1]
+           rfl), h2⟩⟩)
+
+#print axioms step_rpad
+
+/-- **Multi-step right-pad dichotomy.**  Over a whole run: either the pad rides the entire way and
+the right frontier never advanced, or it is absorbed and the two runs land on the SAME config. -/
+theorem steps_rpad_dich : ∀ (n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool)
+    {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ →
+    (steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R' ++ [false]⟩⟩
+       ∧ ((R'.length : Int) + p' = (R.length : Int) + p))
+    ∨ steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro s p L hd R s' p' L' hd' R' hrun
+    have e : (⟨s, p, ⟨L, hd, R⟩⟩ : Cfg) = ⟨s', p', ⟨L', hd', R'⟩⟩ := Option.some.inj hrun
+    injection e with e1 e2 e3
+    subst e1; subst e2
+    injection e3 with f1 f2 f3
+    subst f1; subst f2; subst f3
+    exact Or.inl ⟨rfl, rfl⟩
+  | succ n ih =>
+    intro s p L hd R s' p' L' hd' R' hrun
+    have hru : ((step ⟨s, p, ⟨L, hd, R⟩⟩).bind (steps n)) = some ⟨s', p', ⟨L', hd', R'⟩⟩ := hrun
+    rcases step_rpad s p L hd R with ⟨hn, _⟩ | ⟨s1, p1, t, hst, hcase⟩
+    · rw [hn] at hru; simp at hru
+    · rw [hst] at hru
+      have hru' : steps n ⟨s1, p1, t⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := hru
+      rcases t with ⟨tl, th, tr⟩
+      rcases hcase with ⟨hpad, hfr⟩ | hpad
+      · rcases ih s1 p1 tl th tr hru' with ⟨hp1, hf1⟩ | hp1
+        · refine Or.inl ⟨?_, hf1.trans hfr⟩
+          show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+          rw [hpad]; exact hp1
+        · refine Or.inr ?_
+          show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+          rw [hpad]; exact hp1
+      · refine Or.inr ?_
+        show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+        rw [hpad]; exact hru'
+
+/-- **The exact congruence.**  If the right frontier advanced, the pad WAS absorbed: the padded run
+lands on exactly the trimmed run's config. -/
+theorem steps_rpad_absorb (n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool)
+    {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool}
+    (hrun : steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩)
+    (hf : (R.length : Int) + p < (R'.length : Int) + p') :
+    steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  rcases steps_rpad_dich n s p L hd R hrun with ⟨_, he⟩ | h
+  · omega
+  · exact h
+
+#print axioms steps_rpad_dich
+#print axioms steps_rpad_absorb
+
+/-- **THE EXACT RIGHT-BOUNDARY CONGRUENCE, block form.**  If the run's right frontier advances by
+at least `k`, then a whole block of `k` trailing pads is absorbed and the padded run lands on
+EXACTLY the trimmed run's config — no `∃ i` slack.  This is what carries a transport proven with
+explicit pads down to the real, unpadded milestone config. -/
+theorem steps_rpad_zeros_absorb : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ →
+    (R.length : Int) + p + (k : Int) ≤ (R'.length : Int) + p' →
+    steps n ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L' hd' R' hrun _
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil]
+  | succ k ih =>
+    intro n s p L hd R s' p' L' hd' R' hrun hf
+    have hk : (R.length : Int) + p + (k : Int) ≤ (R'.length : Int) + p' := by push_cast at hf ⊢; omega
+    have hstep := ih n s p L hd R hrun hk
+    have hlen : ((R ++ zeros k).length : Int) + p < (R'.length : Int) + p' := by
+      rw [List.length_append, zeros_length]; push_cast at hf ⊢; omega
+    have habs := steps_rpad_absorb n s p L hd (R ++ zeros k) hstep hlen
+    rwa [List.append_assoc, zeros_snoc] at habs
+
+#print axioms steps_rpad_zeros_absorb
