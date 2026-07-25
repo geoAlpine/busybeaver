@@ -475,3 +475,92 @@ theorem oddOut_is_evenIn (h : Nat) (R : List Bool) :
 #print axioms evenOut_is_oddIn
 #print axioms oddSeam_evenIn
 #print axioms oddOut_is_evenIn
+
+/-- **The REVERSE right-boundary congruence** — twin of `steps_lunpad_zeros`.  Trailing blanks on
+`right` are semantically inert, so a run proven on the PADDED tape yields the run on the trimmed
+one.  (Belongs in `BlankNorm.lean`.) -/
+theorem steps_runpad_zeros : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R'' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ = some ⟨s', p', ⟨L', hd', R''⟩⟩ →
+    ∃ (R' : List Bool) (i : Nat), i ≤ k ∧ R'' = R' ++ zeros i ∧
+      steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L' hd' R'' hrun
+    refine ⟨R'', 0, Nat.le_refl 0,
+      by rw [show (zeros 0 : List Bool) = [] from rfl, List.append_nil], ?_⟩
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil] at hrun
+  | succ k ih =>
+    intro n s p L hd R s' p' L' hd' R'' hrun
+    have hpad : R ++ zeros (k + 1) = (R ++ zeros k) ++ [false] := by
+      rw [← zeros_snoc, List.append_assoc]
+    rw [hpad] at hrun
+    have hc : crtail ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ ⟨s, p, ⟨L, hd, (R ++ zeros k) ++ [false]⟩⟩ :=
+      ⟨rfl, rfl, rfl, rfl, Or.inr rfl⟩
+    rcases steps_crtail n _ _ hc with ⟨_, h2⟩ | ⟨d1, d2, hd1, hd2, hdr⟩
+    · rw [hrun] at h2; simp at h2
+    · have hd2' : d2 = ⟨s', p', ⟨L', hd', R''⟩⟩ := Option.some.inj (hd2.symm.trans hrun)
+      subst hd2'
+      rcases d1 with ⟨s1, p1, ⟨l1, h1, r1⟩⟩
+      obtain ⟨hst, hpos, hll, hhh, hrr⟩ := hdr
+      dsimp only at hst hpos hll hhh hrr
+      subst hst; subst hpos; subst hll; subst hhh
+      obtain ⟨R', i, hik, hRi, hrun'⟩ := ih n s p L hd R hd1
+      rcases hrr with h | h
+      · exact ⟨R', i, Nat.le_succ_of_le hik, by rw [← h] at hRi; exact hRi, hrun'⟩
+      · refine ⟨R', i + 1, Nat.succ_le_succ hik, ?_, hrun'⟩
+        rw [h, hRi, List.append_assoc, zeros_snoc]
+
+#print axioms steps_runpad_zeros
+
+/-! ## The normalized milestone family and its cycle -/
+
+def costEven (h : Nat) : Nat :=
+  (267 + 38*(2*h+2))
+    + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+       + ((descTotal (2 * h + 5) + 415)
+          + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+          + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+             + (27 * (2 * h + 1) + 110))))
+
+def costOdd (h : Nat) : Nat :=
+  (419 + 76*h)
+    + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+         + 6 * 2 ^ (2 * h + 8))
+      + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+         + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+            + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+               + (27 * (2*h+2) + 110)))))
+
+/-- milestone `M1(2h+2)`, normalized: state `E`, pos `0`, left `[]`. -/
+def MEven (h : Nat) (R : List Bool) : Cfg :=
+  ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+    (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+
+/-- milestone `M1(2h+3)`, normalized. -/
+def MOdd (h : Nat) (R : List Bool) : Cfg :=
+  ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+
+/-- **THE EVEN CYCLE** — `MEven h → MOdd h` in `costEven h` steps, right tape landing EXACTLY on
+the next milestone's; only the left boundary blanks and the translation remain to normalize. -/
+theorem cycleEven (h : Nat) (R : List Bool) :
+    ∃ (L' : List Bool) (q : Int),
+      steps (costEven h) (MEven h (zeros 16 ++ oddPadTail h R))
+        = some ⟨.E, q, ⟨L', false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩ := by
+  obtain ⟨L', q, hrun⟩ := hlowDoubEven_trim h (zeros 16 ++ oddPadTail h R)
+  exact ⟨L', q, by rw [← evenOut_is_oddIn h R]; exact hrun⟩
+
+/-- **THE ODD CYCLE** — `MOdd h → MEven (h+1)`. -/
+theorem cycleOdd (h : Nat) (R : List Bool) :
+    ∃ (L' : List Bool) (q : Int),
+      steps (costOdd h) (MOdd h (zeros 16 ++ evenPadTail (h+1) R))
+        = some ⟨.E, q, ⟨L', false, zeros 21 ++ (uUnits (2*(h+1)+1) ++
+            (true :: (zeros 10 ++ evenLowFrame (h+1) R)))⟩⟩ := by
+  obtain ⟨L', q, hrun⟩ := hlowDoubOdd_trim h (zeros 16 ++ evenPadTail (h+1) R)
+  exact ⟨L', q, by rw [← oddOut_is_evenIn h R]; exact hrun⟩
+
+#print axioms cycleEven
+#print axioms cycleOdd
