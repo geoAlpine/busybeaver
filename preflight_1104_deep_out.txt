@@ -4,3 +4,6 @@ deep screen: 1104 holdouts, 20000000 steps, (ratio, time) signature
   ...100/1104  hits=1
   ...150/1104  hits=1
   ...200/1104  hits=1
+  ...250/1104  hits=1
+  HIT[x2] 1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_1LD---  R gap>0.25t  w=[2.0515, 2.0235, 2.0108] t=[4.109, 4.051, 4.021] ws=[185, 422, 893, 1832, 3707, 7454]
+  ...300/1104  hits=2
