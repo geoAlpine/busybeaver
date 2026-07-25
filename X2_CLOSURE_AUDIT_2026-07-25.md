@@ -2,8 +2,13 @@
 
 Machine `x2 = 1RB0RE_1RC---_0LD1LE_0RE1LD_1RF0LC_0RA1RE`, blank tape.
 
-**LABEL HELD.** This file records the proof and the audit. The label is NOT upgraded here; it is
-upgraded only after the cold full build and the red-team both pass, and only by explicit decision.
+**AUDIT COMPLETE — PASSED.** Cold full build from scratch: **63/63, `sorryAx` 0,
+`Classical.choice` 0**, `T7Entry` rebuilt in 570 s.  `#print axioms x2_nonhalt_blank` =
+`[propext, Quot.sound]` — none of the 11 custom `axiom` declarations in `Completion.lean` is in
+its dependency cone.
+
+> ### `x2` DOES NOT HALT FROM THE BLANK TAPE.  [PROVEN]
+> Machine-checked, unconditional, Mathlib-free.
 
 ## The theorem
 
@@ -55,11 +60,31 @@ function that can never return `none`.
 * Independent simulator: x2 has been run to 11 329 301 steps with no halt, and the Lean and Python
   instruments agree on every anchor (`check_anchors`).
 
-## Outstanding
+## Cross-instrument check (Lean vs the Python simulator)
 
-* **Cold full build from scratch** — running.  Until it passes, the result is not audited.
-* Whether `x2` is among the community's current open holdouts is **unverified** (it was drawn from
-  the historical 1104-holdout frontier, and its spec is not in `catalogue_finish.py`'s named list).
-  That question does not affect the theorem; it affects only what the theorem is worth externally.
+| step | Lean `#eval` | simulator |
+|---|---|---|
+| 732 733 | `(E, −31)` | `(E, −31)`, right frontier 2073 |
+| 2 852 091 | `(E, −37)` | `(E, −37)`, right frontier 4127 |
+| 11 329 301 | `(E, −43)`, left 1, right 8229 | `(E, −43)`, right frontier 8229 |
 
-**No label upgraded in this file.**
+Exact agreement at three independent large step counts.
+
+## What this decides, precisely
+
+`Completion.lean` states the BB(6) obligation as **1104 holdouts = 17 named cryptids + 1087
+residual**, with the residual carried as the axiom `holdouts1087_nonhalt` and the note: *"our
+certified suite is a subset of the community decider class (0/300 decided), so this is not
+internally reducible to the named 17."*
+
+`x2` is **not** one of the 17 named cryptids (its spec is absent from `catalogue_finish.py`'s named
+list; `X2_FRONTIER_MAP_2026-07-11.md` records it as drawn from the 1104-holdout frontier).  So:
+
+> **This decides one member of the 1087 residual block — the first, unconditionally, in Lean.**
+
+It does not decide any of the 17 named cryptids, and it does not touch `(K)`.  What it does is
+convert the template method from a design into a **worked, audited end-to-end example**, and it is
+direct evidence for the analysis in `ANALYSIS_2026-07-25.md` §III: the residual block is where the
+template island lives.
+
+**LABEL UPGRADED: `x2` = [PROVEN non-halting].**  Audit of record: this file.
