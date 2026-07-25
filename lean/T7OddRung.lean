@@ -1185,3 +1185,23 @@ theorem oddSpineFull (n m c j : Nat) (hn : 1 ≤ n) (hc : 1 ≤ c)
   exact h2
 
 #print axioms oddSpineFull
+
+/-- `frameLV` peels one frame layer: the 7 cells `0 1 0 1 0 0 1`. -/
+theorem frameLV_succ (j : Nat) (X : List Bool) :
+    frameLV (j + 1) X
+      = false :: true :: false :: true :: false :: false :: true :: frameLV j X := by
+  show false :: true :: false :: true :: false :: false :: frameL j (turnWord ++ X) = _
+  rw [frameL_turnWord j X]
+
+/-- **THE ODD E2 MARKER IDENTITY** — `topEntryOddFull`'s marker tail IS `oddSpineFull`'s, with
+`m = N + 1` and `j = (2h+1) + 1`.  The even branch's 9-cell `seam74` word is absorbed here into
+one `frameLV` layer, which is exactly why the odd branch needs no `seam74`. -/
+theorem oddE2Marker (N j : Nat) (X : List Bool) :
+    pow10 N ++ (true :: (false :: false :: true :: false :: true :: false :: true :: false ::
+        false :: (true :: frameLV j X)))
+      = pow10 (N + 1) ++ (false :: true :: frameLV (j + 1) X) := by
+  rw [pow10_add, frameLV_succ j X, List.append_assoc]
+  rfl
+
+#print axioms frameLV_succ
+#print axioms oddE2Marker
