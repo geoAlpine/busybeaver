@@ -40,3 +40,28 @@
   the first thing to measure for `D`, before any Lean work.**
 
 **No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
+
+
+## `D` reversed — and the species distinction
+
+The holdout list is deduplicated up to left–right reversal, so `D^R` is the same entry:
+
+    D   = 1RB0RA_1LC0LE_0LD0LB_1RA0LF_1LB0RD_1LD---     (grows LEFT)
+    D^R = 1LB0LA_1RC0RE_0RD0RB_1LA0RF_1RB0LD_1RD---     (grows RIGHT)
+
+`D^R`'s milestone right tapes:
+
+    even-type : 0^33 ++ pow10 k      (a long dense (1 0) comb, 43+ alternating runs and continuing)
+    odd-type  : 0^2 (1 0)^4 0^6 ++ pow10 k
+
+Compare `x2`'s `MEven 0 []`:  `0^21 ++ uUnits 1 ++ (1 :: 0^10 ++ ones 1021 ++ m1casc …)`.
+
+> **`x2` and `D` are different species.**  `x2` is a CASCADE doubler — a sparse `uUnits` register
+> (`(1 0^6)^k`) plus long `ones` blocks in a descending `2^k − 3` cascade.  `D` is a COMB doubler —
+> a pure dense `pow10` register.
+
+That is a genuinely new word structure, so `D` needs its own development.  But `pow10` / `pow01`
+and their algebra are already library (built for `x2`), and a pure comb register is *simpler* than a
+cascade, so `D` may well be **cheaper than `x2` was**, not harder.
+
+**No machine decided beyond `x2`.  No label upgraded.  Push HELD.**
