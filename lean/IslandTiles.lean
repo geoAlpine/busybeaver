@@ -10,26 +10,33 @@ set_option maxHeartbeats 1000000
 
 `atoms_island_scan.py` scanned the curated still-open residual
 (`_bbdata/bb6_holdouts_1104.txt`, 1104 entries) for machines satisfying
-`RungCalc.Atoms`, in either orientation, at any state.  **17 of 1104 do.**  Since
+`RungCalc.Atoms`, in either orientation, at any state.  **18 of 1104 do.**  Since
 `RungCalc.tile` proves the rung tile from `Atoms` alone, each of them gets the tile for six
 closed kernel `rfl`s — which is what this file spends.
 
-Distribution over the residual (best count of the six atoms, over both orientations × all
-six candidate outward states): `6/6: 17`, `5/6: 1`, `4/6: 4`, `3/6: 31`, `2/6: 377`,
-`1/6: 674`.  The lone 5/6 near-miss (`1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC`, at
-`sA = E`) fails only `turn`.
+Detection is **behavioural** (`atoms_flex_scan.py`): each atom is matched by its exact
+input/output configuration at whatever step count the machine takes, and the count must
+agree across several tape contexts.  Step counts are not part of the mechanism — the fixed
+`(4,1,1,2,2,3)` of the first scan was an accident of `D`.  Distribution over the residual:
+`6/6: 18`, `5/6: 0`, `4/6: 4`, `3/6: 36`, `2/6: 401`, `1/6: 645`.  **No 5/6 near-miss
+remains**, so this relaxation is exhausted: no further machine is within one atom.
+
+Seventeen hits have `D`'s step counts `(4,1,1,2,2,3)`, span `6(u+m)+21`; one
+(`1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC`, `sA = E`) has a **five**-step turn
+(`A0→1RB, B0→0LC, C1→1RD, D0→0RC, C0→1LE`) reaching the identical output configuration,
+giving `(4,1,1,2,2,5)` and span `6(u+m)+23`.  It was the fixed-shape scan's lone 5/6.
 
 ## How to read this, and how not to
 
 **What it shows.** The machine-independent tile is not a one-machine coincidence: it covers
-17 still-open machines, and the per-machine cost really is six `rfl`s.  Among the named
+18 still-open machines, and the per-machine cost really is six `rfl`s.  Among the named
 island candidates, `D`, `E` and `H` are hits; `x2` (1/6), `F` (2/6), `G` (2/6) and `I` (1/6)
 are not — so this tile is *not* x2's mechanism.
 
 **What it does not show.**  `Atoms` pins 9–10 of a 6-state machine's 12 transition entries
 (10 when the roles `sA, b, e, d, c, f` are distinct, 9 when `d = f`), so the family it
 describes is structurally narrow by construction; the hits differ only in the 2–3 entries
-`Atoms` leaves free, and in whether `d = f` (12 of the 17) or `d ≠ f` (5).  The tile is one
+`Atoms` leaves free, and in the role coincidences.  The tile is one
 lemma.  **None of these machines is decided by this file**, and nothing here bears on their
 epoch anatomy, entry segments, milestone families or cascade inductions — for `D`, that
 remainder is where all the difficulty turned out to live.  Every machine below is `[OPEN]`.
@@ -63,8 +70,9 @@ def TM01 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .E)   -- F0 → 1RE
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep), `e = E`, `d = C`, `c = B`, `f = C`  (`d = f`). -/
-theorem AM01 : Atoms TM01 .D .A where
+/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM01 : Atoms TM01 .D .A 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -84,8 +92,13 @@ theorem AM01 : Atoms TM01 .D .A where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M01`, `∀ u m c g p TAIL REST`. -/
-theorem tileM01 : Tile TM01 St.D := tile_holds AM01
+/-- The rung tile for `M01`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM01 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM01 (6 * u + 6 * m + 21)
+        (IN St.D u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.D (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM01 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -111,8 +124,9 @@ def TM02 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .A)   -- F0 → 1RA
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep), `e = A`, `d = D`, `c = C`, `f = D`  (`d = f`). -/
-theorem AM02 : Atoms TM02 .E .B where
+/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM02 : Atoms TM02 .E .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -132,8 +146,13 @@ theorem AM02 : Atoms TM02 .E .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M02`, `∀ u m c g p TAIL REST`. -/
-theorem tileM02 : Tile TM02 St.E := tile_holds AM02
+/-- The rung tile for `M02`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM02 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM02 (6 * u + 6 * m + 21)
+        (IN St.E u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.E (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM02 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -159,8 +178,9 @@ def TM03 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .D)   -- F0 → 1RD
   | .F, true  => some (false, .L, .B)   -- F1 → 0LB
 
-/-- Roles: `sA = C` (outward sweep), `sB = D` (return sweep), `e = F`, `d = B`, `c = E`, `f = B`  (`d = f`). -/
-theorem AM03 : Atoms TM03 .C .D where
+/-- Roles: `sA = C` (outward sweep), `sB = D` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM03 : Atoms TM03 .C .D 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -180,8 +200,13 @@ theorem AM03 : Atoms TM03 .C .D where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M03`, `∀ u m c g p TAIL REST`. -/
-theorem tileM03 : Tile TM03 St.C := tile_holds AM03
+/-- The rung tile for `M03`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM03 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM03 (6 * u + 6 * m + 21)
+        (IN St.C u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.C (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM03 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -208,8 +233,9 @@ def TM04 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .A)   -- F0 → 1RA
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep), `e = E`, `d = A`, `c = D`, `f = A`  (`d = f`). -/
-theorem AM04 : Atoms TM04 .B .C where
+/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM04 : Atoms TM04 .B .C 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -229,8 +255,13 @@ theorem AM04 : Atoms TM04 .B .C where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M04`, `∀ u m c g p TAIL REST`. -/
-theorem tileM04 : Tile TM04 St.B := tile_holds AM04
+/-- The rung tile for `M04`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM04 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM04 (6 * u + 6 * m + 21)
+        (IN St.B u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.B (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM04 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -257,8 +288,9 @@ def TM05 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .D)   -- F0 → 1RD
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep), `e = E`, `d = D`, `c = C`, `f = D`  (`d = f`). -/
-theorem AM05 : Atoms TM05 .A .B where
+/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM05 : Atoms TM05 .A .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -278,8 +310,13 @@ theorem AM05 : Atoms TM05 .A .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M05`, `∀ u m c g p TAIL REST`. -/
-theorem tileM05 : Tile TM05 St.A := tile_holds AM05
+/-- The rung tile for `M05`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM05 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM05 (6 * u + 6 * m + 21)
+        (IN St.A u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.A (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM05 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -306,8 +343,9 @@ def TM06 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .A)   -- F0 → 1LA
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep), `e = E`, `d = F`, `c = C`, `f = D`  (`d ≠ f`). -/
-theorem AM06 : Atoms TM06 .A .B where
+/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM06 : Atoms TM06 .A .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -327,8 +365,13 @@ theorem AM06 : Atoms TM06 .A .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M06`, `∀ u m c g p TAIL REST`. -/
-theorem tileM06 : Tile TM06 St.A := tile_holds AM06
+/-- The rung tile for `M06`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM06 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM06 (6 * u + 6 * m + 21)
+        (IN St.A u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.A (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM06 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -355,8 +398,9 @@ def TM07 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .E)   -- F0 → 1RE
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep), `e = E`, `d = A`, `c = D`, `f = A`  (`d = f`). -/
-theorem AM07 : Atoms TM07 .B .C where
+/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM07 : Atoms TM07 .B .C 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -376,8 +420,13 @@ theorem AM07 : Atoms TM07 .B .C where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M07`, `∀ u m c g p TAIL REST`. -/
-theorem tileM07 : Tile TM07 St.B := tile_holds AM07
+/-- The rung tile for `M07`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM07 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM07 (6 * u + 6 * m + 21)
+        (IN St.B u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.B (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM07 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -403,8 +452,9 @@ def TM08 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .C)   -- F0 → 1RC
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep), `e = E`, `d = C`, `c = B`, `f = C`  (`d = f`). -/
-theorem AM08 : Atoms TM08 .D .A where
+/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM08 : Atoms TM08 .D .A 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -424,8 +474,13 @@ theorem AM08 : Atoms TM08 .D .A where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M08`, `∀ u m c g p TAIL REST`. -/
-theorem tileM08 : Tile TM08 St.D := tile_holds AM08
+/-- The rung tile for `M08`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM08 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM08 (6 * u + 6 * m + 21)
+        (IN St.D u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.D (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM08 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -452,8 +507,9 @@ def TM09 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .B)   -- F0 → 1LB
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep), `e = E`, `d = F`, `c = D`, `f = A`  (`d ≠ f`). -/
-theorem AM09 : Atoms TM09 .B .C where
+/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM09 : Atoms TM09 .B .C 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -473,8 +529,13 @@ theorem AM09 : Atoms TM09 .B .C where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M09`, `∀ u m c g p TAIL REST`. -/
-theorem tileM09 : Tile TM09 St.B := tile_holds AM09
+/-- The rung tile for `M09`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM09 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM09 (6 * u + 6 * m + 21)
+        (IN St.B u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.B (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM09 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -501,8 +562,9 @@ def TM10 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (false, .L, .C)   -- F0 → 0LC
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep), `e = E`, `d = D`, `c = C`, `f = D`  (`d = f`). -/
-theorem AM10 : Atoms TM10 .A .B where
+/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM10 : Atoms TM10 .A .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -522,8 +584,13 @@ theorem AM10 : Atoms TM10 .A .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M10`, `∀ u m c g p TAIL REST`. -/
-theorem tileM10 : Tile TM10 St.A := tile_holds AM10
+/-- The rung tile for `M10`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM10 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM10 (6 * u + 6 * m + 21)
+        (IN St.A u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.A (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM10 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -549,8 +616,9 @@ def TM11 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (false, .R, .D)   -- F0 → 0RD
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep), `e = E`, `d = C`, `c = B`, `f = C`  (`d = f`). -/
-theorem AM11 : Atoms TM11 .D .A where
+/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM11 : Atoms TM11 .D .A 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -570,8 +638,13 @@ theorem AM11 : Atoms TM11 .D .A where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M11`, `∀ u m c g p TAIL REST`. -/
-theorem tileM11 : Tile TM11 St.D := tile_holds AM11
+/-- The rung tile for `M11`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM11 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM11 (6 * u + 6 * m + 21)
+        (IN St.D u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.D (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM11 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -597,8 +670,9 @@ def TM12 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .C)   -- F0 → 1LC
   | .F, true  => some (false, .L, .F)   -- F1 → 0LF
 
-/-- Roles: `sA = F` (outward sweep), `sB = C` (return sweep), `e = B`, `d = E`, `c = D`, `f = E`  (`d = f`). -/
-theorem AM12 : Atoms TM12 .F .C where
+/-- Roles: `sA = F` (outward sweep), `sB = C` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM12 : Atoms TM12 .F .C 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -618,8 +692,13 @@ theorem AM12 : Atoms TM12 .F .C where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M12`, `∀ u m c g p TAIL REST`. -/
-theorem tileM12 : Tile TM12 St.F := tile_holds AM12
+/-- The rung tile for `M12`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM12 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM12 (6 * u + 6 * m + 21)
+        (IN St.F u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.F (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM12 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -645,8 +724,9 @@ def TM13 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .E)   -- F0 → 1LE
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep), `e = A`, `d = F`, `c = C`, `f = D`  (`d ≠ f`). -/
-theorem AM13 : Atoms TM13 .E .B where
+/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM13 : Atoms TM13 .E .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -666,8 +746,13 @@ theorem AM13 : Atoms TM13 .E .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M13`, `∀ u m c g p TAIL REST`. -/
-theorem tileM13 : Tile TM13 St.E := tile_holds AM13
+/-- The rung tile for `M13`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM13 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM13 (6 * u + 6 * m + 21)
+        (IN St.E u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.E (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM13 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -693,8 +778,9 @@ def TM14 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .D)   -- F0 → 1LD
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep), `e = E`, `d = F`, `c = B`, `f = C`  (`d ≠ f`). -/
-theorem AM14 : Atoms TM14 .D .A where
+/-- Roles: `sA = D` (outward sweep), `sB = A` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM14 : Atoms TM14 .D .A 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -714,8 +800,13 @@ theorem AM14 : Atoms TM14 .D .A where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M14`, `∀ u m c g p TAIL REST`. -/
-theorem tileM14 : Tile TM14 St.D := tile_holds AM14
+/-- The rung tile for `M14`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM14 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM14 (6 * u + 6 * m + 21)
+        (IN St.D u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.D (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM14 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -742,8 +833,9 @@ def TM15 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (false, .L, .D)   -- F0 → 0LD
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep), `e = E`, `d = A`, `c = D`, `f = A`  (`d = f`). -/
-theorem AM15 : Atoms TM15 .B .C where
+/-- Roles: `sA = B` (outward sweep), `sB = C` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM15 : Atoms TM15 .B .C 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -763,8 +855,13 @@ theorem AM15 : Atoms TM15 .B .C where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M15`, `∀ u m c g p TAIL REST`. -/
-theorem tileM15 : Tile TM15 St.B := tile_holds AM15
+/-- The rung tile for `M15`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM15 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM15 (6 * u + 6 * m + 21)
+        (IN St.B u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.B (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM15 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -790,8 +887,9 @@ def TM16 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .L, .E)   -- F0 → 1LE
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep), `e = A`, `d = F`, `c = C`, `f = D`  (`d ≠ f`). -/
-theorem AM16 : Atoms TM16 .E .B where
+/-- Roles: `sA = E` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM16 : Atoms TM16 .E .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -811,8 +909,13 @@ theorem AM16 : Atoms TM16 .E .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M16`, `∀ u m c g p TAIL REST`. -/
-theorem tileM16 : Tile TM16 St.E := tile_holds AM16
+/-- The rung tile for `M16`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM16 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM16 (6 * u + 6 * m + 21)
+        (IN St.E u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.E (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM16 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
@@ -820,12 +923,66 @@ theorem groundM16 :
     steps TM16 33 (IN St.E 1 2 2 4 0 [true, false, true] [true, true])
       = some (IN St.E 3 1 3 1 3 [true, false, true] [true, true]) := by rfl
 
-/-! ## §17 `M17` — `1RB0RA_1LC0LE_0LD0LB_1RA1LF_1LB0RD_1LE---` -/
+/-! ## §17 `M17` — `1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC` -/
+
+/-- `1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC`.
+Transcribed as written — the atoms hold in this orientation. -/
+def TM17 : St → Bool → Option (Bool × Dir × St)
+  | .A, false => some (true , .R, .B)   -- A0 → 1RB
+  | .A, true  => some (false, .R, .F)   -- A1 → 0RF
+  | .B, false => some (false, .L, .C)   -- B0 → 0LC
+  | .B, true  => some (false, .R, .A)   -- B1 → 0RA
+  | .C, false => some (true , .L, .E)   -- C0 → 1LE
+  | .C, true  => some (true , .R, .D)   -- C1 → 1RD
+  | .D, false => some (false, .R, .C)   -- D0 → 0RC
+  | .D, true  => none                    -- D1 → --- HALT
+  | .E, false => some (true , .L, .A)   -- E0 → 1LA
+  | .E, true  => some (false, .L, .E)   -- E1 → 0LE
+  | .F, false => some (true , .R, .A)   -- F0 → 1RA
+  | .F, true  => some (false, .L, .C)   -- F1 → 0LC
+
+/-- Roles: `sA = E` (outward sweep), `sB = A` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 5)` ⇒ span `6u + 6m + 23`. -/
+theorem AM17 : Atoms TM17 .E .A 4 1 1 2 2 5 where
+  crawl := by
+    intro p b L R
+    rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
+    rfl
+  marker := by intro p x L R; rfl
+  turnaround := by intro p x L R; rfl
+  swap10 := by
+    intro p b L R
+    rw [show (p + 2 : Int) = p + 1 + 1 from by omega]
+    rfl
+  swap01 := by
+    intro p b L R
+    rw [show (p + 2 : Int) = p + 1 + 1 from by omega]
+    rfl
+  turn := by
+    intro p L R
+    rw [show (p + 1 : Int) = p + 1 - 1 + 1 + 1 - 1 from by omega]
+    rfl
+
+/-- The rung tile for `M17`, `∀ u m c g p TAIL REST`, span `6u + 6m + 23`. -/
+theorem tileM17 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM17 (6 * u + 6 * m + 23)
+        (IN St.E u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.E (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 23 = span 4 1 1 2 2 5 u m from by simp [span]; omega]
+  exact tile AM17 u m c g p TAIL REST
+
+/-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 35) is a closed kernel `rfl`,
+independent of the law above — so a drift in the table breaks the build. -/
+theorem groundM17 :
+    steps TM17 35 (IN St.E 1 2 2 4 0 [true, false, true] [true, true])
+      = some (IN St.E 3 1 3 1 3 [true, false, true] [true, true]) := by rfl
+
+/-! ## §18 `M18` — `1RB0RA_1LC0LE_0LD0LB_1RA1LF_1LB0RD_1LE---` -/
 
 /-- `1RB0RA_1LC0LE_0LD0LB_1RA1LF_1LB0RD_1LE---`.
 Transcribed in the **reversed** (mirrored) form, in which it grows rightward and the
 atoms hold; halting is invariant under mirroring. -/
-def TM17 : St → Bool → Option (Bool × Dir × St)
+def TM18 : St → Bool → Option (Bool × Dir × St)
   | .A, false => some (true , .L, .B)   -- A0 → 1LB
   | .A, true  => some (false, .L, .A)   -- A1 → 0LA
   | .B, false => some (true , .R, .C)   -- B0 → 1RC
@@ -839,8 +996,9 @@ def TM17 : St → Bool → Option (Bool × Dir × St)
   | .F, false => some (true , .R, .E)   -- F0 → 1RE
   | .F, true  => none                    -- F1 → --- HALT
 
-/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep), `e = E`, `d = D`, `c = C`, `f = D`  (`d = f`). -/
-theorem AM17 : Atoms TM17 .A .B where
+/-- Roles: `sA = A` (outward sweep), `sB = B` (return sweep).
+Atom step counts `(cr, mk, ta, s10, s01, tu) = (4, 1, 1, 2, 2, 3)` ⇒ span `6u + 6m + 21`. -/
+theorem AM18 : Atoms TM18 .A .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -860,37 +1018,43 @@ theorem AM17 : Atoms TM17 .A .B where
     rw [show (p + 1 : Int) = p + 1 + 1 - 1 from by omega]
     rfl
 
-/-- The rung tile for `M17`, `∀ u m c g p TAIL REST`. -/
-theorem tileM17 : Tile TM17 St.A := tile_holds AM17
+/-- The rung tile for `M18`, `∀ u m c g p TAIL REST`, span `6u + 6m + 21`. -/
+theorem tileM18 (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps TM18 (6 * u + 6 * m + 21)
+        (IN St.A u (m + 1) c (g + 3) p TAIL REST)
+      = some (IN St.A (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * u + 6 * m + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact tile AM18 u m c g p TAIL REST
 
 /-- Anti-vacuity: the tile at `u=1, m=2, c=2, g=4` (span 33) is a closed kernel `rfl`,
 independent of the law above — so a drift in the table breaks the build. -/
-theorem groundM17 :
-    steps TM17 33 (IN St.A 1 2 2 4 0 [true, false, true] [true, true])
+theorem groundM18 :
+    steps TM18 33 (IN St.A 1 2 2 4 0 [true, false, true] [true, true])
       = some (IN St.A 3 1 3 1 3 [true, false, true] [true, true]) := by rfl
 
 /-! ## Summary -/
 
 /-- All the tiles in one list, so the count is checkable at a glance. -/
 theorem all_tiles :
-    Tile TM01 St.D
-    ∧ Tile TM02 St.E
-    ∧ Tile TM03 St.C
-    ∧ Tile TM04 St.B
-    ∧ Tile TM05 St.A
-    ∧ Tile TM06 St.A
-    ∧ Tile TM07 St.B
-    ∧ Tile TM08 St.D
-    ∧ Tile TM09 St.B
-    ∧ Tile TM10 St.A
-    ∧ Tile TM11 St.D
-    ∧ Tile TM12 St.F
-    ∧ Tile TM13 St.E
-    ∧ Tile TM14 St.D
-    ∧ Tile TM15 St.B
-    ∧ Tile TM16 St.E
-    ∧ Tile TM17 St.A
-    := ⟨tileM01, tileM02, tileM03, tileM04, tileM05, tileM06, tileM07, tileM08, tileM09, tileM10, tileM11, tileM12, tileM13, tileM14, tileM15, tileM16, tileM17⟩
+    Tile TM01 St.D (span 4 1 1 2 2 3)
+    ∧ Tile TM02 St.E (span 4 1 1 2 2 3)
+    ∧ Tile TM03 St.C (span 4 1 1 2 2 3)
+    ∧ Tile TM04 St.B (span 4 1 1 2 2 3)
+    ∧ Tile TM05 St.A (span 4 1 1 2 2 3)
+    ∧ Tile TM06 St.A (span 4 1 1 2 2 3)
+    ∧ Tile TM07 St.B (span 4 1 1 2 2 3)
+    ∧ Tile TM08 St.D (span 4 1 1 2 2 3)
+    ∧ Tile TM09 St.B (span 4 1 1 2 2 3)
+    ∧ Tile TM10 St.A (span 4 1 1 2 2 3)
+    ∧ Tile TM11 St.D (span 4 1 1 2 2 3)
+    ∧ Tile TM12 St.F (span 4 1 1 2 2 3)
+    ∧ Tile TM13 St.E (span 4 1 1 2 2 3)
+    ∧ Tile TM14 St.D (span 4 1 1 2 2 3)
+    ∧ Tile TM15 St.B (span 4 1 1 2 2 3)
+    ∧ Tile TM16 St.E (span 4 1 1 2 2 3)
+    ∧ Tile TM17 St.E (span 4 1 1 2 2 5)
+    ∧ Tile TM18 St.A (span 4 1 1 2 2 3)
+    := ⟨tile_holds AM01, tile_holds AM02, tile_holds AM03, tile_holds AM04, tile_holds AM05, tile_holds AM06, tile_holds AM07, tile_holds AM08, tile_holds AM09, tile_holds AM10, tile_holds AM11, tile_holds AM12, tile_holds AM13, tile_holds AM14, tile_holds AM15, tile_holds AM16, tile_holds AM17, tile_holds AM18⟩
 
 -- AXIOM AUDIT
 #print axioms tileM01
@@ -910,6 +1074,7 @@ theorem all_tiles :
 #print axioms tileM15
 #print axioms tileM16
 #print axioms tileM17
+#print axioms tileM18
 #print axioms all_tiles
 
 end IslandTiles

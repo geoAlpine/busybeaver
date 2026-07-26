@@ -97,7 +97,7 @@ def init : Cfg St := ⟨.A, 0, ⟨[], false, []⟩⟩
 the genuine machine, so any drift in `dT` breaks the build.  The walks are
 `crawl = A0→1LB, B1→0RE, E1→0LD, D0→1LA`; `marker = A1→0LA`; `turnaround = A0→1LB`;
 `swap10 = B1→0RE, E0→1RB`; `swap01 = B0→1RC, C1→0RB`; `turn = B0→1RC, C0→0RD, D0→1LA`. -/
-theorem dAtoms : Atoms dT .A .B where
+theorem dAtoms : Atoms dT .A .B 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -134,10 +134,11 @@ below (spans `21/33/45`) were always right; only the `∀`-statement was off.
 `d_rung_general.py §A` re-measures both readings side by side. -/
 theorem rungTile (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
     steps dT (6 * (u + m) + 21) (IN u (m + 1) c (g + 3) p TAIL REST)
-      = some (IN (u + 2) m (c + 1) g (p + 3) TAIL REST) :=
-  RungCalc.tile dAtoms u m c g p TAIL REST
+      = some (IN (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * (u + m) + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact RungCalc.tile dAtoms u m c g p TAIL REST
 
-theorem rungTile_holds : Tile dT St.A := tile_holds dAtoms
+theorem rungTile_holds : Tile dT St.A (span 4 1 1 2 2 3) := tile_holds dAtoms
 
 /-! ## §4 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 

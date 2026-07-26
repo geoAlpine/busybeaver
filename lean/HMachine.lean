@@ -83,7 +83,7 @@ the build.  Written out, the walks are:
 
 Note `H`'s `D` appears in both `crawl` (as the closing state, from `F`) and `marker`, while
 `Dᴿ`'s single state `D` covers what `H` splits between `F` and `C`. -/
-theorem hAtoms : Atoms hT .D .A where
+theorem hAtoms : Atoms hT .D .A 4 1 1 2 2 3 where
   crawl := by
     intro p b L R
     rw [show (p - 2 : Int) = p - 1 + 1 - 1 - 1 from by omega]
@@ -113,10 +113,11 @@ abbrev IN (u m c g : Nat) (p : Int) (TAIL REST : List Bool) : Cfg St :=
 composition is repeated here; it comes from `RungCalc.tile` applied to `hAtoms`. -/
 theorem rungTile (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
     steps hT (6 * (u + m) + 21) (IN u (m + 1) c (g + 3) p TAIL REST)
-      = some (IN (u + 2) m (c + 1) g (p + 3) TAIL REST) :=
-  RungCalc.tile hAtoms u m c g p TAIL REST
+      = some (IN (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
+  rw [show 6 * (u + m) + 21 = span 4 1 1 2 2 3 u m from by simp [span]; omega]
+  exact RungCalc.tile hAtoms u m c g p TAIL REST
 
-theorem rungTile_holds : Tile hT St.D := tile_holds hAtoms
+theorem rungTile_holds : Tile hT St.D (span 4 1 1 2 2 3) := tile_holds hAtoms
 
 /-! ## §4 Kernel-grounded instances (anti-vacuity).
 

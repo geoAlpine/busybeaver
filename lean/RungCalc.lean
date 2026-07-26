@@ -39,7 +39,9 @@ roles.  The graphs differ; the atoms do not.  So the tile is an invariant of the
 ## Contents
 
 * `pow10`/`pow01`/`ones` and the four word identities the seams need;
-* `Atoms T sA sB` — the six-atom interface, a `Prop`-valued structure;
+* `Atoms T sA sB cr mk ta s10 s01 tu` — the six-atom interface (a `Prop`-valued structure),
+  each atom carrying its own step count, since those are not part of the mechanism;
+* `span` — the rung's step count as a linear function of the six;
 * `crawlFold`, `sweep10`, `sweep01` — the three `∀`-uniform folds, derived from `Atoms`;
 * `IN` — the milestone-region configuration family;
 * `rung_core` / `tile` — the rung tile, `[PROVEN]` for **every** machine satisfying `Atoms`.
@@ -152,95 +154,116 @@ whose graph is not a relabeling of another's can still satisfy the *same* `Atoms
 
 Each field is `∀`-uniform in the tape context — that discipline is not decoration, it is the
 whole reason the tile composes and the reason it transports between machines. -/
-structure Atoms {S : Type} (T : S → Bool → Option (Bool × Dir × S)) (sA sB : S) : Prop where
+structure Atoms {S : Type} (T : S → Bool → Option (Bool × Dir × S)) (sA sB : S)
+    (cr mk ta s10 s01 tu : Nat) : Prop where
   /-- The outward crawl: 4 steps, head `−2`, the two rewritten cells handed to the right
   verbatim.  Note the `∀ b`: the atom never reads the cell it lands on, which is what lets the
   *same* atom scan `(0 1)^u` and step over the `[1,1]` marker. -/
   crawl : ∀ (p : Int) (b : Bool) (L R : List Bool),
-    steps T 4 ⟨sA, p, ⟨true :: b :: L, false, R⟩⟩
+    steps T cr ⟨sA, p, ⟨true :: b :: L, false, R⟩⟩
       = some ⟨sA, p - 2, ⟨L, b, true :: false :: R⟩⟩
   /-- The marker step: the outward sweep reads a `1` and keeps going, writing `0`. -/
   marker : ∀ (p : Int) (x : Bool) (L R : List Bool),
-    steps T 1 ⟨sA, p, ⟨x :: L, true, R⟩⟩ = some ⟨sA, p - 1, ⟨L, x, false :: R⟩⟩
+    steps T mk ⟨sA, p, ⟨x :: L, true, R⟩⟩ = some ⟨sA, p - 1, ⟨L, x, false :: R⟩⟩
   /-- The turnaround: the outward sweep dies on the `0 0` gap and the return sweep is born,
   one cell further left, in `sB`. -/
   turnaround : ∀ (p : Int) (x : Bool) (L R : List Bool),
-    steps T 1 ⟨sA, p, ⟨x :: L, false, R⟩⟩ = some ⟨sB, p - 1, ⟨L, x, true :: R⟩⟩
+    steps T ta ⟨sA, p, ⟨x :: L, false, R⟩⟩ = some ⟨sB, p - 1, ⟨L, x, true :: R⟩⟩
   /-- Return atom S1: 2 steps, head `+2`, rewrites `1 0 ↦ 0 1`.  `sB`-to-`sB`. -/
   swap10 : ∀ (p : Int) (b : Bool) (L R : List Bool),
-    steps T 2 ⟨sB, p, ⟨L, true, false :: b :: R⟩⟩
+    steps T s10 ⟨sB, p, ⟨L, true, false :: b :: R⟩⟩
       = some ⟨sB, p + 2, ⟨true :: false :: L, b, R⟩⟩
   /-- Return atom S2: 2 steps, head `+2`, rewrites `0 1 ↦ 1 0`.  `sB`-to-`sB`. -/
   swap01 : ∀ (p : Int) (b : Bool) (L R : List Bool),
-    steps T 2 ⟨sB, p, ⟨L, false, true :: b :: R⟩⟩
+    steps T s01 ⟨sB, p, ⟨L, false, true :: b :: R⟩⟩
       = some ⟨sB, p + 2, ⟨false :: true :: L, b, R⟩⟩
   /-- The turn: the return sweep hits the `0 0 0` landing pad, deposits the new `1` and settles
   back into `sA` at `+1`.  This is the rung's `+3` net head advance, and it is why `g ≥ 3` is a
   genuine hypothesis rather than slack. -/
   turn : ∀ (p : Int) (L R : List Bool),
-    steps T 3 ⟨sB, p, ⟨L, false, false :: false :: R⟩⟩
+    steps T tu ⟨sB, p, ⟨L, false, false :: false :: R⟩⟩
       = some ⟨sA, p + 1, ⟨true :: L, false, true :: R⟩⟩
 
 section
 variable {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB : S}
+    {cr mk ta s10 s01 tu : Nat}
 
 /-! ## §3 The three folds. -/
 
 /-- **The crawl fold** — the outward sweep over `pow10 n`: `4n` steps, head `−2n`, tape
 unchanged (the comb is handed over to the right side verbatim). -/
-theorem crawlFold (h : Atoms T sA sB) : ∀ (n : Nat) (p : Int) (L R : List Bool),
-    steps T (4 * n) ⟨sA, p, ⟨pow10 n ++ L, false, R⟩⟩
+theorem crawlFold (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (n : Nat) (p : Int) (L R : List Bool),
+    steps T (cr * n) ⟨sA, p, ⟨pow10 n ++ L, false, R⟩⟩
       = some ⟨sA, p - 2 * n, ⟨L, false, pow10 n ++ R⟩⟩ := by
   intro n
   induction n with
-  | zero => intro p L R; show some _ = some _; simp [pow10]
+  | zero =>
+    intro p L R
+    rw [show cr * 0 = 0 from by omega]
+    show some _ = some _
+    simp [pow10]
   | succ n ih =>
     intro p L R
-    rw [show 4 * (n + 1) = 4 + 4 * n from by omega, steps_add]
-    show (steps T 4 ⟨sA, p, ⟨true :: false :: (pow10 n ++ L), false, R⟩⟩).bind _ = _
+    rw [show cr * (n + 1) = cr + cr * n from by rw [Nat.mul_succ]; omega, steps_add]
+    show (steps T cr ⟨sA, p, ⟨true :: false :: (pow10 n ++ L), false, R⟩⟩).bind _ = _
     rw [h.crawl p false (pow10 n ++ L) R, someBind, ih (p - 2) L (true :: false :: R),
         pow10_snoc n R]
     exact congrArg some (cfgPos (by omega))
 
 /-- **Fold of S1** — `k+1` return atoms over a `(1 0)^{k+1}` block. -/
-theorem sweep10 (h : Atoms T sA sB) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
-    steps T (2 * k + 2) ⟨sB, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
+theorem sweep10 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
+    steps T (s10 * (k + 1)) ⟨sB, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
       = some ⟨sB, p + 2 * k + 2, ⟨pow10 (k + 1) ++ L, b, R⟩⟩ := by
   intro k
   induction k with
   | zero =>
     intro p b L R
-    show steps T 2 ⟨sB, p, ⟨L, true, false :: b :: R⟩⟩
+    rw [show s10 * (0 + 1) = s10 from by omega]
+    show steps T s10 ⟨sB, p, ⟨L, true, false :: b :: R⟩⟩
         = some ⟨sB, p + 2 * ((0 : Nat) : Int) + 2, ⟨true :: false :: L, b, R⟩⟩
     rw [h.swap10 p b L R]
     exact congrArg some (cfgPos (by omega))
   | succ k ih =>
     intro p b L R
-    rw [show 2 * (k + 1) + 2 = 2 + (2 * k + 2) from by omega, steps_add, pow10_cons]
+    rw [show s10 * (k + 1 + 1) = s10 + s10 * (k + 1) from by rw [Nat.mul_succ]; omega,
+        steps_add, pow10_cons]
     rw [h.swap10 p true L (false :: (pow10 k ++ b :: R)), someBind,
         ih (p + 2) b (true :: false :: L) R, pow10_snoc (k + 1) L]
     exact congrArg some (cfgPos (by omega))
 
 /-- **Fold of S2** — `k+1` return atoms over a `(0 1)^{k+1}` block. -/
-theorem sweep01 (h : Atoms T sA sB) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
-    steps T (2 * k + 2) ⟨sB, p, ⟨L, false, true :: (pow01 k ++ b :: R)⟩⟩
+theorem sweep01 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
+    steps T (s01 * (k + 1)) ⟨sB, p, ⟨L, false, true :: (pow01 k ++ b :: R)⟩⟩
       = some ⟨sB, p + 2 * k + 2, ⟨pow01 (k + 1) ++ L, b, R⟩⟩ := by
   intro k
   induction k with
   | zero =>
     intro p b L R
-    show steps T 2 ⟨sB, p, ⟨L, false, true :: b :: R⟩⟩
+    rw [show s01 * (0 + 1) = s01 from by omega]
+    show steps T s01 ⟨sB, p, ⟨L, false, true :: b :: R⟩⟩
         = some ⟨sB, p + 2 * ((0 : Nat) : Int) + 2, ⟨false :: true :: L, b, R⟩⟩
     rw [h.swap01 p b L R]
     exact congrArg some (cfgPos (by omega))
   | succ k ih =>
     intro p b L R
-    rw [show 2 * (k + 1) + 2 = 2 + (2 * k + 2) from by omega, steps_add, pow01_cons]
+    rw [show s01 * (k + 1 + 1) = s01 + s01 * (k + 1) from by rw [Nat.mul_succ]; omega,
+        steps_add, pow01_cons]
     rw [h.swap01 p false L (true :: (pow01 k ++ b :: R)), someBind,
         ih (p + 2) b (false :: true :: L) R, pow01_snoc (k + 1) L]
     exact congrArg some (cfgPos (by omega))
 
 /-! ## §4 The rung tile. -/
+
+/-- The rung's span, as a linear function of the six atom step counts.
+
+The nine phases fire `u+m+2` crawls, `u+3` `swap01`s, `m+1` `swap10`s, and one each of `marker`,
+`turnaround` and `turn`.  The step counts are **not** part of the mechanism: `D`'s
+`(cr,mk,ta,s10,s01,tu) = (4,1,1,2,2,3)` gives `6(u+m)+21`, and the residual also contains a
+machine whose turn takes **five** steps instead of three — reaching the identical output
+configuration — for which `(4,1,1,2,2,5)` gives `6(u+m)+23`
+(`1RB0RF_0LC0RA_1LE1RD_0RC---_1LA0LE_1RA0LC`, `sA = E`; see `atoms_flex_scan.py`). -/
+def span (cr mk ta s10 s01 tu u m : Nat) : Nat :=
+  cr * (u + m + 2) + s01 * (u + 3) + s10 * (m + 1) + mk + ta + tu
 
 /-- **The rung tile with its two frozen contexts abstracted.**  `W` is everything at or left of
 the `1^c` counter, `Z` everything right of the `1 0 0 0` landing pad.  Neither is read — the
@@ -260,16 +283,17 @@ The nine phases, in order (total `6(u+m)+21`):
 | 7 | `2(m+1)` | `sweep10 m` | return over the comb |
 | 8 | `2(u+2)` | `sweep01 (u+1)` | return over the deposit, re-phased by `pow10_true` |
 | 9 | `3` | `turn` | land in `sA` at `+3` -/
-theorem rung_core (h : Atoms T sA sB) (u m : Nat) (p : Int) (W Z : List Bool) :
-    steps T (6 * (u + m) + 21)
+theorem rung_core (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m : Nat) (p : Int) (W Z : List Bool) :
+    steps T (span cr mk ta s10 s01 tu u m)
         ⟨sA, p, ⟨pow10 u ++ (true :: true :: (pow01 (m + 1) ++ (false :: false :: W))),
                  false, true :: false :: false :: false :: Z⟩⟩
       = some ⟨sA, p + 3,
           ⟨pow10 (u + 2) ++ (true :: true :: (pow01 m ++ (false :: false :: true :: W))),
            false, true :: Z⟩⟩ := by
-  rw [show 6 * (u + m) + 21
-        = 4 * u + (4 + (1 + (4 * (m + 1) + (1 + (2 + ((2 * m + 2) + ((2 * (u + 1) + 2) + 3)))))))
-      from by omega]
+  rw [show span cr mk ta s10 s01 tu u m
+        = cr * u + (cr + (mk + (cr * (m + 1) + (ta + (s01 +
+            ((s10 * (m + 1)) + ((s01 * (u + 1 + 1)) + tu)))))))
+      from by simp only [span, Nat.mul_add, Nat.mul_succ]; omega]
   -- 1 ── outward crawl over `(0 1)^u`
   rw [steps_add, crawlFold h u p (true :: true :: (pow01 (m + 1) ++ (false :: false :: W)))
         (true :: false :: false :: false :: Z), someBind]
@@ -325,20 +349,23 @@ In `IN`'s own arguments this reads `steps (6(u+m)+15) IN(u,m,c,g) = IN(u+2, m−
 `pos+3`, for `m ≥ 1`, `g ≥ 3`, **any `c ≥ 0`** (the counter is never read: the outward sweep
 dies on the `0 0` gap one cell short of it) and arbitrary `TAIL`/`REST`. -/
 theorem tile {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB : S}
-    (h : Atoms T sA sB) (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
-    steps T (6 * (u + m) + 21) (IN sA u (m + 1) c (g + 3) p TAIL REST)
+    {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu)
+    (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps T (span cr mk ta s10 s01 tu u m) (IN sA u (m + 1) c (g + 3) p TAIL REST)
       = some (IN sA (u + 2) m (c + 1) g (p + 3) TAIL REST) := by
   rw [IN_norm, IN_norm]
   exact rung_core h u m p (ones c ++ TAIL) (zeros g ++ REST)
 
 /-- The tile as a single `Prop`, for clients that want to name it. -/
-def Tile {S : Type} (T : S → Bool → Option (Bool × Dir × S)) (sA : S) : Prop :=
+def Tile {S : Type} (T : S → Bool → Option (Bool × Dir × S)) (sA : S)
+    (sp : Nat → Nat → Nat) : Prop :=
   ∀ (u m c g : Nat) (p : Int) (TAIL REST : List Bool),
-    steps T (6 * (u + m) + 21) (IN sA u (m + 1) c (g + 3) p TAIL REST)
+    steps T (sp u m) (IN sA u (m + 1) c (g + 3) p TAIL REST)
       = some (IN sA (u + 2) m (c + 1) g (p + 3) TAIL REST)
 
 theorem tile_holds {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB : S}
-    (h : Atoms T sA sB) : Tile T sA := tile h
+    {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu) :
+    Tile T sA (span cr mk ta s10 s01 tu) := tile h
 
 -- AXIOM AUDIT
 #print axioms crawlFold
