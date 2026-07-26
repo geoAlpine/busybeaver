@@ -482,7 +482,7 @@ theorem rung0 (h : Atoms T sA sB cr mk ta s10 s01 tu) (u : Nat) (p : Int) (W Z :
           ⟨true :: (pow01 (u + 2) ++ (false :: true :: W)), false, true :: Z⟩⟩ := by
   rw [show cr * (u + 1) + mk + ta + s01 * (u + 3) + tu
         = cr * u + (cr + (mk + (ta + (s01 + ((s01 * (u + 1 + 1)) + tu)))))
-      from by simp only [Nat.mul_add, Nat.mul_succ]; omega]
+      from by simp only [Nat.mul_succ]; omega]
   rw [steps_add, crawlFold h u p (true :: true :: (false :: false :: W))
         (true :: false :: false :: false :: Z), someBind]
   rw [steps_add, h.crawl _ true (false :: false :: W)
@@ -506,7 +506,7 @@ theorem descend (h : Atoms T sA sB cr mk ta s10 s01 tu) (q r : Nat) (p : Int) (b
       = some ⟨sA, p - 2 * (q + 1) - (r + 1) - 2,
           ⟨L, b, true :: false :: (zeros (r + 1) ++ (true :: false :: (pow10 q ++ R)))⟩⟩ := by
   rw [show cr * (q + 2) + mk * (r + 1) = cr * q + (cr + (mk * (r + 1) + cr))
-      from by simp only [Nat.mul_add, Nat.mul_succ]; omega]
+      from by simp only [Nat.mul_succ]; omega]
   rw [steps_add, crawlFold h q p (true :: true :: (ones r ++ (false :: true :: b :: L))) R,
       someBind]
   rw [steps_add, h.crawl _ true (ones r ++ (false :: true :: b :: L)) (pow10 q ++ R), someBind]
