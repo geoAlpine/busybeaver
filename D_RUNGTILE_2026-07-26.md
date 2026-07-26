@@ -140,13 +140,85 @@ theorem pow10_true : pow10 n ++ true :: R = true :: (pow01 n ++ R)
 5. `TapeCalc.nonhalt_of_invariant` による組立て。
 6. milestone 族は `k=4..9` を pin。`k=1,2,3` は族外 ⇒ 帰納は `M1(4)` から入る。`k ≥ 10` 未実測。
 
-**安価な保険(未実施):** 今回の `swap10`/`swap01`/`crawlB` は D 固有の語彙をほとんど使っていない
-(いずれも `∀ b L R`)。`H` で同じ原子が発火するかを測るのは、D の残りに着手する前でも並行でも
-できる。`H` が「安価な同種再実体化」だという A の主張は依然 `[未検証]`。
+---
+
+## §7 追跡: タイルは**機械独立**だった — `RungCalc` と H
+
+§6 で「安価な保険」として挙げた H の測定を、そのまま実行した。結果は予想より強い。
+
+### (a) H のグラフは D の付け替えでは**ない**
+
+`h_vs_d_tile.py §1`:状態置換の全探索(`D`/`Dᴿ` × `H`/`Hᴿ` の4通り、開始状態 A 固定)で
+**同型 0 個**。つまり **C を無料にした機構(C は x2 のグラフだった)は H には適用されない**。
+A の「安価な同種再実体化」主張は、*この意味では* 反証された。
+
+### (b) それでも D の rung タイルは H で**そのまま発火する**
+
+`h_tile_fire.py`:D の `IN` 族を H のテープに置き、H の状態 `D` から走らせる。
+
+| 検査 | 結果 |
+|---|---|
+| §A 全開始状態 6 通り × 144 点 | **`D` から 144/144**、他の5状態は 0/144 |
+| §C D の証明と同一グリッド 23040 点(`c=0`・敵対的 TAIL/REST 含む) | **23040/23040**、不一致 0(D^R の control も 23040/23040) |
+| §D negative control | `g=0,1,2` 不一致、span+1 不一致 — D と同じく要求どおり失敗 |
+| §B H の**実軌道**の走査(300k 歩) | IN 形の配置 319 個すべてで `st=D d=+3 tape_ok=True` |
+
+しかも itinerary が**同一の語**である:
+
+```
+D^R : ABEDABEDABEDAABEDABEDABEDABCBEBEBEBCBCBCBCBCD
+H   : DAEFDAEFDAEFDDAEFDAEFDAEFDABAEAEAEABABABABABC
+```
+
+対応は関数ではない。**H は D が使い回している状態を2つに割っている**:`Dᴿ` の `D` は
+`E` から(crawl 内)と `C` から(turn 内)の両方に入るが、H はその2役に `F` と `C` を使う。
+**グラフは違い、原子は同じ。**
+
+### (c) なぜそうなるか — そして Lean での帰結
+
+タイルの6原子の*インタフェース*に現れる状態名は **2つだけ**(外向き掃引状態 `sA`、
+復路状態 `sB`)。他の全状態は原子の**内側に隠れる**。したがってタイルは遷移グラフを見ていない
+— 6つの局所書き換え事実だけを見ている。
+
+そこで機械独立層 **`lean/RungCalc.lean`** を新設した(`TapeCalc` の上の第2の機械独立層):
+
+* 語彙 `pow10`/`pow01`/`ones` と4つの語恒等式;
+* **`Atoms T sA sB`** — 6原子インタフェース(`Prop` 値 structure);
+* `crawlFold` / `sweep10` / `sweep01` — 3つの `∀`-一様 fold;
+* **`rung_core` / `tile`** — rung タイル、**`Atoms` を満たす任意の機械に対して `[PROVEN]`**。
+
+結果、機械ごとの負担は **`Atoms` の6フィールド = 6個の閉じた kernel `rfl`** だけになった:
+
+| ファイル | 機械固有の内容 | タイル |
+|---|---|---|
+| `lean/DMachine.lean` | `dT` + `dAtoms` (`sA=A`, `sB=B`) | `RungCalc.tile dAtoms` |
+| `lean/HMachine.lean` | `hT` + `hAtoms` (`sA=D`, `sB=A`) | `RungCalc.tile hAtoms` |
+
+**H の rung タイルは `[PROVEN]`**(`HMachine.rungTile`、9相合成の再掲は1行もない)。
+`anchor17` が H の**実 blank 軌道**が 17 歩でタイルの配置族に入ること(左語が `u=0,m=1,c=1`)を
+kernel `rfl` で pin し、`tile_*` の rfl インスタンスと `tile_*_via_law` の二重証明、
+`tile_span_control`、`tile_c_zero` も D と同じ構成で揃えた。
+
+コーパス全体 `lake build` EXIT=0(81 jobs)、公理は `[propext, Quot.sound]` のみ、
+`sorryAx` 0、`Classical.choice` 0。
+
+### (d) 何が言えて、何が言えないか
+
+**言える:** COMB-doubler の rung タイルは、グラフ同型より粗い同値
+(**原子内部で同じ振る舞いをする状態の融合を法とした同値**)の不変量である。島の他の候補にも
+`Atoms` を試すのは各 6 `rfl` で済む — これは *測定* 可能な安価さになった。
+
+**言えない:** **H は依然 `[OPEN]`。** タイルは1補題である。H の epoch anatomy、entry セグメント、
+milestone 族、cascade level の内部帰納は**本セッションでは一切測っていない**。D の経験の
+正直な読みは「タイルは安い部分だった」であり、H でも同じと見るべき。§6 の残項目1〜6 は
+D について1つも縮んでいないし、H については未着手のままである。
 
 ---
 
 *計器(repo root, committed): `d_rung_atoms.py`(状態列と原子分解)、`d_rung_general.py`
-(span 判定・仮説緩和・negative control・相会計)。Lean: `lean/DMachine.lean`。*
+(span 判定・仮説緩和・negative control・相会計)、`h_vs_d_tile.py`(グラフ同型全探索・原子motif
+探索・head-delta census)、`h_tile_fire.py`(H でのタイル発火:直接・実軌道走査・全強度掃引・
+negative control・itinerary 比較)。
+Lean: `lean/RungCalc.lean`(機械独立層)、`lean/DMachine.lean`、`lean/HMachine.lean`。*
 
-**No machine decided by this document. No label upgraded. `D` remains `[OPEN]`.**
+**No machine decided by this document. No label upgraded. `D` and `H` both remain `[OPEN]`.**
