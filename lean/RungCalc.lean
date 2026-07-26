@@ -43,6 +43,8 @@ roles.  The graphs differ; the atoms do not.  So the tile is an invariant of the
   each atom carrying its own step count, since those are not part of the mechanism;
 * `span` — the rung's step count as a linear function of the six;
 * `crawlFold`, `sweep10`, `sweep01`, `markerFold` — the four `∀`-uniform folds, from `Atoms`;
+* `sweep10At` — the S1 fold at an **arbitrary anchor state**, needing only the `swap10` atom;
+  `D` runs one at state `D` (`D1→0RF, F0→1RD`) in its epoch-entry turn;
 * `IN` — the milestone-region configuration family;
 * `rung_prefix` — phases 1–7, which never read the right context;
 * `rung_core` / `tile` — the rung tile, `[PROVEN]` for **every** machine satisfying `Atoms`;
@@ -239,26 +241,39 @@ theorem crawlFold (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (n : Nat) (p : I
         pow10_snoc n R]
     exact congrArg some (cfgPos (by omega))
 
-/-- **Fold of S1** — `k+1` return atoms over a `(1 0)^{k+1}` block. -/
-theorem sweep10 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
-    steps T (s10 * (k + 1)) ⟨sB, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
-      = some ⟨sB, p + 2 * k + 2, ⟨pow10 (k + 1) ++ L, b, R⟩⟩ := by
+/-- **Fold of S1, at ANY anchor.**  The fold needs only the `swap10` atom, not the whole
+interface, and not `sB` in particular.  That matters: `D`'s epoch-entry turn runs a `swap10`
+sweep anchored at state `D` (`D1→0RF, F0→1RD`) rather than at `sB = B`, so the same fold serves
+both (`d_rf4_epochs.py`). -/
+theorem sweep10At {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {s : S} {n : Nat}
+    (hs : ∀ (p : Int) (b : Bool) (L R : List Bool),
+      steps T n ⟨s, p, ⟨L, true, false :: b :: R⟩⟩
+        = some ⟨s, p + 2, ⟨true :: false :: L, b, R⟩⟩) :
+    ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
+    steps T (n * (k + 1)) ⟨s, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
+      = some ⟨s, p + 2 * k + 2, ⟨pow10 (k + 1) ++ L, b, R⟩⟩ := by
   intro k
   induction k with
   | zero =>
     intro p b L R
-    rw [show s10 * (0 + 1) = s10 from by omega]
-    show steps T s10 ⟨sB, p, ⟨L, true, false :: b :: R⟩⟩
-        = some ⟨sB, p + 2 * ((0 : Nat) : Int) + 2, ⟨true :: false :: L, b, R⟩⟩
-    rw [h.swap10 p b L R]
+    rw [show n * (0 + 1) = n from by omega]
+    show steps T n ⟨s, p, ⟨L, true, false :: b :: R⟩⟩
+        = some ⟨s, p + 2 * ((0 : Nat) : Int) + 2, ⟨true :: false :: L, b, R⟩⟩
+    rw [hs p b L R]
     exact congrArg some (cfgPos (by omega))
   | succ k ih =>
     intro p b L R
-    rw [show s10 * (k + 1 + 1) = s10 + s10 * (k + 1) from by rw [Nat.mul_succ]; omega,
+    rw [show n * (k + 1 + 1) = n + n * (k + 1) from by rw [Nat.mul_succ]; omega,
         steps_add, pow10_cons]
-    rw [h.swap10 p true L (false :: (pow10 k ++ b :: R)), someBind,
+    rw [hs p true L (false :: (pow10 k ++ b :: R)), someBind,
         ih (p + 2) b (true :: false :: L) R, pow10_snoc (k + 1) L]
     exact congrArg some (cfgPos (by omega))
+
+/-- **Fold of S1** — `k+1` return atoms over a `(1 0)^{k+1}` block. -/
+theorem sweep10 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
+    steps T (s10 * (k + 1)) ⟨sB, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
+      = some ⟨sB, p + 2 * k + 2, ⟨pow10 (k + 1) ++ L, b, R⟩⟩ :=
+  sweep10At h.swap10
 
 /-- **Fold of S2** — `k+1` return atoms over a `(0 1)^{k+1}` block. -/
 theorem sweep01 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int) (b : Bool) (L R : List Bool),
@@ -598,6 +613,7 @@ theorem tile2 {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB :
 
 -- AXIOM AUDIT
 #print axioms crawlFold
+#print axioms sweep10At
 #print axioms sweep10
 #print axioms sweep01
 #print axioms markerFold

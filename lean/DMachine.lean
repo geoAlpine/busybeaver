@@ -258,6 +258,29 @@ theorem left_turn_budget_1194806 : (6 * 127 + 15) + (4 * (130 + 2) + (65 + 1)) =
 `descend (q = 619, r = 308)`. -/
 theorem left_turn_budget_1168982 : (6 * 616 + 15) + (4 * (619 + 2) + (308 + 1)) = 6504 := by rfl
 
+
+/-- **A second `swap10` anchor.**  `D`'s epoch-entry turn runs a `1 0 → 0 1` sweep in state `D`
+(`D1→0RF`, `F0→1RD`) rather than in the return state `B`.  Measured once per epoch
+(`d_rf4_epochs.py`: the `(DF)^n` runs).  Only `swap10` holds at `D` — `swap01` does not, since
+`D0 → 1LA` moves left — so this is a *partial* atom set, which is exactly why `sweep10At` takes
+the atom rather than the whole `Atoms`. -/
+theorem swapD (p : Int) (b : Bool) (L R : List Bool) :
+    steps dT 2 ⟨.D, p, ⟨L, true, false :: b :: R⟩⟩
+      = some ⟨.D, p + 2, ⟨true :: false :: L, b, R⟩⟩ := by
+  rw [show (p + 2 : Int) = p + 1 + 1 from by omega]
+  rfl
+
+/-- The `(DF)^{k+1}` run, folded. -/
+theorem sweepD (k : Nat) (p : Int) (b : Bool) (L R : List Bool) :
+    steps dT (2 * (k + 1)) ⟨.D, p, ⟨L, true, false :: (pow10 k ++ b :: R)⟩⟩
+      = some ⟨.D, p + 2 * k + 2, ⟨pow10 (k + 1) ++ L, b, R⟩⟩ :=
+  RungCalc.sweep10At swapD k p b L R
+
+/-- Grounded: the `(DF)^4` run of the `k=5` epoch-entry turn, as a kernel `rfl`. -/
+theorem sweepD_grounded :
+    steps dT 8 ⟨.D, 0, ⟨[true, false], true, false :: (pow10 3 ++ (true :: [false]))⟩⟩
+      = some ⟨.D, 8, ⟨pow10 4 ++ [true, false], true, [false]⟩⟩ := by rfl
+
 /-! ## §6 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 
 Each is a closed `rfl` on the genuine machine, so a drift in `dT` or in the word vocabulary
@@ -340,6 +363,8 @@ theorem tile_c_zero :
 #print axioms descent
 #print axioms combExhausted_grounded
 #print axioms descent_grounded
+#print axioms swapD
+#print axioms sweepD
 #print axioms rungTile_holds
 #print axioms anchor160
 #print axioms tile_1_2_2_4
