@@ -245,8 +245,11 @@ $$L(n) \le \log_3(G_n+14) \approx 0.262\,n.$$
    milestone 族 k=4..9 両側 pin 済み(状態 A、head-step −8k、左語 空、閉形式 `a(k)=39·2^{k−1}−4` 他)、
    **帰納は M1(4) から**(k=1,2,3 は族外)、entry = 291,168 歩(x2 の 40%)。
    反転形 `D^R = 1LB0LA_1RC0RE_0RD0RB_1LA0RF_1RB0LD_1RD---` で作業。
-   **着手順:** (a) `∀`-parametric rung タイル(33 中 30 セグメントをカバー、局所性窓測定済 ⇒
-   `steps_lpad_dich`/`steps_rpad_dich` 直結)を最初に建てる — これが doubling 機構の全体;
+   **着手順:** (a) ~~`∀`-parametric rung タイル(33 中 30 セグメントをカバー、局所性窓測定済 ⇒
+   `steps_lpad_dich`/`steps_rpad_dich` 直結)を最初に建てる — これが doubling 機構の全体~~
+   → **(a) 完了 [PROVEN] 2026-07-26**:`lean/DMachine.lean` の `rungTile`(`∀ u m c g p TAIL REST`)。
+   詳細と2つの訂正(`RungTile : Prop` の span が 6 歩不足、`c ≥ 1` 仮説は不要)は
+   `D_RUNGTILE_2026-07-26.md`。**残り (b)–(f) は 1 つも縮んでいない**;
    (b) turn 相の加法定数(閉形式なし = 最大の残ギャップ)を潰す; (c) 偶 k `S1` の第2タイル;
    (d) cascade level 上の内部帰納; (e) entry 3–4 チャンク; (f) 組立て。
    *正直な見積り:* 種の初号機コスト = 複数セッション。C の「ゼロ新規動力学」は再現しない
