@@ -119,6 +119,31 @@ theorem rungTile (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
 
 theorem rungTile_holds : Tile hT St.D (span 4 1 1 2 2 3) := tile_holds hAtoms
 
+/-! ## §3.1 The turn phase (RF-4), for free.
+
+`RungCalc.tile2` is the rung with the return sweep crossing a `(1 0)^w` comb — the shape `D`'s
+inter-segment turn phases actually have.  `H` inherits it from the same `hAtoms`; not one line of
+the composition is repeated. -/
+
+abbrev IN2 (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) : Cfg St :=
+  RungCalc.IN2 St.D u m c w g p TAIL REST
+
+/-- **`H`'s turn phase — `[PROVEN]`, `∀ u m c w g p TAIL REST`.** -/
+theorem turnPhase (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps hT (6 * (u + m) + 21 + 2 * (w + 1)) (IN2 u (m + 1) c (w + 1) (g + 3) p TAIL REST)
+      = some (IN 0 w 1 g (p + 3 + 2 * (w + 1))
+          (pow01 (u + 1) ++ (pow10 (m + 1) ++ (false :: true :: (ones c ++ TAIL)))) REST) := by
+  rw [show 6 * (u + m) + 21 + 2 * (w + 1) = span 4 1 1 2 2 3 u m + 2 * (w + 1)
+      from by simp [span]; omega]
+  exact RungCalc.tile2 hAtoms u m c w g p TAIL REST
+
+/-- Grounded: `H`'s turn phase at `u=1, m=2, w=2, g=3`, span `6·3+15+4 = 37`, kernel `rfl`. -/
+theorem turn_grounded :
+    steps hT 37 (IN2 1 2 2 2 3 0 [true, false] [true, true])
+      = some (IN 0 1 1 0 7
+          (pow01 2 ++ (pow10 2 ++ (false :: true :: (ones 2 ++ [true, false])))) [true, true]) := by
+  rfl
+
 /-! ## §4 Kernel-grounded instances (anti-vacuity).
 
 The law above is a composition; these are the kernel executing `hT`.  Same propositions, two
@@ -180,6 +205,8 @@ theorem tile_c_zero :
 -- AXIOM AUDIT
 #print axioms hAtoms
 #print axioms rungTile
+#print axioms turnPhase
+#print axioms turn_grounded
 #print axioms rungTile_holds
 #print axioms anchor17
 #print axioms tile_2_3_2_4

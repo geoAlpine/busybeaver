@@ -42,9 +42,13 @@ roles.  The graphs differ; the atoms do not.  So the tile is an invariant of the
 * `Atoms T sA sB cr mk ta s10 s01 tu` — the six-atom interface (a `Prop`-valued structure),
   each atom carrying its own step count, since those are not part of the mechanism;
 * `span` — the rung's step count as a linear function of the six;
-* `crawlFold`, `sweep10`, `sweep01` — the three `∀`-uniform folds, derived from `Atoms`;
+* `crawlFold`, `sweep10`, `sweep01`, `markerFold` — the four `∀`-uniform folds, from `Atoms`;
 * `IN` — the milestone-region configuration family;
-* `rung_core` / `tile` — the rung tile, `[PROVEN]` for **every** machine satisfying `Atoms`.
+* `rung_prefix` — phases 1–7, which never read the right context;
+* `rung_core` / `tile` — the rung tile, `[PROVEN]` for **every** machine satisfying `Atoms`;
+* `rung_core2` / `IN2` / `tile2` — the **turn phase** (`RF-4`), the same law with the return sweep
+  crossing a `(1 0)^w` comb before the landing pad.  `IN` is the `w = 0` case, so one law covers
+  both, and a turn phase's output is again an `IN` — at `u'=0, m'=w, c'=1`.
 
 Zero-Mathlib, core only.  No `sorry`, no `native_decide`, no `decide`.
 No machine is decided here and no label is upgraded: this file proves a *conditional*
@@ -140,6 +144,29 @@ theorem pow01_shift : ∀ (n : Nat) (Z : List Bool),
     intro Z
     show true :: false :: (true :: (pow01 n ++ false :: false :: Z))
         = true :: false :: (pow10 (n + 1) ++ false :: Z)
+    rw [ih]
+
+/-- `zeros` absorbs a `0` handed to it from the right (mirror of `pow10_snoc`). -/
+theorem zerosSnoc : ∀ (n : Nat) (R : List Bool),
+    zeros n ++ false :: R = zeros (n + 1) ++ R := by
+  intro n
+  induction n with
+  | zero => intro R; rfl
+  | succ n ih =>
+    intro R
+    show false :: (zeros n ++ false :: R) = false :: (zeros (n + 1) ++ R)
+    rw [ih]
+
+/-- Mirror of `pow01_shift`, for reading a turn phase's output back as an `IN` word:
+a `0` in front of a `(1 0)`-comb is a `(0 1)`-comb in front of a `0`. -/
+theorem pow10_shift : ∀ (n : Nat) (Y : List Bool),
+    false :: (pow10 n ++ Y) = pow01 n ++ (false :: Y) := by
+  intro n
+  induction n with
+  | zero => intro Y; rfl
+  | succ n ih =>
+    intro Y
+    show false :: true :: false :: (pow10 n ++ Y) = false :: true :: (pow01 n ++ (false :: Y))
     rw [ih]
 
 /-! ## §2 The six-atom interface. -/
@@ -252,6 +279,30 @@ theorem sweep01 (h : Atoms T sA sB cr mk ta s10 s01 tu) : ∀ (k : Nat) (p : Int
         ih (p + 2) b (false :: true :: L) R, pow01_snoc (k + 1) L]
     exact congrArg some (cfgPos (by omega))
 
+/-- **Fold of `marker`** — the outward sweep crossing a `1`-run leftwards, erasing it.
+`marker` leaves the head scanning `true` again whenever the cell it lands on is a `1`, so it
+folds exactly like the crawl does.  This is the `(A)^n` run that dominates `D`'s **leftward**
+(coming-back-down) turn phases; the rightward ones are `rung_core2`. -/
+theorem markerFold (h : Atoms T sA sB cr mk ta s10 s01 tu) :
+    ∀ (n : Nat) (p : Int) (x : Bool) (L R : List Bool),
+    steps T (mk * (n + 1)) ⟨sA, p, ⟨ones n ++ (x :: L), true, R⟩⟩
+      = some ⟨sA, p - (n + 1), ⟨L, x, zeros (n + 1) ++ R⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro p x L R
+    rw [show mk * (0 + 1) = mk from by omega]
+    show steps T mk ⟨sA, p, ⟨x :: L, true, R⟩⟩ = _
+    rw [h.marker p x L R]
+    exact congrArg some (cfgPos (by omega))
+  | succ n ih =>
+    intro p x L R
+    rw [show mk * (n + 1 + 1) = mk + mk * (n + 1) from by rw [Nat.mul_succ]; omega, steps_add]
+    show (steps T mk ⟨sA, p, ⟨true :: (ones n ++ (x :: L)), true, R⟩⟩).bind _ = _
+    rw [h.marker p true (ones n ++ (x :: L)) R, someBind, ih (p - 1) x L (false :: R)]
+    rw [zerosSnoc (n + 1) R]
+    exact congrArg some (cfgPos (by omega))
+
 /-! ## §4 The rung tile. -/
 
 /-- The rung's span, as a linear function of the six atom step counts.
@@ -265,12 +316,14 @@ configuration — for which `(4,1,1,2,2,5)` gives `6(u+m)+23`
 def span (cr mk ta s10 s01 tu u m : Nat) : Nat :=
   cr * (u + m + 2) + s01 * (u + 3) + s10 * (m + 1) + mk + ta + tu
 
-/-- **The rung tile with its two frozen contexts abstracted.**  `W` is everything at or left of
-the `1^c` counter, `Z` everything right of the `1 0 0 0` landing pad.  Neither is read — the
-visited window is `[p − 2(u+m) − 6, p + 4]` in *these* variables — which is what makes the tile
-composable under `TapeCalc.steps_lpad_dich` / `steps_rpad_dich`.
+/-! ### The rung, with its two frozen contexts abstracted.
 
-The nine phases, in order (total `6(u+m)+21`):
+`W` is everything at or left of the `1^c` counter, `Z` everything right of the `1 0 0 0` landing
+pad.  Neither is read — the visited window is `[p − 2(u+m) − 6, p + 4]` in *these* variables —
+which is what makes the tile composable under
+`TapeCalc.steps_lpad_dich` / `steps_rpad_dich`.
+
+The nine phases, in order (total `6(u+m)+21` at `D`'s step counts):
 
 | # | steps | atom | what it does |
 |---|---|---|---|
@@ -282,24 +335,28 @@ The nine phases, in order (total `6(u+m)+21`):
 | 6 | `2` | `swap01` | first return atom |
 | 7 | `2(m+1)` | `sweep10 m` | return over the comb |
 | 8 | `2(u+2)` | `sweep01 (u+1)` | return over the deposit, re-phased by `pow10_true` |
-| 9 | `3` | `turn` | land in `sA` at `+3` -/
-theorem rung_core (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m : Nat) (p : Int) (W Z : List Bool) :
-    steps T (span cr mk ta s10 s01 tu u m)
+| 9 | `3` | `turn` | land in `sA` at `+3`
+-/
+
+/-- **Phases 1–7 alone.**  These never read the right context — every atom is `∀ R` — so `Rt` is
+completely arbitrary here.  That is what lets the *same* prefix serve both the rung tile
+(`Rt = 1 0 0 0 …`, the return sweep turns immediately) and the **turn phase**
+(`Rt = 1 (1 0)^{w+1} 0 0 0 …`, the return sweep first crosses a comb).  See `rung_core2`. -/
+theorem rung_prefix (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m : Nat) (p : Int)
+    (W Rt : List Bool) :
+    steps T (cr * (u + m + 2) + mk + ta + s01 + s10 * (m + 1))
         ⟨sA, p, ⟨pow10 u ++ (true :: true :: (pow01 (m + 1) ++ (false :: false :: W))),
-                 false, true :: false :: false :: false :: Z⟩⟩
-      = some ⟨sA, p + 3,
-          ⟨pow10 (u + 2) ++ (true :: true :: (pow01 m ++ (false :: false :: true :: W))),
-           false, true :: Z⟩⟩ := by
-  rw [show span cr mk ta s10 s01 tu u m
-        = cr * u + (cr + (mk + (cr * (m + 1) + (ta + (s01 +
-            ((s10 * (m + 1)) + ((s01 * (u + 1 + 1)) + tu)))))))
-      from by simp only [span, Nat.mul_add, Nat.mul_succ]; omega]
+                 false, Rt⟩⟩
+      = some ⟨sB, p - 2 * u - 2,
+          ⟨pow10 (m + 1) ++ (false :: true :: W), false, pow10 (u + 1) ++ Rt⟩⟩ := by
+  rw [show cr * (u + m + 2) + mk + ta + s01 + s10 * (m + 1)
+        = cr * u + (cr + (mk + (cr * (m + 1) + (ta + (s01 + s10 * (m + 1))))))
+      from by simp only [Nat.mul_add, Nat.mul_succ]; omega]
   -- 1 ── outward crawl over `(0 1)^u`
-  rw [steps_add, crawlFold h u p (true :: true :: (pow01 (m + 1) ++ (false :: false :: W)))
-        (true :: false :: false :: false :: Z), someBind]
+  rw [steps_add, crawlFold h u p (true :: true :: (pow01 (m + 1) ++ (false :: false :: W))) Rt,
+      someBind]
   -- 2 ── the same atom carries the head over the first `1` of the `[1,1]` marker
-  rw [steps_add, h.crawl _ true (pow01 (m + 1) ++ (false :: false :: W))
-        (pow10 u ++ (true :: false :: false :: false :: Z)), someBind]
+  rw [steps_add, h.crawl _ true (pow01 (m + 1) ++ (false :: false :: W)) (pow10 u ++ Rt), someBind]
   -- 3 ── the marker step
   rw [pow01_cons, steps_add, h.marker _ false (true :: (pow01 m ++ (false :: false :: W))) _,
       someBind]
@@ -311,17 +368,74 @@ theorem rung_core (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m : Nat) (p : Int) 
   rw [steps_add, h.turnaround _ false W _, someBind]
   -- 6 ── the first return atom
   rw [pow10_cons, steps_add, h.swap01 _ true W _, someBind]
-  -- 7 ── the return sweep over the comb
-  rw [steps_add, sweep10 h m _ false (false :: true :: W) _, someBind]
+  -- 7 ── the return sweep over the comb (the last piece: no further `steps_add`)
+  rw [sweep10 h m _ false (false :: true :: W) _, ← pow10_cons u Rt]
+  exact congrArg some (cfgPos (by omega))
+
+theorem rung_core (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m : Nat) (p : Int) (W Z : List Bool) :
+    steps T (span cr mk ta s10 s01 tu u m)
+        ⟨sA, p, ⟨pow10 u ++ (true :: true :: (pow01 (m + 1) ++ (false :: false :: W))),
+                 false, true :: false :: false :: false :: Z⟩⟩
+      = some ⟨sA, p + 3,
+          ⟨pow10 (u + 2) ++ (true :: true :: (pow01 m ++ (false :: false :: true :: W))),
+           false, true :: Z⟩⟩ := by
+  rw [show span cr mk ta s10 s01 tu u m
+        = (cr * (u + m + 2) + mk + ta + s01 + s10 * (m + 1)) + ((s01 * (u + 1 + 1)) + tu)
+      from by simp only [span, Nat.mul_add, Nat.mul_succ]; omega]
+  rw [steps_add, rung_prefix h u m p W (true :: false :: false :: false :: Z), someBind]
   -- the deposit re-phases from `(1 0)` to `(0 1)`
-  rw [← pow10_cons u (true :: false :: false :: false :: Z),
-      pow10_true (u + 1) (false :: false :: false :: Z)]
+  rw [pow10_true (u + 1) (false :: false :: false :: Z)]
   -- 8 ── the return sweep over the deposit
   rw [steps_add, sweep01 h (u + 1) _ false (pow10 (m + 1) ++ (false :: true :: W)) _, someBind]
   -- 9 ── the turn
   rw [h.turn _ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W))) Z]
   -- the target word, read back through the same two identities
   rw [pow01_shift m (true :: W), pow10_true (u + 2) (pow10 (m + 1) ++ (false :: true :: W))]
+  exact congrArg some (cfgPos (by omega))
+
+/-! ### §4.1 The **turn phase** — the same law with a longer return sweep.
+
+`D_SPEC_2026-07-26.md` §5 (RF-4) recorded the inter-segment turn phases as `≈2 steps/cell` with
+additive constants that "are not a closed function of `k` alone", and §8 called each one "a
+separate small lemma".  Measurement says otherwise (`d_rf4_turns.py`, `d_rf4_law.py`): the
+rightward turn phase is **this same rung**, with the return sweep crossing a `(1 0)`-comb before
+it reaches the landing pad.  A turn happens exactly when the gap `g` is exhausted, so the return
+sweep meets a comb instead of `0 0 0`; it crosses with `w+1` more `swap10` atoms and turns beyond.
+
+Two spot checks against `D`'s real orbit, epoch `M1(4) → M1(5)`:
+
+| turn | `u` | `m` | comb crossed | predicted span | measured |
+|---|---:|---:|---:|---:|---:|
+| `t = 291698` | 9 | 2 | 66 | `6·11+15+2·66 = 213` | **213** |
+| `t = 310271` | 72 | 29 | 309 | `6·101+15+2·309 = 1239` | **1239** |
+
+and in both cases the next ladder segment starts at `IN(0, w, 1, g)` — which `IN2_is_IN` below
+proves in general.  The rung tile is the `w = 0` case of the same statement, so this is **one**
+law rather than two (`d_rf4_law.py §3`, 144/144). -/
+theorem rung_core2 (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m w : Nat) (p : Int)
+    (W Z : List Bool) :
+    steps T (span cr mk ta s10 s01 tu u m + s10 * (w + 1))
+        ⟨sA, p, ⟨pow10 u ++ (true :: true :: (pow01 (m + 1) ++ (false :: false :: W))),
+                 false, true :: (pow10 (w + 1) ++ (false :: false :: false :: Z))⟩⟩
+      = some ⟨sA, p + 3 + 2 * (w + 1),
+          ⟨true :: (pow10 (w + 1) ++ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W)))),
+           false, true :: Z⟩⟩ := by
+  rw [show span cr mk ta s10 s01 tu u m + s10 * (w + 1)
+        = (cr * (u + m + 2) + mk + ta + s01 + s10 * (m + 1))
+            + ((s01 * (u + 1 + 1)) + ((s10 * (w + 1)) + tu))
+      from by simp only [span, Nat.mul_add, Nat.mul_succ]; omega]
+  rw [steps_add,
+      rung_prefix h u m p W (true :: (pow10 (w + 1) ++ (false :: false :: false :: Z))), someBind]
+  -- the deposit re-phases from `(1 0)` to `(0 1)`
+  rw [pow10_true (u + 1) (pow10 (w + 1) ++ (false :: false :: false :: Z))]
+  -- 8 ── the return sweep over the deposit; it now lands on a `1`, not on the pad
+  rw [pow10_cons w (false :: false :: false :: Z), steps_add,
+      sweep01 h (u + 1) _ true (pow10 (m + 1) ++ (false :: true :: W)) _, someBind]
+  -- 8b ── the EXTRA sweep: `w+1` more `swap10` atoms across the comb
+  rw [steps_add, sweep10 h w _ false (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W))) _,
+      someBind]
+  -- 9 ── the turn, on the pad beyond the comb
+  rw [h.turn _ (pow10 (w + 1) ++ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W)))) Z]
   exact congrArg some (cfgPos (by omega))
 
 end
@@ -367,12 +481,70 @@ theorem tile_holds {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA
     {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu) :
     Tile T sA (span cr mk ta s10 s01 tu) := tile h
 
+/-! ## §6 The turn phase as a configuration law.
+
+`IN2` is `IN` with the landing pad pushed `2w` cells further right by a `(1 0)`-comb.  `IN` is
+literally the `w = 0` case (`pow10 0 = []`), so the rung tile and the turn phase are two
+instances of ONE law -- which is what `d_rf4_law.py §3` measures (144/144 at `w = 0`). -/
+
+/-- The turn-phase configuration family: `IN` with a `(1 0)^w` comb before the landing pad.
+In tape order the neighbourhood reads
+`… TAILᴿ 1^c 0 0 (1 0)^m 1 1 (0 1)^u [head=0] 1 (1 0)^w 0^g REST …`. -/
+def IN2 {S : Type} (sA : S) (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) : Cfg S :=
+  ⟨sA, p, ⟨pow10 u ++ [true, true] ++ pow01 m ++ [false, false] ++ ones c ++ TAIL,
+           false,
+           true :: (pow10 w ++ (zeros g ++ REST))⟩⟩
+
+theorem IN2_norm {S : Type} (sA : S) (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) :
+    IN2 sA u m c w g p TAIL REST
+      = ⟨sA, p, ⟨pow10 u ++ (true :: true :: (pow01 m ++ (false :: false :: (ones c ++ TAIL)))),
+                 false, true :: (pow10 w ++ (zeros g ++ REST))⟩⟩ := by
+  show (⟨sA, p, ⟨pow10 u ++ [true, true] ++ pow01 m ++ [false, false] ++ ones c ++ TAIL,
+                 false, true :: (pow10 w ++ (zeros g ++ REST))⟩⟩ : Cfg S) = _
+  rw [List.append_assoc, List.append_assoc, List.append_assoc, List.append_assoc]
+  rfl
+
+/-- The word identity that lets a turn phase's output be read back as an `IN` word: the new
+register is `1 1 (0 1)^w 0 0 1 …`, i.e. `IN` at `u' = 0`, `m' = w`, `c' = 1`. -/
+theorem turn_out_word (u m w : Nat) (W : List Bool) :
+    pow10 0 ++ (true :: true :: (pow01 w ++ (false :: false ::
+        (ones 1 ++ (pow01 (u + 1) ++ (pow10 (m + 1) ++ (false :: true :: W)))))))
+      = true :: (pow10 (w + 1) ++ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W)))) := by
+  show true :: true :: (pow01 w ++ (false :: false ::
+          (true :: (pow01 (u + 1) ++ (pow10 (m + 1) ++ (false :: true :: W))))))
+      = true :: true :: false ::
+          (pow10 w ++ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W))))
+  rw [← pow01_cons (u + 1) (pow10 (m + 1) ++ (false :: true :: W)),
+      ← pow10_shift w (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W)))]
+
+/-- **The turn phase, `[PROVEN]` for every machine satisfying `Atoms`.**
+
+`steps (span + s10·(w+1)) IN2(u, m+1, c, w+1, g+3) = IN(0, w, 1, g)` at `pos + 3 + 2(w+1)`.
+
+The output is itself a member of the `IN` family -- at `u' = 0`, `m' = w`, `c' = 1` -- so a turn
+phase feeds straight back into the rung tile, which is exactly what `D`'s epoch does: ladder
+segment, turn, ladder segment.  Measured on `D`'s real orbit at `t = 291698` (`w = 66`, next
+segment `IN(0,65,1,·)`) and `t = 310271` (`w = 309`, next `IN(0,308,1,·)`). -/
+theorem tile2 {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB : S}
+    {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu)
+    (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps T (span cr mk ta s10 s01 tu u m + s10 * (w + 1))
+        (IN2 sA u (m + 1) c (w + 1) (g + 3) p TAIL REST)
+      = some (IN sA 0 w 1 g (p + 3 + 2 * (w + 1))
+          (pow01 (u + 1) ++ (pow10 (m + 1) ++ (false :: true :: (ones c ++ TAIL)))) REST) := by
+  rw [IN2_norm, IN_norm, turn_out_word u m w (ones c ++ TAIL)]
+  exact rung_core2 h u m w p (ones c ++ TAIL) (zeros g ++ REST)
+
 -- AXIOM AUDIT
 #print axioms crawlFold
 #print axioms sweep10
 #print axioms sweep01
+#print axioms markerFold
+#print axioms rung_prefix
 #print axioms rung_core
+#print axioms rung_core2
 #print axioms tile
 #print axioms tile_holds
+#print axioms tile2
 
 end RungCalc

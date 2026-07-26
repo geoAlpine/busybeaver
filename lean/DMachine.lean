@@ -140,7 +140,65 @@ theorem rungTile (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
 
 theorem rungTile_holds : Tile dT St.A (span 4 1 1 2 2 3) := tile_holds dAtoms
 
-/-! ## §4 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
+
+/-! ## §5 The turn phase — RF-4, closed form.
+
+`D_SPEC_2026-07-26.md` §5/§8 recorded the inter-segment turn phases as `≈2 steps/cell` with
+additive constants that are "not a closed function of `k` alone", each needing "a separate small
+lemma".  That reading was **too pessimistic**: measurement (`d_rf4_turns.py`, `d_rf4_law.py`)
+shows the rightward turn phase is the *same rung*, with the return sweep crossing a `(1 0)^w`
+comb before it reaches the landing pad.  The constants are not free parameters — they are
+`6(u+m)+15`, i.e. functions of the **local rung shape**, which is why they never looked like
+functions of `k`.
+
+So `RF-4`'s rightward half needs no new lemma at all: it is `RungCalc.tile2`, and the rung tile
+is its `w = 0` case.  The *leftward* return turns use a different primitive and are still open —
+see `D_RF4_2026-07-27.md`. -/
+
+/-- `IN` with the landing pad pushed `2w` cells right by a `(1 0)^w` comb. -/
+abbrev IN2 (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) : Cfg St :=
+  RungCalc.IN2 St.A u m c w g p TAIL REST
+
+/-- **D's turn phase — `[PROVEN]`, `∀ u m c w g p TAIL REST`.**  Span `6(u+m)+21+2(w+1)`, head
+advance `+3+2(w+1)`, and the output is again an `IN` — at `u'=0, m'=w, c'=1` — so a turn feeds
+straight back into the rung tile, which is exactly what an epoch does. -/
+theorem turnPhase (u m c w g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps dT (6 * (u + m) + 21 + 2 * (w + 1)) (IN2 u (m + 1) c (w + 1) (g + 3) p TAIL REST)
+      = some (IN 0 w 1 g (p + 3 + 2 * (w + 1))
+          (pow01 (u + 1) ++ (pow10 (m + 1) ++ (false :: true :: (ones c ++ TAIL)))) REST) := by
+  rw [show 6 * (u + m) + 21 + 2 * (w + 1) = span 4 1 1 2 2 3 u m + 2 * (w + 1)
+      from by simp [span]; omega]
+  exact RungCalc.tile2 dAtoms u m c w g p TAIL REST
+
+/-- The turn phase at the parameters of `D`'s **real orbit** turn at `t = 291698`
+(`u=9, m=2, c=6, w=66`; span `6·(9+2)+15+2·66 = 213`, measured 213), by the law. -/
+theorem turn_291698_via_law :
+    steps dT 213 (IN2 9 2 6 66 3 0 [true, false] [true, true])
+      = some (IN 0 65 1 0 135
+          (pow01 10 ++ (pow10 2 ++ (false :: true :: (ones 6 ++ [true, false])))) [true, true]) :=
+  turnPhase 9 1 6 65 0 0 _ _
+
+/-- The same proposition, by the kernel executing `dT` for 213 steps.  Two independent proofs. -/
+theorem turn_291698_kernel :
+    steps dT 213 (IN2 9 2 6 66 3 0 [true, false] [true, true])
+      = some (IN 0 65 1 0 135
+          (pow01 10 ++ (pow10 2 ++ (false :: true :: (ones 6 ++ [true, false])))) [true, true]) := by
+  rfl
+
+/-- The other measured orbit turn, `t = 310271`: `u=72, m=29, w=309`, span
+`6·(72+29)+15+2·309 = 1239`, measured 1239. -/
+theorem turn_310271_via_law :
+    steps dT 1239 (IN2 72 29 1 309 4 0 [true] [false, true])
+      = some (IN 0 308 1 1 621
+          (pow01 73 ++ (pow10 29 ++ (false :: true :: (ones 1 ++ [true])))) [false, true]) :=
+  turnPhase 72 28 1 308 1 0 _ _
+
+/-- The rung tile is the `w = 0` case of the turn phase, not a separate law: at `w = 0` the comb
+is empty and `IN2 … 0 … = IN …` definitionally. -/
+theorem tile_is_turn_at_w_zero (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    IN2 u m c 0 g p TAIL REST = IN u m c g p TAIL REST := rfl
+
+/-! ## §6 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 
 Each is a closed `rfl` on the genuine machine, so a drift in `dT` or in the word vocabulary
 breaks the build.  The tile instances cover both `u = 0` and `u > 0`, `m` at its floor and
@@ -183,7 +241,7 @@ theorem tile_span_control :
     (steps dT 22 (IN 0 1 1 3 0 [] [])).map (fun c => (c.st, c.pos))
       = some (St.B, (2 : Int)) := by rfl
 
-/-! ### §4.1 Law-vs-kernel cross-check.
+/-! ### §6.1 Law-vs-kernel cross-check.
 
 Each of the three `tile_*` statements above is proven a *second* time, now as an instance of the
 `∀`-law.  The two proofs share nothing: the `rfl` ones are the kernel executing `dT`, the ones
@@ -214,6 +272,10 @@ theorem tile_c_zero :
 -- AXIOM AUDIT — everything here must be `[propext, Quot.sound]` or axiom-free.
 #print axioms dAtoms
 #print axioms rungTile
+#print axioms turnPhase
+#print axioms turn_291698_via_law
+#print axioms turn_291698_kernel
+#print axioms turn_310271_via_law
 #print axioms rungTile_holds
 #print axioms anchor160
 #print axioms tile_1_2_2_4
