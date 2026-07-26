@@ -46,9 +46,11 @@ roles.  The graphs differ; the atoms do not.  So the tile is an invariant of the
 * `IN` — the milestone-region configuration family;
 * `rung_prefix` — phases 1–7, which never read the right context;
 * `rung_core` / `tile` — the rung tile, `[PROVEN]` for **every** machine satisfying `Atoms`;
-* `rung_core2` / `IN2` / `tile2` — the **turn phase** (`RF-4`), the same law with the return sweep
-  crossing a `(1 0)^w` comb before the landing pad.  `IN` is the `w = 0` case, so one law covers
-  both, and a turn phase's output is again an `IN` — at `u'=0, m'=w, c'=1`.
+* `rung_core2` / `IN2` / `tile2` — the **rightward turn phase** (`RF-4`), the same law with the
+  return sweep crossing a `(1 0)^w` comb before the landing pad.  `IN` is the `w = 0` case, so one
+  law covers both, and a turn phase's output is again an `IN` — at `u'=0, m'=w, c'=1`;
+* `rung0` / `descend` — the two pieces of the **leftward** turn phase: the rung with an exhausted
+  comb, and the descent `crawlFold ; crawl ; markerFold ; crawl`.
 
 Zero-Mathlib, core only.  No `sorry`, no `native_decide`, no `decide`.
 No machine is decided here and no label is upgraded: this file proves a *conditional*
@@ -438,6 +440,65 @@ theorem rung_core2 (h : Atoms T sA sB cr mk ta s10 s01 tu) (u m w : Nat) (p : In
   rw [h.turn _ (pow10 (w + 1) ++ (pow01 (u + 2) ++ (pow10 (m + 1) ++ (false :: true :: W)))) Z]
   exact congrArg some (cfgPos (by omega))
 
+/-! ### §4.2 The **leftward** turn phase — two more laws from the same atoms.
+
+`d_rf4_left.py` reads `D`'s leftward (coming-back-down) turn phases as two pieces, and the head
+trajectory confirms the split (the first advances `+3`, i.e. it is a rung; the second is a pure
+descent):
+
+```
+t = 1194806 (1371 steps):  (ABED)^128 A A (BC)^130 D   ++   (ABED)^131 (A)^66 (ABED)
+                           \________ rung0, u=127 ______/      \____ descend, q=130, r=65 ___/
+                                    777 steps                          594 steps
+```
+
+`rung0` is the rung with an **exhausted comb** (`m_literal = 0`): the crawl run between `marker`
+and `turnaround` is empty, which is exactly the boundary case the `IN` family excludes (`IN`
+needs `m ≥ 1`).  `descend` is `crawlFold ; crawl ; markerFold ; crawl`.  Both are built from the
+same four folds; neither needs a new atom.  Measured 6144/0 and 2304/0 (`d_rf4_left_law.py`). -/
+
+/-- **The rung with an exhausted comb** (`m_literal = 0`).  Span `cr(u+1) + mk + ta + s01(u+3) + tu`
+(`= 6u+15` at `D`'s counts), head `+3` — the same advance as the tile. -/
+theorem rung0 (h : Atoms T sA sB cr mk ta s10 s01 tu) (u : Nat) (p : Int) (W Z : List Bool) :
+    steps T (cr * (u + 1) + mk + ta + s01 * (u + 3) + tu)
+        ⟨sA, p, ⟨pow10 u ++ (true :: true :: (false :: false :: W)),
+                 false, true :: false :: false :: false :: Z⟩⟩
+      = some ⟨sA, p + 3,
+          ⟨true :: (pow01 (u + 2) ++ (false :: true :: W)), false, true :: Z⟩⟩ := by
+  rw [show cr * (u + 1) + mk + ta + s01 * (u + 3) + tu
+        = cr * u + (cr + (mk + (ta + (s01 + ((s01 * (u + 1 + 1)) + tu)))))
+      from by simp only [Nat.mul_add, Nat.mul_succ]; omega]
+  rw [steps_add, crawlFold h u p (true :: true :: (false :: false :: W))
+        (true :: false :: false :: false :: Z), someBind]
+  rw [steps_add, h.crawl _ true (false :: false :: W)
+        (pow10 u ++ (true :: false :: false :: false :: Z)), someBind]
+  rw [steps_add, h.marker _ false (false :: W) _, someBind]
+  rw [steps_add, h.turnaround _ false W _, someBind]
+  rw [steps_add, h.swap01 _ false W _, someBind]
+  rw [← pow10_cons u (true :: false :: false :: false :: Z),
+      pow10_true (u + 1) (false :: false :: false :: Z)]
+  rw [steps_add, sweep01 h (u + 1) _ false (false :: true :: W) _, someBind]
+  rw [h.turn _ (pow01 (u + 2) ++ (false :: true :: W)) Z]
+  exact congrArg some (cfgPos (by omega))
+
+/-- **The descent** — `crawlFold q ; crawl ; markerFold r ; crawl`: the head walks left over a
+`(1 0)^q` comb, steps onto a `1`-run, erases it with `markerFold`, and takes one more crawl.
+Span `cr(q+2) + mk(r+1)`, head `−2(q+1) − (r+1) − 2`. -/
+theorem descend (h : Atoms T sA sB cr mk ta s10 s01 tu) (q r : Nat) (p : Int) (b : Bool)
+    (L R : List Bool) :
+    steps T (cr * (q + 2) + mk * (r + 1))
+        ⟨sA, p, ⟨pow10 q ++ (true :: true :: (ones r ++ (false :: true :: b :: L))), false, R⟩⟩
+      = some ⟨sA, p - 2 * (q + 1) - (r + 1) - 2,
+          ⟨L, b, true :: false :: (zeros (r + 1) ++ (true :: false :: (pow10 q ++ R)))⟩⟩ := by
+  rw [show cr * (q + 2) + mk * (r + 1) = cr * q + (cr + (mk * (r + 1) + cr))
+      from by simp only [Nat.mul_add, Nat.mul_succ]; omega]
+  rw [steps_add, crawlFold h q p (true :: true :: (ones r ++ (false :: true :: b :: L))) R,
+      someBind]
+  rw [steps_add, h.crawl _ true (ones r ++ (false :: true :: b :: L)) (pow10 q ++ R), someBind]
+  rw [steps_add, markerFold h r _ false (true :: b :: L) _, someBind]
+  rw [h.crawl _ b L _]
+  exact congrArg some (cfgPos (by omega))
+
 end
 
 /-- The rung-tile configuration family.  In tape order the neighbourhood reads
@@ -543,6 +604,8 @@ theorem tile2 {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB :
 #print axioms rung_prefix
 #print axioms rung_core
 #print axioms rung_core2
+#print axioms rung0
+#print axioms descend
 #print axioms tile
 #print axioms tile_holds
 #print axioms tile2

@@ -198,6 +198,66 @@ is empty and `IN2 … 0 … = IN …` definitionally. -/
 theorem tile_is_turn_at_w_zero (u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
     IN2 u m c 0 g p TAIL REST = IN u m c g p TAIL REST := rfl
 
+
+/-! ### §5.1 The **leftward** turn phase (RF-4, part 2).
+
+`d_rf4_left.py` reads the leftward turns as `rung0` (the rung with an exhausted comb) followed by
+`descend` (`crawlFold ; crawl ; markerFold ; crawl`), and the head trajectory confirms the split:
+the first piece advances `+3`, the second is a pure descent.  Both come from `RungCalc`; no new
+atom.  The step budgets close exactly against the orbit — see `left_turn_budget_*` below. -/
+
+/-- **The rung with an exhausted comb** (`m_literal = 0`), span `6u+15`, head `+3`.
+This is the boundary case the `IN` family excludes, and every ladder segment ends in it. -/
+theorem combExhausted (u : Nat) (p : Int) (W Z : List Bool) :
+    steps dT (6 * u + 15)
+        ⟨.A, p, ⟨pow10 u ++ (true :: true :: (false :: false :: W)),
+                 false, true :: false :: false :: false :: Z⟩⟩
+      = some ⟨.A, p + 3,
+          ⟨true :: (pow01 (u + 2) ++ (false :: true :: W)), false, true :: Z⟩⟩ := by
+  rw [show 6 * u + 15 = 4 * (u + 1) + 1 + 1 + 2 * (u + 3) + 3 from by omega]
+  exact RungCalc.rung0 dAtoms u p W Z
+
+/-- **The descent**, span `4(q+2) + (r+1)`, head `−2(q+1) − (r+1) − 2`. -/
+theorem descent (q r : Nat) (p : Int) (b : Bool) (L R : List Bool) :
+    steps dT (4 * (q + 2) + (r + 1))
+        ⟨.A, p, ⟨pow10 q ++ (true :: true :: (ones r ++ (false :: true :: b :: L))), false, R⟩⟩
+      = some ⟨.A, p - 2 * (q + 1) - (r + 1) - 2,
+          ⟨L, b, true :: false :: (zeros (r + 1) ++ (true :: false :: (pow10 q ++ R)))⟩⟩ := by
+  rw [show 4 * (q + 2) + (r + 1) = 4 * (q + 2) + 1 * (r + 1) from by omega]
+  exact RungCalc.descend dAtoms q r p b L R
+
+/-- Grounded: `combExhausted` at `u = 3` (span 33) as a closed kernel `rfl`. -/
+theorem combExhausted_grounded :
+    steps dT 33 ⟨.A, 0, ⟨pow10 3 ++ (true :: true :: (false :: false :: [true, false])),
+                         false, true :: false :: false :: false :: [true, true]⟩⟩
+      = some ⟨.A, 3, ⟨true :: (pow01 5 ++ (false :: true :: [true, false])),
+                      false, true :: [true, true]⟩⟩ := by rfl
+
+/-- Grounded: `descent` at `q = 3, r = 4` (span 25) as a closed kernel `rfl`. -/
+theorem descent_grounded :
+    steps dT 25 ⟨.A, 0, ⟨pow10 3 ++ (true :: true :: (ones 4 ++ (false :: true :: true :: [false]))),
+                         false, [true, true]⟩⟩
+      = some ⟨.A, -15, ⟨[false], true,
+          true :: false :: (zeros 5 ++ (true :: false :: (pow10 3 ++ [true, true])))⟩⟩ := by rfl
+
+/-- The same proposition from the law -- `descent 3 4 0 true [false] [true, true]` -- so the
+grounded `rfl` and the `∀`-law are two independent proofs of one statement. -/
+theorem descent_grounded_via_law :
+    steps dT 25 ⟨.A, 0, ⟨pow10 3 ++ (true :: true :: (ones 4 ++ (false :: true :: true :: [false]))),
+                         false, [true, true]⟩⟩
+      = some ⟨.A, -15, ⟨[false], true,
+          true :: false :: (zeros 5 ++ (true :: false :: (pow10 3 ++ [true, true])))⟩⟩ :=
+  descent 3 4 0 true [false] [true, true]
+
+/-- **Budget check against the real orbit.**  The leftward turn at `t = 1194806` is 1371 steps and
+splits as `rung0 (u = 127)` then `descend (q = 130, r = 65)`.  If either law's span were off by a
+step this would not hold. -/
+theorem left_turn_budget_1194806 : (6 * 127 + 15) + (4 * (130 + 2) + (65 + 1)) = 1371 := by rfl
+
+/-- The same for the other leftward turn, `t = 1168982`, 6504 steps: `rung0 (u = 616)` then
+`descend (q = 619, r = 308)`. -/
+theorem left_turn_budget_1168982 : (6 * 616 + 15) + (4 * (619 + 2) + (308 + 1)) = 6504 := by rfl
+
 /-! ## §6 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 
 Each is a closed `rfl` on the genuine machine, so a drift in `dT` or in the word vocabulary
@@ -276,6 +336,10 @@ theorem tile_c_zero :
 #print axioms turn_291698_via_law
 #print axioms turn_291698_kernel
 #print axioms turn_310271_via_law
+#print axioms combExhausted
+#print axioms descent
+#print axioms combExhausted_grounded
+#print axioms descent_grounded
 #print axioms rungTile_holds
 #print axioms anchor160
 #print axioms tile_1_2_2_4
