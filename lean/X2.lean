@@ -1,4 +1,23 @@
 /-!
+# ⚠ STATUS BANNER (added 2026-07-28) — the machine `x2` HAS SINCE BEEN DECIDED
+
+This file's own prose below says `x2 stays [OPEN]` and names `carry_step` as the open gap.
+**That is obsolete.**  It records the program's FIRST attack — a direct cascade-doubler whose
+`Θ(2^{2K})` ripple bottomed out at `carry_step` — which was **abandoned**.  The machine was
+subsequently proved never to halt from the blank tape by a DIFFERENT route (the `T7` milestone
+modules over an eight-chunk kernel-`rfl` entry segment):
+
+```
+theorem x2_nonhalt_blank : ∀ N : Nat, steps N init ≠ none      -- lean/T7Entry.lean:42
+-- 'x2_nonhalt_blank' depends on axioms: [propext, Quot.sound]
+```
+
+This file is retained because the `T7` route imports its machine definition and word vocabulary,
+and because the abandoned construction is worth keeping as a record.  **Nothing below is a status
+claim about the machine.**  See `PAPER_TWO_HOLDOUTS_DECIDED.md`.
+
+---
+
 # The integer-×2 base-2 odometer machine — Lean 4 formalization (namespace `X2`)
 
 Formalizes the frontier machine

@@ -1,7 +1,7 @@
 {
-  "title": "The BB(6) Cryptid Frontier: Certified Templates, Ledger Reductions, and a Unified p-adic Return Problem",
+  "title": "Two BB(6) Holdouts Decided, and the Cryptid Frontier: Machine-Checked Non-Halting Proofs, Certified Templates, and a Unified p-adic Return Problem",
   "upload_type": "dataset",
-  "publication_date": "2026-07-08",
+  "publication_date": "2026-07-28",
   "creators": [
     {
       "name": "Aoki, Yosuke",
@@ -9,7 +9,7 @@
       "orcid": "0009-0002-3791-2372"
     }
   ],
-  "description": "A self-contained research artifact on the BB(6) busy-beaver frontier: paper-style writeups (certified trace-template reductions of the cryptid machines; exact p-adic run-structure theorems with a Lean 4 formalization; a gate/structure/protection classification), a one-command verification battery re-checking every proof-path certificate, and the supporting lab notes including the novelty audit and the full corrections trail. No cryptid is decided; every claim carries an explicit epistemic label. Methodology: AI-assisted under a strict zero-false-proof discipline (adversarial red-teams, independent re-verification), documented in the notes.",
+  "description": "A self-contained research artifact on the BB(6) busy-beaver frontier. <b>New in this version:</b> two machines of the published holdout list (<code>BB6_holdouts_1094.txt</code>, 2026-06-29) are proved <b>never to halt from the blank tape</b>, unconditionally, in Lean 4 &mdash; <code>sorry</code>-free, no <code>native_decide</code>, no Mathlib, axiom audit <code>[propext, Quot.sound]</code>; the novelty of both was re-verified against that list up to TNF and left-right reversal. The artifact also contains a machine-independent mechanism library that yields the same rung law for any machine satisfying a six-atom interface (18 further list entries satisfy it, at six kernel <code>rfl</code>s each), the paper-style writeups of the cryptid side (certified trace-template reductions; exact p-adic run-structure theorems with Lean formalization; a gate/structure/protection classification), a one-command verification battery, and the supporting lab notes including the novelty audit and the full corrections trail. <b>Scope, stated flatly:</b> BB(6) itself is <i>not</i> decided and this work does not shorten the distance to deciding it &mdash; the named cryptids remain open behind a single-orbit equidistribution conjecture, and <b>no cryptid is decided here</b>. Every claim carries an explicit epistemic label. Methodology: AI-assisted under a strict zero-false-proof discipline (adversarial red-teams, independent re-verification), documented in the notes.",
   "access_right": "open",
   "license": "cc-by-4.0",
   "keywords": [
@@ -21,7 +21,9 @@
     "normality conjecture",
     "p-adic dynamics",
     "certified deciders",
-    "Lean 4"
+    "Lean 4",
+    "formal verification",
+    "non-halting proof"
   ],
   "related_identifiers": [
     {

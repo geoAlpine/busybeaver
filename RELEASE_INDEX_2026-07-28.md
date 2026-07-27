@@ -4,10 +4,19 @@ The harvest pass. This is the single page to read before deciding what, if anyth
 repository. It states for every external-facing artifact: its scope, its date, whether it is
 **current**, and what gate applies.
 
-**Nothing has been sent or posted.** The standing policy is: **no community posting** (owner
-decision, 2026-07-07); **academic outreach by email is gated on an explicit per-send go-ahead**.
-This pass did not contact anyone and did not publish anything. The only external access made was
-*reading* the public bbchallenge wiki index to confirm the current holdout list.
+**Publication decision, owner, 2026-07-28: everything known to date is published to the public git
+repository and archived on Zenodo**, on the reasoning that it should save the next person the work.
+This supersedes the 2026-07-07 hold on releasing the material.
+
+Two things are *not* covered by that decision and remain gated:
+
+* **Community posting** (bbchallenge forum / Discord / wiki edits) — a different channel; not
+  authorised here. Publishing the archive is not the same as announcing it.
+* **Academic outreach by email** — still requires an explicit per-send go-ahead, and
+  `OUTREACH_EMAIL_DRAFT.md` still lacks recipient and signature fields.
+
+No one has been contacted. The only external access made during the harvest pass was *reading* the
+public bbchallenge wiki index to confirm the current holdout list.
 
 ---
 
@@ -21,8 +30,8 @@ This pass did not contact anyone and did not publish anything. The only external
 | claim | `x2` and `C` never halt from the blank tape. Unconditional, Lean 4, `[propext, Quot.sound]` |
 | novelty | **verified 2026-07-28** against `BB6_holdouts_1094.txt` (2026-06-29, sha256 `9764…dbdd4`): both STILL OPEN, two distinct canonical classes |
 | audience | bbchallenge community; anyone who wants to verify |
-| gate | **community posting is a standing NO.** Nothing to do unless that decision changes |
-| currency | **current**. Re-run the §2 novelty check before any release — lists appear ~monthly and `1094` is now ~1 month old |
+| gate | **released** (git + Zenodo, 2026-07-28). Announcing it to the community is a separate, ungranted decision |
+| currency | **current**. Re-run the §2 novelty check before *citing* it — lists appear ~monthly and `1094` is now ~1 month old |
 
 This is the only thing in the program that is unconditional and checkable end to end.
 
@@ -56,11 +65,12 @@ actively wrong, one was stale, the rest are sound.**
 | `OUTREACH_EMAIL_DRAFT.md` | 07-07 | sound; still explicitly marked NOT SENT | none |
 | `PAPER_TEMPLATE_METHOD.md` | — | sound (o4-scoped, "no machine is decided" holds there) | none |
 
-**Known omission, deliberate.** `lean/X2.lean` still carries prose calling the machine `[OPEN]` with
-a `[DESIGN ONLY]` `carry_step` gap. That is the abandoned route and is kept as a record; the
-superseded banner in `PAPER_X2_INTEGER_DOUBLER.md` and §4.3 of artifact A both warn a reader about
-it. Anyone reading the Lean corpus cold could still be misled, so if the corpus itself is ever
-released, that prose needs a banner too.
+**Closed, 2026-07-28.** `lean/X2.lean` carries ~12,000 lines of prose from the abandoned first
+construction, calling the machine `[OPEN]` with a `[DESIGN ONLY]` `carry_step` gap. Since the file
+is bundled in the archive, a reader meeting it cold would have been misled, so **a STATUS banner was
+added at the head of the file** pointing at `T7Entry.x2_nonhalt_blank`. The body is left intact as a
+record of the route that did not close. `PAPER_X2_INTEGER_DOUBLER.md` and §4.3 of artifact A carry
+the same warning.
 
 ---
 
@@ -83,11 +93,11 @@ pass:
 
 ## 4. Recommended decision, stated plainly
 
-1. **Artifact A is finished and blocked only by policy.** If the no-community-posting decision ever
-   changes, it is ready; re-run the novelty check first. Its value decays — the list moves ~monthly
-   and someone else may decide these two machines.
-2. **Artifact B is finished and blocked only on a per-send go-ahead** plus the three missing fields
-   in the email draft. No further research is required for it.
+1. **Artifact A is finished and released** (git + Zenodo, 2026-07-28). Announcing it on the
+   bbchallenge community channels remains a separate, ungranted decision.
+2. **Artifact B is finished and released as part of the same archive.** Sending it to named
+   researchers by email still needs a per-send go-ahead plus the three missing fields in the email
+   draft. No further research is required for it.
 3. **No further research is recommended.** The complete BB(6) proof needs every holdout; the ~17
    named cryptids sit behind an open equidistribution conjecture, and structure-only / all-orbits /
    finite-certificate arguments are *proven* not to reach them. See `STOCKTAKE_2026-07-28.md`.
@@ -109,4 +119,5 @@ build in parallel — together they exhaust memory and the machine thrashes (mea
 
 ---
 
-**No machine is decided by this index. No label is upgraded. Nothing was sent.**
+**No machine is decided by this index. No label is upgraded. Nothing was sent to any individual or
+community channel; the material was published to the public repository and archive.**

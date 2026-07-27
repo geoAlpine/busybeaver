@@ -37,6 +37,8 @@ was cheap, and it is the methodological point of §4.
 
 ```
 list      BB6_holdouts_1094.txt          (bbchallenge wiki, shared 2026-06-29 by @mxdys)
+source    https://wiki.bbchallenge.org/w/images/9/90/BB6_holdouts_1094.txt
+index     https://wiki.bbchallenge.org/wiki/Holdouts_lists   (re-read 2026-07-28; 1094 is the latest)
 sha256    976415e041065fbde32d9d773eabed39b52866852b65e4717247cead775dbdd4
 parsed    1094 lines  →  1094 canonical classes   (no collisions within the list)
 
@@ -73,8 +75,8 @@ theorem C_machine_nonhalt : ∀ N : Nat, stepsC N ⟨.A, 0, ⟨[], false, []⟩�
 ```
 
 `steps` / `stepsC` are the step functions of the two machines as literally transcribed from the specs in
-§1, over the tape type of `lean/TapeCalc.lean`; `init` is the blank-tape start configuration; `none` is
-the halting result. So each statement says exactly *"for every number of steps, the machine has not
+§1, over the self-contained tape zipper defined in `lean/X2.lean` (that file has **no imports**);
+`init` is the blank-tape start configuration; `none` is the halting result. So each statement says exactly *"for every number of steps, the machine has not
 halted."*
 
 **Corpus-wide audit.** `lake build` over the whole development: **EXIT 0**, 2,026 theorem declarations,
@@ -84,13 +86,18 @@ halted."*
 
 ## 4. Method
 
-### 4.1 A machine-independent layer
+### 4.1 How non-halting is obtained
 
-`lean/TapeCalc.lean` (41 theorems) contains no reference to any particular machine. It provides the
-tape/step calculus and, in particular, the *padding transport* lemmas that let a run proved on a finite
-tape context be transported to the real orbit: `steps_rpad_dich`, `steps_rpad_zeros_absorb`,
-`nonhalt_of_invariant`, and their left-hand mirrors. Non-halting is then obtained from a milestone family
-`P` and a proof that every `P`-configuration reaches another one in `≥ 1` steps.
+Both proofs are of the same shape: exhibit a milestone family `P`, show every `P`-configuration reaches
+another one in `≥ 1` steps, and enter `P` from the blank tape. The assembly lemma is
+`T7OddBridge.nonhalt_of_invariant`, and the transports that let a run proved on a finite tape context be
+lifted to the real orbit are the padding lemmas alongside it.
+
+*A note on the corpus layout, since it is easy to guess wrong.* These two proofs are **self-contained**:
+`lean/X2.lean` imports nothing and defines its own `St` / `Tape` / `Cfg` / `step` / `steps`, and the
+whole `T7` development sits on top of that. The generic, machine-parameterised layer
+`lean/TapeCalc.lean` (41 theorems over `Cfg S`) came *later* and is **not** used by `x2` or `C`; it
+carries the newer machines and the §7 by-product.
 
 ### 4.2 The `∀`-parametric discipline — why the second machine was nearly free
 
@@ -129,9 +136,11 @@ an appeal to "obviously isomorphic".
 ```
 lean/          Lean 4 (v4.31.0), zero-Mathlib, `lake build`
                the two results are lean/T7Entry.lean and lean/CIso.lean
-bb6_holdouts.py            novelty check (TNF + reversal) against a holdout list
-_bbdata/BB6_holdouts_1094.txt   the list checked in §2
+bb6_holdouts.py       novelty check (TNF + left-right reversal) against a holdout list
 ```
+
+The holdout list is **not bundled** — it is a third party's data file. Download it from the URL in
+§2 (sha256 given there) and point `bb6_holdouts.py` at it to re-run the check.
 
 The axiom audit is not a separate step: each file ends with `#print axioms` on its headline theorems, so
 a clean `lake build` prints the audit lines quoted in §3.

@@ -13,7 +13,9 @@ VERSION = None  # set in main()
 
 PAPERS = ["PAPER_RUN_STRUCTURE.md", "PAPER_TEMPLATE_METHOD.md", "PAPER_SPECIES_SURVEY.md",
           "PAPER_MIRROR_LADDER.md", "PAPER_CENSUS.md", "PAPER_RIGIDITY_LIMITS.md",
-          "MINIMAL_OPEN_KERNEL.md", "PAPER_X2_INTEGER_DOUBLER.md"]
+          "MINIMAL_OPEN_KERNEL.md", "PAPER_X2_INTEGER_DOUBLER.md",
+          # 2026-07-28: the unconditional result — two holdouts decided.
+          "PAPER_TWO_HOLDOUTS_DECIDED.md"]
 
 # verification battery: verify_all.py + its 11 items + their imports (import-closure, hand-audited)
 VERIFICATION = [
@@ -25,12 +27,27 @@ VERIFICATION = [
     # import closure:
     "o18_md_rules.py", "o18_md_probe.py", "o18_md_rules_ext.py",  # ext incl. for the documented correction
     "o4_coboundary_lp.py", "ah_ledger_criticality.py", "mirror_census.py", "freq_rundepth_whiteness.py",  # bonus exact certificates
+    # 2026-07-28: the novelty check of PAPER_TWO_HOLDOUTS_DECIDED §2 (TNF + left-right
+    # reversal).  The holdout LIST itself is not bundled -- it is a third party's data file;
+    # the paper cites its URL and sha256 so the check can be re-run against it.
+    "bb6_holdouts.py",
 ]
 
 LEAN = ["lean/RunStructure.lean", "lean/Template.lean", "lean/Suffix.lean", "lean/Mirror.lean",
         "lean/lakefile.toml", "lean/lean-toolchain", "lean/lake-manifest.json",
         "lean/O3.lean", "lean/O18.lean", "lean/O2.lean", "lean/O17.lean", "lean/Completion.lean",
         "lean/X2.lean",
+        # 2026-07-28: import closure of the two DECIDED machines (T7Entry, CIso).
+        # x2  : T7Entry.x2_nonhalt_blank      C : CIso.C_machine_nonhalt
+        "lean/T7Entry.lean", "lean/CIso.lean", "lean/EntryB.lean", "lean/X2FromB.lean",
+        "lean/BlankNorm.lean", "lean/T7DLaw.lean", "lean/T7E1.lean", "lean/T7E2.lean",
+        "lean/T7E2Bridge.lean", "lean/T7E3.lean", "lean/T7Ladder.lean", "lean/T7Odd.lean",
+        "lean/T7OddBridge.lean", "lean/T7OddRung.lean", "lean/T7P1TLL.lean",
+        "lean/T7RegenGen.lean", "lean/T7S3.lean", "lean/T7Spine.lean", "lean/T7Tail.lean",
+        "lean/T7TopEntry.lean", "lean/T7TopRung.lean",
+        # the machine-independent mechanism library of the paper's §7 by-product
+        "lean/TapeCalc.lean", "lean/RungCalc.lean", "lean/DMachine.lean",
+        "lean/HMachine.lean", "lean/IslandTiles.lean",
         "lean/crosscheck.py", "lean/template_crosscheck.py",
         "lean/suffix_crosscheck.py", "lean/o3_crosscheck.py", "lean/o18_crosscheck.py",
         "LEAN_STATUS_2026-07-07.md"]
@@ -76,6 +93,13 @@ NOTES = [
     # --- the integer-doubler (x2) machine: the carry-transparent decision candidate (2026-07-11..13) ---
     "X2_FRONTIER_MAP_2026-07-11.md", "X2_STATUS_2026-07-12.md",
     "X2_WELLFOUNDED_DESIGN_2026-07-12.md",
+    # --- 2026-07-28: the state-of-play map, for whoever picks this up ---
+    # RELEASE_INDEX: what each artifact claims, what is current, what is gated.
+    # STOCKTAKE: the full ledger of attacks tried and why each stopped, the four obligations of a
+    #   complete BB(6) proof, and the withdrawal of the residual-census inference.  Japanese text;
+    #   its §2 (the proven impossibility results) is available in English in
+    #   PAPER_RIGIDITY_LIMITS.md and MINIMAL_OPEN_KERNEL.md, both bundled above.
+    "RELEASE_INDEX_2026-07-28.md", "STOCKTAKE_2026-07-28.md",
 ]
 
 META = ["zenodo/README_ZENODO.md", "zenodo/CITATION.cff",
