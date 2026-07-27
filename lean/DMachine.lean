@@ -314,6 +314,52 @@ theorem ladder_main (g : Nat) (p : Int) (TAIL REST : List Bool) :
       show (3 : Int) * ((308 : Nat) : Int) = 924 from by omega] at h
   exact h
 
+
+/-! ### §5.3 The main doubling composite.
+
+`d_rf4_epochs.py` reads each epoch off as a sequence of law applications.  The **tails** of the
+`k = 4` and `k = 5` epochs have the *same shape* — eleven applications in the same order — and the
+heart of it is three consecutive steps whose parameters are exact functions of the top comb
+`a(k)`:
+
+| | `k = 4`, `a = 308` | `k = 5`, `a = 620` |
+|---|---|---|
+| main ladder | `tileIter (0, a, 1, ·, a)` | same |
+| then | `rung0 (2a)` = 616 | 1240 |
+| then | `descend (2a+3, a)` = (619, 308) | (1243, 620) |
+
+The first two are composed below.  At `k = 4` they are 857,472 + 3,711 = **861,183 of the epoch's
+905,244 steps — 95.1%** — so this single lemma is the bulk of an epoch, at every level. -/
+
+/-- **The main doubling step**, `∀ a g p TAIL REST`: the top comb is consumed by `a` rungs and
+the exhausted-comb rung fires on the result.  Span `ladderSpan … 0 0 a + (12a + 15)`; at
+`a = 308` that is 857,472 + 3,711 = 861,183, the measured values. -/
+theorem mainDouble (a g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps dT (ladderSpan 4 1 1 2 2 3 0 0 a + (6 * (2 * a) + 15))
+        (IN 0 a 1 (g + 3 + 3 * a) p TAIL REST)
+      = some ⟨.A, p + 3 * a + 3,
+          ⟨true :: (pow01 (2 * a + 2) ++ (false :: true :: (ones (1 + a) ++ TAIL))),
+           false, true :: (zeros g ++ REST)⟩⟩ := by
+  have h1 := ladder a 0 0 1 (g + 3) p TAIL REST
+  rw [show (0 : Nat) + a = a from by omega, show (0 : Nat) + 2 * a = 2 * a from by omega] at h1
+  rw [steps_add, h1, someBind]
+  show steps dT (6 * (2 * a) + 15)
+      (RungCalc.IN St.A (2 * a) 0 (1 + a) (g + 3) (p + 3 * (a : Int)) TAIL REST) = _
+  rw [RungCalc.IN_norm]
+  show steps dT (6 * (2 * a) + 15)
+      (⟨.A, p + 3 * (a : Int),
+        ⟨pow10 (2 * a) ++ (true :: true :: (false :: false :: (ones (1 + a) ++ TAIL))),
+         false, true :: false :: false :: false :: (zeros g ++ REST)⟩⟩ : Cfg St) = _
+  rw [combExhausted (2 * a) (p + 3 * (a : Int)) (ones (1 + a) ++ TAIL) (zeros g ++ REST)]
+
+/-- The measured `k = 4` instance: 861,183 steps, 95.1% of that epoch. -/
+theorem mainDouble_span_measured :
+    ladderSpan 4 1 1 2 2 3 0 0 308 + (6 * (2 * 308) + 15) = 861183 := by rfl
+
+/-- …and the `k = 5` one, at `a = 620`. -/
+theorem mainDouble_span_measured5 :
+    ladderSpan 4 1 1 2 2 3 0 0 620 + (6 * (2 * 620) + 15) = 3474495 := by rfl
+
 /-! ## §6 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 
 Each is a closed `rfl` on the genuine machine, so a drift in `dT` or in the word vocabulary
@@ -401,6 +447,8 @@ theorem tile_c_zero :
 #print axioms ladder
 #print axioms ladderSpans_measured
 #print axioms ladder_main
+#print axioms mainDouble
+#print axioms mainDouble_span_measured
 #print axioms rungTile_holds
 #print axioms anchor160
 #print axioms tile_1_2_2_4

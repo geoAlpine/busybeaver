@@ -277,3 +277,43 @@ for K in (4, 5):
     for t0, n, it in stuck:
         tag = "  <-- contains (DF), the state-D swap atom" if "DF" in it else ""
         print(f"       t={t0:>9} {n:>4} steps  {fmt(chunk(list(it), ATOMS), 24)}{tag}")
+
+print()
+print("=" * 96)
+print("=== THE EPOCH AS A PROGRAM: the law-application sequence, with parameters ===")
+print("    Consecutive `tile` applications are collapsed into tileIter(n) -- that is how the")
+print("    Lean assembly will do it.  If the sequences for k and k+2 have the same SHAPE with")
+print("    parameters given by a rule, that rule is the seam induction's invariant.")
+
+def program(K):
+    s = Sim(); s.run(M1[K])
+    END = M1[K+1]
+    prog = []
+    while s.n < END:
+        r = step_law(s)
+        if r is None:
+            t0 = s.n
+            while s.n < END and step_law(s) is None: s.step()
+            prog.append(("STUCK", (s.n - t0,), s.n - t0))
+            continue
+        name, params, sp = r
+        if s.n + sp > END: break
+        # collapse a run of `tile`s
+        if name == "tile":
+            u, m, c, g = params
+            n = 0; tot = 0
+            while True:
+                rr = step_law(s)
+                if rr is None or rr[0] != "tile" or s.n + rr[2] > END: break
+                n += 1; tot += rr[2]; s.run(rr[2])
+            prog.append(("tileIter", (u, m, c, g, n), tot))
+            continue
+        prog.append((name, params, sp))
+        s.run(sp)
+    return prog
+
+for K in (4, 5):
+    pr = program(K)
+    print(f"\n  --- epoch k={K}: {len(pr)} law applications, {sum(x[2] for x in pr)} steps ---")
+    for i, (nm, params, sp) in enumerate(pr, 1):
+        print(f"    {i:>2}. {nm:<10} {str(params):<26} {sp:>9} steps")
