@@ -14,6 +14,12 @@ Mahler machine (L921) found (plus an independent re-derivation of the named o7);
 
 ## 1. The one-paragraph statement
 
+> **Currency note (2026-07-28).** The frontier count below is the `1104` list of 2026-04-29, current
+> when this package was written. The most recent published list is **`BB6_holdouts_1094.txt`
+> (2026-06-29)**, and **two of its entries have since been decided by this program** — see
+> `PAPER_TWO_HOLDOUTS_DECIDED.md`. Neither is a named cryptid, so nothing in the classification below
+> changes; only the count does.
+
 The BB(6) open frontier is **1104 undecided holdouts**, and they are **structurally homogeneous**: every one is
 a **slow polynomial-growth counter/bouncer** (tape width `∼ step^a`, `a ≤ ~0.8`; none halts or grows
 exponentially in width within cap). The ~15 named cryptids are **representatives** of this mass, and split by

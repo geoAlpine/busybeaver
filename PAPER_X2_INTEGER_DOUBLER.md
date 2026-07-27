@@ -2,7 +2,28 @@
 
 **Yosuke Aoki (GeoAlpine LLC)** — ORCID 0009-0002-3791-2372 — research artifact (2026-07-13)
 
-> **Epistemic banner.** The machine studied here is **NOT decided**. This document reports a
+> ## ⚠ SUPERSEDED — the machine has since been DECIDED (banner updated 2026-07-28)
+>
+> **The status line below is obsolete and must not be released as written.** This document describes
+> the program's **first** attack on the machine (a direct cascade-doubler whose `Θ(2^{2K})` ripple
+> bottomed out at an open `carry_step`). That construction was **abandoned**. The machine was
+> subsequently proved never to halt from the blank tape by a **different** route — the `T7` milestone
+> modules over an eight-chunk kernel-`rfl` entry segment — giving, unconditionally,
+>
+> ```lean
+> theorem x2_nonhalt_blank : ∀ N : Nat, steps N init ≠ none    -- lean/T7Entry.lean:42
+> -- 'x2_nonhalt_blank' depends on axioms: [propext, Quot.sound]
+> ```
+>
+> See **`PAPER_TWO_HOLDOUTS_DECIDED.md`**, the current external artifact for this machine. What
+> remains valuable here is the *reduction and the odometer analysis*, not the status claim.
+> `lean/X2.lean` likewise still carries the old `[OPEN]` prose and the `[DESIGN ONLY]` `carry_step`
+> gap; both are kept deliberately as a record of the abandoned route.
+>
+> ---
+>
+> **Original epistemic banner (2026-07-13, superseded).** The machine studied here is **NOT decided**.
+> This document reports a
 > *machine-checked reduction*: the machine's non-halting is reduced, in Lean 4 (zero `sorry`, zero
 > `native_decide`, axiom audit `[propext, Quot.sound]`), to three explicit halt-free phase
 > transports, of which the surrounding odometer structure is fully resolved and **one** genuinely
