@@ -151,4 +151,99 @@ theorem open_M1_4 :
 #print axioms open_M1_0
 #print axioms open_M1_4
 
+/-! ## §5 The prefixes are prefixes of `Dcascade` for **every** `j`.
+
+§3 established this by `rfl` at `j = 0..5`.  What follows makes it `∀ j`, which is what turns
+`openEven`/`openOdd` from facts about six measured levels into the epoch's opening move.
+
+The obstacle is that `midBlocks` recurses on its **last** block (`midBlocks p (n+1) =
+midBlocks p n ++ blockE (p + 2n)`), while the prefix lives at the **front**.  `midBlocks_front`
+is the unfold-from-the-front lemma; everything else is arithmetic on the block index. -/
+
+/-- Unfold `midBlocks` from the front.  The definition appends at the back, so this is the
+lemma that lets the leading block be read off. -/
+theorem midBlocks_front : ∀ (n p : Nat), midBlocks p (n + 1) = blockE p ++ midBlocks (p + 2) n := by
+  intro n
+  induction n with
+  | zero =>
+    intro p
+    show midBlocks p 0 ++ blockE (p + 2 * 0) = blockE p ++ midBlocks (p + 2) 0
+    rw [show p + 2 * 0 = p from by omega]
+    show ([] : List Bool) ++ blockE p = blockE p ++ ([] : List Bool)
+    rw [List.append_nil]
+    rfl
+  | succ n ih =>
+    intro p
+    show midBlocks p (n + 1) ++ blockE (p + 2 * (n + 1))
+        = blockE p ++ (midBlocks (p + 2) n ++ blockE (p + 2 + 2 * n))
+    rw [ih p, List.append_assoc, show p + 2 * (n + 1) = p + 2 + 2 * n from by omega]
+
+/-- **Every even-`k` cascade word starts with `evenPre`.** -/
+theorem dcascade_evenPre : ∀ i : Nat, ∃ Y, Dcascade (2 * i) = evenPre ++ Y := by
+  intro i
+  cases i with
+  | zero => exact ⟨_, prefix_even_0⟩
+  | succ i =>
+    refine ⟨pow10 264 ++ (midBlocks 4 i ++ (block (gLast (2 * (i + 1))) (aLast (2 * (i + 1)))
+              ++ [true])), ?_⟩
+    show (if (2 * (i + 1) + 4) % 2 = 1 then block 2 4 ++ block 5 15 else [])
+          ++ midBlocks ((2 * (i + 1) + 4) % 2) ((2 * (i + 1) + 4) / 2 - 1)
+          ++ block (gLast (2 * (i + 1))) (aLast (2 * (i + 1))) ++ [true] = _
+    rw [show (2 * (i + 1) + 4) % 2 = 0 from by omega,
+        show (2 * (i + 1) + 4) / 2 - 1 = i + 1 + 1 from by omega]
+    rw [if_neg (by decide), midBlocks_front (i + 1) 0, midBlocks_front i 2]
+    show ([] : List Bool) ++ ((zeros 33 ++ pow10 66) ++ ((zeros 78 ++ pow10 264)
+            ++ midBlocks 4 i)) ++ _ ++ _ = _
+    show (zeros 33 ++ pow10 66) ++ ((zeros 78 ++ pow10 264) ++ midBlocks 4 i) ++ _ ++ _ = _
+    show _ = (zeros 33 ++ pow10 66 ++ zeros 78) ++ _
+    simp only [List.append_assoc]
+
+/-- **Every odd-`k` cascade word starts with `oddPre`.** -/
+theorem dcascade_oddPre : ∀ i : Nat, ∃ Y, Dcascade (2 * i + 1) = oddPre ++ Y := by
+  intro i
+  cases i with
+  | zero => exact ⟨_, prefix_odd_1⟩
+  | succ i =>
+    refine ⟨pow10 528 ++ (midBlocks 5 i ++ (block (gLast (2 * (i + 1) + 1)) (aLast (2 * (i + 1) + 1))
+              ++ [true])), ?_⟩
+    show (if (2 * (i + 1) + 1 + 4) % 2 = 1 then block 2 4 ++ block 5 15 else [])
+          ++ midBlocks ((2 * (i + 1) + 1 + 4) % 2) ((2 * (i + 1) + 1 + 4) / 2 - 1)
+          ++ block (gLast (2 * (i + 1) + 1)) (aLast (2 * (i + 1) + 1)) ++ [true] = _
+    rw [show (2 * (i + 1) + 1 + 4) % 2 = 1 from by omega,
+        show (2 * (i + 1) + 1 + 4) / 2 - 1 = i + 1 + 1 from by omega]
+    rw [if_pos rfl, midBlocks_front (i + 1) 1, midBlocks_front i 3]
+    show (zeros 2 ++ pow10 4 ++ (zeros 5 ++ pow10 15))
+          ++ ((zeros 60 ++ pow10 132) ++ ((zeros 144 ++ pow10 528) ++ midBlocks 5 i)) ++ _ ++ _ = _
+    show _ = (zeros 2 ++ pow10 4 ++ zeros 5 ++ pow10 15 ++ zeros 60 ++ pow10 132 ++ zeros 144)
+              ++ _
+    simp only [List.append_assoc]
+
+/-- **The epoch's opening, at every even level.** -/
+theorem open_even_all (i : Nat) :
+    ∃ Y, steps dT 13219 (M1 (2 * i))
+      = some ⟨.C, -8 * ((2 * i : Nat) + 4 : Int) + 243, ⟨evenOut, true, Y⟩⟩ := by
+  obtain ⟨Y, hY⟩ := dcascade_evenPre i
+  refine ⟨Y, ?_⟩
+  show steps dT 13219 (⟨.A, -8 * ((2 * i : Nat) + 4 : Int), ⟨[], false, Dcascade (2 * i)⟩⟩
+        : Cfg St) = _
+  rw [hY]
+  exact openEven _ _
+
+/-- **The epoch's opening, at every odd level.** -/
+theorem open_odd_all (i : Nat) :
+    ∃ Y, steps dT 50139 (M1 (2 * i + 1))
+      = some ⟨.C, -8 * ((2 * i + 1 : Nat) + 4 : Int) + 513, ⟨oddOut, true, Y⟩⟩ := by
+  obtain ⟨Y, hY⟩ := dcascade_oddPre i
+  refine ⟨Y, ?_⟩
+  show steps dT 50139 (⟨.A, -8 * ((2 * i + 1 : Nat) + 4 : Int), ⟨[], false, Dcascade (2 * i + 1)⟩⟩
+        : Cfg St) = _
+  rw [hY]
+  exact openOdd _ _
+
+#print axioms midBlocks_front
+#print axioms dcascade_evenPre
+#print axioms dcascade_oddPre
+#print axioms open_even_all
+#print axioms open_odd_all
+
 end DOpening
