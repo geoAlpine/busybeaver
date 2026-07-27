@@ -163,8 +163,10 @@ law's output configuration to be the next one's input *on this word*, which is e
 unproven.  Stated as a `def … : Prop` with the measured step counts, never as a `sorry`, so
 nothing here can leak into an axiom audit. -/
 
-/-- Measured epoch spans `T(k+1) − T(k)` for `k = 4..8`
-(`291168, 1196412, 4846662, 19488198, 78148404, 312959448`). -/
+/-- Measured epoch spans `T(k+1) − T(k)` for `k = 4..8`, from the milestone times
+`291168, 1196412, 4846662, 19488198, 78148404, 312959448`.  A **data table**, not a closed form:
+no closed form for the span is measured beyond `k = 8`, which is exactly why `EpochLaw` below is
+stated existentially rather than with this function. -/
 def epochSpan : Nat → Nat
   | 0 => 905244
   | 1 => 3650250
@@ -173,8 +175,15 @@ def epochSpan : Nat → Nat
   | 4 => 234811044
   | _ + 5 => 0
 
-/-- **The epoch law — `[MEASURED for k = 4..8; NOT PROVEN]`.** -/
-def EpochLaw : Prop := ∀ j, steps dT (epochSpan j) (M1 j) = some (M1 (j + 1))
+/-- **The epoch law — `[MEASURED for k = 4..8; NOT PROVEN]`.**
+
+Stated existentially, and deliberately so.  An earlier revision of this file wrote it as
+`∀ j, steps dT (epochSpan j) (M1 j) = some (M1 (j+1))`, which is **false**: `epochSpan` is a
+five-entry measured table and returns `0` for `j ≥ 5`, so that statement asserted
+`M1 j = M1 (j+1)`.  The existential form is also exactly the shape
+`TapeCalc.nonhalt_of_invariant` consumes — see `lean/DReduce.lean`, where `D`'s non-halting is
+reduced to this single obligation. -/
+def EpochLaw : Prop := ∀ j, ∃ n, 1 ≤ n ∧ steps dT n (M1 j) = some (M1 (j + 1))
 
 /-- Anti-vacuity for the *statement*: the spans really are the measured differences. -/
 theorem epochSpan_measured :
