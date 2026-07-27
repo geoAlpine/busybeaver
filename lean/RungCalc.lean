@@ -52,7 +52,8 @@ roles.  The graphs differ; the atoms do not.  So the tile is an invariant of the
   return sweep crossing a `(1 0)^w` comb before the landing pad.  `IN` is the `w = 0` case, so one
   law covers both, and a turn phase's output is again an `IN` — at `u'=0, m'=w, c'=1`;
 * `rung0` / `descend` — the two pieces of the **leftward** turn phase: the rung with an exhausted
-  comb, and the descent `crawlFold ; crawl ; markerFold ; crawl`.
+  comb, and the descent `crawlFold ; crawl ; markerFold ; crawl`;
+* `tileIter` / `ladderSpan` — a whole **ladder segment** (`n` consecutive rungs) as one law.
 
 Zero-Mathlib, core only.  No `sorry`, no `native_decide`, no `decide`.
 No machine is decided here and no label is upgraded: this file proves a *conditional*
@@ -557,6 +558,52 @@ theorem tile_holds {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA
     {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu) :
     Tile T sA (span cr mk ta s10 s01 tu) := tile h
 
+/-! ## §5.1 The ladder segment — `n` rungs as ONE law.
+
+A ladder segment is the tile fired `n` times in a row, and `n` is large: `D`'s epochs contain
+segments of 2, 4, 36, 308, 28 and 1 rungs at `k = 4` alone, and the main segment reaches 1246 at
+`k = 6`.  Nothing can be assembled epoch-wide until a whole segment is a single lemma
+application, which is what `tileIter` is.
+
+The span is not a fixed multiple: each rung is `6` steps longer than the last (`u` grows by 2 and
+`m` shrinks by 1), so `ladderSpan` is defined by the same recursion as the iterate.  Checked
+against all six measured `k = 4` ladders — 60, 264, 18360, 857472, 19320, 69 steps — which the
+closed form reproduces exactly. -/
+
+/-- The total span of `n` consecutive rungs starting from `IN u (m+n) c (g+3n)`. -/
+def ladderSpan (cr mk ta s10 s01 tu u m : Nat) : Nat → Nat
+  | 0 => 0
+  | n + 1 => span cr mk ta s10 s01 tu u (m + n) + ladderSpan cr mk ta s10 s01 tu (u + 2) m n
+
+/-- **The ladder segment, `[PROVEN]` for every machine satisfying `Atoms` and every `n`.**
+`n` rungs take `IN u (m+n) c (g+3n)` to `IN (u+2n) m (c+n) g`, advancing the head by `3n`. -/
+theorem tileIter {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB : S}
+    {cr mk ta s10 s01 tu : Nat} (h : Atoms T sA sB cr mk ta s10 s01 tu) :
+    ∀ (n u m c g : Nat) (p : Int) (TAIL REST : List Bool),
+    steps T (ladderSpan cr mk ta s10 s01 tu u m n)
+        (IN sA u (m + n) c (g + 3 * n) p TAIL REST)
+      = some (IN sA (u + 2 * n) m (c + n) g (p + 3 * n) TAIL REST) := by
+  intro n
+  induction n with
+  | zero =>
+    intro u m c g p TAIL REST
+    show some _ = some _
+    rw [show m + 0 = m from by omega, show g + 3 * 0 = g from by omega,
+        show u + 2 * 0 = u from by omega, show c + 0 = c from by omega,
+        show p + 3 * ((0 : Nat) : Int) = p from by omega]
+  | succ n ih =>
+    intro u m c g p TAIL REST
+    show steps T (span cr mk ta s10 s01 tu u (m + n)
+            + ladderSpan cr mk ta s10 s01 tu (u + 2) m n) _ = _
+    rw [steps_add,
+        show m + (n + 1) = (m + n) + 1 from by omega,
+        show g + 3 * (n + 1) = (g + 3 * n) + 3 from by omega,
+        tile h u (m + n) c (g + 3 * n) p TAIL REST, someBind,
+        ih (u + 2) m (c + 1) g (p + 3) TAIL REST,
+        show u + 2 + 2 * n = u + 2 * (n + 1) from by omega,
+        show c + 1 + n = c + (n + 1) from by omega,
+        show p + 3 + 3 * (n : Int) = p + 3 * ((n : Nat) + 1 : Nat) from by push_cast; omega]
+
 /-! ## §6 The turn phase as a configuration law.
 
 `IN2` is `IN` with the landing pad pushed `2w` cells further right by a `(1 0)`-comb.  `IN` is
@@ -624,6 +671,7 @@ theorem tile2 {S : Type} {T : S → Bool → Option (Bool × Dir × S)} {sA sB :
 #print axioms descend
 #print axioms tile
 #print axioms tile_holds
+#print axioms tileIter
 #print axioms tile2
 
 end RungCalc

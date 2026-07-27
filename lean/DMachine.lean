@@ -281,6 +281,39 @@ theorem sweepD_grounded :
     steps dT 8 ⟨.D, 0, ⟨[true, false], true, false :: (pow10 3 ++ (true :: [false]))⟩⟩
       = some ⟨.D, 8, ⟨pow10 4 ++ [true, false], true, [false]⟩⟩ := by rfl
 
+
+/-! ### §5.2 The ladder segment.
+
+A whole ladder — `n` consecutive rungs — as one law, from `RungCalc.tileIter`.  The spans below
+are the **measured** `k = 4` ladder segments (`d_rf4_epochs.py`), and `ladderSpan` reproduces each
+exactly; the 308-rung one is the epoch's main segment. -/
+
+/-- **D's ladder segment**, `∀ n u m c g p TAIL REST`. -/
+theorem ladder (n u m c g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps dT (ladderSpan 4 1 1 2 2 3 u m n) (IN u (m + n) c (g + 3 * n) p TAIL REST)
+      = some (IN (u + 2 * n) m (c + n) g (p + 3 * n) TAIL REST) :=
+  RungCalc.tileIter dAtoms n u m c g p TAIL REST
+
+/-- The six measured `k = 4` ladder spans, reproduced by `ladderSpan`.  The `IN` parameters are
+those measured at each segment's start; a drift in `span` or in the iterate would break these. -/
+theorem ladderSpans_measured :
+    ladderSpan 4 1 1 2 2 3 0 0 2 = 60 ∧ ladderSpan 4 1 1 2 2 3 1 2 4 = 264
+      ∧ ladderSpan 4 1 1 2 2 3 0 29 36 = 18360 ∧ ladderSpan 4 1 1 2 2 3 0 0 308 = 857472
+      ∧ ladderSpan 4 1 1 2 2 3 71 0 28 = 19320 ∧ ladderSpan 4 1 1 2 2 3 8 0 1 = 69 := by
+  refine ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+
+/-- The main segment as a single application: 308 rungs, 857,472 steps, `IN 0 308 1 (g+924)`
+to `IN 616 0 309 g`, head `+924`. -/
+theorem ladder_main (g : Nat) (p : Int) (TAIL REST : List Bool) :
+    steps dT 857472 (IN 0 308 1 (g + 924) p TAIL REST)
+      = some (IN 616 0 309 g (p + 924) TAIL REST) := by
+  have h := ladder 308 0 0 1 g p TAIL REST
+  rw [show ladderSpan 4 1 1 2 2 3 0 0 308 = 857472 from by rfl] at h
+  rw [show (0 : Nat) + 308 = 308 from by omega, show 3 * 308 = 924 from by omega,
+      show (0 : Nat) + 2 * 308 = 616 from by omega, show (1 : Nat) + 308 = 309 from by omega,
+      show (3 : Int) * ((308 : Nat) : Int) = 924 from by omega] at h
+  exact h
+
 /-! ## §6 Kernel-grounded instances (anti-vacuity + the tile at concrete levels).
 
 Each is a closed `rfl` on the genuine machine, so a drift in `dT` or in the word vocabulary
@@ -365,6 +398,9 @@ theorem tile_c_zero :
 #print axioms descent_grounded
 #print axioms swapD
 #print axioms sweepD
+#print axioms ladder
+#print axioms ladderSpans_measured
+#print axioms ladder_main
 #print axioms rungTile_holds
 #print axioms anchor160
 #print axioms tile_1_2_2_4
