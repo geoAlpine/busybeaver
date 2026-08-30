@@ -1,0 +1,1025 @@
+import T7OddRung
+import BlankNorm
+import T7E2Bridge
+import T7Odd
+open X2
+
+set_option maxRecDepth 40000
+
+/-! # The odd doubling phase: `topEntryOddFull` composed with `oddSpineFull`
+
+`topEntryOddFull h` lands in `descIn (2h+9)` carrying the marker
+`ones 20 ++ (0 0 :: (pow10 N ++ (1 :: rUnitsDep (2h+3) (p1tL ++ LL))))`, `N = 2^(2h+10) - 7`.
+`oddSpineFull n` consumes `ones 20 ++ (0 0 :: (pow10 m ++ (0 1 :: frameLV j (endWord ++ zeros 11 ++ L))))`
+in `descIn (n+4)`.  This file proves the two are the SAME word with
+
+    n = 2h+5,   m = N + 1,   j = 2h+2,   LL = zeros 10 ++ L
+
+and — independently — that `oddSpineFull`'s arithmetic side condition
+`10 + m = (c+1) + (2^(5+n) - 2)` then FORCES `c = 5`, i.e. the odd top rung's measured `Lc = 6`.
+-/
+
+/-- The marker word delivered by `topEntryOddFull` IS the one `oddSpineFull` consumes. -/
+theorem oddMarkerBridge (h : Nat) (L : List Bool) :
+    pow10 (2^(2*h+3+7) - 7) ++ (true :: rUnitsDep (2*h+3) (p1tL ++ (zeros 10 ++ L)))
+      = pow10 ((2^(2*h+3+7) - 7) + 1)
+          ++ (false :: true :: frameLV ((2*h+1) + 1) (endWord ++ (zeros 11 ++ L))) := by
+  rw [rUnitsDep_frameL h (zeros 10 ++ L), ← List.append_assoc (zeros 1), zeros_1_10,
+      frameL_turnWord (2*h+1) (endWord ++ (zeros 11 ++ L)),
+      ← oddE2Marker (2^(2*h+3+7) - 7) (2*h+1) (endWord ++ (zeros 11 ++ L))]
+  rfl
+
+/-- The side condition of `oddSpineFull` at `n = 2h+5`, `m = N+1` FORCES `c = 5` — the odd top
+rung's measured `Lc = 6`, recovered here purely arithmetically. -/
+theorem oddC_forced (h c : Nat)
+    (hm : 10 + ((2^(2*h+3+7) - 7) + 1) = (c + 1) + (2^(5 + (2*h+5)) - 2)) : c = 5 := by
+  have e : (5 + (2*h+5)) = (2*h+3+7) := by omega
+  rw [e] at hm
+  have hp : 2 ^ (2*h+3+7) ≥ 2 ^ 10 := Nat.pow_le_pow_right (by omega) (by omega)
+  have : (2:Nat) ^ 10 = 1024 := by decide
+  omega
+
+#print axioms oddMarkerBridge
+#print axioms oddC_forced
+
+/-- **THE ODD DOUBLING PHASE** — `topEntryOddFull` composed with `oddSpineFull`, unconditional in
+`h`.  From the odd A-entry `odA h` all the way to the next milestone, with `c = 5` (the measured
+`Lc = 6`) and `j = 2h+2` forced, not assumed. -/
+theorem doubPhaseOdd (h : Nat) (L R : List Bool) :
+    ∃ q, steps (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+             + 6 * 2 ^ (2 * h + 8))
+          + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+             + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+                + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+                   + (27 * (2*h+2) + 110)))))
+        (odA h (zeros 10 ++ L)
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2*h+5) ++
+            (zeros (2 ^ (5 + (2*h+5))) ++ (zeros (2 ^ (5 + (2*h+5) + 1)) ++ R))))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
+  have hm : 10 + ((2 ^ (2*h+3+7) - 7) + 1) = (5 + 1) + (2 ^ (5 + (2*h+5)) - 2) := by
+    have e : (5 + (2*h+5)) = (2*h+3+7) := by omega
+    rw [e]
+    have hp : (2:Nat) ^ (2*h+3+7) ≥ 2 ^ 10 := Nat.pow_le_pow_right (by omega) (by omega)
+    have h1024 : (2:Nat) ^ 10 = 1024 := by decide
+    omega
+  obtain ⟨q, hq⟩ := oddSpineFull (2*h+5) ((2 ^ (2*h+3+7) - 7) + 1) 5 (2*h+2) (by omega) (by omega)
+    hm (-5 + 19 + 7 * ((2 * h + 3 : Nat) : Int) + 17
+        + 2 * ((2 ^ (2 * h + 3 + 7) - 7 : Nat) : Int) + 6
+        + 2 * ((2 ^ (2 * h + 8) : Nat) : Int)) L R
+  refine ⟨q, ?_⟩
+  have en : 2*h+5+4 = 2*h+9 := by omega
+  rw [en] at hq
+  rw [steps_add, topEntryOddFull h (zeros 10 ++ L) _, someBind, oddMarkerBridge h L]
+  exact hq
+
+#print axioms doubPhaseOdd
+
+/-- **M4 anti-vacuity.**  At `h = 0` the composed cost is `8476791` — the INDEPENDENTLY MEASURED
+`x2` milestone span M6(3) → M1(4).  The theorem is therefore about the real orbit, not a vacuous
+or off-orbit family. -/
+theorem doubPhaseOdd_cost0 :
+    ((99 + (15 * (2 * 0 + 3) + ((17 + 46 * (2 ^ (2 * 0 + 3 + 7) - 7)) + 6)))
+             + 6 * 2 ^ (2 * 0 + 8))
+          + (((descTotal (2*0+5) + 415) + (ladderSteps 5 (2*0+5) + exitSteps (5 + (2*0+5))))
+             + ((topGrindSteps (5 + (2*0+5)) + exitSteps (5 + (2*0+5) + 1) + 80)
+                + (topGrindSteps (5 + (2*0+5) + 1) + (exitSteps (5 + (2*0+5) + 1 + 1) + 4 * 5)
+                   + (27 * (2*0+2) + 110)))) = 8476791 := by decide
+
+#print axioms doubPhaseOdd_cost0
+
+/-! ## Obligation H (odd branch) — R5 dissolves
+
+`doubPhaseOdd` is `∀ L` in the left tail.  So the low phase's surviving-blank count `j` does NOT
+have to be pinned to `10`: any `j ≥ 10` feeds the phase with `L := zeros (j - 10)`.  The bracket
+`hlow_j_ge`(≥10) + `steps_lpad_zeros`(≤16) is therefore already sufficient, and the "pin `j = 10`"
+item (R5) is not needed for the odd branch at all. -/
+
+/-- the doubling phase's right-hand pad register -/
+def oddPadR (h : Nat) (R : List Bool) : List Bool :=
+  zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2 ^ (5 + (2*h+5))) ++ (zeros (2 ^ (5 + (2*h+5) + 1)) ++ R))))
+
+/-- the low phase's free `FRAME` instantiated to what `odA` needs -/
+def oddLowFrame (h : Nat) (R : List Bool) : List Bool :=
+  ones (2 ^ (2*h+3+8) - 13) ++ (false :: false :: (descCascade (2*h+8) ++ oddPadR h R))
+
+/-- `h_low_odd_core` with `FRAME` set to the doubling phase's register: the OUT is `odA h [] _`. -/
+theorem hlowOdd_core' (h : Nat) (R : List Bool) :
+    steps (419 + 76*h)
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+          (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+      = some (odA h [] (oddPadR h R)) :=
+  h_low_odd_core h (oddLowFrame h R)
+
+#print axioms hlowOdd_core'
+
+/-- padded odd low phase: `zeros m` of left boundary blanks, `j ≤ m` survive. -/
+theorem hlowOdd_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (419 + 76*h)
+          ⟨.E, 0, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some (odA h (zeros j) (oddPadR h R)) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ := steps_lpad_zeros (419 + 76*h) .E 0 [] false _ (hlowOdd_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **Obligation H (odd) — the low phase meets `doubPhaseOdd`, unconditional in `h`.**
+`zeros 16` of left boundary blanks are supplied; `j ∈ [10, 16]` of them survive; the doubling
+phase absorbs the surplus into its free left tail.  No exact `j` is required. -/
+theorem hlowDoubOdd (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((419 + 76*h)
+          + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+               + 6 * 2 ^ (2 * h + 8))
+            + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+               + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+                  + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+                     + (27 * (2*h+2) + 110))))))
+          ⟨.E, 0, ⟨zeros 16, false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowOdd_padded h R 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [odA, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseOdd h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms hlowOdd_padded
+#print axioms hlowDoubOdd
+
+/-! ## The even branch, made `∀ L` — and obligation H (even)
+
+`doubPhaseEven` is stated at the FIXED left tail `zeros 10`.  Its two ingredients
+(`topEntryEvenLT`, `evenSpine`) are both `∀`, so the `∀ L` restatement is immediate — and with it
+the same R5-dissolving argument works on the even branch too. -/
+
+/-- **`doubPhaseEven` with a free left tail.** -/
+theorem doubPhaseEvenL (h : Nat) (L R : List Bool) :
+    ∃ q : Int,
+      steps ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110))))
+          (ttA h (zeros 10 ++ L)
+            (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+              (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))))
+        = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨q, hq⟩ := evenSpine (2 * h + 5) (2 * h + 1) (teP h) L R
+  refine ⟨q, ?_⟩
+  rw [steps_add,
+      topEntryEvenLT h (zeros 10 ++ L)
+        (zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+          (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))),
+      someBind, tlM_spineMk h (zeros 10 ++ L), ← List.append_assoc, zeros_1_10]
+  show steps _ (descIn (2 * h + 5 + 4) (teP h) _ _) = _
+  exact hq
+
+/-- the even doubling phase's right-hand pad register -/
+def evenPadR (h : Nat) (R : List Bool) : List Bool :=
+  zeros 25 ++ (zeros 16 ++ (ladderPad 5 (2 * h + 5) ++
+    (zeros (2 ^ (5 + (2 * h + 5))) ++ R)))
+
+/-- the even low phase's free `TAIL` instantiated to what `ttA` needs -/
+def evenLowFrame (h : Nat) (R : List Bool) : List Bool :=
+  ones (2 ^ (2*h+2+8) - 3) ++ teTailT h (evenPadR h R)
+
+/-- `h_low_even_core` with `TAIL` set to the doubling phase's register: the OUT is `ttA h [] _`. -/
+theorem hlowEven_core' (h : Nat) (R : List Bool) :
+    steps (267 + 38*(2*h+2))
+        ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+          (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+      = some (ttA h [] (evenPadR h R)) :=
+  h_low_even_core h (evenLowFrame h R)
+
+/-- padded even low phase. -/
+theorem hlowEven_padded (h : Nat) (R : List Bool) :
+    ∀ m : Nat, ∃ j : Nat, j ≤ m ∧
+      steps (267 + 38*(2*h+2))
+          ⟨.E, 0, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some (ttA h (zeros j) (evenPadR h R)) := by
+  intro m
+  obtain ⟨j, hjm, hj⟩ := steps_lpad_zeros (267 + 38*(2*h+2)) .E 0 [] false _ (hlowEven_core' h R) m
+  exact ⟨j, hjm, by rwa [List.nil_append] at hj⟩
+
+/-- **Obligation H (even) — the low phase meets `doubPhaseEvenL`, unconditional in `h`.** -/
+theorem hlowDoubEven (h : Nat) (R : List Bool) :
+    ∃ (j : Nat) (q : Int), 10 ≤ j ∧ j ≤ 16 ∧
+      steps ((267 + 38*(2*h+2))
+          + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110)))))
+          ⟨.E, 0, ⟨zeros 16, false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some ⟨.E, q, ⟨zeros 10 ++ zeros (j - 10), false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨j, hj16, hlow⟩ := hlowEven_padded h R 16
+  have hj10 : 10 ≤ j := by
+    have hm := steps_left_mono _ _ _ hlow
+    simp only [ttA, List.length_append, zeros_length, List.length_cons,
+      List.length_nil] at hm
+    push_cast at hm
+    omega
+  obtain ⟨q, hdb⟩ := doubPhaseEvenL h (zeros (j - 10)) R
+  refine ⟨j, q, hj10, hj16, ?_⟩
+  have hz : zeros 10 ++ zeros (j - 10) = zeros j := by
+    rw [← zeros_add, show 10 + (j - 10) = j from by omega]
+  rw [hz] at hdb
+  rw [steps_add, hlow, someBind, hz]
+  exact hdb
+
+#print axioms doubPhaseEvenL
+#print axioms hlowEven_core'
+#print axioms hlowDoubEven
+
+/-! ## M4 anti-vacuity for both obligation-H compositions
+
+MEASURED milestone steps (`x2r2_sim`, instrument anchors green): `M1(2) @732733`,
+`M6(2) @733076`, `M1(3) @2852091`, `M6(3) @2852510`, `M1(4) @11329301` — each in state `E` with
+right `0^21 1 0^6 …` (M1) resp. the `M6` frame.  So
+
+    M1(2) -> M1(3) = 2 119 358      M1(3) -> M1(4) = 8 477 210
+
+and both composed costs hit those spans exactly. -/
+
+theorem hlowDoubEven_cost0 :
+    (267 + 38*(2*0+2))
+      + ((99 + (15 * (2 * 0 + 2 + 1) + (3 + 6 * 2 ^ (2 * 0 + 2 + 6))))
+         + ((descTotal (2 * 0 + 5) + 415)
+            + (ladderSteps 5 (2 * 0 + 5) + exitSteps (5 + (2 * 0 + 5)))
+            + (topGrindSteps (5 + (2 * 0 + 5)) + exitSteps (5 + (2 * 0 + 5) + 1) + 74
+               + (27 * (2 * 0 + 1) + 110)))) = 2119358 := by decide
+
+theorem hlowDoubOdd_cost0 :
+    (419 + 76*0)
+      + (((99 + (15 * (2 * 0 + 3) + ((17 + 46 * (2 ^ (2 * 0 + 3 + 7) - 7)) + 6)))
+           + 6 * 2 ^ (2 * 0 + 8))
+        + (((descTotal (2*0+5) + 415) + (ladderSteps 5 (2*0+5) + exitSteps (5 + (2*0+5))))
+           + ((topGrindSteps (5 + (2*0+5)) + exitSteps (5 + (2*0+5) + 1) + 80)
+              + (topGrindSteps (5 + (2*0+5) + 1) + (exitSteps (5 + (2*0+5) + 1 + 1) + 4 * 5)
+                 + (27 * (2*0+2) + 110))))) = 8477210 := by decide
+
+#print axioms hlowDoubEven_cost0
+#print axioms hlowDoubOdd_cost0
+
+/-! ## The REVERSE left-boundary congruence (`steps_lunpad_zeros`)
+
+`steps_lpad_zeros` lifts a run from the trimmed config to the padded one.  The F assembly needs
+the OTHER direction: a milestone's OUT left carries leftover boundary blanks, and the next
+generation's IN is stated on the TRIMMED (`left = []`) canonical family.  `steps_cltail` is a
+genuine bisimulation, so the reverse holds — this is its iterated form.
+
+(Belongs in `BlankNorm.lean`; kept here so the rebuild stays local.) -/
+theorem steps_lunpad_zeros : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L'' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L ++ zeros k, hd, R⟩⟩ = some ⟨s', p', ⟨L'', hd', R'⟩⟩ →
+    ∃ (L' : List Bool) (i : Nat), i ≤ k ∧ L'' = L' ++ zeros i ∧
+      steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L'' hd' R' hrun
+    refine ⟨L'', 0, Nat.le_refl 0,
+      by rw [show (zeros 0 : List Bool) = [] from rfl, List.append_nil], ?_⟩
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil] at hrun
+  | succ k ih =>
+    intro n s p L hd R s' p' L'' hd' R' hrun
+    have hpad : L ++ zeros (k + 1) = (L ++ zeros k) ++ [false] := by
+      rw [← zeros_snoc, List.append_assoc]
+    rw [hpad] at hrun
+    have hc : cltail ⟨s, p, ⟨L ++ zeros k, hd, R⟩⟩ ⟨s, p, ⟨(L ++ zeros k) ++ [false], hd, R⟩⟩ :=
+      ⟨rfl, rfl, rfl, rfl, Or.inr rfl⟩
+    rcases steps_cltail n _ _ hc with ⟨_, h2⟩ | ⟨d1, d2, hd1, hd2, hdr⟩
+    · rw [hrun] at h2; simp at h2
+    · have hd2' : d2 = ⟨s', p', ⟨L'', hd', R'⟩⟩ := Option.some.inj (hd2.symm.trans hrun)
+      subst hd2'
+      rcases d1 with ⟨s1, p1, ⟨l1, h1, r1⟩⟩
+      obtain ⟨hst, hpos, hhh, hrr, hll⟩ := hdr
+      dsimp only at hst hpos hhh hrr hll
+      subst hst; subst hpos; subst hhh; subst hrr
+      obtain ⟨L', i, hik, hLi, hrun'⟩ := ih n s p L hd R hd1
+      rcases hll with h | h
+      · exact ⟨L', i, Nat.le_succ_of_le hik, by rw [← h] at hLi; exact hLi, hrun'⟩
+      · refine ⟨L', i + 1, Nat.succ_le_succ hik, ?_, hrun'⟩
+        rw [h, hLi, List.append_assoc, zeros_snoc]
+
+#print axioms steps_lunpad_zeros
+
+/-- A list that leaves a `zeros` block when a `zeros` block is appended IS a `zeros` block. -/
+theorem zeros_cancel_right (a b : Nat) (X : List Bool) (h : X ++ zeros b = zeros a) :
+    X = zeros (a - b) := by
+  have hlen : X.length + b = a := by
+    have hl := congrArg List.length h
+    simpa [zeros_length] using hl
+  refine List.append_cancel_right (bs := zeros b) ?_
+  rw [← zeros_add, show a - b + b = a from by omega]
+  exact h
+
+/-- **Obligation H (even), TRIMMED to the canonical `left = []` form.**  This is the shape the
+`M1` milestone family has, so this is the form the F assembly consumes. -/
+theorem hlowDoubEven_trim (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps ((267 + 38*(2*h+2))
+          + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+             + ((descTotal (2 * h + 5) + 415)
+                + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+                + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+                   + (27 * (2 * h + 1) + 110)))))
+          ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+            (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+        = some ⟨.E, q, ⟨zeros m, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2 * h + 1) (seamZ (5 + (2 * h + 5)) R))))⟩⟩ := by
+  obtain ⟨j, q, hj10, _, hrun⟩ := hlowDoubEven h R
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
+
+/-- **Obligation H (odd), TRIMMED to the canonical `left = []` form.** -/
+theorem hlowDoubOdd_trim (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps ((419 + 76*h)
+          + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+               + 6 * 2 ^ (2 * h + 8))
+            + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+               + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+                  + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+                     + (27 * (2*h+2) + 110))))))
+          ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+        = some ⟨.E, q, ⟨zeros m, false,
+            zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+              frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 R))))⟩⟩ := by
+  obtain ⟨j, q, hj10, _, hrun⟩ := hlowDoubOdd h R
+  rw [show zeros 10 ++ zeros (j - 10) = zeros j from by
+        rw [← zeros_add, show 10 + (j - 10) = j from by omega],
+      show (zeros 16 : List Bool) = [] ++ zeros 16 from by rw [List.nil_append]] at hrun
+  obtain ⟨L', i, _, hLi, htrim⟩ := steps_lunpad_zeros 16 _ _ _ _ _ _ hrun
+  exact ⟨j - i, q, by rw [← zeros_cancel_right j i L' hLi.symm]; exact htrim⟩
+
+#print axioms hlowDoubEven_trim
+#print axioms hlowDoubOdd_trim
+
+/-! ## F item 2 — the CROSS-GENERATION frame identity
+
+The OUT frame of one milestone must BE the IN frame of the next.  The key is that `uUnits`'
+repetition unit `1 0^6` IS `frameZ`'s: `frameZ (j+1) Z = frameZ j (0^5 ++ 1 0 :: Z)`, and
+`1 0 :: 0^5` re-associates to `1 :: 0^6`.  So the whole frame block collapses to `uUnits`. -/
+
+theorem uUnits_snoc : ∀ k : Nat, uUnits k ++ (true :: zeros 6) = uUnits (k + 1) := by
+  intro k
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    show ((true :: zeros 6) ++ uUnits k) ++ (true :: zeros 6) = (true :: zeros 6) ++ uUnits (k + 1)
+    rw [List.append_assoc, ih]
+
+/-- **The frame block IS a `uUnits` block.** -/
+theorem uUnits_frameZ : ∀ (j : Nat) (Z : List Bool),
+    true :: (zeros 6 ++ (true :: false :: frameZ j Z)) = uUnits (j + 1) ++ (true :: false :: Z) := by
+  intro j
+  induction j with
+  | zero => intro Z; rfl
+  | succ j ih =>
+    intro Z
+    show true :: (zeros 6 ++ (true :: false :: frameZ j (zeros 5 ++ (true :: false :: Z)))) = _
+    rw [ih (zeros 5 ++ (true :: false :: Z))]
+    show uUnits (j + 1) ++ (true :: (zeros 6 ++ (true :: false :: Z))) = _
+    rw [show (true :: (zeros 6 ++ (true :: false :: Z)) : List Bool)
+          = (true :: zeros 6) ++ (true :: false :: Z) from rfl,
+        ← List.append_assoc, uUnits_snoc]
+
+#print axioms uUnits_snoc
+#print axioms uUnits_frameZ
+
+def oddPadTail (h : Nat) (R : List Bool) : List Bool :=
+  zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2 ^ (5 + (2*h+5))) ++ (zeros (2 ^ (5 + (2*h+5) + 1)) ++ R)))
+
+theorem oddPadR_split (h : Nat) (R : List Bool) :
+    oddPadR h R = zeros 25 ++ oddPadTail h R := rfl
+
+/-- **EVEN OUT seam = ODD IN seam.**  The even milestone's `seamZ` tail, with one leading `0` from
+the frame block, IS the odd low phase's `0^4 (10)^6 1^4 …` entry word. -/
+theorem evenSeam_oddIn (h : Nat) (R : List Bool) :
+    false :: seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)
+      = zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)) := by
+  have hp : (2:Nat) ^ 11 ≤ 2 ^ (2*h+3+8) := Nat.pow_le_pow_right (by omega) (by omega)
+  have h2048 : (2:Nat) ^ 11 = 2048 := by decide
+  have hones : ones (2 ^ (2*h+3+8) - 9) = ones 4 ++ ones (2 ^ (2*h+3+8) - 13) := by
+    rw [← ones_add, show 4 + (2 ^ (2*h+3+8) - 13) = 2 ^ (2*h+3+8) - 9 from by omega]
+  have hz : (zeros 7 ++ (zeros 16 ++ oddPadTail h R) : List Bool)
+      = zeros 23 ++ oddPadTail h R := by rw [← List.append_assoc, ← zeros_add]
+  show false :: (_ ++ (ones (2 ^ (5 + (2*h+5) + 1) - 9) ++ (false :: false ::
+      (descCascade (5 + (2*h+5) - 2) ++ (false :: false ::
+        (zeros 7 ++ (zeros 16 ++ oddPadTail h R))))))) = _
+  rw [show 5 + (2*h+5) + 1 = 2*h+3+8 from by omega,
+      show 5 + (2*h+5) - 2 = 2*h+8 from by omega, hones, hz]
+  show _ = zeros 4 ++ (pow10 6 ++ (ones 4 ++ (ones (2 ^ (2*h+3+8) - 13) ++
+      (false :: false :: (descCascade (2*h+8) ++ (zeros 25 ++ oddPadTail h R))))))
+  rfl
+
+#print axioms evenSeam_oddIn
+
+/-- **EVEN OUT frame IS the ODD IN frame** — the cross-generation milestone identity, even→odd. -/
+theorem evenOut_is_oddIn (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+1) (seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)))))
+      = zeros 21 ++ (uUnits (2*h+2) ++
+          (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R))))) := by
+  rw [uUnits_frameZ (2*h+1) _, show 2*h+1+1 = 2*h+2 from by omega]
+  show zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (false :: seamZ (5 + (2*h+5)) (zeros 16 ++ oddPadTail h R)))) = _
+  rw [evenSeam_oddIn h R]
+
+def evenPadTail (h : Nat) (R : List Bool) : List Bool :=
+  zeros 16 ++ (ladderPad 5 (2*h+5) ++ (zeros (2 ^ (5 + (2*h+5))) ++ R))
+
+theorem evenPadR_split (h : Nat) (R : List Bool) :
+    evenPadR h R = zeros 25 ++ evenPadTail h R := rfl
+
+/-- **ODD OUT seam = EVEN IN seam.** -/
+theorem oddSeam_evenIn (h : Nat) (R : List Bool) :
+    false :: oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)
+      = zeros 10 ++ evenLowFrame (h+1) R := by
+  have hz : (zeros 7 ++ (zeros 16 ++ evenPadTail (h+1) R) : List Bool)
+      = zeros 23 ++ evenPadTail (h+1) R := by rw [← List.append_assoc, ← zeros_add]
+  show false :: (zeros (2*5-1) ++ (ones (2 ^ (5 + (2*h+5) + 1 + 1) - 3) ++ (false :: false ::
+      (descCascade (5 + (2*h+5) + 1 + 1 - 3) ++ (false :: false ::
+        (zeros 7 ++ (zeros 16 ++ evenPadTail (h+1) R))))))) = _
+  rw [show 5 + (2*h+5) + 1 + 1 = 2*(h+1)+2+8 from by omega,
+      show 2*(h+1)+2+8 - 3 = 2*(h+1)+7 from by omega, hz]
+  show _ = zeros 10 ++ (ones (2 ^ (2*(h+1)+2+8) - 3) ++ (false :: false ::
+      (descCascade (2*(h+1)+7) ++ (zeros 25 ++ evenPadTail (h+1) R))))
+  rfl
+
+/-- **ODD OUT frame IS the EVEN IN frame** — the cross-generation milestone identity, odd→even. -/
+theorem oddOut_is_evenIn (h : Nat) (R : List Bool) :
+    zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+        frameZ (2*h+2) (oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)))))
+      = zeros 21 ++ (uUnits (2*(h+1)+1) ++
+          (true :: (zeros 10 ++ evenLowFrame (h+1) R))) := by
+  rw [uUnits_frameZ (2*h+2) _, show 2*h+2+1 = 2*(h+1)+1 from by omega]
+  show zeros 21 ++ (uUnits (2*(h+1)+1) ++
+    (true :: (false :: oddSeamZ (5 + (2*h+5) + 1) 5 (zeros 16 ++ evenPadTail (h+1) R)))) = _
+  rw [oddSeam_evenIn h R]
+
+#print axioms evenOut_is_oddIn
+#print axioms oddSeam_evenIn
+#print axioms oddOut_is_evenIn
+
+/-- **The REVERSE right-boundary congruence** — twin of `steps_lunpad_zeros`.  Trailing blanks on
+`right` are semantically inert, so a run proven on the PADDED tape yields the run on the trimmed
+one.  (Belongs in `BlankNorm.lean`.) -/
+theorem steps_runpad_zeros : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R'' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ = some ⟨s', p', ⟨L', hd', R''⟩⟩ →
+    ∃ (R' : List Bool) (i : Nat), i ≤ k ∧ R'' = R' ++ zeros i ∧
+      steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L' hd' R'' hrun
+    refine ⟨R'', 0, Nat.le_refl 0,
+      by rw [show (zeros 0 : List Bool) = [] from rfl, List.append_nil], ?_⟩
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil] at hrun
+  | succ k ih =>
+    intro n s p L hd R s' p' L' hd' R'' hrun
+    have hpad : R ++ zeros (k + 1) = (R ++ zeros k) ++ [false] := by
+      rw [← zeros_snoc, List.append_assoc]
+    rw [hpad] at hrun
+    have hc : crtail ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ ⟨s, p, ⟨L, hd, (R ++ zeros k) ++ [false]⟩⟩ :=
+      ⟨rfl, rfl, rfl, rfl, Or.inr rfl⟩
+    rcases steps_crtail n _ _ hc with ⟨_, h2⟩ | ⟨d1, d2, hd1, hd2, hdr⟩
+    · rw [hrun] at h2; simp at h2
+    · have hd2' : d2 = ⟨s', p', ⟨L', hd', R''⟩⟩ := Option.some.inj (hd2.symm.trans hrun)
+      subst hd2'
+      rcases d1 with ⟨s1, p1, ⟨l1, h1, r1⟩⟩
+      obtain ⟨hst, hpos, hll, hhh, hrr⟩ := hdr
+      dsimp only at hst hpos hll hhh hrr
+      subst hst; subst hpos; subst hll; subst hhh
+      obtain ⟨R', i, hik, hRi, hrun'⟩ := ih n s p L hd R hd1
+      rcases hrr with h | h
+      · exact ⟨R', i, Nat.le_succ_of_le hik, by rw [← h] at hRi; exact hRi, hrun'⟩
+      · refine ⟨R', i + 1, Nat.succ_le_succ hik, ?_, hrun'⟩
+        rw [h, hRi, List.append_assoc, zeros_snoc]
+
+#print axioms steps_runpad_zeros
+
+/-! ## The normalized milestone family and its cycle -/
+
+def costEven (h : Nat) : Nat :=
+  (267 + 38*(2*h+2))
+    + ((99 + (15 * (2 * h + 2 + 1) + (3 + 6 * 2 ^ (2 * h + 2 + 6))))
+       + ((descTotal (2 * h + 5) + 415)
+          + (ladderSteps 5 (2 * h + 5) + exitSteps (5 + (2 * h + 5)))
+          + (topGrindSteps (5 + (2 * h + 5)) + exitSteps (5 + (2 * h + 5) + 1) + 74
+             + (27 * (2 * h + 1) + 110))))
+
+def costOdd (h : Nat) : Nat :=
+  (419 + 76*h)
+    + (((99 + (15 * (2 * h + 3) + ((17 + 46 * (2 ^ (2 * h + 3 + 7) - 7)) + 6)))
+         + 6 * 2 ^ (2 * h + 8))
+      + (((descTotal (2*h+5) + 415) + (ladderSteps 5 (2*h+5) + exitSteps (5 + (2*h+5))))
+         + ((topGrindSteps (5 + (2*h+5)) + exitSteps (5 + (2*h+5) + 1) + 80)
+            + (topGrindSteps (5 + (2*h+5) + 1) + (exitSteps (5 + (2*h+5) + 1 + 1) + 4 * 5)
+               + (27 * (2*h+2) + 110)))))
+
+/-- milestone `M1(2h+2)`, normalized: state `E`, pos `0`, left `[]`. -/
+def MEven (h : Nat) (R : List Bool) : Cfg :=
+  ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+1) ++
+    (true :: (zeros 10 ++ evenLowFrame h R)))⟩⟩
+
+/-- milestone `M1(2h+3)`, normalized. -/
+def MOdd (h : Nat) (R : List Bool) : Cfg :=
+  ⟨.E, 0, ⟨[], false, zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩
+
+/-- **THE EVEN CYCLE** — `MEven h → MOdd h` in `costEven h` steps, right tape landing EXACTLY on
+the next milestone's; only the left boundary blanks and the translation remain to normalize. -/
+theorem cycleEven (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps (costEven h) (MEven h (zeros 16 ++ oddPadTail h R))
+        = some ⟨.E, q, ⟨zeros m, false, zeros 21 ++ (uUnits (2*h+2) ++
+            (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h R)))))⟩⟩ := by
+  obtain ⟨m, q, hrun⟩ := hlowDoubEven_trim h (zeros 16 ++ oddPadTail h R)
+  exact ⟨m, q, by rw [← evenOut_is_oddIn h R]; exact hrun⟩
+
+/-- **THE ODD CYCLE** — `MOdd h → MEven (h+1)`. -/
+theorem cycleOdd (h : Nat) (R : List Bool) :
+    ∃ (m : Nat) (q : Int),
+      steps (costOdd h) (MOdd h (zeros 16 ++ evenPadTail (h+1) R))
+        = some ⟨.E, q, ⟨zeros m, false, zeros 21 ++ (uUnits (2*(h+1)+1) ++
+            (true :: (zeros 10 ++ evenLowFrame (h+1) R)))⟩⟩ := by
+  obtain ⟨m, q, hrun⟩ := hlowDoubOdd_trim h (zeros 16 ++ evenPadTail (h+1) R)
+  exact ⟨m, q, by rw [← oddOut_is_evenIn h R]; exact hrun⟩
+
+#print axioms cycleEven
+#print axioms cycleOdd
+
+/-! ## Tools for the final chain -/
+
+/-- **Invariant non-halting** — no explicit milestone family (hence no choice) is needed: a
+predicate preserved by one nonempty halt-free segment already forbids halting.  Strong induction
+via a fuel bound `B`. -/
+theorem nonhalt_of_invariant_aux (P : Cfg → Prop)
+    (hstep : ∀ c, P c → ∃ n, 1 ≤ n ∧ ∃ c', P c' ∧ steps n c = some c') :
+    ∀ (B N : Nat), N ≤ B → ∀ c, P c → steps N c ≠ none := by
+  intro B
+  induction B with
+  | zero =>
+    intro N hN c _
+    rw [show N = 0 from by omega]
+    intro h
+    rw [show steps 0 c = some c from rfl] at h
+    exact absurd h (by simp)
+  | succ B ih =>
+    intro N hN c hc
+    obtain ⟨n, hn1, c', hc', hrun⟩ := hstep c hc
+    by_cases hle : N ≤ n
+    · exact steps_prefix_ne_none hrun hle
+    · have e : N = n + (N - n) := by omega
+      rw [e, steps_add, hrun]
+      exact ih (N - n) (by omega) c' hc'
+
+theorem nonhalt_of_invariant (P : Cfg → Prop)
+    (hstep : ∀ c, P c → ∃ n, 1 ≤ n ∧ ∃ c', P c' ∧ steps n c = some c')
+    (c : Cfg) (hc : P c) : ∀ N : Nat, steps N c ≠ none :=
+  fun N => nonhalt_of_invariant_aux P hstep N N (Nat.le_refl N) c hc
+
+/-- the ladder pad is one explicit block of blanks -/
+def padLen (b : Nat) : Nat → Nat
+  | 0 => 0
+  | n + 1 => 2 ^ b + padLen (b + 1) n
+
+theorem ladderPad_zeros : ∀ (n b : Nat), ladderPad b n = zeros (padLen b n) := by
+  intro n
+  induction n with
+  | zero => intro b; rfl
+  | succ n ih =>
+    intro b
+    show zeros (2 ^ b) ++ ladderPad (b + 1) n = _
+    rw [ih (b + 1)]
+    show _ = zeros (2 ^ b + padLen (b + 1) n)
+    rw [zeros_add]
+
+#print axioms nonhalt_of_invariant
+#print axioms ladderPad_zeros
+
+/-! ## `steps_rpad_dichotomy` — the exact right-boundary congruence
+
+The right frontier `|right| + pos` is unchanged by `mvL` and by `mvR` on a nonempty `right`, and
+advances by exactly `1` on `mvR` from an EMPTY `right` — which is precisely the step that absorbs a
+trailing pad.  So "pad absorbed" and "frontier advanced" are the same event. -/
+
+theorem rpadR (L : List Bool) (b : Bool) (R : List Bool) (p : Int) :
+    ( mvR ⟨L, b, R ++ [false]⟩
+        = ⟨(mvR ⟨L, b, R⟩).left, (mvR ⟨L, b, R⟩).head, (mvR ⟨L, b, R⟩).right ++ [false]⟩
+      ∧ (((mvR ⟨L, b, R⟩).right.length : Int) + (p + 1) = (R.length : Int) + p) )
+    ∨ mvR ⟨L, b, R ++ [false]⟩ = mvR ⟨L, b, R⟩ := by
+  cases R with
+  | nil => exact Or.inr rfl
+  | cons x r =>
+    refine Or.inl ⟨rfl, ?_⟩
+    show ((r.length : Int)) + (p + 1) = (((x :: r).length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+
+theorem rpadL (L : List Bool) (b : Bool) (R : List Bool) (p : Int) :
+    mvL ⟨L, b, R ++ [false]⟩
+        = ⟨(mvL ⟨L, b, R⟩).left, (mvL ⟨L, b, R⟩).head, (mvL ⟨L, b, R⟩).right ++ [false]⟩
+      ∧ (((mvL ⟨L, b, R⟩).right.length : Int) + (p - 1) = (R.length : Int) + p) := by
+  cases L with
+  | nil =>
+    refine ⟨rfl, ?_⟩
+    show (((b :: R).length : Int)) + (p - 1) = ((R.length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+  | cons y l =>
+    refine ⟨rfl, ?_⟩
+    show (((b :: R).length : Int)) + (p - 1) = ((R.length : Int)) + p
+    simp only [List.length_cons]; push_cast; omega
+
+#print axioms rpadR
+#print axioms rpadL
+
+/-- **Step-level right-pad dichotomy.**  Either both halt, or the step is taken by both and the
+pad either RIDES (with the frontier unchanged) or is ABSORBED (the two configs become equal). -/
+theorem step_rpad (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool) :
+    (step ⟨s, p, ⟨L, hd, R⟩⟩ = none ∧ step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = none) ∨
+    (∃ (s' : St) (p' : Int) (t : Tape),
+        step ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', t⟩ ∧
+        ( (step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩
+              = some ⟨s', p', ⟨t.left, t.head, t.right ++ [false]⟩⟩
+             ∧ ((t.right.length : Int) + p' = (R.length : Int) + p))
+        ∨ step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', t⟩ )) := by
+  cases s <;> cases hd <;>
+    first
+      | exact Or.inl ⟨rfl, rfl⟩
+      | (rcases rpadR L true R p with ⟨h1, h2⟩ | h1
+         · exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+             show (some ⟨_, p + 1, mvR ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl), h2⟩⟩
+         · exact Or.inr ⟨_, _, _, rfl, Or.inr (by
+             show (some ⟨_, p + 1, mvR ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl)⟩)
+      | (rcases rpadR L false R p with ⟨h1, h2⟩ | h1
+         · exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+             show (some ⟨_, p + 1, mvR ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl), h2⟩⟩
+         · exact Or.inr ⟨_, _, _, rfl, Or.inr (by
+             show (some ⟨_, p + 1, mvR ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+             rw [h1]
+             rfl)⟩)
+      | (obtain ⟨h1, h2⟩ := rpadL L true R p
+         exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+           show (some ⟨_, p - 1, mvL ⟨L, true, R ++ [false]⟩⟩ : Option Cfg) = _
+           rw [h1]
+           rfl), h2⟩⟩)
+      | (obtain ⟨h1, h2⟩ := rpadL L false R p
+         exact Or.inr ⟨_, _, _, rfl, Or.inl ⟨(by
+           show (some ⟨_, p - 1, mvL ⟨L, false, R ++ [false]⟩⟩ : Option Cfg) = _
+           rw [h1]
+           rfl), h2⟩⟩)
+
+#print axioms step_rpad
+
+/-- **Multi-step right-pad dichotomy.**  Over a whole run: either the pad rides the entire way and
+the right frontier never advanced, or it is absorbed and the two runs land on the SAME config. -/
+theorem steps_rpad_dich : ∀ (n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool)
+    {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ →
+    (steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R' ++ [false]⟩⟩
+       ∧ ((R'.length : Int) + p' = (R.length : Int) + p))
+    ∨ steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro n
+  induction n with
+  | zero =>
+    intro s p L hd R s' p' L' hd' R' hrun
+    have e : (⟨s, p, ⟨L, hd, R⟩⟩ : Cfg) = ⟨s', p', ⟨L', hd', R'⟩⟩ := Option.some.inj hrun
+    injection e with e1 e2 e3
+    subst e1; subst e2
+    injection e3 with f1 f2 f3
+    subst f1; subst f2; subst f3
+    exact Or.inl ⟨rfl, rfl⟩
+  | succ n ih =>
+    intro s p L hd R s' p' L' hd' R' hrun
+    have hru : ((step ⟨s, p, ⟨L, hd, R⟩⟩).bind (steps n)) = some ⟨s', p', ⟨L', hd', R'⟩⟩ := hrun
+    rcases step_rpad s p L hd R with ⟨hn, _⟩ | ⟨s1, p1, t, hst, hcase⟩
+    · rw [hn] at hru; simp at hru
+    · rw [hst] at hru
+      have hru' : steps n ⟨s1, p1, t⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := hru
+      rcases t with ⟨tl, th, tr⟩
+      rcases hcase with ⟨hpad, hfr⟩ | hpad
+      · rcases ih s1 p1 tl th tr hru' with ⟨hp1, hf1⟩ | hp1
+        · refine Or.inl ⟨?_, hf1.trans hfr⟩
+          show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+          rw [hpad]; exact hp1
+        · refine Or.inr ?_
+          show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+          rw [hpad]; exact hp1
+      · refine Or.inr ?_
+        show ((step ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩).bind (steps n)) = _
+        rw [hpad]; exact hru'
+
+/-- **The exact congruence.**  If the right frontier advanced, the pad WAS absorbed: the padded run
+lands on exactly the trimmed run's config. -/
+theorem steps_rpad_absorb (n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool) (R : List Bool)
+    {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool}
+    (hrun : steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩)
+    (hf : (R.length : Int) + p < (R'.length : Int) + p') :
+    steps n ⟨s, p, ⟨L, hd, R ++ [false]⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  rcases steps_rpad_dich n s p L hd R hrun with ⟨_, he⟩ | h
+  · omega
+  · exact h
+
+#print axioms steps_rpad_dich
+#print axioms steps_rpad_absorb
+
+/-- **THE EXACT RIGHT-BOUNDARY CONGRUENCE, block form.**  If the run's right frontier advances by
+at least `k`, then a whole block of `k` trailing pads is absorbed and the padded run lands on
+EXACTLY the trimmed run's config — no `∃ i` slack.  This is what carries a transport proven with
+explicit pads down to the real, unpadded milestone config. -/
+theorem steps_rpad_zeros_absorb : ∀ (k n : Nat) (s : St) (p : Int) (L : List Bool) (hd : Bool)
+    (R : List Bool) {s' : St} {p' : Int} {L' : List Bool} {hd' : Bool} {R' : List Bool},
+    steps n ⟨s, p, ⟨L, hd, R⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ →
+    (R.length : Int) + p + (k : Int) ≤ (R'.length : Int) + p' →
+    steps n ⟨s, p, ⟨L, hd, R ++ zeros k⟩⟩ = some ⟨s', p', ⟨L', hd', R'⟩⟩ := by
+  intro k
+  induction k with
+  | zero =>
+    intro n s p L hd R s' p' L' hd' R' hrun _
+    rwa [show (zeros 0 : List Bool) = [] from rfl, List.append_nil]
+  | succ k ih =>
+    intro n s p L hd R s' p' L' hd' R' hrun hf
+    have hk : (R.length : Int) + p + (k : Int) ≤ (R'.length : Int) + p' := by push_cast at hf ⊢; omega
+    have hstep := ih n s p L hd R hrun hk
+    have hlen : ((R ++ zeros k).length : Int) + p < (R'.length : Int) + p' := by
+      rw [List.length_append, zeros_length]; push_cast at hf ⊢; omega
+    have habs := steps_rpad_absorb n s p L hd (R ++ zeros k) hstep hlen
+    rwa [List.append_assoc, zeros_snoc] at habs
+
+#print axioms steps_rpad_zeros_absorb
+
+/-! ## Pinning the milestone translation `q` — no refactor needed
+
+The cycles are `∀ R` in the trailing tail, and `R` sits at the very END of the right tape.  So the
+`R = [false]` instance is the `R = []` instance with one trailing pad — and `steps_rpad_dich` then
+FORCES the riding branch (the absorbed branch would need `Rout = Rout ++ [false]`).  Riding carries
+the frontier equality, so `q` is pinned by two list LENGTHS. -/
+
+theorem evenPadR_app (h : Nat) (X : List Bool) : evenPadR h X = evenPadR h [] ++ X := by
+  simp [evenPadR, List.append_assoc]
+
+theorem oddPadR_app (h : Nat) (X : List Bool) : oddPadR h X = oddPadR h [] ++ X := by
+  simp [oddPadR, oddPadTail, List.append_assoc]
+
+theorem oddPadTail_app (h : Nat) (X : List Bool) : oddPadTail h X = oddPadTail h [] ++ X := by
+  simp [oddPadTail, List.append_assoc]
+
+theorem evenPadTail_app (h : Nat) (X : List Bool) : evenPadTail h X = evenPadTail h [] ++ X := by
+  simp [evenPadTail, List.append_assoc]
+
+theorem MEven_right_app (h : Nat) (X : List Bool) :
+    (MEven h X).tape.right = (MEven h []).tape.right ++ X := by
+  show zeros 21 ++ (uUnits (2*h+1) ++ (true :: (zeros 10 ++ evenLowFrame h X))) = _
+  simp [MEven, evenLowFrame, teTailT, evenPadR_app h X, List.append_assoc]
+
+theorem MOdd_right_app (h : Nat) (X : List Bool) :
+    (MOdd h X).tape.right = (MOdd h []).tape.right ++ X := by
+  show zeros 21 ++ (uUnits (2*h+2) ++
+    (true :: (zeros 4 ++ (pow10 6 ++ (ones 4 ++ oddLowFrame h X))))) = _
+  simp [MOdd, oddLowFrame, oddPadR_app h X, List.append_assoc]
+
+#print axioms MEven_right_app
+#print axioms MOdd_right_app
+
+/-- **`q` IS PINNED** (even cycle): the milestone translation equals the difference of two list
+lengths.  Proof: the `R = [false]` instance of `cycleEven` is the `R = []` instance with one
+trailing pad, and the absorbed branch of `steps_rpad_dich` would force `Rout = Rout ++ [false]`.
+So the pad RIDES, and riding carries exactly the frontier equality. -/
+theorem cycleEven_pos (h : Nat) (m : Nat) (q : Int)
+    (hrun : steps (costEven h)
+        ⟨.E, 0, ⟨[], false, (MEven h (zeros 16 ++ oddPadTail h [])).tape.right⟩⟩
+      = some ⟨.E, q, ⟨zeros m, false, (MOdd h []).tape.right⟩⟩) :
+    ((MOdd h []).tape.right.length : Int) + q
+      = ((MEven h (zeros 16 ++ oddPadTail h [])).tape.right.length : Int) := by
+  have hin : (MEven h (zeros 16 ++ oddPadTail h [false])).tape.right
+      = (MEven h (zeros 16 ++ oddPadTail h [])).tape.right ++ [false] := by
+    rw [MEven_right_app h (zeros 16 ++ oddPadTail h [false]),
+        MEven_right_app h (zeros 16 ++ oddPadTail h []),
+        oddPadTail_app h [false]]
+    rw [← List.append_assoc, ← List.append_assoc, ← List.append_assoc]
+  obtain ⟨m1, q1, h1⟩ := cycleEven h [false]
+  rcases steps_rpad_dich (costEven h) .E 0 [] false
+      ((MEven h (zeros 16 ++ oddPadTail h [])).tape.right) hrun with ⟨_, hf⟩ | habs
+  · exact hf
+  · exfalso
+    have h1' : steps (costEven h)
+        ⟨.E, 0, ⟨[], false,
+          (MEven h (zeros 16 ++ oddPadTail h [])).tape.right ++ [false]⟩⟩
+        = some ⟨.E, q1, ⟨zeros m1, false, (MOdd h []).tape.right ++ [false]⟩⟩ := by
+      rw [← hin, ← MOdd_right_app h [false]]
+      exact h1
+    have hEq := Option.some.inj (habs.symm.trans h1')
+    injection hEq with _ _ e3
+    injection e3 with _ _ e6
+    have hl := congrArg List.length e6
+    rw [List.length_append, show ([false] : List Bool).length = 1 from rfl] at hl
+    omega
+
+#print axioms cycleEven_pos
+
+/-- **`q` IS PINNED** (odd cycle). -/
+theorem cycleOdd_pos (h : Nat) (m : Nat) (q : Int)
+    (hrun : steps (costOdd h)
+        ⟨.E, 0, ⟨[], false, (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right⟩⟩
+      = some ⟨.E, q, ⟨zeros m, false, (MEven (h+1) []).tape.right⟩⟩) :
+    ((MEven (h+1) []).tape.right.length : Int) + q
+      = ((MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right.length : Int) := by
+  have hin : (MOdd h (zeros 16 ++ evenPadTail (h+1) [false])).tape.right
+      = (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right ++ [false] := by
+    rw [MOdd_right_app h (zeros 16 ++ evenPadTail (h+1) [false]),
+        MOdd_right_app h (zeros 16 ++ evenPadTail (h+1) []),
+        evenPadTail_app (h+1) [false]]
+    rw [← List.append_assoc, ← List.append_assoc, ← List.append_assoc]
+  obtain ⟨m1, q1, h1⟩ := cycleOdd h [false]
+  rcases steps_rpad_dich (costOdd h) .E 0 [] false
+      ((MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right) hrun with ⟨_, hf⟩ | habs
+  · exact hf
+  · exfalso
+    have h1' : steps (costOdd h)
+        ⟨.E, 0, ⟨[], false,
+          (MOdd h (zeros 16 ++ evenPadTail (h+1) [])).tape.right ++ [false]⟩⟩
+        = some ⟨.E, q1, ⟨zeros m1, false, (MEven (h+1) []).tape.right ++ [false]⟩⟩ := by
+      rw [← hin, ← MEven_right_app (h+1) [false]]
+      exact h1
+    have hEq := Option.some.inj (habs.symm.trans h1')
+    injection hEq with _ _ e3
+    injection e3 with _ _ e6
+    have hl := congrArg List.length e6
+    rw [List.length_append, show ([false] : List Bool).length = 1 from rfl] at hl
+    omega
+
+#print axioms cycleOdd_pos
+
+set_option maxRecDepth 400000 in
+/-- **M4 anti-vacuity for the pinned translation.**  `cycleEven_pos`/`cycleOdd_pos` say
+`q = |IN right| − |OUT right|`.  At `h = 0` both evaluate to `−6` — exactly the MEASURED milestone
+translation (`M1(2) @−31`, `M1(3) @−37`, `M1(4) @−43`).  Checked by `#eval` for `h = 0,1,2`. -/
+theorem cycle_q_h0 :
+    ((MEven 0 (zeros 16 ++ oddPadTail 0 [])).tape.right.length : Int)
+      - ((MOdd 0 []).tape.right.length : Int) = -6
+    ∧ ((MOdd 0 (zeros 16 ++ evenPadTail 1 [])).tape.right.length : Int)
+      - ((MEven 1 []).tape.right.length : Int) = -6 := ⟨rfl, rfl⟩
+
+#print axioms cycle_q_h0
+
+/-! ## F — the chain
+
+Key simplification: non-halting needs, for each `N`, ONE finite chain of `≥ N` halt-free steps.
+The chain's END config is irrelevant.  So the milestone tails never have to close into an infinite
+nest — a depth-`d` chain carries a depth-`d` tail and bottoms out at `[]`. -/
+
+/-- lift a cycle (stated at pos `0`, left `[]`) to any translation and any block of left blanks -/
+theorem liftCycle {n : Nat} {R Rout : List Bool} {q : Int} {m1 : Nat}
+    (h : steps n ⟨.E, 0, ⟨[], false, R⟩⟩ = some ⟨.E, q, ⟨zeros m1, false, Rout⟩⟩)
+    (p : Int) (m : Nat) :
+    ∃ m2 : Nat, steps n ⟨.E, p, ⟨zeros m, false, R⟩⟩
+      = some ⟨.E, q + p, ⟨zeros m2, false, Rout⟩⟩ := by
+  obtain ⟨j, _, hp⟩ := steps_lpad_zeros n .E 0 [] false R h m
+  rw [List.nil_append] at hp
+  have hs := steps_pos_shift (d := p) hp
+  rw [show (0:Int) + p = p from by omega] at hs
+  exact ⟨m1 + j, by rw [zeros_add]; exact hs⟩
+
+/-- the depth-`d` milestone tail: one even cycle + one odd cycle per level, bottoming out at `[]` -/
+def tailE : Nat → Nat → List Bool
+  | _, 0 => []
+  | h, d + 1 => zeros 16 ++ oddPadTail h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))
+
+#print axioms liftCycle
+
+/-- **THE CHAIN.**  A depth-`d` chain of milestone cycles, unconditional in `h`, from
+`MEven h (tailE h d)` (translated and with any block of left blanks) through `2d` cycles.  Cost
+`≥ d`, which is all the non-halting argument needs. -/
+theorem chainE : ∀ (d h : Nat) (p : Int) (m : Nat),
+    ∃ (n m' : Nat) (q : Int), d ≤ n ∧
+      steps n ⟨.E, p, ⟨zeros m, false, (MEven h (tailE h d)).tape.right⟩⟩
+        = some ⟨.E, q, ⟨zeros m', false, (MEven (h + d) []).tape.right⟩⟩ := by
+  intro d
+  induction d with
+  | zero => intro h p m; exact ⟨0, m, p, Nat.le_refl 0, rfl⟩
+  | succ d ih =>
+    intro h p m
+    obtain ⟨m1, q1, hc1⟩ := cycleEven h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))
+    obtain ⟨m2, hE⟩ := liftCycle hc1 p m
+    obtain ⟨m3, q2, hc2⟩ := cycleOdd h (tailE (h+1) d)
+    obtain ⟨m4, hO⟩ := liftCycle hc2 (q1 + p) m2
+    obtain ⟨n5, m5, q5, hn5, h5⟩ := ih (h+1) (q2 + (q1 + p)) m4
+    refine ⟨costEven h + (costOdd h + n5), m5, q5, ?_, ?_⟩
+    · simp only [costEven, costOdd]; omega
+    · have hE' : steps (costEven h)
+          ⟨.E, p, ⟨zeros m, false, (MEven h (tailE h (d+1))).tape.right⟩⟩
+        = some ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOdd h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))).tape.right⟩⟩ := hE
+      have hO' : steps (costOdd h)
+          ⟨.E, q1 + p, ⟨zeros m2, false,
+            (MOdd h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d))).tape.right⟩⟩
+        = some ⟨.E, q2 + (q1 + p), ⟨zeros m4, false,
+            (MEven (h+1) (tailE (h+1) d)).tape.right⟩⟩ := hO
+      rw [show h + (d+1) = h + 1 + d from by omega,
+          steps_add, hE', someBind, steps_add, hO', someBind]
+      exact h5
+
+#print axioms chainE
+
+/-- every pad register is one block of blanks -/
+theorem oddPadTail_zeros (h : Nat) :
+    oddPadTail h [] = zeros (16 + (padLen 5 (2*h+5) + (2^(5+(2*h+5)) + 2^(5+(2*h+5)+1)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+5) ++
+    (zeros (2^(5+(2*h+5))) ++ (zeros (2^(5+(2*h+5)+1)) ++ []))) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add, ← zeros_add]
+
+theorem evenPadTail_zeros (h : Nat) :
+    evenPadTail h [] = zeros (16 + (padLen 5 (2*h+5) + 2^(5+(2*h+5)))) := by
+  show zeros 16 ++ (ladderPad 5 (2*h+5) ++ (zeros (2^(5+(2*h+5))) ++ [])) = _
+  rw [List.append_nil, ladderPad_zeros, ← zeros_add, ← zeros_add]
+
+/-- the depth-`d` tail is one block of blanks -/
+theorem tailE_zeros : ∀ (d h : Nat), ∃ t : Nat, tailE h d = zeros t := by
+  intro d
+  induction d with
+  | zero => intro h; exact ⟨0, rfl⟩
+  | succ d ih =>
+    intro h
+    obtain ⟨t, ht⟩ := ih (h+1)
+    refine ⟨16 + ((16 + (padLen 5 (2*h+5) + (2^(5+(2*h+5)) + 2^(5+(2*h+5)+1))))
+        + (16 + ((16 + (padLen 5 (2*(h+1)+5) + 2^(5+(2*(h+1)+5)))) + t))), ?_⟩
+    show zeros 16 ++ oddPadTail h (zeros 16 ++ evenPadTail (h+1) (tailE (h+1) d)) = _
+    rw [oddPadTail_app h, evenPadTail_app (h+1), ht,
+        oddPadTail_zeros h, evenPadTail_zeros (h+1),
+        ← zeros_add, ← zeros_add, ← zeros_add, ← zeros_add]
+
+#print axioms tailE_zeros
+
+/-- **THE MILESTONE FAMILY NEVER HALTS** — unconditional.  For every `N` a depth-`N` chain gives
+`≥ N` halt-free steps from `MEven 0 []`; the chain's over-provisioned tail is one block of blanks,
+so `steps_runpad_zeros` brings it down to the trimmed milestone. -/
+theorem milestone_nonhalt : ∀ N : Nat, steps N (MEven 0 []) ≠ none := by
+  intro N
+  obtain ⟨t, ht⟩ := tailE_zeros N 0
+  obtain ⟨n, m', q, hn, hrun⟩ := chainE N 0 0 0
+  have hrun' : steps n ⟨.E, 0, ⟨[], false, (MEven 0 ([]:List Bool)).tape.right ++ zeros t⟩⟩
+      = some ⟨.E, q, ⟨zeros m', false, (MEven (0 + N) ([]:List Bool)).tape.right⟩⟩ := by
+    rw [← ht, ← MEven_right_app 0 (tailE 0 N)]
+    exact hrun
+  obtain ⟨R', i, _, _, htrim⟩ :=
+    steps_runpad_zeros t n .E 0 [] false ((MEven 0 ([]:List Bool)).tape.right) hrun'
+  exact steps_prefix_ne_none htrim hn
+
+/-- **x2 NEVER HALTS, given only the entry segment.**  `hsplit` says the canonical milestone right
+tape is the reached one plus a block of blanks (a finite list identity); `hentry` is the concrete
+`init → M1(2)` run.  Everything else is unconditional. -/
+theorem x2_nonhalt_of_entry (n0 : Nat) (p0 : Int) (tl k : Nat) (Rreal : List Bool)
+    (hsplit : (MEven 0 ([]:List Bool)).tape.right = Rreal ++ zeros k)
+    (hentry : steps n0 init = some ⟨.E, p0, ⟨zeros tl, false, Rreal⟩⟩) :
+    ∀ N : Nat, steps N init ≠ none := by
+  intro N
+  obtain ⟨t, ht⟩ := tailE_zeros N 0
+  obtain ⟨n, m', q, hn, hrun⟩ := chainE N 0 p0 tl
+  have hrun' : steps n ⟨.E, p0, ⟨zeros tl, false, Rreal ++ zeros (k + t)⟩⟩
+      = some ⟨.E, q, ⟨zeros m', false, (MEven (0 + N) ([]:List Bool)).tape.right⟩⟩ := by
+    rw [zeros_add, ← List.append_assoc, ← hsplit, ← ht, ← MEven_right_app 0 (tailE 0 N)]
+    exact hrun
+  obtain ⟨R', i, _, _, htrim⟩ :=
+    steps_runpad_zeros (k + t) n .E p0 (zeros tl) false Rreal hrun'
+  have hfull : steps (n0 + n) init = some ⟨.E, q, ⟨zeros m', false, R'⟩⟩ := by
+    rw [steps_add, hentry, someBind]; exact htrim
+  exact steps_prefix_ne_none hfull (by omega)
+
+#print axioms milestone_nonhalt
+#print axioms x2_nonhalt_of_entry

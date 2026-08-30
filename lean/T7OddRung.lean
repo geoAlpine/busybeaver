@@ -876,3 +876,332 @@ example : topGrindSteps 10 + exitSteps 11 = 1581577 := by decide          -- cas
 example : 5018196 - 3436619 = 1581577 := by decide                        -- and that IS measured
 example : topGrindSteps 11 + (exitSteps 12 + 4 * 5) + (27 * 2 + 110) = 6311105 := by decide
 example : 11329301 - 5018196 = 6311105 := by decide                       -- cReg 11 → milestone
+
+/-! ### The odd E2 tile — MEASURED, awaiting an M3′ chunked build
+
+The last odd-specific object is an 80-step episode (g=3, steps 5 018 116 → 5 018 196, head `+4`).
+Its statement is fixed by measurement:
+
+```
+steps 80 ⟨.D, p, ⟨ones 15 ++ (false :: false :: T), true, ones 5 ++ (false :: false :: R)⟩⟩
+  = some ⟨.E, p + 4, ⟨pow01 10 ++ (false :: T), false, false :: false :: false :: R⟩⟩
+```
+
+A one-shot `rfl` does NOT close it — 80 steps over these lists exceeds 4 000 000 heartbeats.
+It needs the standard M3′ chunking (as `seam74` uses: 25 + 25 + 24). The intermediates are
+measured and ready (positions relative to the IN head, `dpos`):
+
+```
++20  st=E  dpos=−16  cur=0  L=0 1 0 1 0 1 …      R=0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
++40  st=A  dpos=− 8  cur=1  L=0 1 0 1 0 1 …      R=1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 1
++60  st=C  dpos=− 2  cur=0  L=0 1 0 1 0 1 …      R=0 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1
++80  st=E  dpos=+ 4  cur=0  L=0 1 0 1 0 1 …      R=0 0 0 1 1 1 1 1 1 1 1 1 1
+```
+
+Writing the four chunk lemmas (each ~20 steps, `rfl`-affordable) and composing with `steps_add`
+closes it, and with it the odd branch — every other part is already GREEN and on-orbit. -/
+
+private theorem oe2c0 (T R : List Bool) :
+    steps 20 ⟨.D, (0 : Int), ⟨ones 15 ++ (false :: false :: T), true,
+        ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, (-16 : Int), ⟨false :: T, false,
+        false :: (ones 20 ++ (false :: false :: R))⟩⟩ := by rfl
+
+private theorem oe2c1 (T R : List Bool) :
+    steps 20 ⟨.E, (-16 : Int), ⟨false :: T, false,
+        false :: (ones 20 ++ (false :: false :: R))⟩⟩
+      = some ⟨.A, (-8 : Int), ⟨pow01 4 ++ (false :: T), true,
+        ones 13 ++ (false :: false :: R)⟩⟩ := by rfl
+
+private theorem oe2c2 (T R : List Bool) :
+    steps 20 ⟨.A, (-8 : Int), ⟨pow01 4 ++ (false :: T), true,
+        ones 13 ++ (false :: false :: R)⟩⟩
+      = some ⟨.C, (-2 : Int), ⟨pow01 7 ++ (false :: T), false,
+        false :: (ones 6 ++ (false :: false :: R))⟩⟩ := by rfl
+
+private theorem oe2c3 (T R : List Bool) :
+    steps 20 ⟨.C, (-2 : Int), ⟨pow01 7 ++ (false :: T), false,
+        false :: (ones 6 ++ (false :: false :: R))⟩⟩
+      = some ⟨.E, (4 : Int), ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by rfl
+
+/-- **`oddE2Tile`** — THE LAST ODD-SPECIFIC OBJECT.  80 steps, head `+4`: the `ones 15` on the
+left and the `ones 5` on the right are consumed, `pow01 10` is laid down on the left and `0 0 0`
+on the right; the deep tail `R` and the comb tail `T` are untouched.  This is what absorbs the odd
+branch's `ones 20` marker prefix and hands the top rung its canonical comb.
+MEASURED at g=3, steps 5 018 116 → 5 018 196, cell-for-cell; built by M3′ in four 20-step tiles. -/
+theorem oddE2Tile (p : Int) (T R : List Bool) :
+    steps 80 ⟨.D, p, ⟨ones 15 ++ (false :: false :: T), true,
+        ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, p + 4, ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by
+  have h0 : steps 80 ⟨.D, (0 : Int), ⟨ones 15 ++ (false :: false :: T), true,
+      ones 5 ++ (false :: false :: R)⟩⟩
+      = some ⟨.E, (4 : Int), ⟨pow01 10 ++ (false :: T), false,
+        false :: false :: false :: R⟩⟩ := by
+    rw [show (80 : Nat) = 20 + (20 + (20 + 20)) from by decide, steps_add, oe2c0 T R, someBind,
+        steps_add, oe2c1 T R, someBind, steps_add, oe2c2 T R, someBind]
+    exact oe2c3 T R
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms oddE2Tile
+
+/-- **`trailSuffixOdd`** — the odd analogue of `trailSuffix`: the same 7-step, `E`/cur-`1` phase,
+but with an `ones 21` run where the even branch has `0 0 1`.  It lands EXACTLY on `oddE2Tile`'s IN.
+MEASURED at g=3, steps 5 018 109 → 5 018 116. -/
+theorem trailSuffixOdd (p : Int) (M Y : List Bool) :
+    steps 7 ⟨.E, p, ⟨false :: (ones 21 ++ M), true, Y⟩⟩
+      = some ⟨.D, p - 7, ⟨ones 15 ++ M, true, ones 5 ++ (false :: false :: Y)⟩⟩ := by
+  have h0 : steps 7 ⟨.E, (0 : Int), ⟨false :: (ones 21 ++ M), true, Y⟩⟩
+      = some ⟨.D, (-7 : Int), ⟨ones 15 ++ M, true, ones 5 ++ (false :: false :: Y)⟩⟩ := by rfl
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  rw [h]
+  exact congrArg some (cfgPos (by omega))
+
+#print axioms trailSuffixOdd
+
+/-- **`trailOut_allGenO`** — the trailing phase with an `ones`-run tail (the odd branch's).
+Same `trailSteps k` as the even/comb versions; `trailSeam_leftW` and `trailFoldPos` are reused
+verbatim, and only the ending differs (`trailSuffixOdd` for `trailSuffix`).  Its OUT is
+`oddE2Tile`'s IN. -/
+theorem trailOut_allGenO (k : Nat) (hk : 6 ≤ k) (p : Int) (M R : List Bool) :
+    ∃ q, steps (trailSteps k)
+        (cascadeReg 4 1 (p + 2 ^ k - (k : Int) - 44)
+          (depStack k (regenWordW k (ones 21 ++ M))) (zeros 16 ++ R))
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨n, rfl⟩ : ∃ n, k = n + 6 := ⟨k - 6, by omega⟩
+  have hsteps : trailSteps (n + 6) = 393 + (trailCost (trailBlocks (n + 2)) + 7) := by
+    have h := trailSteps_eq_trailCost (n + 6) (by omega)
+    rw [show n + 6 - 4 = n + 2 from by omega] at h
+    omega
+  refine ⟨(p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19)
+      - ((trailCost (trailBlocks (n + 2)) : Nat) : Int) + 2 * (((n + 2 : Nat)) : Int) - 7, ?_⟩
+  rw [hsteps, steps_add]
+  rw [show cascadeReg 4 1 (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+        (depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M))) (zeros 16 ++ R)
+      = ⟨.E, p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44,
+          ⟨pow01 7 ++ depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M)), false,
+            false :: false :: false :: (ones 13 ++ (false :: false ::
+              (descCascade 1 ++ (false :: false :: (zeros 7 ++ (zeros 16 ++ R))))))⟩⟩ from rfl,
+    trailPrefix (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44)
+      (depStack (n + 6) (regenWordW (n + 6) (ones 21 ++ M))) R,
+    someBind]
+  rw [trailSeam_leftW (n + 6) (by omega) (ones 21 ++ M), show n + 6 - 4 = n + 2 from by omega]
+  rw [steps_add,
+    trailFoldPos (trailBlocks (n + 2))
+      (p + 2 ^ (n + 6) - ((n + 6 : Nat) : Int) - 44 + 19) (ones 21 ++ M)
+      (descCascade 2 ++ (zeros 9 ++ R)),
+    someBind, trailBlocks_length]
+  rw [show trailCasc (trailBlocks (n + 2)) (descCascade 2 ++ (zeros 9 ++ R))
+      = descCascade (n + 4) ++ (zeros 9 ++ R) from by
+        rw [trailCasc_append, trailCasc_descCascade, show 2 + (n + 2) = n + 4 from by omega],
+    trailSuffixOdd _ M (descCascade (n + 4) ++ (zeros 9 ++ R)),
+    show n + 6 - 2 = n + 4 from by omega]
+
+#print axioms trailOut_allGenO
+
+/-- **`regenLawGenO_ge7`** — THE ODD EXIT REGEN.  Same assembly as `regenLawGenC_ge7`
+(`leadOut_allGenW ∘ interiorFold ∘ trailFloorRegen ∘ trailOut`), with the `ones`-run trailing
+phase substituted.  Its OUT is `oddE2Tile`'s IN. -/
+theorem regenLawGenO_ge7 (k : Nat) (hk : 7 ≤ k) (M R : List Bool) :
+    ∃ q, steps (exitSteps k) (regenInGenW k 0 (2 ^ (k - 1) + 9) (ones 21 ++ M) R)
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨q', hfold⟩ := interiorFold_lower_expl (k - 6) (by omega)
+      (fun m hm _ => regenLaw_closed m hm)
+      ((0 : Int) + 2 ^ (k - 1) - (k : Int) + 4)
+      (regenWordW k (ones 21 ++ M)) (zeros 32 ++ R)
+  rw [show (k - 6) - 1 = k - 7 from by omega, foldMarker_eq_depStack k hk] at hfold
+  obtain ⟨qt, ht⟩ := trailOut_allGenO k (by omega)
+    ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) M R
+  rw [show ((q' - 2 ^ 4) - 2 ^ k + (k : Int) + 44) + 2 ^ k - (k : Int) - 44
+      = q' - 2 ^ 4 from by omega] at ht
+  refine ⟨qt, ?_⟩
+  rw [framingArith k hk, steps_add, steps_add, steps_add,
+      leadOut_allGenW k (by omega) 0 (ones 21 ++ M) R, someBind,
+      leadOut_is_interiorIn k hk _ _ R, hfold, someBind]
+  rw [show (zeros 32 ++ R : List Bool) = zeros 16 ++ (zeros 16 ++ R) from by
+        rw [← List.append_assoc, ← zeros_add],
+      trailFloorRegen q' (depStack k (regenWordW k (ones 21 ++ M))) (zeros 16 ++ R), someBind]
+  exact ht
+
+#print axioms regenLawGenO_ge7
+
+/-- `regenLawGenO_ge7` at an arbitrary start position. -/
+theorem regenLawGenO_closed (k : Nat) (hk : 7 ≤ k) (p : Int) (M R : List Bool) :
+    ∃ q, steps (exitSteps k) (regenInGenW k p (2 ^ (k - 1) + 9) (ones 21 ++ M) R)
+      = some ⟨.D, q, ⟨ones 15 ++ M, true,
+          ones 5 ++ (false :: false :: (descCascade (k - 2) ++ (zeros 9 ++ R)))⟩⟩ := by
+  obtain ⟨q0, h0⟩ := regenLawGenO_ge7 k hk M R
+  refine ⟨q0 + p, ?_⟩
+  have h := steps_pos_shift (d := p) h0
+  rw [show (0:Int) + p = p from by omega] at h
+  show steps (exitSteps k) ⟨.E, p, _⟩ = _
+  rw [h]
+
+/-- **`topgrind_meets_regenO`** — the odd branch's first seam with the `ones 20` marker: the
+`∀marker` topgrind lands exactly on the `ones`-run REGEN entry one level up. -/
+theorem topgrind_meets_regenO (k : Nat) (hk : 4 ≤ k) (p : Int) (M R : List Bool) :
+    steps (topGrindSteps k)
+        (cascadeReg k 1 p (ones 20 ++ M) (zeros (2 ^ k) ++ R))
+      = some (regenInGenW (k + 1) (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int))
+                (2 ^ k + 9) (ones 21 ++ M) R) := by
+  rw [cascadeReg_topgrind k hk p (ones 20 ++ M) (zeros (2 ^ k) ++ R)]
+  refine congrArg some ?_
+  obtain ⟨m, rfl⟩ : ∃ m, k = m + 4 := ⟨k - 4, by omega⟩
+  have e1 : 4 * (2 ^ (m + 4 - 1) - 2) + 4 + 1 = 2 ^ (m + 4 + 1) - 3 := by
+    have hm : 1 ≤ 2 ^ m := Nat.one_le_two_pow
+    have h1 : 2 ^ (m + 4 - 1) = 2 ^ m * 8 := by
+      rw [show m + 4 - 1 = m + 3 from by omega, Nat.pow_add]
+    have h2 : 2 ^ (m + 4 + 1) = 2 ^ m * 32 := by
+      rw [show m + 4 + 1 = m + 5 from by omega, Nat.pow_add]
+    omega
+  show (⟨.E, _, ⟨ones (4 * (2 ^ (m + 4 - 1) - 2) + 4) ++ (pow10 1 ++ (true :: (ones 20 ++ M))),
+      false, false :: (descCascade (m + 4 - 3) ++
+        (false :: false :: (zeros 7 ++ (zeros (2 ^ (m + 4)) ++ R))))⟩⟩ : Cfg) = _
+  rw [ones_pow10_absorb _ 1 (ones 20 ++ M), e1,
+      zeros_pad (m + 4) R, show m + 4 - 3 = m + 4 + 1 - 4 from by omega]
+  rfl
+
+#print axioms regenLawGenO_closed
+#print axioms topgrind_meets_regenO
+
+/-- **`oddTopRungO`** — the odd top rung with the `ones 20` marker, all the way to `oddE2Tile`'s
+OUT (the canonical `cascadeReg`-shaped landing).  `topgrind ∘ odd exit REGEN ∘ oddE2Tile`. -/
+theorem oddTopRungO (k : Nat) (hk : 6 ≤ k) (p : Int) (T R : List Bool) :
+    ∃ q, steps (topGrindSteps k + exitSteps (k + 1) + 80)
+        (cascadeReg k 1 p (ones 20 ++ (false :: false :: T)) (zeros (2 ^ k) ++ R))
+      = some ⟨.E, q, ⟨pow01 10 ++ (false :: T), false,
+          false :: false :: false ::
+            (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := regenLawGenO_closed (k + 1) (by omega)
+    (p + 5 + 2 * ((2 ^ (k - 1) - 2 : Nat) : Int)) (false :: false :: T) R
+  refine ⟨q1 + 4, ?_⟩
+  rw [steps_add, steps_add, topgrind_meets_regenO k (by omega) p (false :: false :: T) R,
+      someBind, show (2 : Nat) ^ k + 9 = 2 ^ (k + 1 - 1) + 9 from by
+        rw [show k + 1 - 1 = k from by omega], h1, someBind]
+  exact oddE2Tile q1 T (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))
+
+#print axioms oddTopRungO
+
+/-- `oddTopRungO`'s OUT IS a canonical `cascadeReg (k+1) (c+1)` once the comb is read out of its
+free tail.  Uses `foldOut_is_comb_on_suffixIn` to re-phase and `cascadeReg_collapse` on the right. -/
+theorem oddTopRungO_out_cascadeReg (k m c : Nat) (hk : 4 ≤ k)
+    (hm : 10 + m = (c + 1) + (2 ^ k - 2)) (q : Int) (N R : List Bool) :
+    (⟨.E, q, ⟨pow01 10 ++ (false :: (pow10 m ++ (false :: N))), false,
+      false :: false :: false :: (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))⟩⟩ : Cfg)
+      = cascadeReg (k + 1) (c + 1) q (false :: false :: N) R := by
+  have hleft : (pow01 10 ++ (false :: (pow10 m ++ (false :: N))) : List Bool)
+      = pow01 ((c + 1) + (2 ^ (k + 1 - 1) - 2)) ++ (false :: false :: N) := by
+    rw [foldOut_is_comb_on_suffixIn m (false :: N), ← List.append_assoc, ← pow01_add,
+        show k + 1 - 1 = k from by omega, hm]
+  have hright : (false :: false :: false :: (descCascade (k + 1 - 2) ++ (zeros 9 ++ R))
+      : List Bool)
+      = false :: false :: false :: (ones (2 ^ (k + 1) - 3) ++ (false :: false ::
+          (descCascade (k + 1 - 3) ++ (false :: false :: (zeros 7 ++ R))))) := by
+    have hc := cascadeReg_collapse (k + 1) (by omega)
+    rw [← hc, List.append_assoc]
+    rfl
+  show (⟨.E, q, ⟨_, false, _⟩⟩ : Cfg) = _
+  rw [hleft, hright]
+  rfl
+
+#print axioms oddTopRungO_out_cascadeReg
+
+/-! ### Remaining: `oddRungToMilestone` = `oddTopRungO ∘ oddTopRungToMilestone`
+
+Both halves are GREEN and the connecting bridge `oddTopRungO_out_cascadeReg` is GREEN; the
+composition itself did not elaborate on the first attempt (an argument-shape mismatch at the
+`oddTopRungToMilestone` application) and was removed rather than left with `sorryAx`.
+
+The algebra that must line up, all of it already verified on paper and by the measured orbit:
+
+* left:  `pow01 10 ++ (false :: (pow10 m ++ (false :: N)))` `= pow01 (10+m) ++ (false :: false :: N)`
+  and `10 + m = (c+1) + (2^k − 2)` makes that `cascadeReg (k+1) (c+1)`'s comb (at g=3: `c = 5`,
+  comb `1028 = 6 + (2^10 − 2)`, matching the MEASURED `combL` at `cReg 11`).
+* right: `descCascade (k+1−2) ++ zeros 9 ++ R` `=` `cascadeReg (k+1)`'s right, by
+  `cascadeReg_collapse` and `0 0 :: zeros 7 = zeros 9`.
+* `R`-slot: `oddTopRungToMilestone` consumes `zeros (2^{k+1}) ++ R`, which is exactly what
+  `oddTopRungO` is handed.
+
+With that composition the odd branch reaches the milestone, and `doubPhaseOdd` is
+`topEntryOddFull ∘ headToLadder ∘ ⟨this⟩`. -/
+
+/-- **`oddRungToMilestone`** — the odd branch from the `ones 20` marker onto the next milestone's
+frame: `oddTopRungO ∘ oddTopRungToMilestone`, `∀k ≥ 6 ∀j ∀c ≥ 1`.  Every part GREEN. -/
+theorem oddRungToMilestone (k m c j : Nat) (hk : 6 ≤ k) (hc : 1 ≤ c)
+    (hm : 10 + m = (c + 1) + (2 ^ k - 2)) (p : Int) (L R : List Bool) :
+    ∃ q, steps ((topGrindSteps k + exitSteps (k + 1) + 80)
+          + (topGrindSteps (k + 1) + (exitSteps (k + 1 + 1) + 4 * c) + (27 * j + 110)))
+        (cascadeReg k 1 p
+          (ones 20 ++ (false :: false ::
+            (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+          (zeros (2 ^ k) ++ (zeros (2 ^ (k + 1)) ++ R)))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (k + 1) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := oddTopRungO k hk p
+    (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))
+    (zeros (2 ^ (k + 1)) ++ R)
+  refine ⟨(q1 + 5 + 2 * ((2 ^ (k + 1 - 1) - 2 : Nat) : Int)) - 2 ^ (k + 1 + 1)
+      - 2 * (c : Int) - 7 * (j : Int) - 26, ?_⟩
+  rw [steps_add, h1, someBind,
+      oddTopRungO_out_cascadeReg k m c (by omega) hm q1
+        (true :: frameLV j (endWord ++ (zeros 11 ++ L))) (zeros (2 ^ (k + 1)) ++ R)]
+  exact oddTopRungToMilestone (k + 1) j c (by omega) hc q1 L R
+
+#print axioms oddRungToMilestone
+
+/-- **`oddSpineFull`** — THE ODD SPINE, end to end: `headToLadder n ∘ oddRungToMilestone (5+n)`,
+`∀n ≥ 1 ∀m ∀c ≥ 1 ∀j` with `10 + m = (c+1) + (2^{5+n} − 2)`.  From the odd descent entry
+`descIn (n+4)` — whose marker `ones 20 ++ …` is the MEASURED one — all the way onto the next
+milestone's frame.  Every part GREEN. -/
+theorem oddSpineFull (n m c j : Nat) (hn : 1 ≤ n) (hc : 1 ≤ c)
+    (hm : 10 + m = (c + 1) + (2 ^ (5 + n) - 2)) (p : Int) (L R : List Bool) :
+    ∃ q, steps (((descTotal n + 415) + (ladderSteps 5 n + exitSteps (5 + n)))
+          + ((topGrindSteps (5 + n) + exitSteps (5 + n + 1) + 80)
+             + (topGrindSteps (5 + n + 1) + (exitSteps (5 + n + 1 + 1) + 4 * c)
+                + (27 * j + 110))))
+        (descIn (n + 4) p
+          (ones 20 ++ (false :: false ::
+            (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+          (zeros 25 ++ (zeros 16 ++ (ladderPad 5 n ++
+            (zeros (2 ^ (5 + n)) ++ (zeros (2 ^ (5 + n + 1)) ++ R))))))
+      = some ⟨.E, q, ⟨zeros 10 ++ L, false,
+          zeros 21 ++ (true :: (zeros 6 ++ (true :: false ::
+            frameZ j (oddSeamZ (5 + n + 1) c R))))⟩⟩ := by
+  obtain ⟨q1, h1⟩ := headToLadder n p
+    (ones 20 ++ (false :: false ::
+      (pow10 m ++ (false :: true :: frameLV j (endWord ++ (zeros 11 ++ L))))))
+    (zeros (2 ^ (5 + n)) ++ (zeros (2 ^ (5 + n + 1)) ++ R))
+  obtain ⟨q2, h2⟩ := oddRungToMilestone (5 + n) m c j (by omega) hc hm q1 L R
+  refine ⟨q2, ?_⟩
+  rw [steps_add, h1, someBind]
+  exact h2
+
+#print axioms oddSpineFull
+
+/-- `frameLV` peels one frame layer: the 7 cells `0 1 0 1 0 0 1`. -/
+theorem frameLV_succ (j : Nat) (X : List Bool) :
+    frameLV (j + 1) X
+      = false :: true :: false :: true :: false :: false :: true :: frameLV j X := by
+  show false :: true :: false :: true :: false :: false :: frameL j (turnWord ++ X) = _
+  rw [frameL_turnWord j X]
+
+/-- **THE ODD E2 MARKER IDENTITY** — `topEntryOddFull`'s marker tail IS `oddSpineFull`'s, with
+`m = N + 1` and `j = (2h+1) + 1`.  The even branch's 9-cell `seam74` word is absorbed here into
+one `frameLV` layer, which is exactly why the odd branch needs no `seam74`. -/
+theorem oddE2Marker (N j : Nat) (X : List Bool) :
+    pow10 N ++ (true :: (false :: false :: true :: false :: true :: false :: true :: false ::
+        false :: (true :: frameLV j X)))
+      = pow10 (N + 1) ++ (false :: true :: frameLV (j + 1) X) := by
+  rw [pow10_add, frameLV_succ j X, List.append_assoc]
+  rfl
+
+#print axioms frameLV_succ
+#print axioms oddE2Marker
